@@ -1,0 +1,25 @@
+java:
+  image: 'https://hmctspublic.azurecr.io/ia/homeoffice-integration-service:latest'
+  applicationPort: 8098
+  aadIdentityName: ia
+  environment:
+    IDAM_URL: "http://idam-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    CCD_URL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+  keyVaults:
+    ia:
+      secrets:
+        - system-username
+        - system-password
+        - idam-client-id
+        - idam-secret
+        - idam-redirect-uri
+        - s2s-secret
+        - s2s-microservice
+        - ccd-url
+        - ccd-gw-url
+        - dm-url
+        - idam-url
+        - s2s-url
+        - prof-ref-data-urls
+        - AppInsightsInstrumentationKey

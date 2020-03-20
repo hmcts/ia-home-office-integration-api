@@ -328,7 +328,7 @@ def getCheckedOutGitCommitHash() {
 gradle.startParameter.continueOnFailure = true
 
 bootJar {
-  archiveName = 'ia-home-office-integration-api.jar'
+  archiveName = 'ia-homeoffice-integration-api.jar'
 
   manifest {
     attributes('Implementation-Version': project.version.toString())
