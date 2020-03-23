@@ -263,15 +263,13 @@ dependencies {
   compile 'org.projectlombok:lombok:1.18.2'
 
   compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.5.6'
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.0.pr3'
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0.pr3'
-  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.10.0.pr2'
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.2'
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.2'
+  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.10.2'
   compile group: 'io.github.openfeign.form', name: 'feign-form', version: '3.4.0'
   compile group: 'io.github.openfeign.form', name: 'feign-form-spring', version: '3.4.0'
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
-  //compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
-  //compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
 
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
   testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: versions.junit
