@@ -22,7 +22,7 @@ plugins {
 }
 
 apply plugin: 'java'
-//apply plugin: 'net.serenity-bdd.aggregator'
+apply plugin: 'net.serenity-bdd.aggregator'
 //apply plugin: 'project-report'
 //apply plugin: 'idea'
 
@@ -108,7 +108,7 @@ sourceSets {
     testSourceDirs += project.sourceSets.contractTest.java.srcDirs
     testResourceDirs += project.sourceSets.contractTest.resources.srcDirs
   }
-} */
+}*/
 
 configurations {
   integrationTestCompile.extendsFrom testCompile
@@ -151,8 +151,8 @@ task contract(type: Test, description: 'Runs the pact contract tests.', group: '
 }
 
 project.ext {
-  //pactVersion = getCheckedOutGitCommitHash()
-  pactVersion = '3.5.24'
+  pactVersion = getCheckedOutGitCommitHash()
+  //pactVersion = '3.5.24'
 }
 
 checkstyle {
@@ -277,6 +277,12 @@ dependencies {
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
 
+  testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
+  testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
+  testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+  testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
+  testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+
   //pact contract testing
   contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: versions.pact_version
   contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: versions.pact_version
@@ -314,6 +320,12 @@ test {
   useJUnitPlatform()
   failFast = true
 }
+
+def getCheckedOutGitCommitHash() {
+  'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
+
+gradle.startParameter.continueOnFailure = true
 
 bootJar {
   archiveName = 'ia-homeoffice-integration-api.jar'
