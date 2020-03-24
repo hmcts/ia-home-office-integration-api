@@ -9,7 +9,7 @@ properties([
 
 def type = "java"
 def product = "ia"
-def component = "homeoffice-integration-api"
+def component = "home-office-integration-api"
 
 def secrets = [
   'ia-${env}': [

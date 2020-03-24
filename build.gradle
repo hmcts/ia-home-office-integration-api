@@ -41,7 +41,7 @@ def versions = [
 ]
 
 mainClassName = 'uk.gov.hmcts.reform.hois.Application'
-def jarName = 'ia-homeoffice-integration-api.jar'
+def jarName = 'ia-home-office-integration-api.jar'
 
 group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
@@ -328,7 +328,7 @@ def getCheckedOutGitCommitHash() {
 gradle.startParameter.continueOnFailure = true
 
 bootJar {
-  archiveName = 'ia-homeoffice-integration-api.jar'
+  archiveName = 'ia-home-office-integration-api.jar'
 
   manifest {
     attributes('Implementation-Version': project.version.toString())

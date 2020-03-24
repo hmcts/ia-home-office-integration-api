@@ -1,15 +1,15 @@
 version: '3'
 
 services:
-  ia-homeoffice-integration-api:
+  ia-home-office-integration-api:
     build:
       context: .
       args:
         - http_proxy
         - https_proxy
         - no_proxy
-    image: hmcts/ia-homeoffice-integration-api
-    container_name: ia-homeoffice-integration-api
+    image: hmcts/ia-home-office-integration-api
+    container_name: ia-home-office-integration-api
     environment:
       # these environment variables are used by java-logging library
           JAVA_OPTS:
