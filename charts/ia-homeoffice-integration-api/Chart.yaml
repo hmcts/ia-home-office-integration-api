@@ -1,8 +1,0 @@
-apiVersion: v1
-name: ia-homeoffice-integration-service
-home: https://github.com/hmcts/ia-home-office-integration-api
-version: 0.0.1
-description: Immigration & Asylum Home Office Integration API
-maintainers:
-  - name: HMCTS Immigration & Asylum Team
-    email: ImmigrationandAsylum@HMCTS.NET
