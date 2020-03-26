@@ -1,0 +1,17 @@
+java:
+  # Don't modify below here
+  image: ${IMAGE_NAME}
+  ingressHost: ${SERVICE_FQDN}
+  keyVaults:
+    ia:
+      secrets:
+        - system-username
+        - system-password
+        - idam-client-id
+        - idam-secret
+        - idam-redirect-uri
+        - s2s-secret
+        - s2s-microservice
+        - idam-url
+        - s2s-url
+        - prof-ref-data-urls

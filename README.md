@@ -1,1 +1,4 @@
-# ia-home-office-integration-api
+# Home Office Integration API
+
+Service to interface with Home Office
+
