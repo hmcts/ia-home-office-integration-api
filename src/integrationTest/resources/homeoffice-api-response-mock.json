@@ -1,0 +1,65 @@
+{
+  "messageHeader": {
+    "consumer": {
+      "code": "HMCTS",
+      "description": "HM Courts and Tribunal Service"
+    },
+    "correlationId": "ABC2344BCED2234EA",
+    "eventDateTime": "2020-03-27T17:32:28Z"
+  },
+  "messageType": "MessageType.RESPONSE_RIGHT_OF_APPEAL_DETAILS",
+  "status": [
+    {
+      "decisionStatus": {
+        "appealable": true,
+        "applicationType": {
+          "code": "ASYLUM",
+          "description": "Asylum and Protection"
+        },
+        "claimReasonType": {
+          "code": "HUMANRIGHTS",
+          "description": "Human Rights"
+        },
+        "decisionCommunication": {
+          "description": "E-mail",
+          "sentDate": "2017-07-21T17:32:28Z",
+          "type": "EMAIL"
+        },
+        "decisionDate": "2017-07-21T17:32:28Z",
+        "decisionType": {
+          "code": "REJECTION",
+          "description": "Rejected"
+        },
+        "rejectionReasons": [
+          {
+            "reason": "Application not completed properly"
+          }
+        ],
+        "roleSubType": {
+          "code": "SPOUSE. Could be MAIN if the role type is APPLICANT",
+          "description": "Spouse"
+        },
+        "roleType": {
+          "code": "DEPENDANT",
+          "description": "Dependant"
+        }
+      },
+      "person": {
+        "dayOfBirth": 21,
+        "familyName": "Smith",
+        "fullName": "Capability Smith",
+        "gender": {
+          "code": "M",
+          "description": "Male"
+        },
+        "givenName": "Capability",
+        "monthOfBirth": 0,
+        "nationality": {
+          "code": "CAN",
+          "description": "Canada"
+        },
+        "yearOfBirth": 1970
+      }
+    }
+  ]
+}

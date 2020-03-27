@@ -7,16 +7,17 @@ import org.junit.Test;
 
 public class HomeOfficeRequestTest {
 
-    private HomeOfficeRequest request;
-    private final String hoUan = "1111-2222-3333-4444";
+    private static final String hoUan = "1111-2222-3333-4444";
+    private transient HomeOfficeRequest request;
+
     @Before
     public void setUp() {
         request = new HomeOfficeRequest();
-        request.setHoReference(hoUan);
+        request.setIaHomeOfficeReference(hoUan);
     }
 
     @Test
-    public void checkHomeOfficeRequest() throws Exception{
-        assertThat(request.getHoReference().equals(hoUan));
+    public void checkHomeOfficeRequest() throws Exception {
+        assertThat(request.getIaHomeOfficeReference().equals(hoUan));
     }
 }
