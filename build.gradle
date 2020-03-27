@@ -259,7 +259,7 @@ dependencies {
 
   //compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
   //compile(group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4')
-  compile group: 'com.google.guava', name: 'guava', version: '27.0-jre'
+  compile group: 'com.google.guava', name: 'guava', version: '28.2-jre'
   compile 'org.projectlombok:lombok:1.18.2'
 
   compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.5.6'
