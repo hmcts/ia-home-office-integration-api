@@ -64,7 +64,6 @@ public class HoisControllerTest {
             .andExpect(jsonPath("ia_home_office_reference").value(hoUAN))
             .andReturn();
 
-        //assertNotNull(response.getResponse().getContentAsString());
         assertThat(response.getResponse().getContentAsString()).contains("\"ia_home_office_reference\":\"1111-2222-3333-4444\"");
     }
 }

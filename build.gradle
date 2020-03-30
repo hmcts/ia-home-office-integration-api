@@ -186,7 +186,17 @@ jacocoTestReport {
   }
 }
 
-project.tasks['sonarqube'].dependsOn jacocoTestReport
+sonarqube {
+  properties {
+    property "sonar.projectName", "IA :: Immigration & Asylum case api"
+    property "sonar.projectKey", "IAHOISAPI"
+    property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+    property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/hois/Application.java"
+  }
+}
+
+project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
+project.tasks['sonarqube'].group = "Verification"
 
 sonarqube {
   properties {
