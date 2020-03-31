@@ -13,7 +13,7 @@ def component = "home-office-integration-api"
 
 def secrets = [
     'ia-${env}': [
-    
+
         secret('idam-url', 'IDAM_URL'),
         secret('s2s-url', 'S2S_URL')
 
@@ -35,14 +35,6 @@ withPipeline(type, product, component) {
     enableAksStagingDeployment()
     disableLegacyDeployment()
     loadVaultSecrets(secrets)
-
-    after('functionalTest:preview') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-    }
-
-    after('functionalTest:aat') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-    }
 
     enableSlackNotifications('#ia-tech')
 }

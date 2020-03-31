@@ -14,8 +14,8 @@ group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
 
 allprojects {
-  sourceCompatibility = '11'
-  targetCompatibility = '11'
+  sourceCompatibility = '8'
+  targetCompatibility = '8'
 }
 
 sourceSets {
@@ -92,11 +92,16 @@ checkstyle {
 
 pmd {
   toolVersion = "6.18.0"
+  ignoreFailures = true
   sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
   reportsDir = file("$project.buildDir/reports/pmd")
   // https://github.com/pmd/pmd/issues/876
   ruleSets = []
-  ruleSetFiles = files("config/pmd/ruleset.xml")
+//  ruleSetFiles = files("config/pmd/ruleset.xml")
+  ruleSets = [
+      'category/java/errorprone.xml',
+      'category/java/bestpractices.xml'
+  ]
 }
 
 jacocoTestReport {
@@ -174,6 +179,7 @@ ext.libraries = [
     "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
     "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
     "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
+//    "org.junit.vintage:junit-vintage-engine:${versions.junitPlatform}"
   ]
 ]
 
@@ -194,6 +200,11 @@ dependencies {
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+  }
+
+  testCompile("org.hamcrest:hamcrest-junit:2.0.0.0") {
+    exclude group: "org.hamcrest", module: "hamcrest-core"
+    exclude group: "org.hamcrest", module: "hamcrest-library"
   }
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
