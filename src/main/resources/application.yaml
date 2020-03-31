@@ -1,5 +1,5 @@
 server:
-  port: 4550
+  port: 8098
 
 management:
   endpoint:
@@ -14,7 +14,7 @@ management:
 #If you use a database then uncomment below lines and update db properties accordingly
 spring:
   application:
-    name: Spring Boot Template
+    name: Home Office Integration API
 #  datasource:
 #    driver-class-name: org.postgresql.Driver
 #    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}${DB_OPTIONS:}

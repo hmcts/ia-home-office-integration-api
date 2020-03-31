@@ -1,14 +1,14 @@
 version: '2.1'
 
 services:
-  spring-boot-template:
+  ia-home-office-integration-api:
     build:
       context: .
       args:
         - http_proxy
         - https_proxy
         - no_proxy
-    image: hmctspublic.azurecr.io/spring-boot/template
+    image: hmcts/ia-home-office-integration-api
     environment:
       # these environment variables are used by java-logging library
       - ROOT_APPENDER
