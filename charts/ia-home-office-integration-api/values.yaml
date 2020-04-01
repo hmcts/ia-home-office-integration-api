@@ -1,0 +1,5 @@
+java:
+  applicationPort: 8098
+  image: 'https://hmctspublic.azurecr.io/ia/homeoffice-integration-api:latest'
+  aadIdentityName: ia
+  environment:

@@ -17,8 +17,8 @@ group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
 
 allprojects {
-  sourceCompatibility = '8'
-  targetCompatibility = '8'
+  sourceCompatibility = '1.8'
+  targetCompatibility = '1.8'
 }
 
 sourceSets {
@@ -63,6 +63,7 @@ tasks.withType(Test) {
 }
 
 test {
+  useJUnitPlatform()
   failFast = true
 }
 
@@ -116,7 +117,7 @@ jacocoTestReport {
   }
 }
 
-project.tasks['sonarqube'].dependsOn jacocoTestReport
+project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
 
 sonarqube {
   properties {
@@ -222,7 +223,7 @@ mainClassName = 'uk.gov.hmcts.reform.demo.Application'
 
 bootJar {
   getArchiveFileName().set(provider {
-    'spring-boot-template.jar'
+    'ia-home-office-integration-api.jar'
   })
 
   manifest {
