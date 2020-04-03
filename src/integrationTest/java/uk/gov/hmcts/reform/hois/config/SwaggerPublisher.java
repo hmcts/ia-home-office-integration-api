@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.demo.config;
+package uk.gov.hmcts.reform.hois.config;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

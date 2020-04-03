@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.demo.controllers;
+package uk.gov.hmcts.reform.hois.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

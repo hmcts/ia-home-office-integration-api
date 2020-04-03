@@ -1,0 +1,16 @@
+{
+  "messageHeader": {
+    "consumer": {
+      "code": "HMCTS",
+      "description": "HM Courts and Tribunal Service"
+    },
+    "correlationId": "ABC2344BCED2234EA",
+    "eventDateTime": "2020-03-27T17:32:28Z"
+  },
+  "searchParams": [
+    {
+      "spType": "DOCUMENT_REFERENCE",
+      "spValue": "1111-2222-3333-4444"
+    }
+  ]
+}

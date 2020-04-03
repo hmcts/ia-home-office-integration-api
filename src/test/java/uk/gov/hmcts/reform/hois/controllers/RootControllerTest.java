@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.demo.controllers;
+package uk.gov.hmcts.reform.hois.controllers;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
@@ -22,7 +22,8 @@ public class RootControllerTest {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertThat(
             responseEntity.getBody(),
-            containsString("Welcome to spring-boot-template")
+            containsString("Welcome to Home Office Integration API")
         );
     }
+
 }
