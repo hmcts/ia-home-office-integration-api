@@ -17,5 +17,47 @@
     <cve>CVE-2019-17563</cve>
     <cve>CVE-2019-12418</cve>
   </suppress>
-
+    <suppress>
+        <notes><![CDATA[
+        relates to LDAP, not relevant to us and not used
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.codehaus\.groovy.*$</packageUrl>
+        <cve>CVE-2016-6497</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: groovy-2.5.9.jar
+   ]]></notes>
+        <sha1>04222eafca660d01a44682c3fe4c629005728973</sha1>
+        <cve>CVE-2016-6497</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: groovy-json-2.5.9.jar
+   ]]></notes>
+        <sha1>5be9ac3081d348f5d4a6caaf067aa8828d9ab7d9</sha1>
+        <cve>CVE-2016-6497</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: groovy-xml-2.5.9.jar
+   ]]></notes>
+        <sha1>dc96b317b6d922cdbf8966a465d1769c6e7c0080</sha1>
+        <cve>CVE-2016-6497</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: org.apache.sling.javax.activation-0.1.0.jar, not used, false positive
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.sling/org\.apache\.sling\.javax\.activation@.*$</packageUrl>
+        <cve>CVE-2016-5394</cve>
+        <cve>CVE-2016-6798</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: testng-6.13.1.jar: jquery-1.7.1.min.js, not used
+   ]]></notes>
+        <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
+        <cve>CVE-2012-6708</cve>
+    </suppress>
 </suppressions>
