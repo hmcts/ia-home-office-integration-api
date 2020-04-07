@@ -7,5 +7,5 @@ FROM hmctspublic.azurecr.io/base/java:openjdk-8-distroless-1.2
 COPY lib/AI-Agent.xml /opt/app/
 COPY build/libs/ia-home-office-integration-api.jar /opt/app/
 
-EXPOSE 8098
+EXPOSE 8094
 CMD [ "ia-home-office-integration-api.jar" ]
