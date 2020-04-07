@@ -24,7 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 class SwaggerPublisher {
 
     @Autowired
-    private MockMvc mvc;
+    private transient MockMvc mvc;
 
     @DisplayName("Generate swagger documentation")
     @Test

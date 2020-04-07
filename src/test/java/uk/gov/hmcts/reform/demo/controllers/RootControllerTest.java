@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 
 public class RootControllerTest {
 
-    private final RootController rootController = new RootController();
+    private transient RootController rootController = new RootController();
 
     @Test
     public void should_return_welcome_response() {
