@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.demo.controllers;
+package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.controllers;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -23,6 +23,6 @@ public class RootController {
      */
     @GetMapping("/")
     public ResponseEntity<String> welcome() {
-        return ok("Welcome to spring-boot-template");
+        return ok("Welcome to Home Office Integration API");
     }
 }

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.demo;
+package uk.gov.hmcts.reform.iahomeofficeintegrationapi;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
