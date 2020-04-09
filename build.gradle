@@ -18,7 +18,7 @@ plugins {
 
 apply plugin: 'java'
 
-mainClassName = 'uk.gov.hmcts.reform.demo.Application'
+mainClassName = 'uk.gov.hmcts.reform.iahomeofficeintegrationapi.Application'
 def jarName = 'ia-home-office-integration-api.jar'
 
 group = 'uk.gov.hmcts.reform'
@@ -231,8 +231,6 @@ dependencies {
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation sourceSets.test.runtimeClasspath
 }
-
-mainClassName = 'uk.gov.hmcts.reform.demo.Application'
 
 bootJar {
   getArchiveFileName().set(provider {
