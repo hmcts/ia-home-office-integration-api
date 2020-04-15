@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.controllers;
 
-import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.ResponseEntity.ok;
 
 import io.swagger.annotations.Api;
@@ -28,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 )
 @RestController
 public class PreSubmitCallbackController {
-    private static final org.slf4j.Logger LOG = getLogger(PreSubmitCallbackController.class);
 
     @ApiOperation(
         value = "Handles 'AboutToSubmitEvent' callbacks from CCD or delegated calls from IA Case API",

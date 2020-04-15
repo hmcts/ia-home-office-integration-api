@@ -6,17 +6,21 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-public class RootControllerTest {
+@SpringBootTest
+public class WelcomeControllerTest {
 
-    private transient RootController rootController = new RootController();
+    @Autowired
+    private WelcomeController welcomeController;
 
     @Test
     public void should_return_welcome_response() {
 
-        ResponseEntity<String> responseEntity = rootController.welcome();
+        ResponseEntity<String> responseEntity = welcomeController.welcome();
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());

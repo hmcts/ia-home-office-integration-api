@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.Application;
 public class PreSubmitCallbackControllerTest {
     private static final String hoUAN = "1111-2222-3333-4444";
     @Autowired
-    private transient MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @DisplayName("Should send mock request and get response with 200 response code")
     @Test

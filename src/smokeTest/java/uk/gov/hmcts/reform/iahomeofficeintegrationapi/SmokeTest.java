@@ -10,16 +10,16 @@ import org.springframework.http.HttpStatus;
 
 public class SmokeTest {
 
-    private static final String targetInstance =
+    private static final String TARGET_INSTANCE =
         StringUtils.defaultIfBlank(
             System.getenv("TEST_URL"),
             "http://localhost:8098"
         );
 
     @Test
-    public void should_prove_app_is_running_and_healthy() throws Exception {
+    public void should_prove_app_is_running_and_healthy() {
 
-        RestAssured.baseURI = targetInstance;
+        RestAssured.baseURI = TARGET_INSTANCE;
         RestAssured.useRelaxedHTTPSValidation();
 
         String response = given()
