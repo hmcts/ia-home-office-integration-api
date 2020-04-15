@@ -152,6 +152,8 @@ sonarqube {
     property "sonar.projectName", "Reform :: spring-boot-template"
     property "sonar.projectKey", "uk.gov.hmcts.reform:spring-boot-template"
     property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
+    property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/iahomeofficeintegrationapi/infrastructure/config/**," +
+            "src/main/java/uk/gov/hmcts/reform/iahomeofficeintegrationapi/Application.java"
   }
 }
 
@@ -216,7 +218,6 @@ ext.libraries = [
     "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
     "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
     "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
-//    "org.junit.vintage:junit-vintage-engine:${versions.junitPlatform}"
   ]
 ]
 
@@ -248,13 +249,14 @@ dependencies {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
 
-  testCompile("org.hamcrest:hamcrest-junit:2.0.0.0") {
+  testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
+  testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.4'
+
+  testImplementation("org.hamcrest:hamcrest-junit:2.0.0.0") {
     exclude group: "org.hamcrest", module: "hamcrest-core"
     exclude group: "org.hamcrest", module: "hamcrest-library"
   }
-
-  //Smoke test and Pact test
-  testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'
+  testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'
 
   //PACT testing
   contractTestCompile group: 'com.google.guava', name: 'guava', version: '27.0-jre'
