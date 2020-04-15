@@ -259,7 +259,7 @@ dependencies {
   //PACT testing
   contractTestCompile group: 'com.google.guava', name: 'guava', version: '27.0-jre'
   contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
-  contractTestCompile("org.assertj:assertj-core:3.13.2")
+  contractTestCompile("org.assertj:assertj-core:3.15.0")
   //pact contract testing
   contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: versions.pact_version
   contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: versions.pact_version
