@@ -15,6 +15,102 @@ spring:
   application:
     name: Home Office Integration API
 
+ia_system_user: ${IA_SYSTEM_USERNAME:system-user}
+ia_system_user_password: ${IA_SYSTEM_PASSWORD:system-password}
+
+security:
+  anonymousPaths:
+    - "/"
+    - "/health"
+    - "/health/liveness"
+    - "/loggers/**"
+    - "/swagger-ui.html"
+    - "/swagger-resources/**"
+    - "/v2/api-docs"
+    - "/webjars/springfox-swagger-ui/**"
+    - "/favicon.ico"
+  authorisedServices:
+    - "ccd"
+    - "ccd_data"
+    - "ccd_gw"
+    - "ccd_ps"
+    - "iac"
+  authorisedRoles:
+    - "caseworker-ia"
+    - "citizen"
+  roleEventAccess:
+    citizen:
+      - "startAppeal"
+      - "editAppeal"
+      - "submitAppeal"
+      - "submitReasonsForAppeal"
+    caseworker-ia-legalrep-solicitor:
+      - "startAppeal"
+      - "editAppeal"
+      - "submitAppeal"
+      - "buildCase"
+      - "submitCase"
+      - "uploadAdditionalEvidence"
+      - "draftHearingRequirements"
+      - "requestHearingRequirementsFeature"
+      - "uploadAddendumEvidenceLegalRep"
+      - "applyForFTPAAppellant"
+    caseworker-ia-caseofficer:
+      - "sendDirection"
+      - "changeDirectionDueDate"
+      - "requestCaseEdit"
+      - "requestHearingRequirements"
+      - "reviewHearingRequirements"
+      - "listCaseWithoutHearingRequirements"
+      - "requestHearingRequirementsFeature"
+      - "draftHearingRequirements"
+      - "requestRespondentEvidence"
+      - "uploadRespondentEvidence"
+      - "requestRespondentReview"
+      - "addAppealResponse"
+      - "createCaseSummary"
+      - "generateHearingBundle"
+      - "editCaseListing"
+      - "endAppeal"
+      - "recordApplication"
+      - "requestCaseBuilding"
+      - "requestResponseReview"
+      - "sendDecisionAndReasons"
+      - "uploadAddendumEvidence"
+      - "requestReasonsForAppeal"
+      - "updateHearingAdjustments"
+      - "removeAppealFromOnline"
+      - "changeHearingCentre"
+    caseworker-ia-admofficer:
+      - "listCase"
+      - "editCaseListing"
+      - "sendDecisionAndReasons"
+    caseworker-ia-homeofficeapc:
+      - "uploadHomeOfficeBundle"
+      - "uploadAdditionalEvidenceHomeOffice"
+      - "uploadAddendumEvidenceHomeOffice"
+    caseworker-ia-homeofficelart:
+      - "uploadHomeOfficeAppealResponse"
+      - "uploadAdditionalEvidenceHomeOffice"
+      - "uploadAddendumEvidenceHomeOffice"
+    caseworker-ia-homeofficepou:
+      - "uploadAdditionalEvidenceHomeOffice"
+      - "uploadAddendumEvidenceHomeOffice"
+      - "applyForFTPARespondent"
+    caseworker-ia-respondentofficer:
+      - "uploadHomeOfficeBundle"
+      - "addAppealResponse"
+      - "uploadHomeOfficeAppealResponse"
+      - "uploadAdditionalEvidenceHomeOffice"
+      - "uploadAddendumEvidenceHomeOffice"
+      - "applyForFTPARespondent"
+    caseworker-ia-iacjudge:
+      - "endAppeal"
+      - "sendDecisionAndReasons"
+      - "changeDirectionDueDate"
+      - "sendDirection"
+
+### dependency configuration
 auth.idam.client.baseUrl: ${IDAM_URL:http://127.0.0.1:4501}
 auth.idam.client.detailsUri: "/details"
 auth.idam.client.id: ${IA_IDAM_CLIENT_ID:ia}
