@@ -175,6 +175,7 @@ dependencyCheck {
   // range of 0-10 fails the build, anything greater and it doesn't fail the build
   failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'true' ? 0 : 11
   suppressionFile = 'config/owasp/suppressions.xml'
+  skipConfigurations = configurations.collect { it.name }.findAll { it.contains('Test') }
 
   analyzers {
     // Disable scanning of .NET related binaries
@@ -208,7 +209,7 @@ def versions = [
   springBoot      : springBoot.class.package.implementationVersion,
   springfoxSwagger: '2.9.2',
   pact_version    : '3.5.24',
-  serenity        : '2.0.11'
+  serenity        : '2.0.91',
 ]
 
 ext.libraries = [
@@ -263,6 +264,10 @@ dependencies {
   testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'
 
   testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
+  testCompileOnly group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
+  testCompileOnly group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+  testCompileOnly group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
+  testCompileOnly group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
 
   //PACT testing
   contractTestCompile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
