@@ -3,7 +3,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.11")
+    classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.91")
   }
 }
 
@@ -263,12 +263,6 @@ dependencies {
   testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'
 
   testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
-  testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
-  testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
-  testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
-  testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
-  testCompile group: 'com.github.tomakehurst', name: 'wiremock', version: '2.23.2'
-
 
   //PACT testing
   contractTestCompile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
