@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
+import net.serenitybdd.rest.SerenityRest;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +27,7 @@ public class WelcomeFunctionTest {
     @Test
     public void should_allow_unauthenticated_requests_to_welcome_message_and_return_200_response_code() {
         String response =
-            RestAssured
+            SerenityRest
                 .when()
                 .get("/")
                 .then()
