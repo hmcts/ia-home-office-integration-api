@@ -242,6 +242,8 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.2.RELEASE'
+  compileOnly 'org.projectlombok:lombok:1.18.12'
+  annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
@@ -249,6 +251,8 @@ dependencies {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
 
+  testCompileOnly 'org.projectlombok:lombok:1.18.12'
+  testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
   testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.7'
 
@@ -257,6 +261,14 @@ dependencies {
     exclude group: "org.hamcrest", module: "hamcrest-library"
   }
   testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'
+
+  testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
+  testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
+  testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+  testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
+  testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+  testCompile group: 'com.github.tomakehurst', name: 'wiremock', version: '2.23.2'
+
 
   //PACT testing
   contractTestCompile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
@@ -271,6 +283,7 @@ dependencies {
   integrationTestImplementation sourceSets.test.runtimeClasspath
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
+  functionalTestImplementation sourceSets.test.runtimeClasspath
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation sourceSets.test.runtimeClasspath
