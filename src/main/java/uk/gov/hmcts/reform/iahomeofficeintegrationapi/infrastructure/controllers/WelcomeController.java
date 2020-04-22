@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.controllers;
 
-import static org.springframework.http.ResponseEntity.ok;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -35,12 +33,12 @@ public class WelcomeController {
     @GetMapping("/")
     public ResponseEntity<String> welcome() {
 
-        final String MESSAGE = "Welcome to Home Office Integration API s2sMicroservice=" + s2sMicroserviceKey;
+        final String message = "Welcome to Home Office Integration API s2sMicroservice=" + s2sMicroserviceKey;
 
         return ResponseEntity
             .ok()
             .cacheControl(CacheControl.noCache())
             .contentType(MediaType.APPLICATION_JSON)
-            .body("{\"message\": \"" + MESSAGE + "\"}");
+            .body("{\"message\": \"" + message + "\"}");
     }
 }
