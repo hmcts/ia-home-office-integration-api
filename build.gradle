@@ -262,7 +262,6 @@ dependencies {
     exclude group: "org.hamcrest", module: "hamcrest-library"
   }
 
-  testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
   testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
   testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
   testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
