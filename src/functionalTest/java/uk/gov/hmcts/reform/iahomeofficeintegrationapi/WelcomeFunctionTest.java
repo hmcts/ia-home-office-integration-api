@@ -6,12 +6,15 @@ import io.restassured.RestAssured;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 
 
+@RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("functional")
 public class WelcomeFunctionTest {
