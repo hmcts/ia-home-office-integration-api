@@ -36,7 +36,7 @@ public class WelcomeController {
     public ResponseEntity<String> welcome() {
 
         log.info("Vault value received: {}", s2sMicroserviceKey);
-        final String message = "Welcome to Home Office Integration API";
+        final String message = "Welcome to Home Office Integration API " + s2sMicroserviceKey ;
 
         return ResponseEntity
             .ok()
