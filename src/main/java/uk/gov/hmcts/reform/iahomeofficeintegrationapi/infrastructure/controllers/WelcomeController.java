@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.controllers;
 
-import static org.springframework.http.ResponseEntity.ok;
-
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.CacheControl;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,8 +11,17 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Default endpoints per application.
  */
+@Slf4j
 @RestController
 public class WelcomeController {
+
+    private final String s2sMicroserviceKey;
+
+    public WelcomeController(
+        @Value("${idam.s2s-auth.microservice}") String s2sMicroserviceKey
+    ) {
+        this.s2sMicroserviceKey = s2sMicroserviceKey;
+    }
 
     /**
      * Root GET endpoint.
@@ -23,6 +34,14 @@ public class WelcomeController {
      */
     @GetMapping("/")
     public ResponseEntity<String> welcome() {
-        return ok("Welcome to Home Office Integration API");
+
+        log.info("Vault value received: {}", s2sMicroserviceKey);
+        final String message = "Welcome to Home Office Integration API";
+
+        return ResponseEntity
+            .ok()
+            .cacheControl(CacheControl.noCache())
+            .contentType(MediaType.APPLICATION_JSON)
+            .body("{\"message\": \"" + message + "\"}");
     }
 }

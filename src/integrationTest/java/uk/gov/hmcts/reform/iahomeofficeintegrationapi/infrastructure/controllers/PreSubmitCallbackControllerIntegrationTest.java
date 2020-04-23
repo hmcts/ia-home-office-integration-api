@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.Application;
 @ActiveProfiles("integrationTest")
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-public class PreSubmitCallbackControllerTest {
+public class PreSubmitCallbackControllerIntegrationTest {
     private static final String hoUAN = "1111-2222-3333-4444";
     @Autowired
     private MockMvc mockMvc;
