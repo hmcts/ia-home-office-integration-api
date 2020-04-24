@@ -60,4 +60,11 @@
         <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
         <cve>CVE-2012-6708</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Issue is with Spring framework version  5.0.5.RELEASE.  We are using 5.2.4.RELEASE which does not have the issue.
+        See https://nvd.nist.gov/vuln/detail/CVE-2018-1258
+   ]]></notes>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
 </suppressions>
