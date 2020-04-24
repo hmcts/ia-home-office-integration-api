@@ -8,4 +8,6 @@ spring:
         idam-secret: IA_IDAM_SECRET
         s2s-secret: IA_S2S_SECRET
         s2s-microservice: IA_S2S_MICROSERVICE
+        idam-url: IDAM_URL
+        s2s-url: S2S_URL
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
