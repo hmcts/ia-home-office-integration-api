@@ -11,8 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import uk.gov.hmcts.reform.auth.checker.core.RequestAuthorizer;
-import uk.gov.hmcts.reform.auth.checker.core.service.Service;
+import uk.gov.hmcts.reform.auth.checker.core.service.ServiceRequestAuthorizer;
 import uk.gov.hmcts.reform.auth.checker.spring.serviceonly.AuthCheckerServiceOnlyFilter;
 
 @Configuration
@@ -21,20 +20,15 @@ import uk.gov.hmcts.reform.auth.checker.spring.serviceonly.AuthCheckerServiceOnl
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final List<String> anonymousPaths = new ArrayList<>();
-    //private final RequestAuthorizer<User> userRequestAuthorizer;
-    private final RequestAuthorizer<Service> serviceRequestAuthorizer;
     private final AuthenticationManager authenticationManager;
-
-
+    private final ServiceRequestAuthorizer serviceRequestAuthorizer;
 
     public SecurityConfiguration(
-        //RequestAuthorizer<User> userRequestAuthorizer,
-        RequestAuthorizer<Service> serviceRequestAuthorizer,
-        AuthenticationManager authenticationManager
+        AuthenticationManager authenticationManager,
+        ServiceRequestAuthorizer serviceRequestAuthorizer
     ) {
-        //this.userRequestAuthorizer = userRequestAuthorizer;
-        this.serviceRequestAuthorizer = serviceRequestAuthorizer;
         this.authenticationManager = authenticationManager;
+        this.serviceRequestAuthorizer = serviceRequestAuthorizer;
     }
 
     public List<String> getAnonymousPaths() {

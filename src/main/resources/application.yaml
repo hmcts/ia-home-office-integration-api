@@ -14,9 +14,9 @@ management:
 spring:
   application:
     name: Home Office Integration API
-    main:
-      allow-bean-definition-overriding: true
   jackson.date-format: yyyy-MM-dd
+  main:
+    allow-bean-definition-overriding: true
 
 security:
   anonymousPaths:
