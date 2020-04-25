@@ -296,6 +296,23 @@ dependencies {
   contractTestCompile sourceSets.test.runtimeClasspath
 }
 
+def getCheckedOutGitCommitHash() {
+  'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
+
+project.ext {
+  pactVersion = getCheckedOutGitCommitHash()
+}
+
+pact {
+  publish {
+    pactDirectory = 'target/pacts'
+    pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+    tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
+    version = project.pactVersion
+  }
+}
+
 bootJar {
   getArchiveFileName().set(provider {
     'ia-home-office-integration-api.jar'
