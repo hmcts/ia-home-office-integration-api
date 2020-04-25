@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class WelcomeController {
 
-    private final String s2sMicroserviceKey;
+    private final String s2sUrl;
 
     public WelcomeController(
-        @Value("${idam.s2s-auth.microservice}") String s2sMicroserviceKey
+        @Value("${idam.s2s-auth.url}") String s2sUrl
     ) {
-        this.s2sMicroserviceKey = s2sMicroserviceKey;
+        this.s2sUrl = s2sUrl;
     }
 
     /**
@@ -35,8 +35,8 @@ public class WelcomeController {
     @GetMapping("/")
     public ResponseEntity<String> welcome() {
 
-        log.info("Vault value received: {}", s2sMicroserviceKey);
-        final String message = "Welcome to Home Office Integration API " + s2sMicroserviceKey;
+        log.info("Vault value received: {}", s2sUrl);
+        final String message = "Welcome to Home Office Integration API " + s2sUrl;
 
         return ResponseEntity
             .ok()
