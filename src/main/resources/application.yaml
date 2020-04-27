@@ -30,8 +30,6 @@ security:
     - "/webjars/springfox-swagger-ui/**"
     - "/favicon.ico"
     - "/csrf"
-#    FOR TESTING ONLY - SHOULD NOT BE ANONYMOUS
-    - "/asylum/ccdAboutToSubmit"
   authorisedServices:
     - "iac"
 

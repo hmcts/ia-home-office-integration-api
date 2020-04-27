@@ -8,33 +8,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.Application;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.testutils.SpringBootIntegrationTest;
 
-@ActiveProfiles("integrationTest")
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-public class PreSubmitCallbackControllerIntegrationTest {
-    private static final String hoUAN = "1111-2222-3333-4444";
-    @Autowired
-    private MockMvc mockMvc;
+public class PreSubmitCallbackControllerIntegrationTest extends SpringBootIntegrationTest {
+
+    private static final String SERVICE_JWT_TOKEN =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+        + ".eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ"
+        + ".SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+
+    private static final String homeOffice_UAN = "1111-2222-3333-4444";
 
     @DisplayName("Should send mock request and get response with 200 response code")
     @Test
     public void check_callback_Endpoint_WithUan_Returns_200Response() throws Exception {
 
         MvcResult response = mockMvc.perform(
-            post("/asylum/ccdAboutToSubmit").contentType(MediaType.APPLICATION_JSON)
-                .content(hoUAN))
+            post("/asylum/ccdAboutToSubmit")
+                .header("ServiceAuthorization", SERVICE_JWT_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(homeOffice_UAN))
+
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("ia_home_office_reference").value(hoUAN))
+            .andExpect(jsonPath("ia_home_office_reference").value(homeOffice_UAN))
             .andReturn();
 
         assertThat(response.getResponse().getContentAsString()).contains(
