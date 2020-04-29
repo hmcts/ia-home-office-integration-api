@@ -28,20 +28,14 @@ services:
       S2S_URL: http://service-auth-provider-api:8080
       IA_IDAM_REDIRECT_URI: http://idam-api
       IDAM_URL: http://idam-api:8080
-      CCD_URL: http://ccd-data-store-api:4452
-      DM_URL: http://dm-store:8080
       IA_IDAM_CLIENT_ID:
       IA_IDAM_SECRET:
       IA_S2S_MICROSERVICE:
       IA_S2S_SECRET:
-      IA_SYSTEM_USERNAME:
-      IA_SYSTEM_PASSWORD:
 
     external_links:
       - idam-api
-      - dm-store
       - service-auth-provider-api
-      - ccd-data-store-api
     ports:
       - ${SERVER_PORT:-8094}:${SERVER_PORT:-8094}
 networks:

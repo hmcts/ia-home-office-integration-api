@@ -36,8 +36,8 @@ public class CcdEventAuthorizorTest {
             new CcdEventAuthorizor(
                 ImmutableMap
                     .<String, List<Event>>builder()
-                    .put("caseworker-role", Arrays.asList(Event.REQUEST_RESPONDENT_REVIEW, Event.SEND_DIRECTION))
-                    .put("legal-role", Arrays.asList(Event.SUBMIT_APPEAL, Event.BUILD_CASE))
+                    .put("citizen", Arrays.asList(Event.SUBMIT_APPEAL))
+                    .put("caseworker-ia-legalrep-solicitor", Arrays.asList(Event.SUBMIT_APPEAL))
                     .build(),
                 userDetailsProvider
             );
@@ -49,17 +49,17 @@ public class CcdEventAuthorizorTest {
     public void does_not_throw_access_denied_exception_if_role_is_allowed_access_to_event() {
 
         when(userDetails.getRoles()).thenReturn(
-            Arrays.asList("some-unrelated-role", "legal-role")
+            Arrays.asList("some-unrelated-role", "caseworker-ia-legalrep-solicitor")
         );
 
-        assertThatCode(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.BUILD_CASE))
+        assertThatCode(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.SUBMIT_APPEAL))
             .doesNotThrowAnyException();
 
         when(userDetails.getRoles()).thenReturn(
-            Arrays.asList("caseworker-role", "some-unrelated-role")
+            Arrays.asList("caseworker-ia-legalrep-solicitor", "some-unrelated-role")
         );
 
-        assertThatCode(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.SEND_DIRECTION))
+        assertThatCode(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.SUBMIT_APPEAL))
             .doesNotThrowAnyException();
     }
 
@@ -70,16 +70,16 @@ public class CcdEventAuthorizorTest {
             Arrays.asList("caseworker-role", "some-unrelated-role")
         );
 
-        assertThatThrownBy(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.BUILD_CASE))
-            .hasMessage("Event 'buildCase' not allowed")
+        assertThatThrownBy(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.SUBMIT_APPEAL))
+            .hasMessage("Event 'submitAppeal' not allowed")
             .isExactlyInstanceOf(AccessDeniedException.class);
 
         when(userDetails.getRoles()).thenReturn(
             Arrays.asList("some-unrelated-role", "legal-role")
         );
 
-        assertThatThrownBy(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.SEND_DIRECTION))
-            .hasMessage("Event 'sendDirection' not allowed")
+        assertThatThrownBy(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.SUBMIT_APPEAL))
+            .hasMessage("Event 'submitAppeal' not allowed")
             .isExactlyInstanceOf(AccessDeniedException.class);
     }
 
@@ -90,8 +90,8 @@ public class CcdEventAuthorizorTest {
             Arrays.asList("caseworker-role", "some-unrelated-role")
         );
 
-        assertThatThrownBy(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.UPLOAD_RESPONDENT_EVIDENCE))
-            .hasMessage("Event 'uploadRespondentEvidence' not allowed")
+        assertThatThrownBy(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.SUBMIT_APPEAL))
+            .hasMessage("Event 'submitAppeal' not allowed")
             .isExactlyInstanceOf(AccessDeniedException.class);
     }
 
@@ -102,8 +102,8 @@ public class CcdEventAuthorizorTest {
             Collections.emptyList()
         );
 
-        assertThatThrownBy(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.BUILD_CASE))
-            .hasMessage("Event 'buildCase' not allowed")
+        assertThatThrownBy(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.SUBMIT_APPEAL))
+            .hasMessage("Event 'submitAppeal' not allowed")
             .isExactlyInstanceOf(AccessDeniedException.class);
     }
 }

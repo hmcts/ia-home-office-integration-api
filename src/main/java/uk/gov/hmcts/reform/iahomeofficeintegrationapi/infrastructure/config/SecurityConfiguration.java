@@ -45,18 +45,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .stream()
                 .toArray(String[]::new)
         );
-
-        /*web.ignoring().antMatchers("/swagger-ui.html",
-            "/webjars/springfox-swagger-ui/**",
-            "/swagger-resources/**",
-            "/v2/**",
-            "/refdata/**",
-            "/health",
-            "/health/liveness",
-            "/info",
-            "/favicon.ico",
-            "/mock-api/**",
-            "/"); */
     }
 
     @Override

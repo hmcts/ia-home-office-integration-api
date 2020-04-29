@@ -4,8 +4,6 @@ spring:
       prefixed: false
       paths: /mnt/secrets/ia
       aliases:
-        system-username: IA_SYSTEM_USERNAME
-        system-password: IA_SYSTEM_PASSWORD
         idam-client-id: IA_IDAM_CLIENT_ID
         idam-secret: IA_IDAM_SECRET
         s2s-secret: IA_S2S_SECRET

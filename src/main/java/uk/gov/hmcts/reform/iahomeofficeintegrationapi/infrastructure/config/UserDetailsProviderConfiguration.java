@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.RequestUserAccessTokenProvider;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SystemUserAccessTokenProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdamUserDetailsProvider;
 
 
@@ -24,21 +23,6 @@ public class UserDetailsProviderConfiguration {
     ) {
         return new IdamUserDetailsProvider(
             requestUserAccessTokenProvider,
-            restTemplate,
-            baseUrl,
-            detailsUri
-        );
-    }
-
-    @Bean("systemUser")
-    public UserDetailsProvider getSystemUserDetailsProvider(
-        SystemUserAccessTokenProvider systemUserAccessTokenProvider,
-        RestTemplate restTemplate,
-        @Value("${auth.idam.client.baseUrl}") String baseUrl,
-        @Value("${auth.idam.client.detailsUri}") String detailsUri
-    ) {
-        return new IdamUserDetailsProvider(
-            systemUserAccessTokenProvider,
             restTemplate,
             baseUrl,
             detailsUri
