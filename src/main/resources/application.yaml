@@ -15,6 +15,36 @@ spring:
   application:
     name: Home Office Integration API
 
+security:
+  anonymousPaths:
+    - "/"
+    - "/health"
+    - "/health/liveness"
+    - "/loggers/**"
+    - "/swagger-ui.html"
+    - "/swagger-resources/**"
+    - "/v2/api-docs"
+    - "/webjars/springfox-swagger-ui/**"
+    - "/favicon.ico"
+  authorisedServices:
+    - "iac"
+  authorisedRoles:
+    - "caseworker-ia"
+    - "citizen"
+  roleEventAccess:
+    citizen:
+      - "submitAppeal"
+    caseworker-ia-legalrep-solicitor:
+      - "submitAppeal"
+    caseworker-ia-caseofficer:
+    caseworker-ia-admofficer:
+    caseworker-ia-homeofficeapc:
+    caseworker-ia-homeofficelart:
+    caseworker-ia-homeofficepou:
+    caseworker-ia-respondentofficer:
+    caseworker-ia-iacjudge:
+
+### dependency configuration
 auth.idam.client.baseUrl: ${IDAM_URL:http://127.0.0.1:4501}
 auth.idam.client.detailsUri: "/details"
 auth.idam.client.id: ${IA_IDAM_CLIENT_ID:ia}

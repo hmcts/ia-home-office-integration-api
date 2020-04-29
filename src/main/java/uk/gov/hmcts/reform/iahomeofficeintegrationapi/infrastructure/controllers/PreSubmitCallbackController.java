@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
 import javax.validation.constraints.NotNull;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,12 @@ public class PreSubmitCallbackController {
 
     @ApiOperation(
         value = "Handles 'AboutToSubmitEvent' callbacks from CCD or delegated calls from IA Case API",
-        response = String.class
+        response = String.class,
+        authorizations =
+            {
+                @Authorization(value = "Authorization"),
+                @Authorization(value = "ServiceAuthorization")
+            }
     )
     @ApiResponses({
         @ApiResponse(

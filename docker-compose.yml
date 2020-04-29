@@ -9,18 +9,35 @@ services:
         - https_proxy
         - no_proxy
     image: hmcts/ia-home-office-integration-api
+    container_name: ia-home-office-integration-api
     environment:
+      JAVA_OPTS:
       # these environment variables are used by java-logging library
-      - ROOT_APPENDER
-      - JSON_CONSOLE_PRETTY_PRINT
-      - ROOT_LOGGING_LEVEL
-      - REFORM_SERVICE_TYPE
-      - REFORM_SERVICE_NAME
-      - REFORM_TEAM
-      - REFORM_ENVIRONMENT
-      - LOGBACK_DATE_FORMAT
-      - LOGBACK_REQUIRE_THREAD
-      - LOGBACK_REQUIRE_ALERT_LEVEL=false
-      - LOGBACK_REQUIRE_ERROR_CODE=false
+      JSON_CONSOLE_PRETTY_PRINT:
+      ROOT_APPENDER:
+      ROOT_LOGGING_LEVEL:
+      REFORM_SERVICE_TYPE:
+      REFORM_SERVICE_NAME:
+      REFORM_TEAM:
+      REFORM_ENVIRONMENT:
+      LOGBACK_DATE_FORMAT:
+      LOGBACK_REQUIRE_THREAD:
+      LOGBACK_REQUIRE_ALERT_LEVEL: "false"
+      LOGBACK_REQUIRE_ERROR_CODE: "false"
+      # Application environment variables
+      S2S_URL: http://service-auth-provider-api:8080
+      IA_IDAM_REDIRECT_URI: http://idam-api
+      IDAM_URL: http://idam-api:8080
+      IA_IDAM_CLIENT_ID:
+      IA_IDAM_SECRET:
+      IA_S2S_MICROSERVICE:
+      IA_S2S_SECRET:
+
+    external_links:
+      - idam-api
+      - service-auth-provider-api
     ports:
-      - $SERVER_PORT:$SERVER_PORT
+      - ${SERVER_PORT:-8094}:${SERVER_PORT:-8094}
+networks:
+  compose_default:
+    external: true
