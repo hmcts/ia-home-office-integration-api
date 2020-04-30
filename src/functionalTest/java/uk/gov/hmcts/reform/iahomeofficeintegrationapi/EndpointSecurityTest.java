@@ -133,6 +133,7 @@ public class EndpointSecurityTest {
                 .header("ServiceAuthorization", serviceToken)
                 .header("Authorization", accessToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("iaHomeOfficeReference","1111-2222-3333-4444")
                 .when()
                 .post(callbackEndpoint)
                 .then()
