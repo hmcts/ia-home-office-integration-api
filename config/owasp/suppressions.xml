@@ -1,35 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
      Suppressing as it's a false positive (see: https://pivotal.io/security/cve-2018-1258)
    ]]></notes>
-    <gav regex="true">^org\.springframework\.security:spring-security-crypto:5.2.[0-2].RELEASE</gav>
-    <cpe>cpe:/a:pivotal_software:spring_security</cpe>
-    <cve>CVE-2018-1258</cve>
-  </suppress>
-
-  <suppress until="2020-01-31">
-    <notes><![CDATA[
-   relates to form based authentication, not relevant to us, fix will be picked up in next spring boot update
-   ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed.*$</packageUrl>
-    <cve>CVE-2019-17563</cve>
-    <cve>CVE-2019-12418</cve>
-  </suppress>
-    <suppress>
-        <notes><![CDATA[
-        relates to LDAP, not relevant to us and not used
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.codehaus\.groovy.*$</packageUrl>
-        <cve>CVE-2016-6497</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: groovy-2.5.9.jar
-   ]]></notes>
-        <sha1>04222eafca660d01a44682c3fe4c629005728973</sha1>
-        <cve>CVE-2016-6497</cve>
+        <gav regex="true">^org\.springframework\.security:spring-security-crypto:5.2.[0-2].RELEASE</gav>
+        <cpe>cpe:/a:pivotal_software:spring_security</cpe>
+        <cve>CVE-2018-1258</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -68,4 +45,13 @@
         ]]></notes>
         <cve>CVE-2018-1258</cve>
     </suppress>
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
+     Suppressing as SMTP appender is not used in this project (see: https://nvd.nist.gov/vuln/detail/CVE-2020-9488)
+   ]]></notes>
+        <gav regex="true">org.apache.logging.log4j:log4j.*</gav>
+        <cpe>cpe:/a:apache:log4j:2.12.1</cpe>
+        <cve>CVE-2020-9488</cve>
+    </suppress>
+
 </suppressions>
