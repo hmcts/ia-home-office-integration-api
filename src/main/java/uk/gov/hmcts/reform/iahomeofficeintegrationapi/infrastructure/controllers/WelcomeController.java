@@ -26,7 +26,7 @@ public class WelcomeController {
     @GetMapping("/")
     public ResponseEntity<String> welcome() {
 
-        final String message = "Welcome to Home Office Integration API ";
+        final String message = "Welcome to Home Office Integration API";
 
         return ResponseEntity
             .ok()
