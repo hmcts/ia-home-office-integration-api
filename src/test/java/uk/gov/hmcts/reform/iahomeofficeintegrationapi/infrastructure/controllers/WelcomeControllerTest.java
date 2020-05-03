@@ -6,16 +6,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-@SpringBootTest
 public class WelcomeControllerTest {
 
-    @Autowired
-    private WelcomeController welcomeController;
+
+    private WelcomeController welcomeController = new WelcomeController();
 
     @Test
     public void should_return_welcome_response() {

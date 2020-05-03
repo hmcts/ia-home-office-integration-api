@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.controllers;
 
+import static java.util.Objects.requireNonNull;
 import static org.springframework.http.ResponseEntity.ok;
 
 import io.swagger.annotations.Api;
@@ -9,12 +10,18 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import javax.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.PreSubmitCallbackDispatcher;
 
 @Api(
     value = "/asylum",
@@ -27,8 +34,20 @@ import org.springframework.web.bind.annotation.RestController;
     produces = MediaType.APPLICATION_JSON_VALUE
 )
 
+@Slf4j
 @RestController
 public class PreSubmitCallbackController {
+
+    private final PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
+
+    public PreSubmitCallbackController(
+        PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher
+    ) {
+        requireNonNull(callbackDispatcher, "callbackDispatcher must not be null");
+
+        this.callbackDispatcher = callbackDispatcher;
+    }
+
 
     @ApiOperation(
         value = "Handles 'AboutToSubmitEvent' callbacks from CCD or delegated calls from IA Case API",
@@ -63,10 +82,35 @@ public class PreSubmitCallbackController {
         )
     })
     @PostMapping(path = "/ccdAboutToSubmit")
-    public ResponseEntity<String> ccdAboutToSubmit(
-        @ApiParam(value = "Asylum case data", required = true) @NotNull @RequestBody String iaHomeOfficeReference
+    public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdAboutToSubmit(
+        @ApiParam(value = "Asylum case data", required = true) @NotNull @RequestBody Callback<AsylumCase> callback) {
+
+        return performStageRequest(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+    }
+
+    private ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> performStageRequest(
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
-        String response = "{ia_home_office_reference:" + iaHomeOfficeReference + "}";
-        return ok(response);
+
+        log.info(
+            "Asylum Case CCD `{}` event `{}` received for Case ID `{}`",
+            callbackStage,
+            callback.getEvent(),
+            callback.getCaseDetails().getId()
+        );
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            callbackDispatcher.handle(callbackStage, callback);
+
+        log.info(
+            "Asylum Case CCD `{}` event `{}` handled for Case ID `{}`",
+            callbackStage,
+            callback.getEvent(),
+            callback.getCaseDetails().getId()
+        );
+
+        return ok(callbackResponse);
     }
 }
