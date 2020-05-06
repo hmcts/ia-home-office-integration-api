@@ -52,15 +52,13 @@ public class HomeOfficeConsumerTest {
             .path(HOMEOFFICE_API_URL)
             .headers(headers)
             .method(HttpMethod.POST.toString())
-            .body(new PactDslJsonBody()
-                .stringType("ho_reference", "1234-5678-6789-7890"))
             .willRespondWith()
             .status(HttpStatus.OK.value())
             .body(new PactDslJsonBody()
                 .stringType("ho_reference", "1234-5678-6789-7890")
                 .stringType("appealDecisionDate", "20-02-2020")
                 .stringType("firstName", "20-02-2020")
-                .stringType("surName", "20-02-2020"))
+                .stringType("surname", "20-02-2020"))
             .toPact();
     }
 
