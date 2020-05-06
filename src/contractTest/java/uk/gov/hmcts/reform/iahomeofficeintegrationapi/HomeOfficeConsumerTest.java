@@ -52,8 +52,6 @@ public class HomeOfficeConsumerTest {
             .path(HOMEOFFICE_API_URL)
             .headers(headers)
             .method(HttpMethod.POST.toString())
-            .body(new PactDslJsonBody()
-                .stringType("ho_reference", "1234-5678-6789-7890"))
             .willRespondWith()
             .status(HttpStatus.OK.value())
             .body(new PactDslJsonBody()
@@ -88,7 +86,7 @@ public class HomeOfficeConsumerTest {
         assertThat(response).hasNoNullFieldsOrProperties();
         assertThat(response.getString("ho_reference")).isNotBlank();
         assertThat(response.getString("firstName")).isNotBlank();
-        assertThat(response.getString("surname")).isNotBlank();
+        assertThat(response.getString("surName")).isNotBlank();
         assertThat(response.getString("appealDecisionDate")).isNotBlank();
 
     }

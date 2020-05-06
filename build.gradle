@@ -210,7 +210,7 @@ def versions = [
   springBoot      : springBoot.class.package.implementationVersion,
   springfoxSwagger: '2.9.2',
   pact_version    : '3.5.24',
-  serenity        : '2.0.91',
+  serenity        : '2.0.91'
 ]
 
 ext.libraries = [
@@ -306,7 +306,7 @@ project.ext {
 
 pact {
   publish {
-    pactDirectory = 'target/pacts'
+    pactDirectory = "target/pacts"
     pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
     tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
     version = project.pactVersion
