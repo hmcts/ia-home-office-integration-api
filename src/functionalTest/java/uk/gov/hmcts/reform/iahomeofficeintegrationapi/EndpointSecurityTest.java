@@ -9,6 +9,7 @@ import net.serenitybdd.rest.SerenityRest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.util.AuthorizationHeadersProvider;
 
 @RunWith(SpringRunner.class)
@@ -23,12 +26,15 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.util.AuthorizationHeadersP
 @ActiveProfiles("functional")
 public class EndpointSecurityTest {
 
+    @Mock private Callback<AsylumCase> callback;
+
     private final List<String> callbackEndpoints =
         Arrays.asList(
             "/asylum/ccdAboutToSubmit"
         );
     @Value("${targetInstance}")
     private String targetInstance;
+
     @Autowired
     private AuthorizationHeadersProvider authorizationHeadersProvider;
 
@@ -126,6 +132,9 @@ public class EndpointSecurityTest {
             .getLegalRepresentativeAuthorization()
             .getValue("Authorization");
 
+        System.out.println(serviceToken);
+        System.out.println(accessToken);
+
         callbackEndpoints.forEach(callbackEndpoint ->
 
             SerenityRest
@@ -133,7 +142,7 @@ public class EndpointSecurityTest {
                 .header("ServiceAuthorization", serviceToken)
                 .header("Authorization", accessToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam("iaHomeOfficeReference","1111-2222-3333-4444")
+                .body(callback)
                 .when()
                 .post(callbackEndpoint)
                 .then()

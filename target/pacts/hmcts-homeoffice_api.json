@@ -21,10 +21,10 @@
                     "Content-Type": "application/json; charset=UTF-8"
                 },
                 "body": {
-                    "firstName": "20-02-2020",
+                    "firstName": "John",
                     "ho_reference": "1234-5678-6789-7890",
                     "appealDecisionDate": "20-02-2020",
-                    "surName": "20-02-2020"
+                    "surname": "Smith"
                 },
                 "matchingRules": {
                     "body": {
@@ -52,7 +52,7 @@
                             ],
                             "combine": "AND"
                         },
-                        "$.surName": {
+                        "$.surname": {
                             "matchers": [
                                 {
                                     "match": "type"
