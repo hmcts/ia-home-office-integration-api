@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import net.serenitybdd.rest.SerenityRest;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -31,13 +32,15 @@ public class WelcomeFunctionTest {
 
         final String expected = "Welcome to Home Office Integration API";
 
-        SerenityRest.given()
+        String response = SerenityRest.given()
             .get("/")
             .then()
-            .log()
-            .all()
             .statusCode(HttpStatus.OK.value())
-            .body("message", Matchers.equalTo(expected));
+            .extract()
+            .body()
+            .toString();
+
+        assertThat(response.contains(expected));
     }
 
 }
