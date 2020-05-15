@@ -57,8 +57,8 @@ public class HomeOfficeConsumerTest {
             .body(new PactDslJsonBody()
                 .stringType("ho_reference", "1234-5678-6789-7890")
                 .stringType("appealDecisionDate", "20-02-2020")
-                .stringType("firstName", "20-02-2020")
-                .stringType("surName", "20-02-2020"))
+                .stringType("firstName", "John")
+                .stringType("surname", "Smith"))
             .toPact();
     }
 
@@ -86,7 +86,7 @@ public class HomeOfficeConsumerTest {
         assertThat(response).hasNoNullFieldsOrProperties();
         assertThat(response.getString("ho_reference")).isNotBlank();
         assertThat(response.getString("firstName")).isNotBlank();
-        assertThat(response.getString("surName")).isNotBlank();
+        assertThat(response.getString("surname")).isNotBlank();
         assertThat(response.getString("appealDecisionDate")).isNotBlank();
 
     }

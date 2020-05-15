@@ -1,0 +1,21 @@
+{
+  "description": "RIA-3073 Gets Home Office data for the IA appeal reference",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "SUBMIT_APPEAL",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json"
+    }
+  }
+}

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.presubmit;
+package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
