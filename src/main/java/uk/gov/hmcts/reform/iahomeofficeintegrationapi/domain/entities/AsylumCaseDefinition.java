@@ -14,7 +14,19 @@ public enum AsylumCaseDefinition {
         "appellantFamilyName", new TypeReference<String>() {}),
 
     APPEAL_REFERENCE_NUMBER(
-        "appealReferenceNumber", new TypeReference<String>(){});
+        "appealReferenceNumber", new TypeReference<String>(){}),
+
+    HO_APPELLANT_GIVEN_NAME(
+        "hoAppellantGivenName", new TypeReference<String>() {}),
+
+    HO_APPELLANT_FAMILY_NAME(
+        "hoAppellantFamilyName", new TypeReference<String>() {}),
+
+    HO_APPELLANT_NATIONALITY_CODE(
+        "hoAppellantNationalityCode", new TypeReference<String>() {}),
+
+    HO_APPELLANT_NATIONALITY(
+        "hoAppellantNationality", new TypeReference<String>() {});
 
     private final String value;
     private final TypeReference typeReference;

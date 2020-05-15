@@ -9,31 +9,40 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeCaseStatusClient;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class AsylumCaseStatusSearchHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    private final String someHomeOfficeReference = "some-reference";
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private HomeOfficeCaseStatusClient homeOfficeCaseStatusClient;
 
     private AsylumCaseStatusSearchHandler asylumCaseStatusSearchHandler;
 
     @BeforeEach
     void setUp() {
-        asylumCaseStatusSearchHandler = new AsylumCaseStatusSearchHandler();
+        asylumCaseStatusSearchHandler = new AsylumCaseStatusSearchHandler(homeOfficeCaseStatusClient);
     }
 
     @Test
@@ -42,18 +51,19 @@ public class AsylumCaseStatusSearchHandlerTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER))
+            .thenReturn(Optional.of(someHomeOfficeReference));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
-
         assertThat(response.getData()).isEqualTo(asylumCase);
 
     }
 
     @Test
-    public void handling_should_throw_if_event_not_applicable() {
+    public void handler_should_throw_if_event_not_applicable() {
 
         when(callback.getEvent()).thenReturn(Event.UNKNOWN);
 
@@ -63,7 +73,7 @@ public class AsylumCaseStatusSearchHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_not_bound_to__about_to_submit__callback_stage() {
+    public void handler_should_throw_if_not_bound_to__about_to_submit__callback_stage() {
 
         assertThatThrownBy(() -> asylumCaseStatusSearchHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -113,6 +123,18 @@ public class AsylumCaseStatusSearchHandlerTest {
         assertThatThrownBy(() -> asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    public void should_not_allow_empty_home_office_reference() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertThatThrownBy(() -> asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Home office reference number cannot be null")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
 }
