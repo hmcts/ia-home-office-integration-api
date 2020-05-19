@@ -191,6 +191,13 @@ dependencyManagement {
     dependencySet(group: 'com.google.guava', version: '29.0-jre') {
       entry 'guava'
     }
+    // solves CVE-2020-5407
+    dependencySet(group: 'org.springframework.security', version: '5.3.2.RELEASE') {
+      entry 'spring-security-crypto'
+      entry 'spring-security-config'
+      entry 'spring-security-core'
+      entry 'spring-security-web'
+    }
   }
 }
 
