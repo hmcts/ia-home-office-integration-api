@@ -37,6 +37,7 @@ security:
     caseworker-ia-legalrep-solicitor:
       - "submitAppeal"
     caseworker-ia-caseofficer:
+      - "requestRespondentEvidence"
     caseworker-ia-admofficer:
     caseworker-ia-homeofficeapc:
     caseworker-ia-homeofficelart:
@@ -56,5 +57,6 @@ idam.s2s-auth.microservice: ${IA_S2S_MICROSERVICE:something}
 idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}
 
 ### Home Office API
-homeoffice.endpoint: ${HOME_OFFICE_ENDPOINT:http://ia-home-office-mock-api-aat.service.core-compute-aat.internal}
+homeoffice.endpoint: ${HOME_OFFICE_ENDPOINT:http://localhost:8098}
 homeoffice.case.search.uri: ${HOME_OFFICE_CASE_SEARCH_URI:/v1/applicationStatus/getBySearchParameters}
+homeoffice.instruct.uri: ${HOME_OFFICE_INSTRUCT_URI:/v1/applicationInstruct/setInstruct}

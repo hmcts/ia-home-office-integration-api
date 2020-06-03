@@ -34,6 +34,7 @@ services:
       IA_S2S_SECRET:
       HOME_OFFICE_ENDPOINT: http://ia-home-office-mock-api-aat.service.core-compute-aat.internal
       HOME_OFFICE_CASE_SEARCH_URI: /v1/applicationStatus/getBySearchParameters
+      HOME_OFFICE_INSTRUCT_URI: /v1/applicationInstruct/setInstruct
 
     external_links:
       - idam-api

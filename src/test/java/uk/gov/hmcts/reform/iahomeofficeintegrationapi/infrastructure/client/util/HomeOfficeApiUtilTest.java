@@ -43,7 +43,7 @@ public class HomeOfficeApiUtilTest {
     }
 
     @Test
-    public void create_home_office_header_returns_valid() {
+    public void create_home_office_header_returns_valid_header() {
         HttpHeaders headers = homeOfficeApiUtil.getHomeOfficeHeader();
 
         assertNotNull(headers);
@@ -51,7 +51,7 @@ public class HomeOfficeApiUtilTest {
     }
 
     @Test
-    public void createMessageHeader_returns_valid_values() {
+    public void create_messageHeader_returns_valid_values() {
         Map<String, Object> messageHeader = homeOfficeApiUtil.createMessageHeader();
 
         assertNotNull(messageHeader);
@@ -62,13 +62,37 @@ public class HomeOfficeApiUtilTest {
     }
 
     @Test
-    public void createConsumer_returns_valid_values() {
+    public void create_consumer_returns_valid_values() {
         Map<String, String> consumer = homeOfficeApiUtil.createConsumer();
 
         assertNotNull(consumer);
         assertThat(consumer.size()).isEqualTo(2);
         assertThat(consumer.get("code")).isEqualTo("HMCTS");
         assertThat(consumer.get("description")).isEqualTo("HM Courts and Tribunal Service");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void create_consume_reference_returns_valid_values() {
+        Map<String, Object> consumerReference = homeOfficeApiUtil.createConsumerReference();
+
+        assertNotNull(consumerReference);
+        assertThat(consumerReference.size()).isEqualTo(1);
+        Map<String, Object> consumer = (Map<String, Object>)consumerReference.get("consumer");
+        assertThat(consumer.size()).isEqualTo(4);
+        assertThat(consumer.get("code")).isEqualTo("HMCTS_CHALLENGE_REF");
+        assertThat(consumer.get("description")).isEqualTo("HMCTS challenge reference");
+        assertThat(consumer.get("value")).isEqualTo("xxxyyyynnn-nnn");
+    }
+
+    @Test
+    public void create_court_outcome_returns_valid_values() {
+        Map<String, String> courtOutcome = homeOfficeApiUtil.createCourtOutcome();
+
+        assertNotNull(courtOutcome);
+        assertThat(courtOutcome.size()).isEqualTo(2);
+        assertThat(courtOutcome.get("courtType")).isEqualTo("FIRST_TIER");
+        assertThat(courtOutcome.get("outcome")).isEqualTo("ALLOWED");
     }
 
     @Test

@@ -38,6 +38,21 @@ public class HomeOfficeApiUtil {
         return ImmutableMap.of("code", "HMCTS", "description", "HM Courts and Tribunal Service");
     }
 
+    public Map<String, Object> createConsumerReference() {
+        Map<String, Object> consumerReference = new HashMap<>();
+        consumerReference.put("consumer", ImmutableMap.of(
+            "code", "HMCTS_CHALLENGE_REF",
+            "consumer", createConsumer(),
+            "description", "HMCTS challenge reference",
+            "value","xxxyyyynnn-nnn"));
+
+        return consumerReference;
+    }
+
+    public Map<String, String> createCourtOutcome() {
+        return ImmutableMap.of("courtType", "FIRST_TIER", "outcome", "ALLOWED");
+    }
+
     public AsylumCase extractHomeOfficeData(String response) throws HomeOfficeResponseException {
         AsylumCase homeOfficeData = new AsylumCase();
         ObjectMapper objectMapper = new ObjectMapper();

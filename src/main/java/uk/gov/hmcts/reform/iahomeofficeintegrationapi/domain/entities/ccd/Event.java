@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 
 public enum Event {
     SUBMIT_APPEAL("submitAppeal"),
+    REQUEST_RESPONDENT_EVIDENCE("requestRespondentEvidence"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 
