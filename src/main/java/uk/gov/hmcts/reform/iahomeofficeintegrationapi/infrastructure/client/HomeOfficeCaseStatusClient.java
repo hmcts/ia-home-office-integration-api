@@ -50,7 +50,7 @@ public class HomeOfficeCaseStatusClient {
         }
     }
 
-    HttpEntity<Map<String, Object>> createRequest(AsylumCase asylumCase) {
+    public HttpEntity<Map<String, Object>> createRequest(AsylumCase asylumCase) {
         Map<String, Object> body = new LinkedHashMap<>();
 
         body.put("messageHeader", homeOfficeApiUtil.createMessageHeader());
@@ -59,7 +59,7 @@ public class HomeOfficeCaseStatusClient {
         return new HttpEntity<>(body, homeOfficeApiUtil.getHomeOfficeHeader());
     }
 
-    Object[] createSearchParams(AsylumCase asylumCase) {
+    public Object[] createSearchParams(AsylumCase asylumCase) {
         Map<String, Object> searchCaseID = ImmutableMap.of("spType", "DOCUMENT_REFERENCE",
             "spValue", asylumCase.read(
                 AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER).orElse(""));
