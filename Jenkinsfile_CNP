@@ -42,8 +42,8 @@ withPipeline(type, product, component) {
     env.IA_IDAM_REDIRECT_URI = "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
     env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
     env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-
-    installCharts()
+    env.HOME_OFFICE_ENDPOINT = "http://ia-home-office-mock-api-aat.service.core-compute-aat.internal"
+    env.HOME_OFFICE_CASE_SEARCH_URI = "/v1/applicationStatus/getBySearchParameters"
 
     enableAksStagingDeployment()
     disableLegacyDeployment()

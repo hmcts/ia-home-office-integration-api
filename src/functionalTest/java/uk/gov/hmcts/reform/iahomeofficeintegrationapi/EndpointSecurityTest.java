@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 
 import io.restassured.RestAssured;
 import java.time.LocalDateTime;
@@ -47,7 +47,7 @@ public class EndpointSecurityTest {
     @Test
     public void should_allow_unauthenticated_requests_to_health_check_and_return_200_response_code() {
 
-        String response = SerenityRest
+        SerenityRest
             .given()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
@@ -56,11 +56,8 @@ public class EndpointSecurityTest {
             .assertThat()
             .statusCode(HttpStatus.OK.value())
             .and()
-            .extract()
-            .body()
-            .asString();
+            .body(containsString("UP"));
 
-        assertThat(response).contains("UP");
     }
 
     @Test
@@ -157,6 +154,7 @@ public class EndpointSecurityTest {
         caseDetails.put("jurisdiction", "IA");
         caseDetails.put("state", State.APPEAL_STARTED);
         caseDetails.put("created_date", LocalDateTime.now().toString());
+        caseData.put("homeOfficeReferenceNumber","A123456");
         caseDetails.put("case_data", caseData);
         callback.put("event_id", Event.SUBMIT_APPEAL);
         callback.put("case_details", caseDetails);
