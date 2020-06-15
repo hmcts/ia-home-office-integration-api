@@ -40,4 +40,5 @@ public class AuthCheckerConfiguration {
     public Function<HttpServletRequest, Optional<String>> userIdExtractor() {
         return any -> Optional.empty();
     }
+
 }

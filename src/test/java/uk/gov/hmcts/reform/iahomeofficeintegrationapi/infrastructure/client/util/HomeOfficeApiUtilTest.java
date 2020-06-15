@@ -120,6 +120,13 @@ public class HomeOfficeApiUtilTest {
             .hasMessage("Error test message");
     }
 
+    @Test
+    public void call_date_time_string_returns_current_time_in_format() {
+        String currentTime = HomeOfficeApiUtil.getCurrentDateTime();
+        assertNotNull(currentTime);
+        assertEquals(20, currentTime.length());
+    }
+
     private String getErrorJsonResponseString() {
         return "{"
             + "\"messageHeader\":{\"consumer\":"

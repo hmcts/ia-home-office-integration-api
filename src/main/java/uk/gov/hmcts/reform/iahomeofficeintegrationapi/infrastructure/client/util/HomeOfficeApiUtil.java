@@ -6,17 +6,31 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.SystemDateProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 
 @Service
 public class HomeOfficeApiUtil {
+
+    public static String getCurrentDateTime() {
+        DateProvider dateProvider = new SystemDateProvider();
+        return dateProvider.nowWithTime().format(
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+    }
+
+    public static String generateUuid() {
+        return UUID.randomUUID().toString();
+    }
 
     public HttpHeaders getHomeOfficeHeader() {
         HttpHeaders headers = new HttpHeaders();

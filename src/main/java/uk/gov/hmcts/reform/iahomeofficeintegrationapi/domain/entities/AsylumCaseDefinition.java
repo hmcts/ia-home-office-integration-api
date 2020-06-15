@@ -22,11 +22,17 @@ public enum AsylumCaseDefinition {
     HO_APPELLANT_FAMILY_NAME(
         "hoAppellantFamilyName", new TypeReference<String>() {}),
 
+    HO_APPELLANT_FULL_NAME(
+        "hoAppellantFullName", new TypeReference<String>() {}),
+
     HO_APPELLANT_NATIONALITY_CODE(
         "hoAppellantNationalityCode", new TypeReference<String>() {}),
 
     HO_APPELLANT_NATIONALITY(
-        "hoAppellantNationality", new TypeReference<String>() {});
+        "hoAppellantNationality", new TypeReference<String>() {}),
+
+    HOME_OFFICE_INSTRUCT_STATUS(
+        "homeOfficeInstructStatus", new TypeReference<String>() {});
 
     private final String value;
     private final TypeReference typeReference;
