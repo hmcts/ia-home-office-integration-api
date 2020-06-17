@@ -31,6 +31,12 @@ public enum AsylumCaseDefinition {
     HO_APPELLANT_NATIONALITY(
         "hoAppellantNationality", new TypeReference<String>() {}),
 
+    HO_APPELLANT_DECISION(
+        "hoAppellantDecision", new TypeReference<String>() {}),
+
+    HO_APPELLANT_DECISION_DATE(
+        "hoAppellantDecisionDate", new TypeReference<String>() {}),
+
     HOME_OFFICE_INSTRUCT_STATUS(
         "homeOfficeInstructStatus", new TypeReference<String>() {});
 

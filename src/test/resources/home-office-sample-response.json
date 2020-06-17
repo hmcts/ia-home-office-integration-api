@@ -16,7 +16,7 @@
           "description": "Male"
         },
         "nationality": {
-          "code": "CAN (denoting Canada)",
+          "code": "CAN",
           "description": "Canada"
         },
         "dayOfBirth": 21,
@@ -61,7 +61,7 @@
           "code": "DEPENDANT",
           "description": "Dependant"
         },
-        "decisionDate": "2017-07-21T17:32:28Z"
+        "decisionDate": "2020-06-14T17:32:28Z"
       }
     },
     {

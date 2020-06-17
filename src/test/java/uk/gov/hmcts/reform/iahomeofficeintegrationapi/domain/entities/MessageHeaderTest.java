@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @SuppressWarnings("unchecked")
 public class MessageHeaderTest {
     @Mock
-    private ConsumerType consumerType;
+    private CodeWithDescription consumerType;
     private MessageHeader messageHeader;
 
     @BeforeEach
@@ -26,7 +25,7 @@ public class MessageHeaderTest {
 
     @Test
     public void has_correct_values() {
-        assertNotNull(messageHeader.getConsumerType());
+        assertEquals(consumerType, messageHeader.getConsumer());
         assertEquals("1234-tttt-wwwwwww", messageHeader.getCorrelationId());
         assertEquals("2020-06-15T17:35:38Z", messageHeader.getEventDateTime());
     }

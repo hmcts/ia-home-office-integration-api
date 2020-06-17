@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("homeoffice.params")
 public class HomeOfficeProperties {
 
-    private Map<String, LookupReferenceData> homeOfficeReferenceData = new HashMap<>();
+    private Map<String, LookupReferenceData> codes = new HashMap<>();
 
-    public Map<String, LookupReferenceData> getHomeOfficeReferenceData() {
-        return homeOfficeReferenceData;
+    public Map<String, LookupReferenceData> getCodes() {
+        return codes;
     }
 
     public static class LookupReferenceData {

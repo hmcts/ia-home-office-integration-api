@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties.LookupReferenceData;
 
@@ -15,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerType;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CourtType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
@@ -44,13 +45,14 @@ public class HomeOfficeInstructServiceTest {
     @BeforeEach
     public void setUp() {
 
-        homeOfficeInstructService = new HomeOfficeInstructService(homeOfficeProperties, homeOfficeInstructApi);
+        homeOfficeInstructService = new HomeOfficeInstructService(
+            homeOfficeProperties, homeOfficeInstructApi);
     }
 
     @Test
     public void should_return_message_header_for_valid_request_inputs() {
 
-        when(homeOfficeProperties.getHomeOfficeReferenceData()).thenReturn(getHomeOfficeReferenceData());
+        when(homeOfficeProperties.getCodes()).thenReturn(getHomeOfficeReferenceData());
         when(homeOfficeInstructApi.sendNotification(any()))
             .thenReturn(getResponse());
 
@@ -61,14 +63,14 @@ public class HomeOfficeInstructServiceTest {
         assertThat(instructResponse.getMessageHeader().getCorrelationId()).isNotBlank();
         assertThat(instructResponse.getMessageHeader().getEventDateTime()).isNotBlank();
         assertEquals(someCorrelationId, instructResponse.getMessageHeader().getCorrelationId());
-        assertEquals("2020-06-15T17:32:28Z", instructResponse.getMessageHeader().getEventDateTime());
+        assertEquals("some-time", instructResponse.getMessageHeader().getEventDateTime());
 
     }
 
     @Test
     public void returns_values_in_request_body() {
 
-        when(homeOfficeProperties.getHomeOfficeReferenceData()).thenReturn(getHomeOfficeReferenceData());
+        doReturn(getHomeOfficeReferenceData()).when(homeOfficeProperties).getCodes();
 
         HomeOfficeInstruct request = homeOfficeInstructService.makeRequestBody(
             someHoReference, someCaseReference, someCorrelationId);
@@ -79,15 +81,15 @@ public class HomeOfficeInstructServiceTest {
         assertEquals("HMCTS challenge reference",
             request.getConsumerReference().getConsumerInstruct().getDescription());
         assertEquals("HMCTS",
-            request.getConsumerReference().getConsumerInstruct().getConsumerType().getCode());
+            request.getConsumerReference().getConsumerInstruct().getConsumer().getCode());
         assertEquals("HM Courts and Tribunal Service",
-            request.getConsumerReference().getConsumerInstruct().getConsumerType().getDescription());
+            request.getConsumerReference().getConsumerInstruct().getConsumer().getDescription());
         assertEquals(someCaseReference, request.getConsumerReference().getConsumerInstruct().getValue());
         assertEquals(CourtType.FIRST_TIER.toString(), request.getCourtOutcome().getCourtType());
         assertEquals(Outcome.ALLOWED.toString(), request.getCourtOutcome().getOutcome());
-        assertEquals("HMCTS", request.getMessageHeader().getConsumerType().getCode());
+        assertEquals("HMCTS", request.getMessageHeader().getConsumer().getCode());
         assertEquals("HM Courts and Tribunal Service",
-            request.getMessageHeader().getConsumerType().getDescription());
+            request.getMessageHeader().getConsumer().getDescription());
         assertNotNull(request.getMessageHeader().getEventDateTime());
         assertEquals(someCorrelationId, request.getMessageHeader().getCorrelationId());
 
@@ -106,14 +108,14 @@ public class HomeOfficeInstructServiceTest {
         final Map<String, LookupReferenceData> consumerMap = new HashMap<>();
 
         LookupReferenceData lookupReferenceData = new LookupReferenceData();
-        lookupReferenceData.setCode("HMCTS");
-        lookupReferenceData.setDescription("HM Courts and Tribunal Service");
-        consumerMap.put("consumer", lookupReferenceData);
-
-        lookupReferenceData = new LookupReferenceData();
         lookupReferenceData.setCode("HMCTS_CHALLENGE_REF");
         lookupReferenceData.setDescription("HMCTS challenge reference");
         consumerMap.put("consumerInstruct", lookupReferenceData);
+
+        lookupReferenceData = new LookupReferenceData();
+        lookupReferenceData.setCode("HMCTS");
+        lookupReferenceData.setDescription("HM Courts and Tribunal Service");
+        consumerMap.put("consumer", lookupReferenceData);
 
         return consumerMap;
     }
@@ -121,9 +123,9 @@ public class HomeOfficeInstructServiceTest {
     private HomeOfficeInstructResponse getResponse() {
         return new HomeOfficeInstructResponse(
             new MessageHeader(
-                new ConsumerType("HMCTS", "HM Courts and Tribunal Service"),
+                new CodeWithDescription("HMCTS", "HM Courts and Tribunal Service"),
                 someCorrelationId,
-                "2020-06-15T17:32:28Z"),
+                "some-time"),
             null);
     }
 }
