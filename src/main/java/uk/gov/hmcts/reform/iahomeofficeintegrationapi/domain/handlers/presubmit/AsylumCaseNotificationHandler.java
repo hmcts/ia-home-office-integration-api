@@ -55,13 +55,13 @@ public class AsylumCaseNotificationHandler implements PreSubmitCallbackHandler<A
         MessageHeader messageHeader = homeOfficeInstructService.sendNotification(homeOfficeReferenceNumber,caseId);
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
         if (messageHeader == null) {
-            asylumCase.write(HOME_OFFICE_INSTRUCT_STATUS,"Error sending notification to Home Office");
+            asylumCase.write(HOME_OFFICE_INSTRUCT_STATUS,false);
             response.addErrors(Collections.singleton("Error sending notification to Home Office"));
         } else {
-            asylumCase.write(HOME_OFFICE_INSTRUCT_STATUS,"Notification sent to Home Office");
+            asylumCase.write(HOME_OFFICE_INSTRUCT_STATUS,true);
         }
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return response;
     }
 
 }

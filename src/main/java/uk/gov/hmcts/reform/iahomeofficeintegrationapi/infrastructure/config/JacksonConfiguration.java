@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.DeserializationFeature.READ_ENUMS_USING_TO_STRING;
 import static com.fasterxml.jackson.databind.DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_USING_TO_STRING;
@@ -22,6 +23,7 @@ public class JacksonConfiguration {
             .featuresToEnable(READ_ENUMS_USING_TO_STRING)
             .featuresToEnable(READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE)
             .featuresToEnable(WRITE_ENUMS_USING_TO_STRING)
+            .featuresToDisable(FAIL_ON_UNKNOWN_PROPERTIES)
             .serializationInclusion(JsonInclude.Include.NON_ABSENT);
     }
 

@@ -1,21 +1,11 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
-
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class HomeOfficeInstruct {
 
-    @JsonProperty("consumerReference")
     private ConsumerReference consumerReference;
-    @JsonProperty("courtOutcome")
     private CourtOutcome courtOutcome;
-    @JsonProperty("hoReference")
     private String hoReference;
-    @JsonProperty("messageHeader")
     private MessageHeader messageHeader;
-    @JsonProperty("messageType")
     private String messageType;
 
     private HomeOfficeInstruct() {

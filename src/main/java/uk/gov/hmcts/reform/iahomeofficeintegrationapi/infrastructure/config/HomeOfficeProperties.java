@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config;
 
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -18,24 +19,19 @@ public class HomeOfficeProperties {
     }
 
     public static class LookupReferenceData {
+        @Setter
         private String code;
+        @Setter
         private String description;
 
         public String getCode() {
             return code;
         }
 
-        public void setCode(String code) {
-            this.code = code;
-        }
-
         public String getDescription() {
             return description;
         }
 
-        public void setDescription(String description) {
-            this.description = description;
-        }
     }
 
 }

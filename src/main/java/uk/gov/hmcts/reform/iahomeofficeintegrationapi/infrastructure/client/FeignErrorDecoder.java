@@ -32,7 +32,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                 return new ResponseStatusException(HttpStatus.valueOf(response.status()), response.reason());
 
             default:
-                return new Exception(response.reason());
+                return new HomeOfficeResponseException(response.reason());
 
         }
     }

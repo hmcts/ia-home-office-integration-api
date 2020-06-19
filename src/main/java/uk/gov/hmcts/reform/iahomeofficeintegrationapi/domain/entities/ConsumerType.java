@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
-
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ConsumerType {
 
     private String code;

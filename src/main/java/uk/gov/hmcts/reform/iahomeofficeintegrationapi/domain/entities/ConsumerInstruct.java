@@ -3,10 +3,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 import static java.util.Objects.requireNonNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ConsumerInstruct {
 
     private String code;

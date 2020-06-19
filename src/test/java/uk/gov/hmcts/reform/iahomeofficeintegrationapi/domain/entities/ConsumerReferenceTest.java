@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -16,10 +18,15 @@ public class ConsumerReferenceTest {
 
     private ConsumerReference consumerReference;
 
+    @BeforeEach
+    void setUp() {
+        consumerReference = new ConsumerReference(consumerInstruct);
+    }
+
     @Test
     public void has_correct_values() {
-
-        consumerReference = new ConsumerReference(consumerInstruct);
         assertNotNull(consumerReference);
+        assertEquals(consumerInstruct, consumerReference.getConsumerInstruct());
+
     }
 }
