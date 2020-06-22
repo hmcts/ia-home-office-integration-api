@@ -5,6 +5,9 @@ public class ConsumerType {
     private String code;
     private String description;
 
+    private ConsumerType() {
+    }
+
     public ConsumerType(String code, String description) {
         this.code = code;
         this.description = description;
@@ -14,16 +17,8 @@ public class ConsumerType {
         return code;
     }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
 }

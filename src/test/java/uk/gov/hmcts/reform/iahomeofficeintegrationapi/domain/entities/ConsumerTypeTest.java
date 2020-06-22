@@ -19,8 +19,7 @@ public class ConsumerTypeTest {
         assertEquals("HMCTS", consumerType.getCode());
         assertEquals("HM Courts and Tribunal Service", consumerType.getDescription());
 
-        consumerType.setCode("HMCTS_CHALLENGE_REF");
-        consumerType.setDescription("HMCTS challenge reference");
+        consumerType = new ConsumerType("HMCTS_CHALLENGE_REF", "HMCTS challenge reference");
         assertEquals("HMCTS_CHALLENGE_REF", consumerType.getCode());
         assertEquals("HMCTS challenge reference", consumerType.getDescription());
     }

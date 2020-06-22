@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.SystemDateP
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 
 @Service
-public class HomeOfficeApiUtil {
+public class HomeOfficeRequestHelper {
 
     public static String getCurrentDateTime() {
         DateProvider dateProvider = new SystemDateProvider();
@@ -52,7 +52,7 @@ public class HomeOfficeApiUtil {
         return ImmutableMap.of("code", "HMCTS", "description", "HM Courts and Tribunal Service");
     }
 
-    public AsylumCase extractHomeOfficeData(String response) throws HomeOfficeResponseException {
+    public AsylumCase extractHomeOfficeData(String response) {
         AsylumCase homeOfficeData = new AsylumCase();
         ObjectMapper objectMapper = new ObjectMapper();
         try {

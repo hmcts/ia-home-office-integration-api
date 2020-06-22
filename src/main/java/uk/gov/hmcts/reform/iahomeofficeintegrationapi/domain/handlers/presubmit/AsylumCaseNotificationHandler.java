@@ -9,13 +9,14 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd
 import java.util.Collections;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHeader;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeRequestHelper;
 
 @Component
 public class AsylumCaseNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -52,13 +53,16 @@ public class AsylumCaseNotificationHandler implements PreSubmitCallbackHandler<A
         final String caseId = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)
             .orElseThrow(() -> new IllegalStateException("Case ID for the appeal is not present"));
 
-        MessageHeader messageHeader = homeOfficeInstructService.sendNotification(homeOfficeReferenceNumber,caseId);
+        final String correlationId = HomeOfficeRequestHelper.generateUuid();
+        HomeOfficeInstructResponse instructResponse = homeOfficeInstructService
+            .sendNotification(homeOfficeReferenceNumber, caseId, correlationId);
+
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-        if (messageHeader == null) {
-            asylumCase.write(HOME_OFFICE_INSTRUCT_STATUS,false);
+        if (instructResponse == null || instructResponse.getMessageHeader() == null) {
+            asylumCase.write(HOME_OFFICE_INSTRUCT_STATUS, "Internal Server Error");
             response.addErrors(Collections.singleton("Error sending notification to Home Office"));
         } else {
-            asylumCase.write(HOME_OFFICE_INSTRUCT_STATUS,true);
+            asylumCase.write(HOME_OFFICE_INSTRUCT_STATUS, "OK");
         }
 
         return response;

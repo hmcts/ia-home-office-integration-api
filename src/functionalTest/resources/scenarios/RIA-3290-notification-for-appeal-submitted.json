@@ -23,7 +23,7 @@
       "replacements": {
         "homeOfficeReferenceNumber": "1111-2222-3333-4444",
         "appealReferenceNumber": "PA-123456",
-        "homeOfficeInstructStatus": true
+        "homeOfficeInstructStatus": "OK"
       }
     }
   }

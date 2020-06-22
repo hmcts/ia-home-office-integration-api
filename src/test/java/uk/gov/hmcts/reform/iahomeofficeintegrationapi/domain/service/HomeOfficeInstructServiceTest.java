@@ -15,17 +15,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerInstruct;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerReference;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerType;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CourtOutcome;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CourtType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHeader;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Outcome;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeInstructApi;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeApiUtil;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,10 +30,14 @@ public class HomeOfficeInstructServiceTest {
 
     private final String someHoReference = "some-ho-reference";
     private final String someCaseReference = "some-case";
+    private final String someCorrelationId = "some-id";
 
-    @Mock private HomeOfficeProperties homeOfficeProperties;
-    @Mock private HomeOfficeInstructApi homeOfficeInstructApi;
-    @Mock private HomeOfficeInstruct homeOfficeInstruct;
+    @Mock
+    private HomeOfficeProperties homeOfficeProperties;
+    @Mock
+    private HomeOfficeInstructApi homeOfficeInstructApi;
+    @Mock
+    private HomeOfficeInstruct homeOfficeInstruct;
 
     private HomeOfficeInstructService homeOfficeInstructService;
 
@@ -51,31 +51,17 @@ public class HomeOfficeInstructServiceTest {
     public void should_return_message_header_for_valid_request_inputs() {
 
         when(homeOfficeProperties.getHomeOfficeReferenceData()).thenReturn(getHomeOfficeReferenceData());
-        when(homeOfficeInstructApi.sendNotification(any())).thenReturn(getMessageHeader());
+        when(homeOfficeInstructApi.sendNotification(any()))
+            .thenReturn(getResponse());
 
-        MessageHeader messageHeader = homeOfficeInstructService.sendNotification(
-            someHoReference,someCaseReference);
+        HomeOfficeInstructResponse instructResponse = homeOfficeInstructService.sendNotification(
+            someHoReference, someCaseReference, someCorrelationId);
 
-        assertNotNull(messageHeader);
-        assertThat(messageHeader.getCorrelationId()).isNotBlank();
-        assertThat(messageHeader.getEventDateTime()).isNotBlank();
-        assertEquals("AAAAAAAAA", messageHeader.getCorrelationId());
-        assertEquals("2020-06-15T17:32:28Z", messageHeader.getEventDateTime());
-
-    }
-
-    @Test
-    public void should_return_message_header_for_valid_request_body() {
-
-        when(homeOfficeInstructApi.sendNotification(any())).thenReturn(getMessageHeader());
-
-        MessageHeader messageHeader = homeOfficeInstructService.makeRequest(makeSampleRequestBody());
-
-        assertNotNull(messageHeader);
-        assertThat(messageHeader.getCorrelationId()).isNotBlank();
-        assertThat(messageHeader.getEventDateTime()).isNotBlank();
-        assertEquals("AAAAAAAAA", messageHeader.getCorrelationId());
-        assertEquals("2020-06-15T17:32:28Z", messageHeader.getEventDateTime());
+        assertNotNull(instructResponse.getMessageHeader());
+        assertThat(instructResponse.getMessageHeader().getCorrelationId()).isNotBlank();
+        assertThat(instructResponse.getMessageHeader().getEventDateTime()).isNotBlank();
+        assertEquals(someCorrelationId, instructResponse.getMessageHeader().getCorrelationId());
+        assertEquals("2020-06-15T17:32:28Z", instructResponse.getMessageHeader().getEventDateTime());
 
     }
 
@@ -84,7 +70,8 @@ public class HomeOfficeInstructServiceTest {
 
         when(homeOfficeProperties.getHomeOfficeReferenceData()).thenReturn(getHomeOfficeReferenceData());
 
-        HomeOfficeInstruct request = homeOfficeInstructService.makeRequestBody(someHoReference, someCaseReference);
+        HomeOfficeInstruct request = homeOfficeInstructService.makeRequestBody(
+            someHoReference, someCaseReference, someCorrelationId);
 
         assertNotNull(request);
         assertEquals(someHoReference, request.getHoReference());
@@ -102,14 +89,15 @@ public class HomeOfficeInstructServiceTest {
         assertEquals("HM Courts and Tribunal Service",
             request.getMessageHeader().getConsumerType().getDescription());
         assertNotNull(request.getMessageHeader().getEventDateTime());
-        assertNotNull(request.getMessageHeader().getCorrelationId());
+        assertEquals(someCorrelationId, request.getMessageHeader().getCorrelationId());
 
     }
 
     @Test
     public void should_throw_for_null_case() {
 
-        assertThatThrownBy(() -> homeOfficeInstructService.sendNotification(null, null))
+        assertThatThrownBy(() -> homeOfficeInstructService.sendNotification(
+            null, null, someCorrelationId))
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
@@ -130,39 +118,12 @@ public class HomeOfficeInstructServiceTest {
         return consumerMap;
     }
 
-    private MessageHeader getMessageHeader() {
-        return new MessageHeader(
-            new ConsumerType("HMCTS", "HM Courts and Tribunal Service"),
-            "AAAAAAAAA",
-            "2020-06-15T17:32:28Z");
-    }
-
-    private HomeOfficeInstruct makeSampleRequestBody() {
-
-        final ConsumerType consumerType = new ConsumerType("HMCTS", "HM Courts and Tribunal Service");
-
-        ConsumerInstruct consumerInstruct = new ConsumerInstruct(
-            "HMCTS_CHALLENGE_REF",
-            consumerType,
-            "HMCTS challenge reference",
-            someCaseReference
-        );
-
-        CourtOutcome courtOutcome = new CourtOutcome(
-            CourtType.FIRST_TIER.toString(),
-            Outcome.ALLOWED.toString());
-        MessageHeader messageHeader = new MessageHeader(
-            consumerType,
-            HomeOfficeApiUtil.generateUuid(),
-            HomeOfficeApiUtil.getCurrentDateTime());
-
-        return new HomeOfficeInstruct(
-            new ConsumerReference(consumerInstruct),
-            courtOutcome,
-            someHoReference,
-            messageHeader,
-            MessageType.REQUEST_CHALLENGE_END.toString()
-        );
-
+    private HomeOfficeInstructResponse getResponse() {
+        return new HomeOfficeInstructResponse(
+            new MessageHeader(
+                new ConsumerType("HMCTS", "HM Courts and Tribunal Service"),
+                someCorrelationId,
+                "2020-06-15T17:32:28Z"),
+            null);
     }
 }

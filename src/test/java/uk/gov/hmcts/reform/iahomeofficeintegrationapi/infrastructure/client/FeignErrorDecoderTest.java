@@ -5,6 +5,7 @@ import static feign.Response.Body;
 import static feign.Response.builder;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -22,9 +23,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 public class FeignErrorDecoderTest {
 
-    @Mock private Response response;
+    @Mock
+    private Response response;
 
-    @Mock private RequestTemplate requestTemplate;
+    @Mock
+    private RequestTemplate requestTemplate;
 
     private FeignErrorDecoder feignErrorDecoder;
 
@@ -40,7 +43,8 @@ public class FeignErrorDecoderTest {
         response = builder()
             .status(500)
             .reason("Internal server error")
-            .request(create(HttpMethod.GET, "/api", Collections.emptyMap(), null, Util.UTF_8, requestTemplate))
+            .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
+                null, Util.UTF_8, requestTemplate))
             .body("Internal server error", Util.UTF_8)
             .build();
 
@@ -53,11 +57,13 @@ public class FeignErrorDecoderTest {
         response = builder()
             .status(404)
             .reason("Not found")
-            .request(create(HttpMethod.GET, "/api", Collections.emptyMap(), null, Util.UTF_8, requestTemplate))
+            .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
+                null, Util.UTF_8, requestTemplate))
             .body("No data found", Util.UTF_8)
             .build();
 
-        assertThat(feignErrorDecoder.decode("someMethod", response), instanceOf(ResponseStatusException.class));
+        assertThat(feignErrorDecoder.decode("someMethod", response),
+            instanceOf(ResponseStatusException.class));
     }
 
     @Test
@@ -66,11 +72,13 @@ public class FeignErrorDecoderTest {
         response = builder()
             .status(400)
             .reason("Bad request")
-            .request(create(HttpMethod.GET, "/api", Collections.emptyMap(), null, Util.UTF_8, requestTemplate))
+            .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
+                null, Util.UTF_8, requestTemplate))
             .body("Bad request data".getBytes())
             .build();
 
-        assertThat(feignErrorDecoder.decode("someMethod", response), instanceOf(ResponseStatusException.class));
+        assertThat(feignErrorDecoder.decode("someMethod", response),
+            instanceOf(HomeOfficeResponseException.class));
     }
 
     @Test
@@ -83,11 +91,45 @@ public class FeignErrorDecoderTest {
         response = builder()
             .status(400)
             .reason("Bad request")
-            .request(create(HttpMethod.GET, "/api", Collections.emptyMap(), null, Util.UTF_8, requestTemplate))
+            .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
+                null, Util.UTF_8, requestTemplate))
             .body(body)
             .build();
 
-        feignErrorDecoder.decode("someMethod", response);
-        assertThat(feignErrorDecoder.decode("someMethod", response), instanceOf(ResponseStatusException.class));
+        assertThat(feignErrorDecoder.decode("someMethod", response),
+            instanceOf(HomeOfficeResponseException.class));
+    }
+
+    @Test
+    public void should_decode_for_400_home_office_error() {
+
+        response = builder()
+            .status(400)
+            .reason("Bad request")
+            .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
+                null, Util.UTF_8, requestTemplate))
+            .body(getErrorDetail())
+            .build();
+
+        Exception exception = feignErrorDecoder.decode("someMethod", response);
+        assertThat(exception, instanceOf(HomeOfficeResponseException.class));
+        assertTrue(exception.getMessage().contains(
+            "Invalid reference format. "
+                + "Format should be either nnnn-nnnn-nnnn-nnnn or 0(0) followed by digits (total length 9 or 10)"
+        ));
+
+    }
+
+    private byte[] getErrorDetail() {
+        String errorResponse = "{\n"
+            + "  \"errorDetail\": {\n"
+            + "    \"errorCode\": \"1100\",\n"
+            + "    \"messageText\": \"Invalid reference format. "
+            + "Format should be either nnnn-nnnn-nnnn-nnnn or 0(0) followed by digits (total length 9 or 10)\",\n"
+            + "    \"success\": true\n"
+            + "  }"
+            + "}";
+
+        return errorResponse.getBytes();
     }
 }

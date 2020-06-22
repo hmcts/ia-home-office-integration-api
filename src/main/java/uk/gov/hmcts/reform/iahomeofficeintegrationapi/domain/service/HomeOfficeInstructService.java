@@ -10,11 +10,12 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerTy
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CourtOutcome;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CourtType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHeader;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Outcome;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeInstructApi;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeApiUtil;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeRequestHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties;
 
 @Service
@@ -30,21 +31,19 @@ public class HomeOfficeInstructService {
         this.homeOfficeInstructApi = homeOfficeInstructApi;
     }
 
-    public MessageHeader sendNotification(String homeOfficeReferenceNumber, String caseId) {
+    public HomeOfficeInstructResponse sendNotification(
+        String homeOfficeReferenceNumber,
+        String caseId,
+        String correlationId) {
 
-        HomeOfficeInstruct request = makeRequestBody(homeOfficeReferenceNumber, caseId);
-        MessageHeader instructResponse = makeRequest(request);
+        HomeOfficeInstruct request = makeRequestBody(homeOfficeReferenceNumber, caseId, correlationId);
+        HomeOfficeInstructResponse instructResponse = homeOfficeInstructApi.sendNotification(request);
         log.debug("HomeOffice-Instruct response: {}", instructResponse);
 
         return instructResponse;
     }
 
-    public MessageHeader makeRequest(HomeOfficeInstruct request) {
-
-        return homeOfficeInstructApi.sendNotification(request);
-    }
-
-    public HomeOfficeInstruct makeRequestBody(String homeOfficeReferenceNumber, String caseId) {
+    public HomeOfficeInstruct makeRequestBody(String homeOfficeReferenceNumber, String caseId, String correlationId) {
 
         LookupReferenceData consumerParent = homeOfficeProperties.getHomeOfficeReferenceData().get("consumerInstruct");
         LookupReferenceData consumer = homeOfficeProperties.getHomeOfficeReferenceData().get("consumer");
@@ -62,8 +61,8 @@ public class HomeOfficeInstructService {
             Outcome.ALLOWED.toString());
         MessageHeader messageHeader = new MessageHeader(
             consumerType,
-            HomeOfficeApiUtil.generateUuid(),
-            HomeOfficeApiUtil.getCurrentDateTime());
+            correlationId,
+            HomeOfficeRequestHelper.getCurrentDateTime());
 
         return new HomeOfficeInstruct(
             new ConsumerReference(consumerInstruct),

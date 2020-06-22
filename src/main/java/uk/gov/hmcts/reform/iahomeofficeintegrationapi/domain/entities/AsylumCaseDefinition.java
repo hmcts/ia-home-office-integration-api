@@ -32,7 +32,7 @@ public enum AsylumCaseDefinition {
         "hoAppellantNationality", new TypeReference<String>() {}),
 
     HOME_OFFICE_INSTRUCT_STATUS(
-        "homeOfficeInstructStatus", new TypeReference<Boolean>() {});
+        "homeOfficeInstructStatus", new TypeReference<String>() {});
 
     private final String value;
     private final TypeReference typeReference;

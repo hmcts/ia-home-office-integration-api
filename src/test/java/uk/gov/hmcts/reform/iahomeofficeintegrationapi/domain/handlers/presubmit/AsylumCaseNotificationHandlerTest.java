@@ -15,10 +15,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerType;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHeader;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
@@ -34,6 +35,7 @@ public class AsylumCaseNotificationHandlerTest {
 
     private final String someHomeOfficeReference = "some-reference";
     private final String someCaseReference = "some-case";
+    private final String someCorrelationId = "some-id";
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -61,8 +63,8 @@ public class AsylumCaseNotificationHandlerTest {
             .thenReturn(Optional.of(someHomeOfficeReference));
         when(asylumCase.read(AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(someCaseReference));
-        when(homeOfficeInstructService.sendNotification(any(),any())).thenReturn(
-            Mockito.mock(MessageHeader.class)
+        when(homeOfficeInstructService.sendNotification(any(),any(),any())).thenReturn(
+            getResponse()
         );
 
         PreSubmitCallbackResponse<AsylumCase> response =
@@ -159,6 +161,15 @@ public class AsylumCaseNotificationHandlerTest {
             .hasMessage("Case ID for the appeal is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
 
+    }
+
+    private HomeOfficeInstructResponse getResponse() {
+        return new HomeOfficeInstructResponse(
+            new MessageHeader(
+                new ConsumerType("HMCTS", "HM Courts and Tribunal Service"),
+                someCorrelationId,
+                "2020-06-15T17:32:28Z"),
+            null);
     }
 
 }
