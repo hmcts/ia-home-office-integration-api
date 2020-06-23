@@ -37,6 +37,7 @@ public class HomeOfficeCaseStatusClientTest {
     private final String someUri = "some-uri";
     private final String someResponse = "some-response";
     private final String someHomeOfficeReference = "some-ho-reference";
+
     @Mock
     private RestTemplate restTemplate;
     @Mock
