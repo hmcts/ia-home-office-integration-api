@@ -28,9 +28,9 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Home
 
 @SpringJUnitConfig
 @ExtendWith(MockitoExtension.class)
-public class HomeOfficeRequestHelperTest {
+public class HomeOfficeMessageHeaderHelperTest {
 
-    private HomeOfficeRequestHelper homeOfficeRequestHelper;
+    private HomeOfficeMessageHeaderHelper homeOfficeMessageHeaderHelper;
 
     private ObjectMapper objectMapper;
 
@@ -39,12 +39,12 @@ public class HomeOfficeRequestHelperTest {
 
     @BeforeEach
     void setUp() {
-        homeOfficeRequestHelper = new HomeOfficeRequestHelper();
+        homeOfficeMessageHeaderHelper = new HomeOfficeMessageHeaderHelper();
     }
 
     @Test
     public void create_home_office_header_returns_valid() {
-        HttpHeaders headers = homeOfficeRequestHelper.getHomeOfficeHeader();
+        HttpHeaders headers = homeOfficeMessageHeaderHelper.getHomeOfficeHeader();
 
         assertNotNull(headers);
         assertThat(headers.getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
@@ -52,7 +52,7 @@ public class HomeOfficeRequestHelperTest {
 
     @Test
     public void createMessageHeader_returns_valid_values() {
-        Map<String, Object> messageHeader = homeOfficeRequestHelper.createMessageHeader();
+        Map<String, Object> messageHeader = homeOfficeMessageHeaderHelper.createMessageHeader();
 
         assertNotNull(messageHeader);
         assertThat(messageHeader.size()).isEqualTo(3);
@@ -63,7 +63,7 @@ public class HomeOfficeRequestHelperTest {
 
     @Test
     public void createConsumer_returns_valid_values() {
-        Map<String, String> consumer = homeOfficeRequestHelper.createConsumer();
+        Map<String, String> consumer = homeOfficeMessageHeaderHelper.createConsumer();
 
         assertNotNull(consumer);
         assertThat(consumer.size()).isEqualTo(2);
@@ -77,7 +77,7 @@ public class HomeOfficeRequestHelperTest {
         Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
         String jsonResponse = FileCopyUtils.copyToString(reader);
 
-        AsylumCase asylumCase = homeOfficeRequestHelper.extractHomeOfficeData(jsonResponse);
+        AsylumCase asylumCase = homeOfficeMessageHeaderHelper.extractHomeOfficeData(jsonResponse);
 
         assertNotNull(asylumCase);
         assertEquals(Optional.of("Smith"),
@@ -93,20 +93,20 @@ public class HomeOfficeRequestHelperTest {
 
     @Test
     public void call_extract_home_office_data_should_throws_error_for_null_response() {
-        assertThatThrownBy(() -> homeOfficeRequestHelper.extractHomeOfficeData(null))
+        assertThatThrownBy(() -> homeOfficeMessageHeaderHelper.extractHomeOfficeData(null))
             .isExactlyInstanceOf(NullPointerException.class)
             .hasMessage("Home office Appeal-validate response must not be null");
     }
 
     @Test
     public void call_extract_home_office_data_should_throws_error_for_null_person_element() {
-        assertThatThrownBy(() -> homeOfficeRequestHelper.extractHomeOfficeData("{}"))
+        assertThatThrownBy(() -> homeOfficeMessageHeaderHelper.extractHomeOfficeData("{}"))
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
     @Test
     public void call_extract_home_office_data_should_throws_error_for_invalid_response() {
-        assertThatThrownBy(() -> homeOfficeRequestHelper.extractHomeOfficeData(getErrorJsonResponseString()))
+        assertThatThrownBy(() -> homeOfficeMessageHeaderHelper.extractHomeOfficeData(getErrorJsonResponseString()))
             .isExactlyInstanceOf(HomeOfficeResponseException.class)
             .hasMessage("Error test message");
     }
@@ -115,14 +115,14 @@ public class HomeOfficeRequestHelperTest {
     public void call_validate_response_throws_error_for_error_node_present() throws Exception {
         objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(getErrorJsonResponseString());
-        assertThatThrownBy(() -> homeOfficeRequestHelper.hasValidHomeOfficeResponse(rootNode.get("errorDetails")))
+        assertThatThrownBy(() -> homeOfficeMessageHeaderHelper.hasValidHomeOfficeResponse(rootNode.get("errorDetails")))
             .isExactlyInstanceOf(HomeOfficeResponseException.class)
             .hasMessage("Error test message");
     }
 
     @Test
     public void call_date_time_string_returns_current_time_in_format() {
-        String currentTime = HomeOfficeRequestHelper.getCurrentDateTime();
+        String currentTime = HomeOfficeMessageHeaderHelper.getCurrentDateTime();
         assertNotNull(currentTime);
         assertEquals(20, currentTime.length());
     }

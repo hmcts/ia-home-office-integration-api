@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.SystemDateP
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 
 @Service
-public class HomeOfficeRequestHelper {
+public class HomeOfficeMessageHeaderHelper {
 
     public static String getCurrentDateTime() {
         DateProvider dateProvider = new SystemDateProvider();

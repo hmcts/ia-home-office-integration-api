@@ -28,7 +28,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeRequestHelper;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeMessageHeaderHelper;
 
 @ExtendWith(MockitoExtension.class)
 public class HomeOfficeCaseStatusClientTest {
@@ -44,7 +44,7 @@ public class HomeOfficeCaseStatusClientTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private HomeOfficeRequestHelper homeOfficeRequestHelper;
+    private HomeOfficeMessageHeaderHelper homeOfficeMessageHeaderHelper;
     @Mock
     private ObjectMapper objectMapper;
     @Captor
@@ -58,7 +58,7 @@ public class HomeOfficeCaseStatusClientTest {
             someEndpoint,
             someUri,
             restTemplate,
-            homeOfficeRequestHelper);
+            homeOfficeMessageHeaderHelper);
     }
 
     @Test

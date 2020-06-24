@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import feign.codec.ErrorDecoder;
@@ -18,6 +17,11 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOffice
 public class FeignErrorDecoder implements ErrorDecoder {
 
     private final String errorLog = "Error in reading response body %s";
+    private ObjectMapper objectMapper;
+
+    public FeignErrorDecoder(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public Exception decode(String methodKey, Response response) {
@@ -27,9 +31,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                 String errMessage = "";
                 try {
                     if (response.body() != null && response.body().asInputStream() != null) {
-                        ObjectMapper mapper = new ObjectMapper();
-                        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-                        HomeOfficeInstructResponse homeOfficeError = mapper.readValue(
+                        HomeOfficeInstructResponse homeOfficeError = objectMapper.readValue(
                             response.body().asInputStream(),
                             HomeOfficeInstructResponse.class);
                         if (homeOfficeError != null) {

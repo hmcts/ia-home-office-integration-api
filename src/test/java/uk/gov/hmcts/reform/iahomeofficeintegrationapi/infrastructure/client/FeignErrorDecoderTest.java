@@ -9,6 +9,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Request.HttpMethod;
 import feign.RequestTemplate;
 import feign.Response;
@@ -33,8 +35,9 @@ public class FeignErrorDecoderTest {
 
     @BeforeEach
     public void setUp() {
-
-        feignErrorDecoder = new FeignErrorDecoder();
+        ObjectMapper objectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+        feignErrorDecoder = new FeignErrorDecoder(objectMapper);
     }
 
     @Test

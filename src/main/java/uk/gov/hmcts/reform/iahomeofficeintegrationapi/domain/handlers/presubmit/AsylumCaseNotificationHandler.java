@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeRequestHelper;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeMessageHeaderHelper;
 
 @Component
 public class AsylumCaseNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -53,7 +53,7 @@ public class AsylumCaseNotificationHandler implements PreSubmitCallbackHandler<A
         final String caseId = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)
             .orElseThrow(() -> new IllegalStateException("Case ID for the appeal is not present"));
 
-        final String correlationId = HomeOfficeRequestHelper.generateUuid();
+        final String correlationId = HomeOfficeMessageHeaderHelper.generateUuid();
         HomeOfficeInstructResponse instructResponse = homeOfficeInstructService
             .sendNotification(homeOfficeReferenceNumber, caseId, correlationId);
 

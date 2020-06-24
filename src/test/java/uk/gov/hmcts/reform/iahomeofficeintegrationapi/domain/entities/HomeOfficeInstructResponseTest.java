@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,12 +14,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class HomeOfficeInstructResponseTest {
     @Mock
     MessageHeader messageHeader;
+    @Mock
+    private HomeOfficeError errorDetail;
     private HomeOfficeInstructResponse instructResponse;
 
     @BeforeEach
     void setUp() {
         instructResponse = new HomeOfficeInstructResponse(
-            messageHeader, null
+            messageHeader, errorDetail
         );
     }
 
@@ -29,6 +30,6 @@ public class HomeOfficeInstructResponseTest {
         assertNotNull(instructResponse);
         assertNotNull(instructResponse.getMessageHeader());
         assertEquals(messageHeader, instructResponse.getMessageHeader());
-        assertNull(instructResponse.getErrorDetail());
+        assertEquals(errorDetail, instructResponse.getErrorDetail());
     }
 }
