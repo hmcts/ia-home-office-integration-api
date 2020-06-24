@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHea
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Outcome;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeInstructApi;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeMessageHeaderHelper;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeDateFormatter;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties;
 
 @Service
@@ -62,7 +62,7 @@ public class HomeOfficeInstructService {
         MessageHeader messageHeader = new MessageHeader(
             consumerType,
             correlationId,
-            HomeOfficeMessageHeaderHelper.getCurrentDateTime());
+            HomeOfficeDateFormatter.getCurrentDateTime());
 
         return new HomeOfficeInstruct(
             new ConsumerReference(consumerInstruct),

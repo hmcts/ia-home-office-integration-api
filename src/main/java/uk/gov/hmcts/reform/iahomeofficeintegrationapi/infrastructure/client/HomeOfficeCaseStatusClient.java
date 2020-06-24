@@ -10,25 +10,25 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeMessageHeaderHelper;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeMessageHeaderCreator;
 
 @Service
 public class HomeOfficeCaseStatusClient {
 
     private final RestTemplate restTemplate;
     private final String homeOfficeSearchByParametersUrl;
-    private HomeOfficeMessageHeaderHelper homeOfficeMessageHeaderHelper;
+    private HomeOfficeMessageHeaderCreator homeOfficeMessageHeaderCreator;
 
     public HomeOfficeCaseStatusClient(
         @Value("${homeoffice.endpoint}") String homeOfficeEndpoint,
         @Value("${homeoffice.case.search.uri}") String homeOfficeSearchByParametersUrl,
         RestTemplate restTemplate,
-        HomeOfficeMessageHeaderHelper homeOfficeMessageHeaderHelper
+        HomeOfficeMessageHeaderCreator homeOfficeMessageHeaderCreator
     ) {
 
         this.restTemplate = restTemplate;
         this.homeOfficeSearchByParametersUrl = homeOfficeEndpoint + homeOfficeSearchByParametersUrl;
-        this.homeOfficeMessageHeaderHelper = homeOfficeMessageHeaderHelper;
+        this.homeOfficeMessageHeaderCreator = homeOfficeMessageHeaderCreator;
     }
 
     public String getCaseStatus(AsylumCase asylumCase) {
@@ -54,10 +54,10 @@ public class HomeOfficeCaseStatusClient {
     public HttpEntity<Map<String, Object>> createRequest(AsylumCase asylumCase) {
         Map<String, Object> body = new LinkedHashMap<>();
 
-        body.put("messageHeader", homeOfficeMessageHeaderHelper.createMessageHeader());
+        body.put("messageHeader", homeOfficeMessageHeaderCreator.createMessageHeader());
         body.put("searchParams", createSearchParams(asylumCase));
 
-        return new HttpEntity<>(body, homeOfficeMessageHeaderHelper.getHomeOfficeHeader());
+        return new HttpEntity<>(body, homeOfficeMessageHeaderCreator.getHomeOfficeHeader());
     }
 
     public Object[] createSearchParams(AsylumCase asylumCase) {
