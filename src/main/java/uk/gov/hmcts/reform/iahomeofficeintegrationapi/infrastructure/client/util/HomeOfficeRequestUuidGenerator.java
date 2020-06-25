@@ -4,9 +4,9 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
-public class HomeOfficeMessageHeaderCreator {
+public class HomeOfficeRequestUuidGenerator {
 
-    private HomeOfficeMessageHeaderCreator() {
+    private HomeOfficeRequestUuidGenerator() {
     }
 
     public static String generateUuid() {

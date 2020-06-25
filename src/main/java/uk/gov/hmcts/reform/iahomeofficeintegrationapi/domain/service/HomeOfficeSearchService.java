@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHea
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.SearchParams;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeSearchApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeDateFormatter;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeMessageHeaderCreator;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeRequestUuidGenerator;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties;
 
 @Service
@@ -45,7 +45,7 @@ public class HomeOfficeSearchService {
         return new HomeOfficeSearch(
             new MessageHeader(
                 consumerType,
-                HomeOfficeMessageHeaderCreator.generateUuid(),
+                HomeOfficeRequestUuidGenerator.generateUuid(),
                 HomeOfficeDateFormatter.getCurrentDateTime()
             ),
             Collections.singletonList(new SearchParams("DOCUMENT_REFERENCE", homeOfficeReferenceNumber))

@@ -8,11 +8,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class HomeOfficeMessageHeaderCreatorTest {
+public class HomeOfficeRequestUuidGeneratorTest {
 
     @Test
     public void create_uuid_returns_valid() {
-        String uuid = HomeOfficeMessageHeaderCreator.generateUuid();
+        String uuid = HomeOfficeRequestUuidGenerator.generateUuid();
 
         assertNotNull(uuid);
         assertEquals(36, uuid.length());
