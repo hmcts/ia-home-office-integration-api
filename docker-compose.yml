@@ -32,13 +32,10 @@ services:
       IA_IDAM_SECRET:
       IA_S2S_MICROSERVICE:
       IA_S2S_SECRET:
-      HOME_OFFICE_ENDPOINT: http://ia-home-office-mock-api-aat.service.core-compute-aat.internal
-      HOME_OFFICE_CASE_SEARCH_URI: /v1/applicationStatus/getBySearchParameters
 
     external_links:
       - idam-api
       - service-auth-provider-api
-      - ia-home-office-mock-api-aat.service.core-compute-aat.internal
     ports:
       - ${SERVER_PORT:-8094}:${SERVER_PORT:-8094}
 networks:

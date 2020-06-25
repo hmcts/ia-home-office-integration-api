@@ -4,7 +4,7 @@
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
     "input": {
-      "eventId": "SUBMIT_APPEAL",
+      "eventId": "submitAppeal",
       "state": "appealStarted",
       "caseData": {
         "template": "minimal-appeal-started.json"

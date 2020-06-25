@@ -152,11 +152,11 @@ public class EndpointSecurityTest {
         final Map<String, Object> caseDetails = new HashMap<>();
         final Map<String, Object> callback = new HashMap<>();
         caseDetails.put("jurisdiction", "IA");
-        caseDetails.put("state", State.APPEAL_STARTED);
+        caseDetails.put("state", State.APPEAL_STARTED.toString());
         caseDetails.put("created_date", LocalDateTime.now().toString());
         caseData.put("homeOfficeReferenceNumber","A123456");
         caseDetails.put("case_data", caseData);
-        callback.put("event_id", Event.SUBMIT_APPEAL);
+        callback.put("event_id", Event.SUBMIT_APPEAL.toString());
         callback.put("case_details", caseDetails);
 
         return callback;
