@@ -25,17 +25,17 @@ public enum AsylumCaseDefinition {
     HO_APPELLANT_FULL_NAME(
         "hoAppellantFullName", new TypeReference<String>() {}),
 
-    HO_APPELLANT_NATIONALITY_CODE(
-        "hoAppellantNationalityCode", new TypeReference<String>() {}),
-
     HO_APPELLANT_NATIONALITY(
         "hoAppellantNationality", new TypeReference<String>() {}),
 
-    HO_APPELLANT_DECISION(
-        "hoAppellantDecision", new TypeReference<String>() {}),
+    HO_APPLICATION_DECISION(
+        "hoApplicationDecision", new TypeReference<String>() {}),
 
-    HO_APPELLANT_DECISION_DATE(
-        "hoAppellantDecisionDate", new TypeReference<String>() {}),
+    HO_APPLICATION_DECISION_DATE(
+        "hoApplicationDecisionDate", new TypeReference<String>() {}),
+
+    HOME_OFFICE_SEARCH_STATUS(
+        "homeOfficeSearchStatus", new TypeReference<String>() {}),
 
     HOME_OFFICE_INSTRUCT_STATUS(
         "homeOfficeInstructStatus", new TypeReference<String>() {});

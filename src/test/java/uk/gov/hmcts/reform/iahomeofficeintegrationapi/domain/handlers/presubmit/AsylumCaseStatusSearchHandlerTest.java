@@ -86,13 +86,13 @@ public class AsylumCaseStatusSearchHandlerTest {
         verify(asylumCase, times(1))
             .write(AsylumCaseDefinition.HO_APPELLANT_FULL_NAME, "Capability Smith");
         verify(asylumCase, times(1))
-            .write(AsylumCaseDefinition.HO_APPELLANT_NATIONALITY_CODE, "CAN");
-        verify(asylumCase, times(1))
             .write(AsylumCaseDefinition.HO_APPELLANT_NATIONALITY, "Canada");
         verify(asylumCase, times(1))
-            .write(AsylumCaseDefinition.HO_APPELLANT_DECISION, "Rejected");
+            .write(AsylumCaseDefinition.HO_APPLICATION_DECISION, "Rejected");
         verify(asylumCase, times(1))
-            .write(AsylumCaseDefinition.HO_APPELLANT_DECISION_DATE, "2020-06-14T17:32:28Z");
+            .write(AsylumCaseDefinition.HO_APPLICATION_DECISION_DATE, "2020-06-14T17:32:28Z");
+        verify(asylumCase, times(1))
+            .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
 
     }
 

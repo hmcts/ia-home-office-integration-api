@@ -51,20 +51,23 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
             .orElseThrow(() -> new IllegalStateException("Home office reference for the appeal is not present"));
 
         HomeOfficeSearchResponse searchResponse = homeOfficeSearchService.getCaseStatus(homeOfficeReferenceNumber);
-        requireNonNull(searchResponse.getStatus().get(0).getPerson(),
-            "Home office response does not contain Person details");
-        requireNonNull(searchResponse.getStatus().get(0).getDecisionStatus(),
-            "Home office response does not contain Decision details");
-        Person person = searchResponse.getStatus().get(0).getPerson();
-        DecisionStatus decisionStatus = searchResponse.getStatus().get(0).getDecisionStatus();
-
-        asylumCase.write(AsylumCaseDefinition.HO_APPELLANT_GIVEN_NAME, person.getGivenName());
-        asylumCase.write(AsylumCaseDefinition.HO_APPELLANT_FAMILY_NAME, person.getFamilyName());
-        asylumCase.write(AsylumCaseDefinition.HO_APPELLANT_FULL_NAME, person.getFullName());
-        asylumCase.write(AsylumCaseDefinition.HO_APPELLANT_NATIONALITY_CODE, person.getNationality().getCode());
-        asylumCase.write(AsylumCaseDefinition.HO_APPELLANT_NATIONALITY, person.getNationality().getDescription());
-        asylumCase.write(AsylumCaseDefinition.HO_APPELLANT_DECISION, decisionStatus.getDecisionType().getDescription());
-        asylumCase.write(AsylumCaseDefinition.HO_APPELLANT_DECISION_DATE, decisionStatus.getDecisionDate());
+        if (searchResponse.getStatus() == null
+            || searchResponse.getStatus().isEmpty()
+            || searchResponse.getStatus().get(0).getPerson() == null
+            || searchResponse.getStatus().get(0).getDecisionStatus() == null) {
+            asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+        } else {
+            Person person = searchResponse.getStatus().get(0).getPerson();
+            DecisionStatus decisionStatus = searchResponse.getStatus().get(0).getDecisionStatus();
+            asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
+            asylumCase.write(AsylumCaseDefinition.HO_APPELLANT_GIVEN_NAME, person.getGivenName());
+            asylumCase.write(AsylumCaseDefinition.HO_APPELLANT_FAMILY_NAME, person.getFamilyName());
+            asylumCase.write(AsylumCaseDefinition.HO_APPELLANT_FULL_NAME, person.getFullName());
+            asylumCase.write(AsylumCaseDefinition.HO_APPELLANT_NATIONALITY, person.getNationality().getDescription());
+            asylumCase.write(
+                AsylumCaseDefinition.HO_APPLICATION_DECISION, decisionStatus.getDecisionType().getDescription());
+            asylumCase.write(AsylumCaseDefinition.HO_APPLICATION_DECISION_DATE, decisionStatus.getDecisionDate());
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

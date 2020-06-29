@@ -24,9 +24,9 @@
         "hoAppellantGivenName": "Capability",
         "hoAppellantFamilyName": "Smith",
         "hoAppellantFullName": "Capability Smith",
-        "hoAppellantNationalityCode": "CAN (denoting Canada)",
         "hoAppellantNationality": "Canada",
-        "hoAppellantDecision": "Rejected"
+        "hoApplicationDecision": "Rejected",
+        "homeOfficeSearchStatus": "SUCCESS"
       }
     }
   }
