@@ -10,4 +10,5 @@ spring:
         s2s-microservice: IA_S2S_MICROSERVICE
         idam-url: IDAM_URL
         s2s-url: S2S_URL
+        home-office.api.url: HOME_OFFICE_ENDPOINT
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key

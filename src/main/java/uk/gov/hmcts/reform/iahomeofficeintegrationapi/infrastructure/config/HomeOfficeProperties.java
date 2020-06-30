@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @EnableConfigurationProperties
-@ConfigurationProperties("homeoffice.params")
+@ConfigurationProperties("home-office.params")
 public class HomeOfficeProperties {
 
     private Map<String, LookupReferenceData> codes = new HashMap<>();
