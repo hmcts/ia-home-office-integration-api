@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 @EnableConfigurationProperties
-@ConfigurationProperties("homeoffice.params")
+@ConfigurationProperties("home-office.params")
 public class HomeOfficeProperties {
 
-    private Map<String, LookupReferenceData> homeOfficeReferenceData = new HashMap<>();
+    private Map<String, LookupReferenceData> codes = new HashMap<>();
 
-    public Map<String, LookupReferenceData> getHomeOfficeReferenceData() {
-        return homeOfficeReferenceData;
+    public Map<String, LookupReferenceData> getCodes() {
+        return codes;
     }
 
     public static class LookupReferenceData {

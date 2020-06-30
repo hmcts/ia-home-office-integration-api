@@ -58,15 +58,11 @@ idam.s2s-auth.totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
 idam.s2s-auth.microservice: ${IA_S2S_MICROSERVICE:something}
 idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}
 
-### Home Office API
-homeoffice.endpoint: ${HOME_OFFICE_ENDPOINT:http://localhost:8098}
-homeoffice.case.search.uri: ${HOME_OFFICE_CASE_SEARCH_URI:/v1/applicationStatus/getBySearchParameters}
-
-homeoffice:
+home-office:
   api:
     url: ${HOME_OFFICE_ENDPOINT:http://localhost:8098}
   params:
-    homeOfficeReferenceData:
+    codes:
       consumer:
         code: HMCTS
         description: HM Courts and Tribunal Service

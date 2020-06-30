@@ -5,8 +5,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_INSTRUCT_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -17,8 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerType;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHeader;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
@@ -59,11 +64,11 @@ public class AsylumCaseNotificationHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(someHomeOfficeReference));
-        when(asylumCase.read(AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER, String.class))
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(someCaseReference));
-        when(homeOfficeInstructService.sendNotification(any(),any(),any())).thenReturn(
+        when(homeOfficeInstructService.sendNotification(any(), any(), any())).thenReturn(
             getResponse()
         );
 
@@ -73,6 +78,33 @@ public class AsylumCaseNotificationHandlerTest {
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
         assertTrue(response.getErrors().isEmpty());
+        verify(asylumCase, times(1))
+            .write(HOME_OFFICE_INSTRUCT_STATUS, "OK");
+
+    }
+
+    @Test
+    public void check_handler_returns_errors_data() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(someHomeOfficeReference));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(someCaseReference));
+        when(homeOfficeInstructService.sendNotification(anyString(), anyString(), anyString())).thenReturn(null);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            asylumCaseNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertThat(response.getErrors()).isNotEmpty();
+        assertThat(response.getErrors().contains("Error sending notification to Home Office"));
+        verify(asylumCase, times(1))
+            .write(HOME_OFFICE_INSTRUCT_STATUS, "Internal Server Error");
 
     }
 
@@ -143,7 +175,7 @@ public class AsylumCaseNotificationHandlerTest {
     }
 
     @Test
-    public void should_not_allow_empty_home_office_reference_and_case_reference() {
+    public void should_throw_error_for_home_office_reference_and_case_reference_null_values() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -154,7 +186,7 @@ public class AsylumCaseNotificationHandlerTest {
             .hasMessage("Home office reference for the appeal is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(someHomeOfficeReference));
 
         assertThatThrownBy(() -> asylumCaseNotificationHandler.handle(ABOUT_TO_SUBMIT, callback))
@@ -166,9 +198,9 @@ public class AsylumCaseNotificationHandlerTest {
     private HomeOfficeInstructResponse getResponse() {
         return new HomeOfficeInstructResponse(
             new MessageHeader(
-                new ConsumerType("HMCTS", "HM Courts and Tribunal Service"),
+                new CodeWithDescription("HMCTS", "HM Courts and Tribunal Service"),
                 someCorrelationId,
-                "2020-06-15T17:32:28Z"),
+                "some-time"),
             null);
     }
 

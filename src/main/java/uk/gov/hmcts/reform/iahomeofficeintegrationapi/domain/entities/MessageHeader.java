@@ -1,11 +1,8 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class MessageHeader {
 
-    @JsonProperty("consumer")
-    private ConsumerType consumerType;
+    private CodeWithDescription consumer;
     private String correlationId;
     private String eventDateTime;
 
@@ -13,8 +10,8 @@ public class MessageHeader {
 
     }
 
-    public MessageHeader(ConsumerType consumerType, String correlationId, String eventDateTime) {
-        this.consumerType = consumerType;
+    public MessageHeader(CodeWithDescription consumer, String correlationId, String eventDateTime) {
+        this.consumer = consumer;
         this.correlationId = correlationId;
         this.eventDateTime = eventDateTime;
     }
@@ -27,8 +24,8 @@ public class MessageHeader {
         return eventDateTime;
     }
 
-    public ConsumerType getConsumerType() {
-        return consumerType;
+    public CodeWithDescription getConsumer() {
+        return consumer;
     }
 
 }

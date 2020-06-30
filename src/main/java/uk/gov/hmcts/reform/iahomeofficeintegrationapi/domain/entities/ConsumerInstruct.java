@@ -2,19 +2,16 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
 import static java.util.Objects.requireNonNull;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class ConsumerInstruct {
 
     private String code;
-    @JsonProperty("consumer")
-    private ConsumerType consumerType;
+    private CodeWithDescription consumer;
     private String description;
     private String value;
 
-    public ConsumerInstruct(String code, ConsumerType consumerType, String description, String value) {
+    public ConsumerInstruct(String code, CodeWithDescription consumer, String description, String value) {
         this.code = code;
-        this.consumerType = consumerType;
+        this.consumer = consumer;
         this.description = description;
         this.value = value;
     }
@@ -27,8 +24,8 @@ public class ConsumerInstruct {
         return code;
     }
 
-    public ConsumerType getConsumerType() {
-        return consumerType;
+    public CodeWithDescription getConsumer() {
+        return consumer;
     }
 
     public String getDescription() {

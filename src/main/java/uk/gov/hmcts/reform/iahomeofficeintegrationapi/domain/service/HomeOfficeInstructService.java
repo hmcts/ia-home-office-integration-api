@@ -4,9 +4,9 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.conf
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerInstruct;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerReference;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CourtOutcome;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CourtType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
@@ -45,9 +45,9 @@ public class HomeOfficeInstructService {
 
     public HomeOfficeInstruct makeRequestBody(String homeOfficeReferenceNumber, String caseId, String correlationId) {
 
-        LookupReferenceData consumerParent = homeOfficeProperties.getHomeOfficeReferenceData().get("consumerInstruct");
-        LookupReferenceData consumer = homeOfficeProperties.getHomeOfficeReferenceData().get("consumer");
-        final ConsumerType consumerType = new ConsumerType(consumer.getCode(), consumer.getDescription());
+        LookupReferenceData consumerParent = homeOfficeProperties.getCodes().get("consumerInstruct");
+        LookupReferenceData consumer = homeOfficeProperties.getCodes().get("consumer");
+        final CodeWithDescription consumerType = new CodeWithDescription(consumer.getCode(), consumer.getDescription());
 
         ConsumerInstruct consumerInstruct = new ConsumerInstruct(
             consumerParent.getCode(),
