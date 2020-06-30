@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeSearchService;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeDateFormatter;
 
 @Component
 public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -66,7 +67,9 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
             asylumCase.write(AsylumCaseDefinition.HO_APPELLANT_NATIONALITY, person.getNationality().getDescription());
             asylumCase.write(
                 AsylumCaseDefinition.HO_APPLICATION_DECISION, decisionStatus.getDecisionType().getDescription());
-            asylumCase.write(AsylumCaseDefinition.HO_APPLICATION_DECISION_DATE, decisionStatus.getDecisionDate());
+            asylumCase.write(
+                AsylumCaseDefinition.HO_APPLICATION_DECISION_DATE,
+                HomeOfficeDateFormatter.getIacDecisionDate(decisionStatus.getDecisionDate()));
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

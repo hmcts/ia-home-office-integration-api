@@ -17,4 +17,12 @@ public class HomeOfficeDateFormatter {
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
     }
 
+    public static String getIacDecisionDate(String hoDecisionDate) {
+        return (hoDecisionDate != null && hoDecisionDate.length() == 20)
+            ? hoDecisionDate.substring(8, 10)
+            + "/" + hoDecisionDate.substring(5, 7)
+            + "/" + hoDecisionDate.substring(0, 4)
+            : "";
+    }
+
 }

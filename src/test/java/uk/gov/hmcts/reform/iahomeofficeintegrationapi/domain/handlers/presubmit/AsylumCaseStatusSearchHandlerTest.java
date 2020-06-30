@@ -90,7 +90,7 @@ public class AsylumCaseStatusSearchHandlerTest {
         verify(asylumCase, times(1))
             .write(AsylumCaseDefinition.HO_APPLICATION_DECISION, "Rejected");
         verify(asylumCase, times(1))
-            .write(AsylumCaseDefinition.HO_APPLICATION_DECISION_DATE, "2020-06-14T17:32:28Z");
+            .write(AsylumCaseDefinition.HO_APPLICATION_DECISION_DATE, "14/06/2020");
         verify(asylumCase, times(1))
             .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
 
