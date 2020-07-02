@@ -52,6 +52,7 @@
         <gav regex="true">org.springframework.security:spring-security-*.*</gav>
         <cpe>cpe:/a:pivotal_software:spring_security</cpe>
         <cve>CVE-2020-5408</cve>
+        <cve>CVE-2020-5407</cve>
     </suppress>
     <suppress until="2030-01-01">
         <notes><![CDATA[
