@@ -11,14 +11,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DecisionStatusTest {
+public class ApplicationStatusTest {
     @Mock
     CodeWithDescription decisionType;
-    private DecisionStatus decisionStatus;
+    private ApplicationStatus applicationStatus;
 
     @BeforeEach
     void setUp() {
-        decisionStatus = new DecisionStatus(
+        applicationStatus = new ApplicationStatus(
             decisionType,
             "some-date"
         );
@@ -26,9 +26,9 @@ public class DecisionStatusTest {
 
     @Test
     public void has_correct_values_after_setting() {
-        assertNotNull(decisionStatus.getDecisionType());
-        assertEquals(decisionType, decisionStatus.getDecisionType());
-        assertEquals("some-date", decisionStatus.getDecisionDate());
+        assertNotNull(applicationStatus.getDecisionType());
+        assertEquals(decisionType, applicationStatus.getDecisionType());
+        assertEquals("some-date", applicationStatus.getDecisionDate());
 
     }
 }

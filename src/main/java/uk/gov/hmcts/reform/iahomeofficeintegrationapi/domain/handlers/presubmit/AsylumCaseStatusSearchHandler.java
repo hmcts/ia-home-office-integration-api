@@ -4,9 +4,9 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ApplicationStatus;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.DecisionStatus;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeSearchResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
@@ -55,21 +55,21 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
         if (searchResponse.getStatus() == null
             || searchResponse.getStatus().isEmpty()
             || searchResponse.getStatus().get(0).getPerson() == null
-            || searchResponse.getStatus().get(0).getDecisionStatus() == null) {
+            || searchResponse.getStatus().get(0).getApplicationStatus() == null) {
             asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         } else {
             Person person = searchResponse.getStatus().get(0).getPerson();
-            DecisionStatus decisionStatus = searchResponse.getStatus().get(0).getDecisionStatus();
+            ApplicationStatus applicationStatus = searchResponse.getStatus().get(0).getApplicationStatus();
             asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
             asylumCase.write(AsylumCaseDefinition.HO_APPELLANT_GIVEN_NAME, person.getGivenName());
             asylumCase.write(AsylumCaseDefinition.HO_APPELLANT_FAMILY_NAME, person.getFamilyName());
             asylumCase.write(AsylumCaseDefinition.HO_APPELLANT_FULL_NAME, person.getFullName());
             asylumCase.write(AsylumCaseDefinition.HO_APPELLANT_NATIONALITY, person.getNationality().getDescription());
             asylumCase.write(
-                AsylumCaseDefinition.HO_APPLICATION_DECISION, decisionStatus.getDecisionType().getDescription());
+                AsylumCaseDefinition.HO_APPLICATION_DECISION, applicationStatus.getDecisionType().getDescription());
             asylumCase.write(
                 AsylumCaseDefinition.HO_APPLICATION_DECISION_DATE,
-                HomeOfficeDateFormatter.getIacDecisionDate(decisionStatus.getDecisionDate()));
+                HomeOfficeDateFormatter.getIacDecisionDate(applicationStatus.getDecisionDate()));
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

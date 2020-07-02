@@ -5,11 +5,11 @@ import static java.util.Objects.requireNonNull;
 public class SearchStatus {
 
     private Person person;
-    private DecisionStatus decisionStatus;
+    private ApplicationStatus applicationStatus;
 
-    public SearchStatus(Person person, DecisionStatus decisionStatus) {
+    public SearchStatus(Person person, ApplicationStatus applicationStatus) {
         this.person = person;
-        this.decisionStatus = decisionStatus;
+        this.applicationStatus = applicationStatus;
     }
 
     private SearchStatus() {
@@ -21,8 +21,8 @@ public class SearchStatus {
         return person;
     }
 
-    public DecisionStatus getDecisionStatus() {
-        requireNonNull(decisionStatus);
-        return decisionStatus;
+    public ApplicationStatus getApplicationStatus() {
+        requireNonNull(applicationStatus);
+        return applicationStatus;
     }
 }

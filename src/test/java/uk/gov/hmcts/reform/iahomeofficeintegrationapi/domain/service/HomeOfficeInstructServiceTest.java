@@ -77,14 +77,14 @@ public class HomeOfficeInstructServiceTest {
 
         assertNotNull(request);
         assertEquals(someHoReference, request.getHoReference());
-        assertEquals("HMCTS_CHALLENGE_REF", request.getConsumerReference().getConsumerInstruct().getCode());
+        assertEquals("HMCTS_CHALLENGE_REF", request.getConsumerReference().getCode());
         assertEquals("HMCTS challenge reference",
-            request.getConsumerReference().getConsumerInstruct().getDescription());
+            request.getConsumerReference().getDescription());
         assertEquals("HMCTS",
-            request.getConsumerReference().getConsumerInstruct().getConsumer().getCode());
+            request.getConsumerReference().getConsumer().getCode());
         assertEquals("HM Courts and Tribunal Service",
-            request.getConsumerReference().getConsumerInstruct().getConsumer().getDescription());
-        assertEquals(someCaseReference, request.getConsumerReference().getConsumerInstruct().getValue());
+            request.getConsumerReference().getConsumer().getDescription());
+        assertEquals(someCaseReference, request.getConsumerReference().getValue());
         assertEquals(CourtType.FIRST_TIER.toString(), request.getCourtOutcome().getCourtType());
         assertEquals(Outcome.ALLOWED.toString(), request.getCourtOutcome().getOutcome());
         assertEquals("HMCTS", request.getMessageHeader().getConsumer().getCode());
@@ -110,7 +110,7 @@ public class HomeOfficeInstructServiceTest {
         LookupReferenceData lookupReferenceData = new LookupReferenceData();
         lookupReferenceData.setCode("HMCTS_CHALLENGE_REF");
         lookupReferenceData.setDescription("HMCTS challenge reference");
-        consumerMap.put("consumerInstruct", lookupReferenceData);
+        consumerMap.put("consumerReference", lookupReferenceData);
 
         lookupReferenceData = new LookupReferenceData();
         lookupReferenceData.setCode("HMCTS");

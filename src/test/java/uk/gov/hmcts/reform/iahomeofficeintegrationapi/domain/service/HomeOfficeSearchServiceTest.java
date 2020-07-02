@@ -65,15 +65,15 @@ public class HomeOfficeSearchServiceTest {
         assertNotNull(response);
         assertNotNull(response.getMessageHeader());
         assertNotNull(response.getMessageType());
-        assertThat(response.getMessageType()).isEqualTo("MessageType.RESPONSE_RIGHT_OF_APPEAL_DETAILS");
+        assertThat(response.getMessageType()).isEqualTo("RESPONSE_RIGHT_OF_APPEAL_DETAILS");
         assertNotNull(response.getStatus().get(0).getPerson());
-        assertNotNull(response.getStatus().get(0).getDecisionStatus());
+        assertNotNull(response.getStatus().get(0).getApplicationStatus());
         assertNotNull(response.getStatus().get(0).getPerson().getGivenName());
         assertNotNull(response.getStatus().get(0).getPerson().getFamilyName());
         assertNotNull(response.getStatus().get(0).getPerson().getFullName());
         assertNotNull(response.getStatus().get(0).getPerson().getNationality());
-        assertNotNull(response.getStatus().get(0).getDecisionStatus().getDecisionDate());
-        assertNotNull(response.getStatus().get(0).getDecisionStatus().getDecisionType());
+        assertNotNull(response.getStatus().get(0).getApplicationStatus().getDecisionDate());
+        assertNotNull(response.getStatus().get(0).getApplicationStatus().getDecisionType());
     }
 
     @Test
