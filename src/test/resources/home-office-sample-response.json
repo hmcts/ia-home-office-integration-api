@@ -1,122 +1,73 @@
 {
   "messageHeader": {
-    "eventDateTime": "2017-07-21T17:32:28Z",
-    "correlationId": "ABC2344BCED2234EA",
     "consumer": {
       "code": "HMCTS",
       "description": "HM Courts and Tribunal Service"
-    }
+    },
+    "correlationId": "ABC2344BCED2234EA",
+    "eventDateTime": "2020-07-21T17:32:28Z"
   },
-  "messageType": "MessageType.RESPONSE_RIGHT_OF_APPEAL_DETAILS",
+  "messageType": "RESPONSE_RIGHT_OF_APPEAL_DETAILS",
   "status": [
     {
+      "applicationStatus": {
+        "applicationType": {
+          "code": "ASYLUM",
+          "description": "Asylum and Protection"
+        },
+        "claimReasonType": {
+          "code": "HUMANRIGHTS",
+          "description": "Human Rights"
+        },
+        "decisionCommunication": {
+          "description": "E-mail",
+          "dispatchDate": "2020-07-21T17:32:28Z",
+          "sentDate": "2020-07-21T17:32:28Z",
+          "type": "EMAIL"
+        },
+        "decisionDate": "2020-07-21T17:32:28Z",
+        "decisionType": {
+          "code": "REJECTION",
+          "description": "Rejected"
+        },
+        "documentReference": "1234-1234-5678-5678/00",
+        "metadata": [
+          {
+            "code": "APPEALABLE or DISPATCH_DATE",
+            "valueBoolean": true,
+            "valueDateTime": "2020-07-21T17:32:28Z",
+            "valueString": "Some extra decision data"
+          }
+        ],
+        "rejectionReasons": [
+          {
+            "reason": "Application not completed properly"
+          }
+        ],
+        "roleSubType": {
+          "code": "SPOUSE. Could be MAIN if the role type is APPLICANT",
+          "description": "Spouse"
+        },
+        "roleType": {
+          "code": "DEPENDANT",
+          "description": "Dependant"
+        }
+      },
       "person": {
+        "dayOfBirth": 21,
+        "familyName": "Smith",
+        "fullName": "Capability Smith",
         "gender": {
           "code": "M (denoting male)",
           "description": "Male"
         },
+        "givenName": "Capability",
+        "monthOfBirth": 0,
         "nationality": {
           "code": "CAN",
           "description": "Canada"
         },
-        "dayOfBirth": 21,
-        "givenName": "Capability",
-        "familyName": "Smith",
-        "fullName": "Capability Smith",
-        "monthOfBirth": 0,
         "yearOfBirth": 1970
-      },
-      "decisionStatus": {
-        "applicationType": {
-          "code": "ASYLUM",
-          "description": "Asylum and Protection"
-        },
-        "rejectionReasons": [
-          {
-            "reason": "Application not completed properly"
-          },
-          {
-            "reason": "Application not completed properly"
-          }
-        ],
-        "decisionCommunication": {
-          "sentDate": "2017-07-21T17:32:28Z",
-          "description": "E-mail",
-          "type": "EMAIL"
-        },
-        "claimReasonType": {
-          "code": "HUMANRIGHTS",
-          "description": "Human Rights"
-        },
-        "roleSubType": {
-          "code": "SPOUSE. Could be MAIN if the role type is APPLICANT",
-          "description": "Spouse"
-        },
-        "decisionType": {
-          "code": "REJECTION",
-          "description": "Rejected"
-        },
-        "appealable": true,
-        "roleType": {
-          "code": "DEPENDANT",
-          "description": "Dependant"
-        },
-        "decisionDate": "2020-06-14T17:32:28Z"
-      }
-    },
-    {
-      "person": {
-        "gender": {
-          "code": "M (denoting male)",
-          "description": "Male"
-        },
-        "nationality": {
-          "code": "CAN (denoting Canada)",
-          "description": "Canada"
-        },
-        "dayOfBirth": 21,
-        "givenName": "Capability",
-        "familyName": "Smith",
-        "fullName": "Capability Smith",
-        "monthOfBirth": 0,
-        "yearOfBirth": 1970
-      },
-      "decisionStatus": {
-        "applicationType": {
-          "code": "ASYLUM",
-          "description": "Asylum and Protection"
-        },
-        "rejectionReasons": [
-          {
-            "reason": "Application not completed properly"
-          },
-          {
-            "reason": "Application not completed properly"
-          }
-        ],
-        "decisionCommunication": {
-          "sentDate": "2017-07-21T17:32:28Z",
-          "description": "E-mail",
-          "type": "EMAIL"
-        },
-        "claimReasonType": {
-          "code": "HUMANRIGHTS",
-          "description": "Human Rights"
-        },
-        "roleSubType": {
-          "code": "SPOUSE. Could be MAIN if the role type is APPLICANT",
-          "description": "Spouse"
-        },
-        "decisionType": {
-          "code": "REJECTION",
-          "description": "Rejected"
-        },
-        "appealable": true,
-        "roleType": {
-          "code": "DEPENDANT",
-          "description": "Dependant"
-        },
-        "decisionDate": "2017-07-21T17:32:28Z"
       }
     }
   ]

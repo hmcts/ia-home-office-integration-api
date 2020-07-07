@@ -14,12 +14,13 @@ public class MessageTypeTest {
         assertEquals("HEARING", MessageType.HEARING.toString());
         assertEquals("HEARING_BUNDLE_READY", MessageType.HEARING_BUNDLE_READY.toString());
         assertEquals("COURT_OUTCOME", MessageType.COURT_OUTCOME.toString());
+        assertEquals("PERMISSION_TO_APPEAL", MessageType.PERMISSION_TO_APPEAL.toString());
         assertEquals("DEFAULT", MessageType.DEFAULT.toString());
 
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(7, MessageType.values().length);
+        assertEquals(8, MessageType.values().length);
     }
 }

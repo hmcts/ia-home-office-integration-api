@@ -14,19 +14,24 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class ConsumerReferenceTest {
 
     @Mock
-    private ConsumerInstruct consumerInstruct;
-
+    CodeWithDescription consumerType;
     private ConsumerReference consumerReference;
 
     @BeforeEach
     void setUp() {
-        consumerReference = new ConsumerReference(consumerInstruct);
+        consumerReference = new ConsumerReference(
+            "some-code",
+            consumerType,
+            "some-description",
+            "some-value"
+        );
     }
 
     @Test
-    public void has_correct_values() {
-        assertNotNull(consumerReference);
-        assertEquals(consumerInstruct, consumerReference.getConsumerInstruct());
-
+    public void has_correct_values_after_setting() {
+        assertNotNull(consumerReference.getConsumer());
+        assertEquals("some-code", consumerReference.getCode());
+        assertEquals("some-description", consumerReference.getDescription());
+        assertEquals("some-value", consumerReference.getValue());
     }
 }

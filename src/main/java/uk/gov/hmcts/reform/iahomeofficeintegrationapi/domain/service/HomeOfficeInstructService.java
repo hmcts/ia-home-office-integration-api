@@ -5,7 +5,6 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.conf
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerInstruct;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerReference;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CourtOutcome;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CourtType;
@@ -45,17 +44,16 @@ public class HomeOfficeInstructService {
 
     public HomeOfficeInstruct makeRequestBody(String homeOfficeReferenceNumber, String caseId, String correlationId) {
 
-        LookupReferenceData consumerParent = homeOfficeProperties.getCodes().get("consumerInstruct");
+        LookupReferenceData consumerParent = homeOfficeProperties.getCodes().get("consumerReference");
         LookupReferenceData consumer = homeOfficeProperties.getCodes().get("consumer");
         final CodeWithDescription consumerType = new CodeWithDescription(consumer.getCode(), consumer.getDescription());
 
-        ConsumerInstruct consumerInstruct = new ConsumerInstruct(
+        ConsumerReference consumerReference = new ConsumerReference(
             consumerParent.getCode(),
             consumerType,
             consumerParent.getDescription(),
             caseId
         );
-
         CourtOutcome courtOutcome = new CourtOutcome(
             CourtType.FIRST_TIER.toString(),
             Outcome.ALLOWED.toString());
@@ -65,7 +63,7 @@ public class HomeOfficeInstructService {
             HomeOfficeDateFormatter.getCurrentDateTime());
 
         return new HomeOfficeInstruct(
-            new ConsumerReference(consumerInstruct),
+            consumerReference,
             courtOutcome,
             homeOfficeReferenceNumber,
             messageHeader,

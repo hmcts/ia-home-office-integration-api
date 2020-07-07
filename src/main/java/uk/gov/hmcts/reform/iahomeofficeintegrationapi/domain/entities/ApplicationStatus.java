@@ -2,16 +2,16 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
 import static java.util.Objects.requireNonNull;
 
-public class DecisionStatus {
+public class ApplicationStatus {
 
     private CodeWithDescription decisionType;
     private String decisionDate;
 
-    private DecisionStatus() {
+    private ApplicationStatus() {
 
     }
 
-    public DecisionStatus(CodeWithDescription decisionType, String decisionDate) {
+    public ApplicationStatus(CodeWithDescription decisionType, String decisionDate) {
         this.decisionType = decisionType;
         this.decisionDate = decisionDate;
     }

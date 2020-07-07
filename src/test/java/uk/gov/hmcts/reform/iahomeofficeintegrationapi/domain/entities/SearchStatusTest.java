@@ -15,22 +15,22 @@ public class SearchStatusTest {
     @Mock
     Person person;
     @Mock
-    DecisionStatus decisionStatus;
+    ApplicationStatus applicationStatus;
 
     private SearchStatus searchStatus;
 
     @BeforeEach
     void setUp() {
         searchStatus = new SearchStatus(
-            person, decisionStatus);
+            person, applicationStatus);
     }
 
     @Test
     public void has_correct_values_after_setting() {
         assertNotNull(searchStatus);
         assertNotNull(searchStatus.getPerson());
-        assertNotNull(searchStatus.getDecisionStatus());
+        assertNotNull(searchStatus.getApplicationStatus());
         assertEquals(person, searchStatus.getPerson());
-        assertEquals(decisionStatus, searchStatus.getDecisionStatus());
+        assertEquals(applicationStatus, searchStatus.getApplicationStatus());
     }
 }
