@@ -3,13 +3,16 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_CASE_STATUS_DATA;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -17,6 +20,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +35,8 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.util.FileCopyUtils;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeCaseStatus;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeMetadata;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeSearchResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
@@ -43,6 +51,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeS
 @SuppressWarnings("unchecked")
 public class AsylumCaseStatusSearchHandlerTest {
 
+    private static HomeOfficeSearchResponse homeOfficeSearchResponse;
     private final String someHomeOfficeReference = "some-reference";
     @Mock
     private Callback<AsylumCase> callback;
@@ -52,7 +61,8 @@ public class AsylumCaseStatusSearchHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private HomeOfficeSearchService homeOfficeSearchService;
-
+    @Mock
+    private HomeOfficeCaseStatus caseStatus;
     @Value("classpath:home-office-sample-response.json")
     private Resource resource;
 
@@ -64,7 +74,7 @@ public class AsylumCaseStatusSearchHandlerTest {
     }
 
     @Test
-    public void check_handler_returns_case_data_with_home_office_fields() throws Exception {
+    void check_handler_returns_case_data_with_home_office_fields() throws Exception {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -72,32 +82,24 @@ public class AsylumCaseStatusSearchHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(someHomeOfficeReference));
+        when(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class))
+            .thenReturn(Optional.of(caseStatus));
         when(homeOfficeSearchService.getCaseStatus(anyString())).thenReturn(getSampleResponse());
 
         PreSubmitCallbackResponse<AsylumCase> response =
             asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
+
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
         verify(asylumCase, times(1))
-            .write(AsylumCaseDefinition.HO_APPELLANT_GIVEN_NAME, "Capability");
-        verify(asylumCase, times(1))
-            .write(AsylumCaseDefinition.HO_APPELLANT_FAMILY_NAME, "Smith");
-        verify(asylumCase, times(1))
-            .write(AsylumCaseDefinition.HO_APPELLANT_FULL_NAME, "Capability Smith");
-        verify(asylumCase, times(1))
-            .write(AsylumCaseDefinition.HO_APPELLANT_NATIONALITY, "Canada");
-        verify(asylumCase, times(1))
-            .write(AsylumCaseDefinition.HO_APPLICATION_DECISION, "Rejected");
-        verify(asylumCase, times(1))
-            .write(AsylumCaseDefinition.HO_APPLICATION_DECISION_DATE, "21/07/2020");
-        verify(asylumCase, times(1))
             .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
+        assertTrue(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class).isPresent());
 
     }
 
     @Test
-    public void check_handler_returns_case_data_with_errors_data() {
+    void check_handler_returns_case_data_with_errors_data() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -113,7 +115,7 @@ public class AsylumCaseStatusSearchHandlerTest {
     }
 
     @Test
-    public void handler_should_throw_if_event_not_applicable() {
+    void handler_should_throw_if_event_not_applicable() {
 
         when(callback.getEvent()).thenReturn(Event.UNKNOWN);
 
@@ -123,7 +125,7 @@ public class AsylumCaseStatusSearchHandlerTest {
     }
 
     @Test
-    public void handler_should_throw_if_not_bound_to__about_to_submit__callback_stage() {
+    void handler_should_throw_if_not_bound_to__about_to_submit__callback_stage() {
 
         assertThatThrownBy(() -> asylumCaseStatusSearchHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -131,7 +133,7 @@ public class AsylumCaseStatusSearchHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
 
@@ -158,7 +160,7 @@ public class AsylumCaseStatusSearchHandlerTest {
 
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> asylumCaseStatusSearchHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -178,7 +180,7 @@ public class AsylumCaseStatusSearchHandlerTest {
     }
 
     @Test
-    public void should_not_allow_empty_home_office_reference() {
+    void should_not_allow_empty_home_office_reference() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -190,11 +192,90 @@ public class AsylumCaseStatusSearchHandlerTest {
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
+    @Test
+    void reject_reasons_returned_as_one_string_formatted() throws Exception {
+
+        String rejectReason = asylumCaseStatusSearchHandler.getRejectionReasonString(
+            getSampleResponse().getStatus().get(1).getApplicationStatus().getRejectionReasons());
+
+        assertNotNull(rejectReason);
+        assertEquals("Application not completed properly" + "<br />" + "Application not entered properly",
+            rejectReason);
+
+    }
+
+    @Test
+    void reject_reasons_returned_as_empty_string_for_null_or_empty_value() {
+
+        String rejectReason = asylumCaseStatusSearchHandler.getRejectionReasonString(null);
+        assertEquals("", rejectReason);
+        rejectReason = asylumCaseStatusSearchHandler.getRejectionReasonString(new ArrayList<>());
+        assertEquals("", rejectReason);
+    }
+
+    @Test
+    void main_applicant_status_returned_from_valid_set_of_status() throws Exception {
+
+        Optional<HomeOfficeCaseStatus> searchStatus = asylumCaseStatusSearchHandler.selectMainApplicant(
+            getSampleResponse().getStatus());
+
+        assertNotNull(searchStatus);
+        assertTrue(searchStatus.isPresent());
+    }
+
+    @Test
+    void main_applicant_status_returned_empty_from_invalid_set_of_status() throws Exception {
+        List<HomeOfficeCaseStatus> invalidList = new ArrayList<>();
+        invalidList.add(getSampleResponse().getStatus().get(0));
+        Optional<HomeOfficeCaseStatus> searchStatus = asylumCaseStatusSearchHandler.selectMainApplicant(invalidList);
+
+        assertNotNull(searchStatus);
+        assertFalse(searchStatus.isPresent());
+    }
+
+    @Test
+    void main_applicant_status_returned_empty_from_null_or_empty_list() {
+        Optional<HomeOfficeCaseStatus> searchStatus = asylumCaseStatusSearchHandler.selectMainApplicant(null);
+        assertFalse(searchStatus.isPresent());
+        searchStatus = asylumCaseStatusSearchHandler.selectMainApplicant(Collections.EMPTY_LIST);
+        assertFalse(searchStatus.isPresent());
+    }
+
+    @Test
+    void metadata_returned_from_valid_set_of_values() throws Exception {
+
+        Optional<HomeOfficeMetadata> metadata = asylumCaseStatusSearchHandler.selectMetadata(
+            getSampleResponse().getStatus().get(1).getApplicationStatus().getHomeOfficeMetadata());
+
+        assertNotNull(metadata);
+        assertTrue(metadata.isPresent());
+    }
+
+    @Test
+    void metadata_returned_empty_from_invalid_set_of_values() throws Exception {
+        Optional<HomeOfficeMetadata> metadata = asylumCaseStatusSearchHandler.selectMetadata(
+            getSampleResponse().getStatus().get(0).getApplicationStatus().getHomeOfficeMetadata());
+
+        assertNotNull(metadata);
+        assertFalse(metadata.isPresent());
+    }
+
+    @Test
+    void metadata_returned_empty_from_null_or_empty_list() {
+        Optional<HomeOfficeMetadata> metadata = asylumCaseStatusSearchHandler.selectMetadata(null);
+        assertFalse(metadata.isPresent());
+        metadata = asylumCaseStatusSearchHandler.selectMetadata(Collections.EMPTY_LIST);
+        assertFalse(metadata.isPresent());
+    }
+
     private HomeOfficeSearchResponse getSampleResponse() throws Exception {
-        Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
-        ObjectMapper om = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return om.readValue(FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
+        if (homeOfficeSearchResponse == null) {
+            Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
+            ObjectMapper om = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            homeOfficeSearchResponse = om.readValue(FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
+        }
+        return homeOfficeSearchResponse;
     }
 
 }

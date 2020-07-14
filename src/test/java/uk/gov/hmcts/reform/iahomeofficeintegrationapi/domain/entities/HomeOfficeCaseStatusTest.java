@@ -11,26 +11,26 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class SearchStatusTest {
+public class HomeOfficeCaseStatusTest {
     @Mock
     Person person;
     @Mock
     ApplicationStatus applicationStatus;
 
-    private SearchStatus searchStatus;
+    private HomeOfficeCaseStatus homeOfficeCaseStatus;
 
     @BeforeEach
     void setUp() {
-        searchStatus = new SearchStatus(
+        homeOfficeCaseStatus = new HomeOfficeCaseStatus(
             person, applicationStatus);
     }
 
     @Test
     public void has_correct_values_after_setting() {
-        assertNotNull(searchStatus);
-        assertNotNull(searchStatus.getPerson());
-        assertNotNull(searchStatus.getApplicationStatus());
-        assertEquals(person, searchStatus.getPerson());
-        assertEquals(applicationStatus, searchStatus.getApplicationStatus());
+        assertNotNull(homeOfficeCaseStatus);
+        assertNotNull(homeOfficeCaseStatus.getPerson());
+        assertNotNull(homeOfficeCaseStatus.getApplicationStatus());
+        assertEquals(person, homeOfficeCaseStatus.getPerson());
+        assertEquals(applicationStatus, homeOfficeCaseStatus.getApplicationStatus());
     }
 }

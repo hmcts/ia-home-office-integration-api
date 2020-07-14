@@ -45,12 +45,82 @@
           }
         ],
         "roleSubType": {
-          "code": "SPOUSE. Could be MAIN if the role type is APPLICANT",
-          "description": "Spouse"
+          "code": "MAIN",
+          "description": "Main"
         },
         "roleType": {
-          "code": "DEPENDANT",
-          "description": "Dependant"
+          "code": "MAIN",
+          "description": "Main"
+        }
+      },
+      "person": {
+        "dayOfBirth": 29,
+        "familyName": "Smith",
+        "fullName": "John Smith",
+        "gender": {
+          "code": "M (denoting male)",
+          "description": "Male"
+        },
+        "givenName": "John",
+        "monthOfBirth": 2,
+        "nationality": {
+          "code": "CAN",
+          "description": "Canada"
+        },
+        "yearOfBirth": 1968
+      }
+    },
+    {
+      "applicationStatus": {
+        "applicationType": {
+          "code": "ASYLUM",
+          "description": "Asylum and Protection"
+        },
+        "claimReasonType": {
+          "code": "HUMANRIGHTS",
+          "description": "Human Rights"
+        },
+        "decisionCommunication": {
+          "description": "E-mail",
+          "dispatchDate": "2020-07-21T17:32:28Z",
+          "sentDate": "2020-07-21T17:32:28Z",
+          "type": "EMAIL"
+        },
+        "decisionDate": "2020-07-21T17:32:28Z",
+        "decisionType": {
+          "code": "REJECTION",
+          "description": "Rejected"
+        },
+        "documentReference": "1234-1234-5678-5678/00",
+        "metadata": [
+          {
+            "code": "DISPATCH_DATE",
+            "valueBoolean": true,
+            "valueDateTime": "2020-07-21T17:32:28Z",
+            "valueString": "Some extra decision data"
+          },
+          {
+            "code": "APPEALABLE",
+            "valueBoolean": true,
+            "valueDateTime": "2020-07-21T17:32:28Z",
+            "valueString": "Some extra decision data"
+          }
+        ],
+        "rejectionReasons": [
+          {
+            "reason": "Application not completed properly"
+          },
+          {
+            "reason": "Application not entered properly"
+          }
+        ],
+        "roleSubType": {
+          "code": "MAIN",
+          "description": "Main"
+        },
+        "roleType": {
+          "code": "APPLICANT",
+          "description": "Applicant"
         }
       },
       "person": {
