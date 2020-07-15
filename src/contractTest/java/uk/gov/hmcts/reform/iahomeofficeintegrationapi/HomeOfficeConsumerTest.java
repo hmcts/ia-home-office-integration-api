@@ -50,12 +50,12 @@ public class HomeOfficeConsumerTest {
         //DO NOT CHANGE THE INDENTATION OF THE BODY
         PactDslJsonBody validateResponseBody = new PactDslJsonBody();
         validateResponseBody
-            .stringType("messageType", "RESPONSE_RIGHT_OF_APPEAL_DETAILS")
+            .stringMatcher("messageType","RESPONSE_RIGHT_OF_APPEAL_DETAILS","RESPONSE_RIGHT_OF_APPEAL_DETAILS")
             .object("messageHeader")
                 .stringType("correlationId", "ABC2344BCED2234EA")
                 .stringType("eventDateTime", "2017-07-21T17:32:28Z")
                 .object("consumer")
-                    .stringType("code", "HMCTS")
+                    .stringMatcher("code", "HMCTS", "HMCTS")
                     .stringType("description", "HM Courts and Tribunal Service")
                 .closeObject()
             .closeObject()
@@ -70,16 +70,16 @@ public class HomeOfficeConsumerTest {
                         .stringType("description", "Human Rights")
                     .closeObject()
                     .object("decisionCommunication")
-                        .stringType("description", "E-mail")
+                        .stringType("description","E-mail")
                         .stringType("dispatchDate", "2017-07-21T17:32:28Z")
                         .stringType("sentDate", "2017-07-21T17:32:28Z")
-                        .stringType("type", "EMAIL")
+                        .stringMatcher("type", "EMAIL|POST", "EMAIL")
                     .closeObject()
                     .object("decisionType")
                         .stringType("description", "Rejected")
                     .closeObject()
                     .minArrayLike("metadata", 0, 1)
-                        .stringType("code", "APPEALABLE or DISPATCH_DATE")
+                        .stringMatcher("code", "APPEALABLE|DISPATCH_DATE|SUSPENSIVE|IN_COUNTRY","APPEALABLE")
                         .booleanType("valueBoolean", true)
                         .stringType("valueDateTime", "2017-07-21T17:32:28Z")
                         .stringType("valueString", "Some extra decision data")
@@ -102,7 +102,7 @@ public class HomeOfficeConsumerTest {
                     .integerType("monthOfBirth", 3)
                     .integerType("yearOfBirth", 1970)
                         .object("gender")
-                            .stringType("description", "Spouse")
+                            .stringType("description", "Male")
                         .closeObject()
                         .object("nationality")
                             .stringType("description", "Canada")
@@ -135,7 +135,7 @@ public class HomeOfficeConsumerTest {
                 .stringType("correlationId", "ABC2344BCED2234EA")
                 .stringType("eventDateTime", "2017-07-21T17:32:28Z")
                 .object("consumer")
-                    .stringType("code", "HMCTS")
+                    .stringMatcher("code", "HMCTS", "HMCTS")
                     .stringType("description", "HM Courts and Tribunal Service")
                 .closeObject()
             .closeObject()
@@ -181,10 +181,10 @@ public class HomeOfficeConsumerTest {
         assertThat(response.getJSONObject("messageHeader").getString("eventDateTime")).isNotBlank();
         assertThat(response.getJSONObject("messageHeader").getJSONObject("consumer")).isNotNull();
         assertThat(response.getJSONObject("messageHeader").getJSONObject("consumer").getString("code"))
-            .isNotBlank();
+            .matches("HMCTS");
         assertThat(response.getJSONObject("messageHeader").getJSONObject("consumer").getString("description"))
             .isNotBlank();
-        assertThat(response.getString("messageType")).isNotBlank();
+        assertThat(response.getString("messageType")).matches("RESPONSE_RIGHT_OF_APPEAL_DETAILS");
         assertThat(status).isNotNull();
         assertThat(status.length()).isGreaterThan(0);
 
@@ -202,13 +202,13 @@ public class HomeOfficeConsumerTest {
         assertThat(applicationStatus.getJSONObject("decisionCommunication").getString("description")).isNotBlank();
         assertThat(applicationStatus.getJSONObject("decisionCommunication").getString("dispatchDate")).isNotBlank();
         assertThat(applicationStatus.getJSONObject("decisionCommunication").getString("sentDate")).isNotBlank();
-        assertThat(applicationStatus.getJSONObject("decisionCommunication").getString("type")).isNotBlank();
+        assertThat(applicationStatus.getJSONObject("decisionCommunication").getString("type")).matches("EMAIL|POST");
         assertThat(applicationStatus.getJSONObject("decisionType")).isNotNull();
         assertThat(applicationStatus.getJSONObject("decisionType").getString("description")).isNotBlank();
         assertThat(applicationStatus.getJSONArray("metadata")).isNotNull();
         assertThat(applicationStatus.getJSONArray("metadata").length()).isGreaterThanOrEqualTo(0);
         JSONObject metadata = applicationStatus.getJSONArray("metadata").getJSONObject(0);
-        assertThat(metadata.getString("code")).isNotBlank();
+        assertThat(metadata.getString("code")).matches("APPEALABLE|DISPATCH_DATE|SUSPENSIVE|IN_COUNTRY");
         assertThat(metadata.getBoolean("valueBoolean")).isNotNull();
         assertThat(metadata.getString("valueDateTime")).isNotBlank();
         assertThat(metadata.getString("valueString")).isNotBlank();
@@ -262,7 +262,7 @@ public class HomeOfficeConsumerTest {
         assertThat(response.getJSONObject("messageHeader").getString("eventDateTime")).isNotBlank();
         assertThat(response.getJSONObject("messageHeader").getJSONObject("consumer")).isNotNull();
         assertThat(response.getJSONObject("messageHeader").getJSONObject("consumer").getString("code"))
-            .isNotBlank();
+            .matches("HMCTS");
         assertThat(response.getJSONObject("messageHeader").getJSONObject("consumer").getString("description"))
             .isNotBlank();
 
