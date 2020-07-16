@@ -21,9 +21,9 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "homeOfficeReferenceNumber": "1111-2222-3333-4444",
-        "hoAppellantGivenName": "Capability",
+        "hoAppellantGivenName": "John",
         "hoAppellantFamilyName": "Smith",
-        "hoAppellantFullName": "Capability Smith",
+        "hoAppellantFullName": "John Smith",
         "hoAppellantNationality": "Canada",
         "hoApplicationDecision": "Rejected",
         "homeOfficeSearchStatus": "SUCCESS"
