@@ -64,9 +64,11 @@ public class HomeOfficeConsumerTest {
                 .stringType("decisionDate", "2017-07-21T17:32:28Z")
                 .stringType("documentReference", "1234-1234-5678-5678/00")
                     .object("applicationType")
+                        .stringType("code", "ASYLUM")
                         .stringType("description", "Asylum and Protection")
                     .closeObject()
                     .object("claimReasonType")
+                        .stringType("code", "HUMANRIGHTS")
                         .stringType("description", "Human Rights")
                     .closeObject()
                     .object("decisionCommunication")
@@ -76,6 +78,7 @@ public class HomeOfficeConsumerTest {
                         .stringMatcher("type", "EMAIL|POST", "EMAIL")
                     .closeObject()
                     .object("decisionType")
+                        .stringType("code", "REJECTION")
                         .stringType("description", "Rejected")
                     .closeObject()
                     .minArrayLike("metadata", 0, 1)
@@ -88,9 +91,11 @@ public class HomeOfficeConsumerTest {
                         .stringType("reason", "Application not completed properly")
                     .closeObject().closeArray()
                     .object("roleSubType")
+                        .stringType("code", "SPOUSE")
                         .stringType("description", "Spouse")
                     .closeObject()
                     .object("roleType")
+                        .stringType("code", "DEPENDANT")
                         .stringType("description", "Dependant")
                     .closeObject()
                 .closeObject() //applicationStatus closed
@@ -102,9 +107,11 @@ public class HomeOfficeConsumerTest {
                     .integerType("monthOfBirth", 3)
                     .integerType("yearOfBirth", 1970)
                         .object("gender")
+                            .stringType("code", "M")
                             .stringType("description", "Male")
                         .closeObject()
                         .object("nationality")
+                            .stringType("code", "CAN")
                             .stringType("description", "Canada")
                         .closeObject()
                 .closeObject() //person closed
@@ -120,6 +127,43 @@ public class HomeOfficeConsumerTest {
             .willRespondWith()
             .status(HttpStatus.OK.value())
             .body(validateResponseBody)
+            .toPact();
+    }
+
+    @Pact(provider = "homeoffice_api", consumer = "hmcts")
+    public RequestResponsePact executeSearchByParametersAndGet400(PactDslWithProvider builder) {
+
+        Map<String, String> headers = Maps.newHashMap();
+        headers.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        //DO NOT CHANGE THE INDENTATION OF THE BODY
+        PactDslJsonBody searchErrorResponseBody = new PactDslJsonBody();
+        searchErrorResponseBody
+            .object("messageHeader")
+            .stringType("correlationId", "ABC2344BCED2234EA")
+            .stringType("eventDateTime", "2017-07-21T17:32:28Z")
+            .object("consumer")
+            .stringMatcher("code", "HMCTS", "HMCTS")
+            .stringType("description", "HM Courts and Tribunal Service")
+            .closeObject()
+            .closeObject()
+            .object("errorDetail")
+            .stringType("errorCode", "1100")
+            .stringType("messageText",
+                "Invalid reference format."
+                    + " Format should be either nnnn-nnnn-nnnn-nnnn or 0(0) followed by digits (total length 9 or 10)")
+            .booleanType("success", false)
+            .closeObject()
+            .closeObject();
+
+        return builder
+            .given("Home Office sends error code after receiving HMCTS search request")
+            .uponReceiving("Provider receives a POST /applicationStatus/getBySearchParameters request from an IA API")
+            .path(HOMEOFFICE_API_SEARCH_URL)
+            .headers(headers)
+            .method(HttpMethod.POST.toString())
+            .willRespondWith()
+            .status(HttpStatus.BAD_REQUEST.value())
+            .body(searchErrorResponseBody)
             .toPact();
     }
 
@@ -150,6 +194,43 @@ public class HomeOfficeConsumerTest {
             .willRespondWith()
             .status(HttpStatus.OK.value())
             .body(instructResponseBody)
+            .toPact();
+    }
+
+    @Pact(provider = "homeoffice_api", consumer = "hmcts")
+    public RequestResponsePact executeSetInstructAndGet400(PactDslWithProvider builder) {
+
+        Map<String, String> headers = Maps.newHashMap();
+        headers.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        //DO NOT CHANGE THE INDENTATION OF THE BODY
+        PactDslJsonBody errorInstructResponseBody = new PactDslJsonBody();
+        errorInstructResponseBody
+            .object("messageHeader")
+            .stringType("correlationId", "ABC2344BCED2234EA")
+            .stringType("eventDateTime", "2017-07-21T17:32:28Z")
+            .object("consumer")
+            .stringMatcher("code", "HMCTS", "HMCTS")
+            .stringType("description", "HM Courts and Tribunal Service")
+            .closeObject()
+            .closeObject()
+            .object("errorDetail")
+            .stringType("errorCode", "1100")
+            .stringType("messageText",
+                "Invalid reference format. "
+                    + "Format should be either nnnn-nnnn-nnnn-nnnn or 0(0) followed by digits (total length 9 or 10)")
+            .booleanType("success", false)
+            .closeObject()
+            .closeObject();
+
+        return builder
+            .given("Home Office sends error code after receiving HMCTS notification")
+            .uponReceiving("Provider receives a POST /applicationInstruct/setInstruct request from an IA API")
+            .path(HOMEOFFICE_API_INSTRUCT_URL)
+            .headers(headers)
+            .method(HttpMethod.POST.toString())
+            .willRespondWith()
+            .status(HttpStatus.BAD_REQUEST.value())
+            .body(errorInstructResponseBody)
             .toPact();
     }
 
@@ -195,8 +276,10 @@ public class HomeOfficeConsumerTest {
         assertThat(applicationStatus.getString("decisionDate")).isNotBlank();
         assertThat(applicationStatus.getString("documentReference")).isNotBlank();
         assertThat(applicationStatus.getJSONObject("applicationType")).isNotNull();
+        assertThat(applicationStatus.getJSONObject("applicationType").getString("code")).isNotBlank();
         assertThat(applicationStatus.getJSONObject("applicationType").getString("description")).isNotBlank();
         assertThat(applicationStatus.getJSONObject("claimReasonType")).isNotNull();
+        assertThat(applicationStatus.getJSONObject("claimReasonType").getString("code")).isNotBlank();
         assertThat(applicationStatus.getJSONObject("claimReasonType").getString("description")).isNotBlank();
         assertThat(applicationStatus.getJSONObject("decisionCommunication")).isNotNull();
         assertThat(applicationStatus.getJSONObject("decisionCommunication").getString("description")).isNotBlank();
@@ -204,6 +287,7 @@ public class HomeOfficeConsumerTest {
         assertThat(applicationStatus.getJSONObject("decisionCommunication").getString("sentDate")).isNotBlank();
         assertThat(applicationStatus.getJSONObject("decisionCommunication").getString("type")).matches("EMAIL|POST");
         assertThat(applicationStatus.getJSONObject("decisionType")).isNotNull();
+        assertThat(applicationStatus.getJSONObject("decisionType").getString("code")).isNotBlank();
         assertThat(applicationStatus.getJSONObject("decisionType").getString("description")).isNotBlank();
         assertThat(applicationStatus.getJSONArray("metadata")).isNotNull();
         assertThat(applicationStatus.getJSONArray("metadata").length()).isGreaterThanOrEqualTo(0);
@@ -217,8 +301,10 @@ public class HomeOfficeConsumerTest {
         assertThat(applicationStatus.getJSONArray("rejectionReasons")
             .getJSONObject(0).getString("reason")).isNotBlank();
         assertThat(applicationStatus.getJSONObject("roleSubType")).isNotNull();
+        assertThat(applicationStatus.getJSONObject("roleSubType").getString("code")).isNotBlank();
         assertThat(applicationStatus.getJSONObject("roleSubType").getString("description")).isNotBlank();
         assertThat(applicationStatus.getJSONObject("roleType")).isNotNull();
+        assertThat(applicationStatus.getJSONObject("roleType").getString("code")).isNotBlank();
         assertThat(applicationStatus.getJSONObject("roleType").getString("description")).isNotBlank();
 
         assertThat(person).isNotNull();
@@ -229,9 +315,48 @@ public class HomeOfficeConsumerTest {
         assertThat(person.getInt("monthOfBirth")).isGreaterThan(0);
         assertThat(person.getInt("yearOfBirth")).isGreaterThan(0);
         assertThat(person.getJSONObject("gender")).isNotNull();
+        assertThat(person.getJSONObject("gender").getString("code")).isNotBlank();
         assertThat(person.getJSONObject("gender").getString("description")).isNotBlank();
         assertThat(person.getJSONObject("nationality")).isNotNull();
+        assertThat(person.getJSONObject("nationality").getString("code")).isNotBlank();
         assertThat(person.getJSONObject("nationality").getString("description")).isNotBlank();
+
+    }
+
+    @Test
+    @PactTestFor(pactMethod = "executeSearchByParametersAndGet400")
+    public void should_get_error_detail_for_searching_invalid_ho_reference(MockServer mockServer) throws JSONException {
+
+        String actualResponseBody =
+            SerenityRest
+                .given()
+                .relaxedHTTPSValidation()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(mockServer.getUrl() + HOMEOFFICE_API_SEARCH_URL)
+                .then()
+                .statusCode(400)
+                .and()
+                .extract()
+                .body()
+                .asString();
+
+        JSONObject response = new JSONObject(actualResponseBody);
+
+        assertThat(actualResponseBody).isNotNull();
+        assertThat(response).hasNoNullFieldsOrProperties();
+        assertThat(response.getJSONObject("messageHeader")).isNotNull();
+        assertThat(response.getJSONObject("messageHeader").getString("correlationId")).isNotBlank();
+        assertThat(response.getJSONObject("messageHeader").getString("eventDateTime")).isNotBlank();
+        assertThat(response.getJSONObject("messageHeader").getJSONObject("consumer")).isNotNull();
+        assertThat(response.getJSONObject("messageHeader").getJSONObject("consumer").getString("code"))
+            .matches("HMCTS");
+        assertThat(response.getJSONObject("messageHeader").getJSONObject("consumer").getString("description"))
+            .isNotBlank();
+        assertThat(response.getJSONObject("errorDetail")).isNotNull();
+        assertThat(response.getJSONObject("errorDetail").getString("errorCode")).isNotBlank();
+        assertThat(response.getJSONObject("errorDetail").getString("messageText")).isNotBlank();
+        assertThat(response.getJSONObject("errorDetail").getBoolean("success")).isFalse();
 
     }
 
@@ -265,6 +390,43 @@ public class HomeOfficeConsumerTest {
             .matches("HMCTS");
         assertThat(response.getJSONObject("messageHeader").getJSONObject("consumer").getString("description"))
             .isNotBlank();
+
+    }
+
+    @Test
+    @PactTestFor(pactMethod = "executeSetInstructAndGet400")
+    public void should_get_error_detail_for_sending_invalid_notification(MockServer mockServer) throws JSONException {
+
+        String actualResponseBody =
+            SerenityRest
+                .given()
+                .relaxedHTTPSValidation()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(mockServer.getUrl() + HOMEOFFICE_API_INSTRUCT_URL)
+                .then()
+                .statusCode(400)
+                .and()
+                .extract()
+                .body()
+                .asString();
+
+        JSONObject response = new JSONObject(actualResponseBody);
+
+        assertThat(actualResponseBody).isNotNull();
+        assertThat(response).hasNoNullFieldsOrProperties();
+        assertThat(response.getJSONObject("messageHeader")).isNotNull();
+        assertThat(response.getJSONObject("messageHeader").getString("correlationId")).isNotBlank();
+        assertThat(response.getJSONObject("messageHeader").getString("eventDateTime")).isNotBlank();
+        assertThat(response.getJSONObject("messageHeader").getJSONObject("consumer")).isNotNull();
+        assertThat(response.getJSONObject("messageHeader").getJSONObject("consumer").getString("code"))
+            .matches("HMCTS");
+        assertThat(response.getJSONObject("messageHeader").getJSONObject("consumer").getString("description"))
+            .isNotBlank();
+        assertThat(response.getJSONObject("errorDetail")).isNotNull();
+        assertThat(response.getJSONObject("errorDetail").getString("errorCode")).isNotBlank();
+        assertThat(response.getJSONObject("errorDetail").getString("messageText")).isNotBlank();
+        assertThat(response.getJSONObject("errorDetail").getBoolean("success")).isFalse();
 
     }
 }
