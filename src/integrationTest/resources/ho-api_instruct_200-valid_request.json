@@ -1,0 +1,25 @@
+{
+  "consumerReference": {
+    "code": "HMCTS_CHALLENGE_REF",
+    "consumer": {
+      "code": "HMCTS",
+      "description": "HM Courts and Tribunal Service"
+    },
+    "description": "HMCTS challenge reference",
+    "value": "some-appeal-reference-number"
+  },
+  "courtOutcome": {
+    "courtType": "FIRST_TIER",
+    "outcome": "ALLOWED"
+  },
+  "hoReference": "CustRef123",
+  "messageHeader": {
+    "consumer": {
+      "code": "HMCTS",
+      "description": "HM Courts and Tribunal Service"
+    },
+    "correlationId": "${json-unit.any-string}",
+    "eventDateTime": "${json-unit.any-string}"
+  },
+  "messageType": "REQUEST_CHALLENGE_END"
+}

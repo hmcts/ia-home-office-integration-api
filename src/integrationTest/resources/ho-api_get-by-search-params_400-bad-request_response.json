@@ -1,0 +1,15 @@
+{
+  "messageHeader": {
+    "eventDateTime": "2020-07-29T11:59:15.898219+01:00",
+    "correlationId": "ABC2344BCED2234EA",
+    "consumer": {
+      "code": "HMCTS",
+      "description": "HM Courts and Tribunal Service"
+    }
+  },
+  "errorDetail": {
+    "success": "false",
+    "messageText": "Invalid message format: Messages with a search parameter of type DOCUMENT_REFERENCE must pass a parameter value conforming to a UAN or Case ID (CID)",
+    "errorCode": "1060"
+  }
+}

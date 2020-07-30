@@ -1,0 +1,69 @@
+{
+  "messageHeader": {
+    "consumer": {
+      "code": "HMCTS",
+      "description": "HM Courts and Tribunal Service"
+    },
+    "correlationId": "ABC2344BCED2234EA",
+    "eventDateTime": "2017-07-21T17:32:28Z"
+  },
+  "messageType": "MessageType.RESPONSE_RIGHT_OF_APPEAL_DETAILS",
+  "extraField1": "an extra field to be ignored - 01",
+  "extraField2": "an extra field to be ignored - 02",
+  "status": [
+    {
+      "applicationStatus": {
+        "appealable": true,
+        "extraField3": "an extra field to be ignored - 03",
+        "applicationType": {
+          "code": "ASYLUM",
+          "description": "Asylum and Protection"
+        },
+        "claimReasonType": {
+          "code": "HUMANRIGHTS",
+          "description": "Human Rights"
+        },
+        "decisionCommunication": {
+          "description": "E-mail",
+          "sentDate": "2017-07-21T17:32:28Z",
+          "type": "EMAIL"
+        },
+        "decisionDate": "2017-07-21T17:32:28Z",
+        "decisionType": {
+          "code": "REJECTION",
+          "description": "Rejected"
+        },
+        "rejectionReasons": [
+          {
+            "reason": "Application not completed properly"
+          }
+        ],
+        "roleSubType": {
+          "code": "SPOUSE. Could be MAIN if the role type is APPLICANT",
+          "description": "Spouse"
+        },
+        "roleType": {
+          "code": "APPLICANT",
+          "description": "Applicant"
+        }
+      },
+      "person": {
+        "dayOfBirth": 21,
+        "extraField4": "an extra field to be ignored - 04",
+        "familyName": "Smith",
+        "fullName": "Capability Smith",
+        "gender": {
+          "code": "M",
+          "description": "Male"
+        },
+        "givenName": "Capability",
+        "monthOfBirth": 0,
+        "nationality": {
+          "code": "CAN",
+          "description": "Canada"
+        },
+        "yearOfBirth": 1970
+      }
+    }
+  ]
+}
