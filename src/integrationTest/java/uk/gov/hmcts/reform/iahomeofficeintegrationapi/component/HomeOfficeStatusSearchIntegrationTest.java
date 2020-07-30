@@ -88,7 +88,7 @@ public class HomeOfficeStatusSearchIntegrationTest
             assertEquals(person.getFullName(), "Capability Smith");
         }
     }
-    
+
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
