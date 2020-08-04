@@ -11,32 +11,37 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.SystemDateP
 @Slf4j
 public class HomeOfficeDateFormatter {
 
+    private static final DateTimeFormatter HO_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter HO_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
+        "yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static final DateTimeFormatter DD_MON_YEAR_FORMATTER = DateTimeFormatter.ofPattern("dd' 'MMM' 'yyyy");
+    private static final DateTimeFormatter DD_MM_YYYY_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     private HomeOfficeDateFormatter() {
     }
 
     public static String getCurrentDateTime() {
         DateProvider dateProvider = new SystemDateProvider();
-        return dateProvider.nowWithTime().format(
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+        return dateProvider.nowWithTime().format(HO_DATE_TIME_FORMATTER);
     }
 
     public static String getIacDateTime(String homeOfficeDate) {
         try {
             if (homeOfficeDate != null) {
-                //only Date is provided
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate parsedDate;
                 //Date-time is provided
                 if (homeOfficeDate.length() > 10) {
-                    formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                    parsedDate = LocalDate.parse(homeOfficeDate, HO_DATE_TIME_FORMATTER);
+                } else {
+                    //only Date is provided
+                    parsedDate = LocalDate.parse(homeOfficeDate, HO_DATE_FORMATTER);
                 }
-                LocalDate parsedDate = LocalDate.parse(homeOfficeDate, formatter);
-                formatter = DateTimeFormatter.ofPattern("dd' 'MMM' 'yyyy");
-                return parsedDate.format(formatter);
+                return parsedDate.format(DD_MON_YEAR_FORMATTER);
             }
 
         } catch (Exception e) {
             //We return the date we received from Home Office
-            log.info("HO Decision date format error. HO date {}", homeOfficeDate);
+            log.info("HO date format error. HO date {}", homeOfficeDate);
         }
 
         return homeOfficeDate;
@@ -47,10 +52,8 @@ public class HomeOfficeDateFormatter {
             + "/" + String.format("%02d", monthOfBirth)
             + "/" + yearOfBirth;
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            LocalDate parsedDate = LocalDate.parse(hoDateOfBirth, formatter);
-            formatter = DateTimeFormatter.ofPattern("dd' 'MMM' 'yyyy");
-            return parsedDate.format(formatter);
+            LocalDate parsedDate = LocalDate.parse(hoDateOfBirth, DD_MM_YYYY_FORMATTER);
+            return parsedDate.format(DD_MON_YEAR_FORMATTER);
 
         } catch (Exception e) {
             //We return the date we received from Home Office
