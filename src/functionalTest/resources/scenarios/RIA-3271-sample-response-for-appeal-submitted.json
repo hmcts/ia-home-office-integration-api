@@ -1,5 +1,5 @@
 {
-  "description": "RIA-3073 Gets Home Office data for the IA appeal reference",
+  "description": "RIA-3271 Gets Home Office data for the IA appeal reference",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -21,11 +21,6 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "homeOfficeReferenceNumber": "1111-2222-3333-4444",
-        "hoAppellantGivenName": "John",
-        "hoAppellantFamilyName": "Smith",
-        "hoAppellantFullName": "John Smith",
-        "hoAppellantNationality": "Canada",
-        "hoApplicationDecision": "Rejected",
         "homeOfficeSearchStatus": "SUCCESS"
       }
     }

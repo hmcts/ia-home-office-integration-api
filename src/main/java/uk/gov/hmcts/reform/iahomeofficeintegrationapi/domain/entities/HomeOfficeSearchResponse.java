@@ -6,15 +6,20 @@ public class HomeOfficeSearchResponse {
 
     private MessageHeader messageHeader;
     private String messageType;
-    private List<SearchStatus> status;
+    private List<HomeOfficeCaseStatus> status;
+    private HomeOfficeError errorDetail;
 
     private HomeOfficeSearchResponse() {
     }
 
-    public HomeOfficeSearchResponse(MessageHeader messageHeader, String messageType, List<SearchStatus> status) {
+    public HomeOfficeSearchResponse(MessageHeader messageHeader,
+                                    String messageType,
+                                    List<HomeOfficeCaseStatus> status,
+                                    HomeOfficeError errorDetail) {
         this.messageHeader = messageHeader;
         this.messageType = messageType;
         this.status = status;
+        this.errorDetail = errorDetail;
     }
 
     public MessageHeader getMessageHeader() {
@@ -25,7 +30,11 @@ public class HomeOfficeSearchResponse {
         return messageType;
     }
 
-    public List<SearchStatus> getStatus() {
+    public List<HomeOfficeCaseStatus> getStatus() {
         return status;
+    }
+
+    public HomeOfficeError getErrorDetail() {
+        return errorDetail;
     }
 }

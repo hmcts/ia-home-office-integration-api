@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -17,7 +18,7 @@ public class HomeOfficeSearchResponseTest {
     @Mock
     MessageHeader messageHeader;
     @Mock
-    SearchStatus searchStatus;
+    HomeOfficeCaseStatus homeOfficeCaseStatus;
 
     private HomeOfficeSearchResponse response;
 
@@ -26,7 +27,8 @@ public class HomeOfficeSearchResponseTest {
         response = new HomeOfficeSearchResponse(
             messageHeader,
             "some-message-type",
-            Collections.singletonList(searchStatus)
+            Collections.singletonList(homeOfficeCaseStatus),
+            Mockito.mock(HomeOfficeError.class)
         );
     }
 
@@ -37,5 +39,6 @@ public class HomeOfficeSearchResponseTest {
         assertNotNull(response.getStatus());
         assertThat(response.getStatus()).isNotEmpty();
         assertEquals("some-message-type", response.getMessageType());
+        assertNotNull(response.getErrorDetail());
     }
 }
