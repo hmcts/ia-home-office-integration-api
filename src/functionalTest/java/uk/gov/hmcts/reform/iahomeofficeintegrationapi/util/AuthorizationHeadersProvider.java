@@ -2,26 +2,47 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.util;
 
 import io.restassured.http.Header;
 import io.restassured.http.Headers;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdamAuthorizor;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.IdamApi;
 
 @Service
 public class AuthorizationHeadersProvider {
+
+    @Value("${idam.redirectUrl}") protected String idamRedirectUrl;
+    @Value("${idam.scope}") protected String userScope;
+    @Value("${spring.security.oauth2.client.registration.oidc.client-id}") protected String idamClientId;
+    @Value("${spring.security.oauth2.client.registration.oidc.client-secret}") protected String idamClientSecret;
 
     @Autowired
     private AuthTokenGenerator serviceAuthTokenGenerator;
 
     @Autowired
-    private IdamAuthorizor idamAuthorizor;
+    private IdamApi idamApi;
+
+    private final Map<String, String> tokens = new ConcurrentHashMap<>();
 
     public Headers getLegalRepresentativeAuthorization() {
 
-        String serviceToken = serviceAuthTokenGenerator.generate();
-        String accessToken = idamAuthorizor.exchangeForAccessToken(
-            System.getenv("TEST_LAW_FIRM_A_USERNAME"),
-            System.getenv("TEST_LAW_FIRM_A_PASSWORD")
+        MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
+        tokenRequestForm.add("grant_type", "password");
+        tokenRequestForm.add("redirect_uri", idamRedirectUrl);
+        tokenRequestForm.add("client_id", idamClientId);
+        tokenRequestForm.add("client_secret", idamClientSecret);
+        tokenRequestForm.add("username", System.getenv("TEST_LAW_FIRM_A_USERNAME"));
+        tokenRequestForm.add("password", System.getenv("TEST_LAW_FIRM_A_PASSWORD"));
+        tokenRequestForm.add("scope", userScope);
+
+        String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
+        String accessToken = tokens.computeIfAbsent(
+            "LegalRepresentative",
+            user -> "Bearer " + idamApi.token(tokenRequestForm).getAccessToken()
         );
 
         return new Headers(

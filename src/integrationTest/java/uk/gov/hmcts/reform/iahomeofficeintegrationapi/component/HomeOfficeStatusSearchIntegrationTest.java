@@ -44,6 +44,7 @@ public class HomeOfficeStatusSearchIntegrationTest
         WithHomeOfficeStatusSearchStub, WithHomeOfficeInstructStub, WithHomeOfficeAuthStub {
 
     public static final String APPEAL_REFERENCE_NUMBER = "some-appeal-reference-number";
+    public static final String SUCCESS = "SUCCESS";
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
@@ -53,7 +54,7 @@ public class HomeOfficeStatusSearchIntegrationTest
         final String homeOfficeReference = "CustRef123";
 
         addServiceAuthStub(server);
-        addUserDetailsStub(server);
+        addUserInfoStub(server);
         addHomeOfficeAuthTokenStub(server);
         addHomeOfficeApiSearchValidResponseStub(server, homeOfficeReference);
         addHomeOfficeApiInstructStub(server, homeOfficeReference);
@@ -76,7 +77,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
         assertNotNull(response);
         assertNotNull(asylumCase);
-        assertEquals(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class), Optional.of("SUCCESS"));
+        assertEquals(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class), Optional.of(SUCCESS));
         final Optional<HomeOfficeCaseStatus> homeOfficeCaseStatus
             = asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class);
         assertTrue(homeOfficeCaseStatus.isPresent());
@@ -98,7 +99,7 @@ public class HomeOfficeStatusSearchIntegrationTest
         final String homeOfficeReference = "CustRef000";
 
         addServiceAuthStub(server);
-        addUserDetailsStub(server);
+        addUserInfoStub(server);
         addHomeOfficeAuthTokenStub(server);
         addHomeOfficeApiSearchValidResponseStub(server, homeOfficeReference);
         addHomeOfficeApiInstructStub(server, homeOfficeReference);
@@ -121,7 +122,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
         assertNotNull(response);
         assertNotNull(asylumCase);
-        assertEquals(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class), Optional.of("SUCCESS"));
+        assertEquals(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class), Optional.of(SUCCESS));
         final Optional<HomeOfficeCaseStatus> homeOfficeCaseStatus
             = asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class);
         assertTrue(homeOfficeCaseStatus.isPresent());
@@ -159,7 +160,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
         final String homeOfficeReference = "1212-0099-0036-2016";
         addServiceAuthStub(server);
-        addUserDetailsStub(server);
+        addUserInfoStub(server);
         addHomeOfficeAuthTokenStub(server);
         addHomeOfficeApiSearchNoInvolvementsStub(server, homeOfficeReference);
         addHomeOfficeApiInstructStub(server, homeOfficeReference);
@@ -184,7 +185,7 @@ public class HomeOfficeStatusSearchIntegrationTest
         final String homeOfficeReference = "extra-fields-ref-number";
 
         addServiceAuthStub(server);
-        addUserDetailsStub(server);
+        addUserInfoStub(server);
         addHomeOfficeAuthTokenStub(server);
         addHomeOfficeApiSearchExtraFieldsStub(server, homeOfficeReference);
         addHomeOfficeApiInstructStub(server, homeOfficeReference);
@@ -207,7 +208,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
         assertNotNull(response);
         assertNotNull(asylumCase);
-        assertEquals(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class), Optional.of("SUCCESS"));
+        assertEquals(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class), Optional.of(SUCCESS));
         final Optional<HomeOfficeCaseStatus> homeOfficeCaseStatus =
             asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class);
         assertTrue(homeOfficeCaseStatus.isPresent());
@@ -229,7 +230,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
         final String homeOfficeReference = "1212-0099-0036-1000";
         addServiceAuthStub(server);
-        addUserDetailsStub(server);
+        addUserInfoStub(server);
         addHomeOfficeAuthTokenStub(server);
         addHomeOfficeApiInstructStub(server, homeOfficeReference);
         addHomeOfficeApiSearch400InternalSystemErrorStub(server, homeOfficeReference);
@@ -253,7 +254,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
         final String homeOfficeReference = "1212-0099-0036-XXXX";
         addServiceAuthStub(server);
-        addUserDetailsStub(server);
+        addUserInfoStub(server);
         addHomeOfficeAuthTokenStub(server);
         addHomeOfficeApiInstructStub(server, homeOfficeReference);
         addHomeOfficeApiSearch400BadRequestStub(server, homeOfficeReference);
@@ -277,7 +278,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
         final String homeOfficeReference = "1212-0099-0036-0500";
         addServiceAuthStub(server);
-        addUserDetailsStub(server);
+        addUserInfoStub(server);
         addHomeOfficeAuthTokenStub(server);
         addHomeOfficeApiInstructStub(server, homeOfficeReference);
         addHomeOfficeApiSearch500ServerErrorStub(server, homeOfficeReference);
