@@ -51,7 +51,23 @@ public class FeignErrorDecoderTest {
             .body("Internal server error", Util.UTF_8)
             .build();
 
-        assertThat(feignErrorDecoder.decode("someMethod", response), instanceOf(Exception.class));
+        assertThat(feignErrorDecoder.decode("someMethod", response),
+            instanceOf(ResponseStatusException.class));
+    }
+
+    @Test
+    public void should_decode_for_default() {
+
+        response = builder()
+            .status(403)
+            .reason("Forbidden")
+            .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
+                null, Util.UTF_8, requestTemplate))
+            .body("Authorization failed", Util.UTF_8)
+            .build();
+
+        assertThat(feignErrorDecoder.decode("someMethod", response),
+            instanceOf(HomeOfficeResponseException.class));
     }
 
     @Test

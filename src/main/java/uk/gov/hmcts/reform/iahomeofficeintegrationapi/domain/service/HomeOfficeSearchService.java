@@ -32,7 +32,7 @@ public class HomeOfficeSearchService {
 
         HomeOfficeSearch request = makeRequestBody(homeOfficeReferenceNumber);
         HomeOfficeSearchResponse searchResponse = homeOfficeSearchApi.getStatus(request);
-        log.debug("HomeOffice-CaseSearch response: {}", searchResponse);
+        log.info("HomeOffice-CaseSearch response: {}", searchResponse);
 
         return searchResponse;
     }

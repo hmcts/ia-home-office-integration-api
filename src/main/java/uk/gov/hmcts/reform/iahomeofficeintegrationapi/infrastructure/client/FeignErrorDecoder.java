@@ -72,7 +72,20 @@ public class FeignErrorDecoder implements ErrorDecoder {
                 }
                 return new ResponseStatusException(HttpStatus.valueOf(response.status()), response.reason());
 
+            case 500:
+                log.error("StatusCode: {}, methodKey: {}, reason: {}",
+                    response.status(),
+                    methodKey,
+                    response.reason());
+
+                return new ResponseStatusException(HttpStatus.valueOf(response.status()), response.reason());
+
             default:
+                log.error("StatusCode: {}, methodKey: {}, reason: {}",
+                    response.status(),
+                    methodKey,
+                    response.reason()
+                );
                 return new HomeOfficeResponseException(response.reason());
 
         }
