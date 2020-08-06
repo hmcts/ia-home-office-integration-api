@@ -70,4 +70,9 @@ home-office:
         code: HMCTS_CHALLENGE_REF
         description: HMCTS challenge reference
 
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: full
 

@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOffice
 @FeignClient(name = "home-office-case-search-api", url = "${home-office.api.url}")
 public interface HomeOfficeSearchApi {
 
-    @PostMapping("/v1/applicationStatus/getBySearchParameters")
+    @PostMapping("/ichallenge/applicationStatus/getBySearchParameters")
     HomeOfficeSearchResponse getStatus(
         @RequestBody HomeOfficeSearch request
     );
