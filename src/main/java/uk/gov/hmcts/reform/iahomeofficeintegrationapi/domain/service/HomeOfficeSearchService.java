@@ -31,22 +31,13 @@ public class HomeOfficeSearchService {
         this.homeOfficeSearchApi = homeOfficeSearchApi;
     }
 
-    public HomeOfficeSearchResponse getCaseStatus(String homeOfficeReferenceNumber) {
+    public HomeOfficeSearchResponse getCaseStatus(String homeOfficeReferenceNumber) throws JsonProcessingException {
 
         HomeOfficeSearch request = makeRequestBody(homeOfficeReferenceNumber);
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        try {
-            log.info("HomeOffice-CaseSearch request: {}", ow.writeValueAsString(request));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
+        log.info("HomeOffice-CaseSearch request: {}", ow.writeValueAsString(request));
         HomeOfficeSearchResponse searchResponse = homeOfficeSearchApi.getStatus(request);
-        try {
-            log.info("HomeOffice-CaseSearch response: {}", ow.writeValueAsString(searchResponse));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        log.info("HomeOffice-CaseSearch response: {}", ow.writeValueAsString(searchResponse));
 
         return searchResponse;
     }

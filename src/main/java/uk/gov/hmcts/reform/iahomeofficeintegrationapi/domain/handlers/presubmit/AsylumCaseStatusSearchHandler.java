@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeSearchService;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeDateFormatter;
 
 @Slf4j
@@ -58,7 +60,14 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
         final String homeOfficeReferenceNumber = asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
             .orElseThrow(() -> new IllegalStateException("Home office reference for the appeal is not present"));
 
-        HomeOfficeSearchResponse searchResponse = homeOfficeSearchService.getCaseStatus(homeOfficeReferenceNumber);
+        HomeOfficeSearchResponse searchResponse = null;
+        try {
+            searchResponse = homeOfficeSearchService.getCaseStatus(homeOfficeReferenceNumber);
+        } catch (JsonProcessingException e) {
+            log.error("Json error while calling Home office case status search: " + e.getMessage());
+            throw new HomeOfficeResponseException(
+                "Json error while calling Home office case status search: " + e.getMessage());
+        }
         Optional<HomeOfficeCaseStatus> selectedApplicant = selectMainApplicant(searchResponse.getStatus());
         if (!selectedApplicant.isPresent()) {
             log.info("Unable to find MAIN APPLICANT in Home office response");
