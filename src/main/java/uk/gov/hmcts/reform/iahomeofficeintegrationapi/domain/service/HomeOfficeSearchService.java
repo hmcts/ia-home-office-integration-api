@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties.LookupReferenceData;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,11 +31,13 @@ public class HomeOfficeSearchService {
         this.homeOfficeSearchApi = homeOfficeSearchApi;
     }
 
-    public HomeOfficeSearchResponse getCaseStatus(String homeOfficeReferenceNumber) {
+    public HomeOfficeSearchResponse getCaseStatus(String homeOfficeReferenceNumber) throws JsonProcessingException {
 
         HomeOfficeSearch request = makeRequestBody(homeOfficeReferenceNumber);
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        log.info("HomeOffice-CaseSearch request: {}", ow.writeValueAsString(request));
         HomeOfficeSearchResponse searchResponse = homeOfficeSearchApi.getStatus(request);
-        log.info("HomeOffice-CaseSearch response: {}", searchResponse);
+        log.info("HomeOffice-CaseSearch response: {}", ow.writeValueAsString(searchResponse));
 
         return searchResponse;
     }

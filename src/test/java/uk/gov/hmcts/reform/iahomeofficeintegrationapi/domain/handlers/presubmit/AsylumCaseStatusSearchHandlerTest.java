@@ -99,7 +99,7 @@ public class AsylumCaseStatusSearchHandlerTest {
     }
 
     @Test
-    void check_handler_returns_case_data_with_errors_data() {
+    void check_handler_returns_case_data_with_errors_data() throws Exception {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
