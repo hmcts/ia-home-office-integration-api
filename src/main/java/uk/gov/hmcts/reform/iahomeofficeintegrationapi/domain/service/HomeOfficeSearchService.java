@@ -24,20 +24,22 @@ public class HomeOfficeSearchService {
 
     private final HomeOfficeProperties homeOfficeProperties;
     private final HomeOfficeSearchApi homeOfficeSearchApi;
+    private final ObjectMapper objectMapper;
 
     public HomeOfficeSearchService(
-        HomeOfficeProperties homeOfficeProperties, HomeOfficeSearchApi homeOfficeSearchApi) {
+        HomeOfficeProperties homeOfficeProperties, HomeOfficeSearchApi homeOfficeSearchApi, ObjectMapper objectMapper) {
         this.homeOfficeProperties = homeOfficeProperties;
         this.homeOfficeSearchApi = homeOfficeSearchApi;
+        this.objectMapper = objectMapper;
     }
 
     public HomeOfficeSearchResponse getCaseStatus(String homeOfficeReferenceNumber) throws JsonProcessingException {
 
         HomeOfficeSearch request = makeRequestBody(homeOfficeReferenceNumber);
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        log.info("HomeOffice-CaseSearch request: {}", ow.writeValueAsString(request));
+        ObjectWriter objectWriter = this.objectMapper.writer().withDefaultPrettyPrinter();
+        log.info("HomeOffice-CaseStatusSearch request: {}", objectWriter.writeValueAsString(request));
         HomeOfficeSearchResponse searchResponse = homeOfficeSearchApi.getStatus(request);
-        log.info("HomeOffice-CaseSearch response: {}", ow.writeValueAsString(searchResponse));
+        log.info("HomeOffice-CaseStatusSearch response: {}", objectWriter.writeValueAsString(searchResponse));
 
         return searchResponse;
     }

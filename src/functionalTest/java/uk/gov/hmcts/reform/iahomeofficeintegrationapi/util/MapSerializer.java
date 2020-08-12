@@ -20,7 +20,6 @@ public final class MapSerializer {
     }
 
     public static Map<String, Object> deserialize(String source) throws IOException {
-
         return MAPPER.readValue(
             source,
             new TypeReference<Map<String, Object>>() {
@@ -29,7 +28,6 @@ public final class MapSerializer {
     }
 
     public static String serialize(Map<String, Object> map) throws IOException {
-
         return MAPPER.writeValueAsString(map);
     }
 }

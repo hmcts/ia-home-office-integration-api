@@ -45,6 +45,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeSearchService;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 
 @SpringJUnitConfig
 @ExtendWith(MockitoExtension.class)
@@ -107,10 +108,39 @@ public class AsylumCaseStatusSearchHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(someHomeOfficeReference));
+        when(homeOfficeSearchService.getCaseStatus(anyString()))
+            .thenThrow(new HomeOfficeResponseException("some-error"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        verify(asylumCase, times(1))
+            .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+
+    }
+
+    @Test
+    void check_handler_returns_case_data_with_error_status() throws Exception {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(someHomeOfficeReference));
         when(homeOfficeSearchService.getCaseStatus(anyString())).thenReturn(null);
 
-        assertThatThrownBy(() -> asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback))
-            .isExactlyInstanceOf(NullPointerException.class);
+        PreSubmitCallbackResponse<AsylumCase> response =
+            asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        verify(asylumCase, times(1))
+            .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
 
     }
 

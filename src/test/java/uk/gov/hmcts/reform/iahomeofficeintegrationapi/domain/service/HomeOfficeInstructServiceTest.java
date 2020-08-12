@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties.LookupReferenceData;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,20 +38,18 @@ public class HomeOfficeInstructServiceTest {
     private HomeOfficeProperties homeOfficeProperties;
     @Mock
     private HomeOfficeInstructApi homeOfficeInstructApi;
-    @Mock
-    private HomeOfficeInstruct homeOfficeInstruct;
-
+    private ObjectMapper objectMapper = new ObjectMapper();
     private HomeOfficeInstructService homeOfficeInstructService;
 
     @BeforeEach
     public void setUp() {
 
         homeOfficeInstructService = new HomeOfficeInstructService(
-            homeOfficeProperties, homeOfficeInstructApi);
+            homeOfficeProperties, homeOfficeInstructApi, objectMapper);
     }
 
     @Test
-    public void should_return_message_header_for_valid_request_inputs() {
+    void should_return_message_header_for_valid_request_inputs() throws Exception {
 
         when(homeOfficeProperties.getCodes()).thenReturn(getHomeOfficeReferenceData());
         when(homeOfficeInstructApi.sendNotification(any()))
@@ -68,7 +67,7 @@ public class HomeOfficeInstructServiceTest {
     }
 
     @Test
-    public void returns_values_in_request_body() {
+    void returns_values_in_request_body() {
 
         doReturn(getHomeOfficeReferenceData()).when(homeOfficeProperties).getCodes();
 
@@ -96,7 +95,7 @@ public class HomeOfficeInstructServiceTest {
     }
 
     @Test
-    public void should_throw_for_null_case() {
+    void should_throw_for_null_case() {
 
         assertThatThrownBy(() -> homeOfficeInstructService.sendNotification(
             null, null, someCorrelationId))

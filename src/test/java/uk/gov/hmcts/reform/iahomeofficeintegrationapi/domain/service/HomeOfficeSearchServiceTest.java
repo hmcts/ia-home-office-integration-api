@@ -47,9 +47,9 @@ public class HomeOfficeSearchServiceTest {
 
     @BeforeEach
     public void setUp() {
-
+        ObjectMapper objectMapper = new ObjectMapper();
         homeOfficeSearchService = new HomeOfficeSearchService(
-            homeOfficeProperties, homeOfficeSearchApi);
+            homeOfficeProperties, homeOfficeSearchApi, objectMapper);
     }
 
     @Test
