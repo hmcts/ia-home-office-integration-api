@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.component;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -32,7 +33,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOffice
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 
 @Slf4j
 public class HomeOfficeStatusSearchIntegrationTest
@@ -74,15 +74,15 @@ public class HomeOfficeStatusSearchIntegrationTest
         assertEquals(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class), Optional.of("SUCCESS"));
         final Optional<HomeOfficeCaseStatus> homeOfficeCaseStatus
             = asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class);
-        Person person = null;
+        assertTrue(homeOfficeCaseStatus.isPresent());
         if (homeOfficeCaseStatus.isPresent()) {
-            person = homeOfficeCaseStatus.get().getPerson();
+            Person person = homeOfficeCaseStatus.get().getPerson();
+            assertNotNull(person);
+            assertEquals(person.getGivenName(), "Capability");
+            assertEquals(person.getFamilyName(), "Smith");
+            assertEquals(person.getNationality().getDescription(), "Canada");
+            assertEquals(person.getFullName(), "Capability Smith");
         }
-        assertNotNull(person);
-        assertEquals(person.getGivenName(), "Capability");
-        assertEquals(person.getFamilyName(), "Smith");
-        assertEquals(person.getNationality().getDescription(), "Canada");
-        assertEquals(person.getFullName(), "Capability Smith");
     }
 
     @Test
@@ -141,15 +141,15 @@ public class HomeOfficeStatusSearchIntegrationTest
         assertEquals(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class), Optional.of("SUCCESS"));
         final Optional<HomeOfficeCaseStatus> homeOfficeCaseStatus =
             asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class);
-        Person person = null;
+        assertTrue(homeOfficeCaseStatus.isPresent());
         if (homeOfficeCaseStatus.isPresent()) {
-            person = homeOfficeCaseStatus.get().getPerson();
+            Person person = homeOfficeCaseStatus.get().getPerson();
+            assertNotNull(person);
+            assertEquals(person.getGivenName(), "Capability");
+            assertEquals(person.getFamilyName(), "Smith");
+            assertEquals(person.getNationality().getDescription(), "Canada");
+            assertEquals(person.getFullName(), "Capability Smith");
         }
-        assertNotNull(person);
-        assertEquals(person.getGivenName(), "Capability");
-        assertEquals(person.getFamilyName(), "Smith");
-        assertEquals(person.getNationality().getDescription(), "Canada");
-        assertEquals(person.getFullName(), "Capability Smith");
     }
 
 
@@ -164,9 +164,16 @@ public class HomeOfficeStatusSearchIntegrationTest
         addHomeOfficeApiInstructStub(server, homeOfficeReference);
         addHomeOfficeApiSearch400InternalSystemErrorStub(server, homeOfficeReference);
 
-        Assertions.assertThatThrownBy(() -> getPreSubmitCallbackResponse(homeOfficeReference))
-            .hasRootCauseInstanceOf(HomeOfficeResponseException.class)
-            .hasMessageContaining("message: Home office error code: 1070, message: Internal system error");
+        PreSubmitCallbackResponseForTest response = getPreSubmitCallbackResponse(homeOfficeReference);
+
+        AsylumCase asylumCase = response.getAsylumCase();
+
+        assertNotNull(response);
+        assertNotNull(asylumCase);
+        assertEquals(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class), Optional.of("FAIL"));
+        final Optional<HomeOfficeCaseStatus> homeOfficeCaseStatus =
+            asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class);
+        assertFalse(homeOfficeCaseStatus.isPresent());
     }
 
     @Test
@@ -180,12 +187,16 @@ public class HomeOfficeStatusSearchIntegrationTest
         addHomeOfficeApiInstructStub(server, homeOfficeReference);
         addHomeOfficeApiSearch400BadRequestStub(server, homeOfficeReference);
 
-        Assertions.assertThatThrownBy(() -> getPreSubmitCallbackResponse(homeOfficeReference))
-            .hasRootCauseInstanceOf(HomeOfficeResponseException.class)
-            .hasMessageContaining("message: Home office error code: 1060, "
-                                  + "message: Invalid message format: Messages with a search parameter of type "
-                                  + "DOCUMENT_REFERENCE must pass a parameter value conforming to a UAN "
-                                  + "or Case ID (CID)");
+        PreSubmitCallbackResponseForTest response = getPreSubmitCallbackResponse(homeOfficeReference);
+
+        AsylumCase asylumCase = response.getAsylumCase();
+
+        assertNotNull(response);
+        assertNotNull(asylumCase);
+        assertEquals(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class), Optional.of("FAIL"));
+        final Optional<HomeOfficeCaseStatus> homeOfficeCaseStatus =
+            asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class);
+        assertFalse(homeOfficeCaseStatus.isPresent());
     }
 
     @Test

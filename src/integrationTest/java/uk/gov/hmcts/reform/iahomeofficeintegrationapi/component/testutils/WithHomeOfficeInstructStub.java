@@ -18,7 +18,7 @@ public interface WithHomeOfficeInstructStub {
 
     default void addHomeOfficeApiInstructStub(WireMockServer server, String homeOfficeReference) throws IOException {
 
-        String homeOfficeInstructApiUrl = "/v1/applicationInstruct/setInstruct";
+        String homeOfficeInstructApiUrl = "/ichallenge/applicationInstruct/setInstruct";
 
         final File hoInstructResponseResourceFile
             = ResourceUtils.getFile("classpath:ho-api_instruct_200-valid_response.json");
