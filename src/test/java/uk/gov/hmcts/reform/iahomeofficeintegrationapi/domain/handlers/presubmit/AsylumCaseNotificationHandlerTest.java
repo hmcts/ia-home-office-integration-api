@@ -57,7 +57,7 @@ public class AsylumCaseNotificationHandlerTest {
         asylumCaseNotificationHandler = new AsylumCaseNotificationHandler(homeOfficeInstructService);
     }
 
-    //@Test
+    @Test
     void check_handler_returns_case_data_for_valid_input() throws Exception {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -83,7 +83,7 @@ public class AsylumCaseNotificationHandlerTest {
 
     }
 
-    //@Test
+    @Test
     void check_handler_returns_error_status() throws Exception {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -107,7 +107,7 @@ public class AsylumCaseNotificationHandlerTest {
 
     }
 
-    //@Test
+    @Test
     void check_handler_returns_exception_status() throws Exception {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);

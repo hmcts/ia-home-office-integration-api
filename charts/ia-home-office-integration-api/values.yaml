@@ -5,7 +5,7 @@ java:
   environment:
     IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
     S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-    HOME_OFFICE_ENDPOINT: "https://cts-challenge.prp1.np.immigration-api.homeoffice.gov.uk"
+    HOME_OFFICE_ENDPOINT: "http://ia-home-office-mock-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
   keyVaults:
     ia:
       resourceGroup: ia
