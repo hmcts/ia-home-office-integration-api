@@ -1,12 +1,8 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.JacksonConfiguration;
-
 public class HomeOfficeMetadata {
 
     private String code;
-    @JsonDeserialize(using = JacksonConfiguration.BooleanStringDeserializer.class)
     private String valueBoolean;
     private String valueDateTime;
     private String valueString;

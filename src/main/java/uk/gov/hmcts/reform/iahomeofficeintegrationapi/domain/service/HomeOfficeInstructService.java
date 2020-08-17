@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties.LookupReferenceData;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
@@ -23,21 +26,27 @@ public class HomeOfficeInstructService {
 
     private final HomeOfficeProperties homeOfficeProperties;
     private final HomeOfficeInstructApi homeOfficeInstructApi;
+    private final ObjectMapper objectMapper;
 
     public HomeOfficeInstructService(
-        HomeOfficeProperties homeOfficeProperties, HomeOfficeInstructApi homeOfficeInstructApi) {
+        HomeOfficeProperties homeOfficeProperties,
+        HomeOfficeInstructApi homeOfficeInstructApi,
+        ObjectMapper objectMapper) {
         this.homeOfficeProperties = homeOfficeProperties;
         this.homeOfficeInstructApi = homeOfficeInstructApi;
+        this.objectMapper = objectMapper;
     }
 
     public HomeOfficeInstructResponse sendNotification(
         String homeOfficeReferenceNumber,
         String caseId,
-        String correlationId) {
+        String correlationId) throws JsonProcessingException {
 
         HomeOfficeInstruct request = makeRequestBody(homeOfficeReferenceNumber, caseId, correlationId);
+        ObjectWriter objectWriter = this.objectMapper.writer().withDefaultPrettyPrinter();
+        log.info("HomeOffice-Instruct request: {}", objectWriter.writeValueAsString(request));
         HomeOfficeInstructResponse instructResponse = homeOfficeInstructApi.sendNotification(request);
-        log.debug("HomeOffice-Instruct response: {}", instructResponse);
+        log.info("HomeOffice-Instruct response: {}", objectWriter.writeValueAsString(instructResponse));
 
         return instructResponse;
     }

@@ -57,8 +57,8 @@ public class AsylumCaseNotificationHandlerTest {
         asylumCaseNotificationHandler = new AsylumCaseNotificationHandler(homeOfficeInstructService);
     }
 
-    //@Test
-    public void check_handler_returns_case_data_for_valid_input() {
+    @Test
+    void check_handler_returns_case_data_for_valid_input() throws Exception {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -83,8 +83,8 @@ public class AsylumCaseNotificationHandlerTest {
 
     }
 
-    //@Test
-    public void check_handler_returns_errors_data() {
+    @Test
+    void check_handler_returns_error_status() throws Exception {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -101,15 +101,40 @@ public class AsylumCaseNotificationHandlerTest {
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
-        assertThat(response.getErrors()).isNotEmpty();
-        assertThat(response.getErrors().contains("Error sending notification to Home Office"));
+        assertThat(response.getErrors()).isEmpty();
         verify(asylumCase, times(1))
             .write(HOME_OFFICE_INSTRUCT_STATUS, "Internal Server Error");
 
     }
 
     @Test
-    public void handling_should_throw_if_event_not_applicable() {
+    void check_handler_returns_exception_status() throws Exception {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(someHomeOfficeReference));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(someCaseReference));
+        when(homeOfficeInstructService.sendNotification(anyString(), anyString(), anyString())).thenThrow(
+            new RuntimeException("some-error")
+        );
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            asylumCaseNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertThat(response.getErrors()).isEmpty();
+        verify(asylumCase, times(1))
+            .write(HOME_OFFICE_INSTRUCT_STATUS, "Error sending notification to Home office. Message: some-error");
+
+    }
+
+    @Test
+    void handling_should_throw_if_event_not_applicable() {
 
         when(callback.getEvent()).thenReturn(Event.UNKNOWN);
 
@@ -119,7 +144,7 @@ public class AsylumCaseNotificationHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_not_bound_to__about_to_submit__callback_stage() {
+    void handling_should_throw_if_not_bound_to__about_to_submit__callback_stage() {
 
         assertThatThrownBy(() -> asylumCaseNotificationHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -127,7 +152,7 @@ public class AsylumCaseNotificationHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
 
@@ -155,7 +180,7 @@ public class AsylumCaseNotificationHandlerTest {
 
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> asylumCaseNotificationHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -174,8 +199,8 @@ public class AsylumCaseNotificationHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    //@Test
-    public void should_throw_error_for_home_office_reference_and_case_reference_null_values() {
+    @Test
+    void should_throw_error_for_home_office_reference_and_case_reference_null_values() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);

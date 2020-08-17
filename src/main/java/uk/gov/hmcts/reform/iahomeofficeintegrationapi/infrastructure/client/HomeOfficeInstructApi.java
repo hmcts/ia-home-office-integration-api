@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOffice
 @FeignClient(name = "home-office-instruct-api", url = "${home-office.api.url}")
 public interface HomeOfficeInstructApi {
 
-    @PostMapping("/v1/applicationInstruct/setInstruct")
+    @PostMapping("/ichallenge/applicationInstruct/setInstruct")
     HomeOfficeInstructResponse sendNotification(
         @RequestBody HomeOfficeInstruct request
     );

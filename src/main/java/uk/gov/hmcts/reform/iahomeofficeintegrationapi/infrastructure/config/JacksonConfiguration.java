@@ -6,12 +6,8 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.READ_UNKNOWN
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_USING_TO_STRING;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import java.io.IOException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -39,15 +35,4 @@ public class JacksonConfiguration {
         return objectMapper;
     }
 
-    public static class BooleanStringDeserializer extends JsonDeserializer<String> {
-
-        @Override
-        public String deserialize(JsonParser parser, DeserializationContext context) throws IOException {
-            String defaultValue = "No";
-            if (parser.hasCurrentToken()) {
-                defaultValue = (parser.getBooleanValue() ? "Yes" : "No");
-            }
-            return defaultValue;
-        }
-    }
 }
