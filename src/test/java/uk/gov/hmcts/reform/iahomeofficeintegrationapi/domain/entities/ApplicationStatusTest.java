@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +52,8 @@ public class ApplicationStatusTest {
         assertNotNull(applicationStatus.getRejectionReasons());
         assertThat(applicationStatus.getHomeOfficeMetadata()).isEmpty();
         assertThat(applicationStatus.getRejectionReasons()).isEmpty();
+        assertNull(applicationStatus.getCcdHomeOfficeMetadata());
+        assertNull(applicationStatus.getCcdRejectionReasons());
 
     }
 }

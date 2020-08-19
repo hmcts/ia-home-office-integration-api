@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 
 public class ApplicationStatus {
 
@@ -16,6 +17,8 @@ public class ApplicationStatus {
     @JsonProperty("metadata")
     private List<HomeOfficeMetadata> homeOfficeMetadata;
     private List<RejectionReason> rejectionReasons;
+    private List<IdValue<HomeOfficeMetadata>> ccdHomeOfficeMetadata;
+    private List<IdValue<RejectionReason>> ccdRejectionReasons;
 
     private ApplicationStatus() {
 
@@ -84,5 +87,12 @@ public class ApplicationStatus {
         return rejectionReasons;
     }
 
+    public List<IdValue<HomeOfficeMetadata>> getCcdHomeOfficeMetadata() {
+        return ccdHomeOfficeMetadata;
+    }
+
+    public List<IdValue<RejectionReason>> getCcdRejectionReasons() {
+        return ccdRejectionReasons;
+    }
 }
 

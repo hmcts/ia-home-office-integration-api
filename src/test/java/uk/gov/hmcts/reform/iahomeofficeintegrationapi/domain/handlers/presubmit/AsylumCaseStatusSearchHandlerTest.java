@@ -13,8 +13,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_CASE_STATUS_DATA;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -39,6 +41,7 @@ import org.springframework.util.FileCopyUtils;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeCaseStatus;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeError;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeMetadata;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeSearchResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
@@ -54,6 +57,9 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Home
 @SuppressWarnings("unchecked")
 public class AsylumCaseStatusSearchHandlerTest {
 
+    private static final String HOME_OFFICE_ERROR_MESSAGE = "The service has been "
+        + "unable to retrieve the Home Office information about this appeal.";
+
     private static HomeOfficeSearchResponse homeOfficeSearchResponse;
     private static HomeOfficeSearchResponse homeOfficeNullFieldResponse;
     private final String someHomeOfficeReference = "some-reference";
@@ -67,6 +73,9 @@ public class AsylumCaseStatusSearchHandlerTest {
     private HomeOfficeSearchService homeOfficeSearchService;
     @Mock
     private HomeOfficeCaseStatus caseStatus;
+    @Mock
+    private HomeOfficeSearchResponse mockResponse;
+
     @Value("classpath:home-office-sample-response.json")
     private Resource resource;
     @Value("classpath:home-office-null-field-response.json")
@@ -122,6 +131,31 @@ public class AsylumCaseStatusSearchHandlerTest {
         assertThat(response.getData()).isEqualTo(asylumCase);
         verify(asylumCase, times(1))
             .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+        verify(asylumCase, times(1))
+            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_ERROR_MESSAGE);
+
+    }
+
+    @Test
+    void check_handler_returns_case_data_with_error_status_for_null_fields() throws Exception {
+
+        when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(someHomeOfficeReference));
+        when(homeOfficeSearchService.getCaseStatus(anyString())).thenReturn(null);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        verify(asylumCase, times(1))
+            .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+        verify(asylumCase, times(1))
+            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_ERROR_MESSAGE);
 
     }
 
@@ -143,18 +177,25 @@ public class AsylumCaseStatusSearchHandlerTest {
         assertThat(response.getData()).isEqualTo(asylumCase);
         verify(asylumCase, times(1))
             .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+        verify(asylumCase, times(1))
+            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_ERROR_MESSAGE);
 
     }
 
     @Test
-    void check_handler_returns_case_data_with_error_status() throws Exception {
+    void check_handler_validates_error_detail_from_home_office_data_returns_fail() throws Exception {
 
         when(callback.getEvent()).thenReturn(MARK_APPEAL_PAID);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(someHomeOfficeReference));
-        when(homeOfficeSearchService.getCaseStatus(anyString())).thenReturn(null);
+        when(homeOfficeSearchService.getCaseStatus(anyString())).thenReturn(mockResponse);
+        when(mockResponse.getErrorDetail()).thenReturn(new HomeOfficeError(
+            "1010",
+            "UAN format is invalid",
+            true
+        ));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -164,6 +205,8 @@ public class AsylumCaseStatusSearchHandlerTest {
         assertThat(response.getData()).isEqualTo(asylumCase);
         verify(asylumCase, times(1))
             .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+        verify(asylumCase, times(1))
+            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_ERROR_MESSAGE);
 
     }
 
@@ -200,7 +243,8 @@ public class AsylumCaseStatusSearchHandlerTest {
                 if (callbackStage == ABOUT_TO_SUBMIT
                     && (callback.getEvent() == SUBMIT_APPEAL
                     || callback.getEvent() == PAY_AND_SUBMIT_APPEAL
-                    || callback.getEvent() == MARK_APPEAL_PAID)
+                    || callback.getEvent() == MARK_APPEAL_PAID
+                    || callback.getEvent() == REQUEST_HOME_OFFICE_DATA)
                 ) {
                     assertTrue(canHandle);
                 } else {

@@ -16,6 +16,9 @@ public enum AsylumCaseDefinition {
     HOME_OFFICE_SEARCH_STATUS(
         "homeOfficeSearchStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_SEARCH_STATUS_MESSAGE(
+        "homeOfficeSearchStatusMessage", new TypeReference<String>() {}),
+
     HOME_OFFICE_INSTRUCT_STATUS(
         "homeOfficeInstructStatus", new TypeReference<String>() {});
 

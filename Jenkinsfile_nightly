@@ -37,6 +37,8 @@ def secrets = [
 
         secret('test-law-firm-a-username', 'TEST_LAW_FIRM_A_USERNAME'),
         secret('test-law-firm-a-password', 'TEST_LAW_FIRM_A_PASSWORD'),
+        secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
+        secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
         secret('test-adminofficer-username', 'TEST_ADMINOFFICER_USERNAME'),
         secret('test-adminofficer-password', 'TEST_ADMINOFFICER_PASSWORD')
 
