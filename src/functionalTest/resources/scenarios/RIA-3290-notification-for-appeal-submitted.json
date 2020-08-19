@@ -1,6 +1,5 @@
 {
   "description": "RIA-3290 Sends sample notification to Home office API",
-  "disabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
