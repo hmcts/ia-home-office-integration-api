@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -29,11 +30,11 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOffice
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeSearchResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeSearchApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AccessTokenProvider;
 
 @SpringJUnitConfig
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
-public class HomeOfficeSearchServiceTest {
+class HomeOfficeSearchServiceTest {
 
     private final String someHoReference = "some-ho-reference";
     @Value("classpath:home-office-sample-response.json")
@@ -42,6 +43,8 @@ public class HomeOfficeSearchServiceTest {
     private HomeOfficeProperties homeOfficeProperties;
     @Mock
     private HomeOfficeSearchApi homeOfficeSearchApi;
+    @Mock
+    private @Qualifier("requestUser") AccessTokenProvider accessTokenProvider;
 
     private HomeOfficeSearchService homeOfficeSearchService;
 
@@ -49,14 +52,14 @@ public class HomeOfficeSearchServiceTest {
     public void setUp() {
         ObjectMapper objectMapper = new ObjectMapper();
         homeOfficeSearchService = new HomeOfficeSearchService(
-            homeOfficeProperties, homeOfficeSearchApi, objectMapper);
+            homeOfficeProperties, homeOfficeSearchApi, accessTokenProvider, objectMapper);
     }
 
     @Test
-    public void should_return_case_details_from_home_office() throws Exception {
+    void should_return_case_details_from_home_office() throws Exception {
 
         when(homeOfficeProperties.getCodes()).thenReturn(getHomeOfficeReferenceData());
-        when(homeOfficeSearchApi.getStatus(any())).thenReturn(
+        when(homeOfficeSearchApi.getStatus(any(), any())).thenReturn(
             getSampleResponse()
         );
 
@@ -77,7 +80,7 @@ public class HomeOfficeSearchServiceTest {
     }
 
     @Test
-    public void returns_values_in_request_body() {
+    void returns_values_in_request_body() {
 
         doReturn(getHomeOfficeReferenceData()).when(homeOfficeProperties).getCodes();
 
@@ -94,7 +97,7 @@ public class HomeOfficeSearchServiceTest {
     }
 
     @Test
-    public void should_throw_for_null_home_office_reference() {
+    void should_throw_for_null_home_office_reference() {
 
         assertThatThrownBy(() -> homeOfficeSearchService.getCaseStatus(null))
             .isExactlyInstanceOf(NullPointerException.class);

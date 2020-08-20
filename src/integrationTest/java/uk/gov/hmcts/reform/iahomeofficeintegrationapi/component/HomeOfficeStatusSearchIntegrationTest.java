@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.Callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.IaCaseHomeOfficeIntegrationApiClient;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.StaticPortWiremockFactory;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithHomeOfficeAuthStub;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithHomeOfficeInstructStub;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithHomeOfficeStatusSearchStub;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithIdamStub;
@@ -37,7 +38,9 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 @Slf4j
 public class HomeOfficeStatusSearchIntegrationTest
     extends SpringBootIntegrationTest
-    implements WithIdamStub, WithServiceAuthStub, WithHomeOfficeStatusSearchStub, WithHomeOfficeInstructStub {
+    implements
+        WithIdamStub, WithServiceAuthStub,
+        WithHomeOfficeStatusSearchStub, WithHomeOfficeInstructStub, WithHomeOfficeAuthStub {
 
     public static final String APPEAL_REFERENCE_NUMBER = "some-appeal-reference-number";
 
@@ -50,6 +53,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
         addServiceAuthStub(server);
         addUserDetailsStub(server);
+        addHomeOfficeAuthTokenStub(server);
         addHomeOfficeApiSearchValidResponseStub(server, homeOfficeReference);
         addHomeOfficeApiInstructStub(server, homeOfficeReference);
 
@@ -93,6 +97,7 @@ public class HomeOfficeStatusSearchIntegrationTest
         final String homeOfficeReference = "1212-0099-0036-2016";
         addServiceAuthStub(server);
         addUserDetailsStub(server);
+        addHomeOfficeAuthTokenStub(server);
         addHomeOfficeApiSearchNoInvolvementsStub(server, homeOfficeReference);
         addHomeOfficeApiInstructStub(server, homeOfficeReference);
 
@@ -117,6 +122,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
         addServiceAuthStub(server);
         addUserDetailsStub(server);
+        addHomeOfficeAuthTokenStub(server);
         addHomeOfficeApiSearchExtraFieldsStub(server, homeOfficeReference);
         addHomeOfficeApiInstructStub(server, homeOfficeReference);
 
@@ -161,6 +167,7 @@ public class HomeOfficeStatusSearchIntegrationTest
         final String homeOfficeReference = "1212-0099-0036-1000";
         addServiceAuthStub(server);
         addUserDetailsStub(server);
+        addHomeOfficeAuthTokenStub(server);
         addHomeOfficeApiInstructStub(server, homeOfficeReference);
         addHomeOfficeApiSearch400InternalSystemErrorStub(server, homeOfficeReference);
 
@@ -184,6 +191,7 @@ public class HomeOfficeStatusSearchIntegrationTest
         final String homeOfficeReference = "1212-0099-0036-XXXX";
         addServiceAuthStub(server);
         addUserDetailsStub(server);
+        addHomeOfficeAuthTokenStub(server);
         addHomeOfficeApiInstructStub(server, homeOfficeReference);
         addHomeOfficeApiSearch400BadRequestStub(server, homeOfficeReference);
 
@@ -207,6 +215,7 @@ public class HomeOfficeStatusSearchIntegrationTest
         final String homeOfficeReference = "1212-0099-0036-0500";
         addServiceAuthStub(server);
         addUserDetailsStub(server);
+        addHomeOfficeAuthTokenStub(server);
         addHomeOfficeApiInstructStub(server, homeOfficeReference);
         addHomeOfficeApiSearch500ServerErrorStub(server, homeOfficeReference);
 

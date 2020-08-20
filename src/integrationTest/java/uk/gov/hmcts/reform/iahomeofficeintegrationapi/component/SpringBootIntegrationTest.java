@@ -21,6 +21,8 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.Application;
     "S2S_URL=http://127.0.0.1:" + WIREMOCK_PORT + "/s2s",
     "IA_IDAM_CLIENT_ID=ia",
     "IA_IDAM_SECRET=something",
+    "IA_HOMEOFFICE_CLIENT_ID=ho-client-id",
+    "IA_HOMEOFFICE_SECRET=something",
     "HOME_OFFICE_ENDPOINT=http://127.0.0.1:" + WIREMOCK_PORT
 })
 @ExtendWith({

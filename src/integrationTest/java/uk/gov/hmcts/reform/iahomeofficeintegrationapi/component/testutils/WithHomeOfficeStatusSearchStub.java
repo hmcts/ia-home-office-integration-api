@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.IntegrationConstants.HOME_OFFICE_ACCESS_TOKEN;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.IntegrationConstants.HOME_OFFICE_API_URL;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -60,6 +61,7 @@ public interface WithHomeOfficeStatusSearchStub {
         server.addStubMapping(
             new StubMapping(
                 newRequestPattern(RequestMethod.POST, urlEqualTo(HOME_OFFICE_API_URL))
+                    .withHeader("Authorization", equalTo(HOME_OFFICE_ACCESS_TOKEN))
                     .withRequestBody(
                         matchingJsonPath("$.searchParams[0].spValue", equalTo(homeOfficeReference)))
                     .build(),
@@ -111,6 +113,7 @@ public interface WithHomeOfficeStatusSearchStub {
         server.addStubMapping(
             new StubMapping(
                 newRequestPattern(RequestMethod.POST, urlEqualTo(HOME_OFFICE_API_URL))
+                    .withHeader("Authorization", equalTo("Bearer " + HOME_OFFICE_ACCESS_TOKEN))
                     .withRequestBody(
                         matchingJsonPath("$.searchParams[0].spValue", equalTo(homeOfficeReference)))
                     .build(),

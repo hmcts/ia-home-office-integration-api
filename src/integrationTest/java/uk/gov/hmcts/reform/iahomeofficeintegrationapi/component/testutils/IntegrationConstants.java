@@ -4,6 +4,8 @@ public class IntegrationConstants {
 
     public static final String HOME_OFFICE_API_URL = "/ichallenge/applicationStatus/getBySearchParameters";
 
+    public static final String HOME_OFFICE_ACCESS_TOKEN = "some_access_token";
+
     public static final String SERVICE_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaW"
                                                + "F0IjoxNTE2MjM5MDIyfQ.L8i6g3PfcHlioHCCPURC9pmXT7gdJpx3kOoyAfNUwCc";
 

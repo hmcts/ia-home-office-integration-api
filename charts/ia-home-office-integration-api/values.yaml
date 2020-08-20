@@ -14,4 +14,6 @@ java:
         - idam-secret
         - s2s-secret
         - s2s-microservice
+        - homeoffice-client-id
+        - homeoffice-secret
         - AppInsightsInstrumentationKey

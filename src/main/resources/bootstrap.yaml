@@ -11,4 +11,6 @@ spring:
         idam-url: IDAM_URL
         s2s-url: S2S_URL
         home-office.api.url: HOME_OFFICE_ENDPOINT
+        homeoffice-client-id: IA_HOMEOFFICE_CLIENT_ID
+        homeoffice-secret: IA_HOMEOFFICE_SECRET
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key

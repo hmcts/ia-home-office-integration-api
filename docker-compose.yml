@@ -32,6 +32,8 @@ services:
       IA_IDAM_SECRET:
       IA_S2S_MICROSERVICE:
       IA_S2S_SECRET:
+      IA_HOMEOFFICE_CLIENT_ID:
+      IA_HOMEOFFICE_SECRET:
 
     external_links:
       - idam-api

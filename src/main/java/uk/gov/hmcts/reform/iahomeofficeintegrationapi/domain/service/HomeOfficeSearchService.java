@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeSearch;
@@ -17,6 +18,8 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Home
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeDateFormatter;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeRequestUuidGenerator;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AccessTokenProvider;
+
 
 @Service
 @Slf4j
@@ -24,21 +27,27 @@ public class HomeOfficeSearchService {
 
     private final HomeOfficeProperties homeOfficeProperties;
     private final HomeOfficeSearchApi homeOfficeSearchApi;
+    private final AccessTokenProvider accessTokenProvider;
     private final ObjectMapper objectMapper;
 
     public HomeOfficeSearchService(
-        HomeOfficeProperties homeOfficeProperties, HomeOfficeSearchApi homeOfficeSearchApi, ObjectMapper objectMapper) {
+        HomeOfficeProperties homeOfficeProperties,
+        HomeOfficeSearchApi homeOfficeSearchApi,
+        @Qualifier("homeOffice") AccessTokenProvider accessTokenProvider,
+        ObjectMapper objectMapper) {
         this.homeOfficeProperties = homeOfficeProperties;
         this.homeOfficeSearchApi = homeOfficeSearchApi;
         this.objectMapper = objectMapper;
+        this.accessTokenProvider = accessTokenProvider;
     }
 
     public HomeOfficeSearchResponse getCaseStatus(String homeOfficeReferenceNumber) throws JsonProcessingException {
 
+        final String accessToken = accessTokenProvider.getAccessToken();
         HomeOfficeSearch request = makeRequestBody(homeOfficeReferenceNumber);
         ObjectWriter objectWriter = this.objectMapper.writer().withDefaultPrettyPrinter();
         log.info("HomeOffice-CaseStatusSearch request: {}", objectWriter.writeValueAsString(request));
-        HomeOfficeSearchResponse searchResponse = homeOfficeSearchApi.getStatus(request);
+        HomeOfficeSearchResponse searchResponse = homeOfficeSearchApi.getStatus(accessToken, request);
         log.info("HomeOffice-CaseStatusSearch response: {}", objectWriter.writeValueAsString(searchResponse));
 
         return searchResponse;

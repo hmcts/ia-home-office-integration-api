@@ -76,3 +76,7 @@ feign:
       default:
         loggerLevel: full
 
+auth.homeoffice.client.baseUrl: ${HOME_OFFICE_ENDPOINT:http://127.0.0.1:8098}
+auth.homeoffice.token.path: /ichallenge/token
+auth.homeoffice.client.id: ${IA_HOMEOFFICE_CLIENT_ID:}
+auth.homeoffice.client.secret: ${IA_HOMEOFFICE_SECRET:}
