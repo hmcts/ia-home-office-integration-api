@@ -13,9 +13,13 @@ public interface WithHomeOfficeAuthStub {
 
     default void addHomeOfficeAuthTokenStub(WireMockServer server) {
 
-        String jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdG9rZW4iOiJzb21lX2FjY2V"
-                           + "zc190b2tlbiIsInNjb3BlIjoicmVhZCIsInRva2VuX3R5cGUiOiJiZWFyZXIiLCJleHBpc"
-                           + "mVzX2luIjoyOTl9.rsrnW2pMzmSJiY_80IxvgOTgglgLGBiYtAFRRuNVVqc";
+        String jwtToken = "{"
+                          + "\"access_token\": \"some_access_token\","
+                          + "\"expires_in\": 300,"
+                          + "\"token_type\": \"bearer\","
+                          + "\"not-before-policy\": 0,"
+                          + "\"scope\": \"email profile\""
+                          + "}";
 
         server.addStubMapping(
             new StubMapping(
@@ -30,7 +34,7 @@ public interface WithHomeOfficeAuthStub {
                     .build(),
                 aResponse()
                     .withStatus(200)
-                    .withHeader("Content-Type", "text/plain;charset=UTF-8")
+                    .withHeader("Content-Type", "application/json;charset=UTF-8")
                     // a JWT token as response body
                     .withBody(jwtToken)
                     .build()

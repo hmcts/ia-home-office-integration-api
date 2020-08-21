@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.homeoffice;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -77,16 +75,9 @@ public class HomeOfficeAuthorizor {
 
     private String extractAccessToken(String response) {
 
-        DecodedJWT decodedJwt;
-        try {
-            decodedJwt = JWT.decode(response);
-        } catch (JWTDecodeException e) {
-            //Invalid token
-            e.printStackTrace();
-            throw new IdentityManagerResponseException(
-                "Exception decoding the token: " + e.getMessage(), e
-            );
-        }
-        return decodedJwt.getClaims().getOrDefault("access_token", null).asString();
+        JacksonJsonParser jsonParser = new JacksonJsonParser();
+        final String accessToken = jsonParser.parseMap(response).get("access_token").toString();
+        log.info("Extracted access token from the response : " + accessToken);
+        return accessToken;
     }
 }
