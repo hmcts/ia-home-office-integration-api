@@ -1,0 +1,15 @@
+{
+  "messageHeader": {
+    "eventDateTime": "2020-07-29T09:49:09.692485+01:00",
+    "correlationId": "ABC2344BCED2234EA",
+    "consumer": {
+      "code": "HMCTS",
+      "description": "HM Courts and Tribunal Service"
+    }
+  },
+  "errorDetail": {
+    "success": "false",
+    "messageText": "Internal system error",
+    "errorCode": "1070"
+  }
+}

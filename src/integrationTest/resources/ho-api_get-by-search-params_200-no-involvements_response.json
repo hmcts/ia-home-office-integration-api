@@ -1,0 +1,15 @@
+{
+  "messageHeader": {
+    "eventDateTime": "2020-07-29T09:00:28.19323+01:00",
+    "correlationId": "ABC2344BCED2234EA",
+    "consumer": {
+      "code": "HMCTS",
+      "description": "HM Courts and Tribunal Service"
+    }
+  },
+  "errorDetail": {
+    "success": "true",
+    "messageText": "No item found for given DOCUMENT_REFERENCE",
+    "errorCode": "1030"
+  }
+}
