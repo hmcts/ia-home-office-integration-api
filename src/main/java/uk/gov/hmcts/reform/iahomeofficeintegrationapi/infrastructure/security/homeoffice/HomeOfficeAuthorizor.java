@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.h
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
 
 @Service
+@Slf4j
 public class HomeOfficeAuthorizor {
 
     private final RestTemplate restTemplate;
@@ -61,6 +63,7 @@ public class HomeOfficeAuthorizor {
                         requestEntity,
                         new ParameterizedTypeReference<String>() {}
                     ).getBody();
+            log.info("Received JWT token response from Home Office: " + response);
 
         } catch (RestClientResponseException e) {
 
@@ -79,8 +82,9 @@ public class HomeOfficeAuthorizor {
             decodedJwt = JWT.decode(response);
         } catch (JWTDecodeException e) {
             //Invalid token
+            e.printStackTrace();
             throw new IdentityManagerResponseException(
-                "Exception decoding the token", e
+                "Exception decoding the token: " + e.getMessage(), e
             );
         }
         return decodedJwt.getClaims().getOrDefault("access_token", null).asString();
