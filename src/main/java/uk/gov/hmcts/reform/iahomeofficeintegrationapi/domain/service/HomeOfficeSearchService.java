@@ -46,11 +46,13 @@ public class HomeOfficeSearchService {
         final String accessToken = accessTokenProvider.getAccessToken();
         HomeOfficeSearch request = makeRequestBody(homeOfficeReferenceNumber);
         ObjectWriter objectWriter = this.objectMapper.writer().withDefaultPrettyPrinter();
-        log.info("HomeOffice-CaseStatusSearch request: {}", objectWriter.writeValueAsString(request));
-        HomeOfficeSearchResponse searchResponse = homeOfficeSearchApi.getStatus(accessToken, request);
-        log.info("HomeOffice-CaseStatusSearch response: {}", objectWriter.writeValueAsString(searchResponse));
 
-        return searchResponse;
+        log.info("HomeOffice-CaseStatusSearch request: {}", objectWriter.writeValueAsString(request));
+        String searchResponse = homeOfficeSearchApi.getStatus(accessToken, request);
+        log.info("HomeOffice-CaseStatusSearch response for reference number {} : {}",
+            homeOfficeReferenceNumber, searchResponse);
+
+        return objectMapper.readValue(searchResponse, HomeOfficeSearchResponse.class);
     }
 
 
