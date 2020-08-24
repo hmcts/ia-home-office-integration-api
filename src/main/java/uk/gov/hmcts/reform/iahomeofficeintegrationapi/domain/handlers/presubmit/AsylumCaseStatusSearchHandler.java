@@ -43,8 +43,8 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.SUBMIT_APPEAL
-            && callback.getCaseDetails().getState() == State.APPEAL_SUBMITTED;
+               && callback.getEvent() == Event.SUBMIT_APPEAL
+               && callback.getCaseDetails().getState() == State.APPEAL_SUBMITTED;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
