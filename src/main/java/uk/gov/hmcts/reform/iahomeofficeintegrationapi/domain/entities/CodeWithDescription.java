@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
-import static java.util.Objects.requireNonNull;
-
 public class CodeWithDescription {
 
     private String code;
@@ -17,12 +15,10 @@ public class CodeWithDescription {
     }
 
     public String getCode() {
-        requireNonNull(code);
         return code;
     }
 
     public String getDescription() {
-        requireNonNull(description);
         return description;
     }
 

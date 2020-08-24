@@ -10,7 +10,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties.LookupReferenceData;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -112,11 +111,12 @@ class HomeOfficeSearchServiceTest {
         return consumerMap;
     }
 
-    private HomeOfficeSearchResponse getSampleResponse() throws Exception {
+    private String getSampleResponse() throws Exception {
         Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
-        ObjectMapper om = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return om.readValue(FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
+        return FileCopyUtils.copyToString(reader);
+        //ObjectMapper om = new ObjectMapper()
+        //    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        //return om.readValue(FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
     }
 
 }

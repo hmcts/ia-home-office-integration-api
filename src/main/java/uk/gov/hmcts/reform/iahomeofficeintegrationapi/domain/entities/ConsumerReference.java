@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
-import static java.util.Objects.requireNonNull;
-
 public class ConsumerReference {
 
     private String code;
@@ -20,7 +18,6 @@ public class ConsumerReference {
     }
 
     public String getCode() {
-        requireNonNull(code);
         return code;
     }
 

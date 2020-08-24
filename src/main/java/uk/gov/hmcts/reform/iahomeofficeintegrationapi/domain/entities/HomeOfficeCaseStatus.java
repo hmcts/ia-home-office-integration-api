@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
-import static java.util.Objects.requireNonNull;
-
 public class HomeOfficeCaseStatus {
 
     private Person person;
@@ -25,12 +23,10 @@ public class HomeOfficeCaseStatus {
     }
 
     public Person getPerson() {
-        requireNonNull(person);
         return person;
     }
 
     public ApplicationStatus getApplicationStatus() {
-        requireNonNull(applicationStatus);
         return applicationStatus;
     }
 
