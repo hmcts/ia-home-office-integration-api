@@ -53,6 +53,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Home
 public class AsylumCaseStatusSearchHandlerTest {
 
     private static HomeOfficeSearchResponse homeOfficeSearchResponse;
+    private static HomeOfficeSearchResponse homeOfficeNullFieldResponse;
     private final String someHomeOfficeReference = "some-reference";
     @Mock
     private Callback<AsylumCase> callback;
@@ -66,6 +67,8 @@ public class AsylumCaseStatusSearchHandlerTest {
     private HomeOfficeCaseStatus caseStatus;
     @Value("classpath:home-office-sample-response.json")
     private Resource resource;
+    @Value("classpath:home-office-null-field-response.json")
+    private Resource resourceNullField;
 
     private AsylumCaseStatusSearchHandler asylumCaseStatusSearchHandler;
 
@@ -110,6 +113,28 @@ public class AsylumCaseStatusSearchHandlerTest {
             .thenReturn(Optional.of(someHomeOfficeReference));
         when(homeOfficeSearchService.getCaseStatus(anyString()))
             .thenThrow(new HomeOfficeResponseException("some-error"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        verify(asylumCase, times(1))
+            .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+
+    }
+
+    @Test
+    void check_handler_validates_person_null_value_from_home_office_data() throws Exception {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(someHomeOfficeReference));
+        when(homeOfficeSearchService.getCaseStatus(anyString())).thenReturn(getNullFieldResponse());
 
         PreSubmitCallbackResponse<AsylumCase> response =
             asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -306,6 +331,17 @@ public class AsylumCaseStatusSearchHandlerTest {
             homeOfficeSearchResponse = om.readValue(FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
         }
         return homeOfficeSearchResponse;
+    }
+
+    private HomeOfficeSearchResponse getNullFieldResponse() throws Exception {
+        if (homeOfficeNullFieldResponse == null) {
+            Reader reader = new InputStreamReader(resourceNullField.getInputStream(), UTF_8);
+            ObjectMapper om = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            homeOfficeNullFieldResponse = om.readValue(
+                FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
+        }
+        return homeOfficeNullFieldResponse;
     }
 
 }
