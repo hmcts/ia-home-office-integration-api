@@ -1,5 +1,5 @@
 {
-  "description": "RIA-3378 Gets Home Office data for a valid appeal reference",
+  "description": "RIA-33788 Gets Home Office data for a valid appeal reference",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

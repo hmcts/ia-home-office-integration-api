@@ -9,7 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "20651434"
+          "homeOfficeReferenceNumber": "020651434"
         }
       }
     }
@@ -20,7 +20,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "20651434",
+        "homeOfficeReferenceNumber": "020651434",
         "homeOfficeSearchStatus": "SUCCESS"
       }
     }

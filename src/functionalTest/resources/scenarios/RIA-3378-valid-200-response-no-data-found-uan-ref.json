@@ -1,5 +1,5 @@
 {
-  "description": "RIA-3378 Gets Home Office data for a valid appeal reference in non UAN format",
+  "description": "RIA-3378 Valid 200 response for UAN appeal reference no data found",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -9,7 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "020639760"
+          "homeOfficeReferenceNumber": "1212-0099-0029-3029"
         }
       }
     }
@@ -20,8 +20,8 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "020639760",
-        "homeOfficeSearchStatus": "SUCCESS"
+        "homeOfficeReferenceNumber": "1212-0099-0029-3029",
+        "homeOfficeSearchStatus": "FAIL"
       }
     }
   }

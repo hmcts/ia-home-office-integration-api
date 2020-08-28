@@ -51,6 +51,8 @@ public class HomeOfficeAuthorizor {
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
+        log.info("Requesting JWT token from Home Office: {}, clid: {} ", baseUrl + tokenPath, clientId);
+
         String response;
         try {
             response =
