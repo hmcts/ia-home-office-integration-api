@@ -68,6 +68,12 @@ public class IdamUserDetailsProvider implements UserDetailsProvider {
             );
         }
 
+        if (response == null) {
+            throw new IdentityManagerResponseException(
+                "Could not get user details with IDAM", null
+            );
+        }
+
         if (response.get("id") == null) {
             throw new IllegalStateException("IDAM user details missing 'id' field");
         }

@@ -88,8 +88,8 @@ public class IdamAuthorizor {
                 e
             );
         }
-
-        return response.getOrDefault("code", "");
+        
+        return response != null ? response.getOrDefault("code", "") : "";
     }
 
     private String fetchTokenAuthorization(
@@ -129,6 +129,6 @@ public class IdamAuthorizor {
             );
         }
 
-        return response.getOrDefault("access_token", "");
+        return response != null ? response.getOrDefault("access_token", "") : "";
     }
 }
