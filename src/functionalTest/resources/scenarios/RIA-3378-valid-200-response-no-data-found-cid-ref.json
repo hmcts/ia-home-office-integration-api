@@ -1,5 +1,5 @@
 {
-  "description": "RIA-3378 Valid 200 response for appeal reference no data found",
+  "description": "RIA-3378 Valid 200 response for CID appeal reference no data found",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -9,7 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "1212-0099-0029-3029"
+          "homeOfficeReferenceNumber": "123123123"
         }
       }
     }
@@ -20,7 +20,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "1212-0099-0029-3029",
+        "homeOfficeReferenceNumber": "123123123",
         "homeOfficeSearchStatus": "FAIL"
       }
     }

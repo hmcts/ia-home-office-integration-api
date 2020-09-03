@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.util.MapValueExtractor;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.util.StringResourceLoader;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.verifiers.Verifier;
 
+
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 @ActiveProfiles("functional")
@@ -143,22 +144,12 @@ public class CcdScenarioRunnerTest {
             Map<String, Object> actualResponse = MapSerializer.deserialize(actualResponseBody);
             Map<String, Object> expectedResponse = MapSerializer.deserialize(expectedResponseBody);
 
-            verifiers.forEach(verifier -> {
-                    try {
-                        verifier.verify(
-                            testCaseId,
-                            scenario,
-                            expectedResponse,
-                            actualResponse
-                        );
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("Verifier.verify: Logging exception and continue : " + testCaseId);
-                    } catch (AssertionError error) {
-                        error.printStackTrace();
-                        System.out.println("Verifier.verify: Logging ERROR and continue : " + testCaseId);
-                    }
-                }
+            verifiers.forEach(verifier -> verifier.verify(
+                testCaseId,
+                scenario,
+                expectedResponse,
+                actualResponse
+                )
             );
         }
 

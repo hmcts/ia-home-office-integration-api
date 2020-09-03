@@ -2,3 +2,5 @@ java:
   # Don't modify this file, it is only needed for the pipeline to set the image and ingressHost
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  environment:
+    HOME_OFFICE_ENDPOINT: "https://cts-challenge.prp1.np.immigration-api.homeoffice.gov.uk"
