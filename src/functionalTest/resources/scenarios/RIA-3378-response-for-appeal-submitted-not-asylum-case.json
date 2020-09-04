@@ -21,7 +21,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "homeOfficeReferenceNumber": "020651434",
-        "homeOfficeSearchStatus": "SUCCESS"
+        "homeOfficeSearchStatus": "FAIL"
       }
     }
   }
