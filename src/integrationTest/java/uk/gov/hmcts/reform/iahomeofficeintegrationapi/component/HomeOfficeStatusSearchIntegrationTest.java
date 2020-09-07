@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithHo
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithHomeOfficeStatusSearchStub;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithIdamStub;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithServiceAuthStub;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ApplicationStatus;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeCaseStatus;
@@ -87,6 +88,67 @@ public class HomeOfficeStatusSearchIntegrationTest
             assertEquals(person.getNationality().getDescription(), "Canada");
             assertEquals(person.getFullName(), "Capability Smith");
         }
+    }
+
+    @Test
+    @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
+    public void shouldRetirieveHomeOfficeUserDetailsWithNullValue(@WiremockResolver
+        .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
+
+        final String homeOfficeReference = "CustRef000";
+
+        addServiceAuthStub(server);
+        addUserDetailsStub(server);
+        addHomeOfficeAuthTokenStub(server);
+        addHomeOfficeApiSearchValidResponseStub(server, homeOfficeReference);
+        addHomeOfficeApiInstructStub(server, homeOfficeReference);
+
+        IaCaseHomeOfficeIntegrationApiClient iaCaseHomeOfficeIntegrationApiClient
+            = new IaCaseHomeOfficeIntegrationApiClient(mockMvc);
+
+        final CallbackForTestBuilder callback = callback()
+            .event(Event.SUBMIT_APPEAL)
+            .caseDetails(someCaseDetailsWith()
+                .state(State.APPEAL_SUBMITTED)
+                .caseData(anAsylumCase()
+                    .with(AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER, APPEAL_REFERENCE_NUMBER)
+                    .with(HOME_OFFICE_REFERENCE_NUMBER, homeOfficeReference)));
+
+
+        PreSubmitCallbackResponseForTest response = iaCaseHomeOfficeIntegrationApiClient.aboutToSubmit(callback);
+
+        AsylumCase asylumCase = response.getAsylumCase();
+
+        assertNotNull(response);
+        assertNotNull(asylumCase);
+        assertEquals(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class), Optional.of("SUCCESS"));
+        final Optional<HomeOfficeCaseStatus> homeOfficeCaseStatus
+            = asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class);
+        assertTrue(homeOfficeCaseStatus.isPresent());
+        if (homeOfficeCaseStatus.isPresent()) {
+            HomeOfficeCaseStatus caseStatus = homeOfficeCaseStatus.get();
+            Person person = caseStatus.getPerson();
+            assertNotNull(person);
+            assertNull(person.getGivenName());
+            assertNull(person.getFamilyName());
+            assertNull(person.getNationality());
+            assertNull(person.getFullName());
+            ApplicationStatus applicationStatus = caseStatus.getApplicationStatus();
+            assertNull(applicationStatus.getHomeOfficeMetadata());
+            assertNull(applicationStatus.getDecisionCommunication());
+            assertNull(applicationStatus.getRoleSubType());
+            assertNull(applicationStatus.getDecisionType());
+            assertNull(applicationStatus.getClaimReasonType());
+            assertNull(applicationStatus.getApplicationType());
+            assertNull(applicationStatus.getRejectionReasons());
+            assertEquals("", caseStatus.getDisplayRejectionReasons());
+            assertNull(caseStatus.getDisplayDecisionDate());
+            assertNull(caseStatus.getDisplayDecisionSentDate());
+            assertNull(caseStatus.getDisplayMetadataValueBoolean());
+            assertNull(caseStatus.getDisplayMetadataValueDateTime());
+            assertEquals("00/00/0", caseStatus.getDisplayDateOfBirth());
+        }
+
     }
     
 
