@@ -11,8 +11,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.Application;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.TestConfiguration;
 
 @SpringBootTest(classes = {
+    TestConfiguration.class,
     Application.class
 })
 @TestPropertySource(properties = {

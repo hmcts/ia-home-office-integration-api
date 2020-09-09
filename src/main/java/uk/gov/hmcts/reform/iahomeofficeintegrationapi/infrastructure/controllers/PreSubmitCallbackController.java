@@ -61,7 +61,8 @@ public class PreSubmitCallbackController {
     @ApiResponses({
         @ApiResponse(
             code = 200,
-            message = "Transformed Asylum case data, with any identified error or warning messages",
+            message = "Transformed Asylum case data with Home Office information,"
+                + " with any identified error or warning messages",
             response = String.class
         ),
         @ApiResponse(

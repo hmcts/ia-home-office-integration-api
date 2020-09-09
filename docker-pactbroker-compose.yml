@@ -1,9 +1,0 @@
-version: "3"
-
-services:
-  broker_app:
-    image: dius/pact-broker
-    ports:
-    - "80:80"
-    environment:
-      PACT_BROKER_WEBHOOK_SCHEME_WHITELIST: http
