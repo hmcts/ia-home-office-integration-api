@@ -94,6 +94,9 @@ public interface WithHomeOfficeStatusSearchStub {
             case "1212-0099-0036-XXXX":
                 responseJsonFile = "ho-api_get-by-search-params_400-bad-request_response.json";
                 break;
+            case "CustRef000":
+                responseJsonFile = "ho-api_get-by-search-params_200-valid_null_response.json";
+                break;
             default:
                 throw new IOException("Invalid home office reference : " + homeOfficeReference);
         }
