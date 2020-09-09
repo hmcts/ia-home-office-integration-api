@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Qualifier;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CourtType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHea
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Outcome;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeInstructApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AccessTokenProvider;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -40,12 +42,15 @@ public class HomeOfficeInstructServiceTest {
     private HomeOfficeInstructApi homeOfficeInstructApi;
     private ObjectMapper objectMapper = new ObjectMapper();
     private HomeOfficeInstructService homeOfficeInstructService;
+    @Mock
+    private @Qualifier("requestUser")
+    AccessTokenProvider accessTokenProvider;
 
     @BeforeEach
     public void setUp() {
 
         homeOfficeInstructService = new HomeOfficeInstructService(
-            homeOfficeProperties, homeOfficeInstructApi, objectMapper);
+            homeOfficeProperties, homeOfficeInstructApi, accessTokenProvider, objectMapper);
     }
 
     @Test
