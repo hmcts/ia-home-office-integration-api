@@ -21,6 +21,8 @@ def secrets = [
         secret('idam-secret', 'IA_IDAM_SECRET'),
         secret('s2s-secret', 'IA_S2S_SECRET'),
         secret('s2s-microservice', 'IA_S2S_MICROSERVICE'),
+        secret('homeoffice-client-id', 'IA_HOMEOFFICE_CLIENT_ID'),
+        secret('homeoffice-secret', 'IA_HOMEOFFICE_SECRET'),
 
         secret('test-law-firm-a-username', 'TEST_LAW_FIRM_A_USERNAME'),
         secret('test-law-firm-a-password', 'TEST_LAW_FIRM_A_PASSWORD')
