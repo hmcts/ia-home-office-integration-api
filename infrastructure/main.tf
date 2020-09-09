@@ -40,3 +40,13 @@ data "azurerm_key_vault_secret" "s2s_microservice" {
   name      = "s2s-microservice"
   vault_uri = data.azurerm_key_vault.ia_key_vault.vault_uri
 }
+
+data "azurerm_key_vault_secret" "homeoffice-client-id" {
+  name      = "homeoffice-client-id"
+  vault_uri = data.azurerm_key_vault.ia_key_vault.vault_uri
+}
+
+data "azurerm_key_vault_secret" "homeoffice-secret" {
+  name      = "homeoffice-secret"
+  vault_uri = data.azurerm_key_vault.ia_key_vault.vault_uri
+}
