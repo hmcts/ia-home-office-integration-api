@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerReference;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Outcome;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeInstructApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeDateFormatter;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AccessTokenProvider;
 
 @Service
 @Slf4j
@@ -26,14 +28,17 @@ public class HomeOfficeInstructService {
 
     private final HomeOfficeProperties homeOfficeProperties;
     private final HomeOfficeInstructApi homeOfficeInstructApi;
+    private final AccessTokenProvider accessTokenProvider;
     private final ObjectMapper objectMapper;
 
     public HomeOfficeInstructService(
         HomeOfficeProperties homeOfficeProperties,
         HomeOfficeInstructApi homeOfficeInstructApi,
+        @Qualifier("homeOffice") AccessTokenProvider accessTokenProvider,
         ObjectMapper objectMapper) {
         this.homeOfficeProperties = homeOfficeProperties;
         this.homeOfficeInstructApi = homeOfficeInstructApi;
+        this.accessTokenProvider = accessTokenProvider;
         this.objectMapper = objectMapper;
     }
 
@@ -41,6 +46,8 @@ public class HomeOfficeInstructService {
         String homeOfficeReferenceNumber,
         String caseId,
         String correlationId) throws JsonProcessingException {
+
+        final String accessToken = accessTokenProvider.getAccessToken();
 
         HomeOfficeInstruct request = makeRequestBody(homeOfficeReferenceNumber, caseId, correlationId);
         ObjectWriter objectWriter = this.objectMapper.writer().withDefaultPrettyPrinter();
