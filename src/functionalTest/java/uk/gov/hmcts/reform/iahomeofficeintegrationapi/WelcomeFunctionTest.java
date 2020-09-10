@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -32,13 +34,19 @@ public class WelcomeFunctionTest {
 
         final String expected = "Welcome to Home Office Integration API";
 
-        String response = SerenityRest.given()
-            .get("/")
+        final Response response1 = SerenityRest
+            .given()
+            .when()
+            .get("/");
+
+        String response = response1
             .then()
             .statusCode(HttpStatus.OK.value())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .and()
             .extract()
             .body()
-            .toString();
+            .asString();
 
         assertThat(response.contains(expected));
     }

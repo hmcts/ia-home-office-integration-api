@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import java.time.LocalDateTime;
@@ -44,38 +44,56 @@ public class EndpointSecurityTest {
         RestAssured.useRelaxedHTTPSValidation();
     }
 
+
     @Test
-    public void should_allow_unauthenticated_requests_to_health_check_and_return_200_response_code() {
+    public void should_allow_unauthenticated_requests_to_welcome_message_and_return_200_response_code() {
 
-        SerenityRest
-            .given()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get("/health")
-            .then()
-            .assertThat()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .body(containsString("UP"));
+        String response =
+            SerenityRest
+                .when()
+                .get("/")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .and()
+                .extract().body().asString();
 
+        assertThat(response)
+            .contains("Welcome");
     }
 
     @Test
-    public void should_not_allow_unauthenticated_requests_and_return_403_response_code() {
+    public void should_allow_unauthenticated_requests_to_health_check_and_return_200_response_code() {
+
+        String response =
+            SerenityRest
+                .when()
+                .get("/health")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .and()
+                .log().all(true)
+                .extract().body().asString();
+
+        assertThat(response)
+            .contains("UP");
+    }
+
+    @Test
+    public void should_not_allow_unauthenticated_requests_and_return_401_response_code() {
 
         callbackEndpoints.forEach(callbackEndpoint ->
 
             SerenityRest
                 .given()
                 .when()
-                .get(callbackEndpoint)
+                .post(callbackEndpoint)
                 .then()
-                .statusCode(HttpStatus.FORBIDDEN.value())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
         );
     }
 
     @Test
-    public void should_not_allow_requests_without_valid_service_authorisation_and_return_403_response_code() {
+    public void should_not_allow_requests_without_valid_service_authorisation_and_return_401_response_code() {
 
         String invalidServiceToken = "invalid";
 
@@ -91,14 +109,14 @@ public class EndpointSecurityTest {
                 .header("ServiceAuthorization", invalidServiceToken)
                 .header("Authorization", accessToken)
                 .when()
-                .get(callbackEndpoint)
+                .post(callbackEndpoint)
                 .then()
-                .statusCode(HttpStatus.FORBIDDEN.value())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
         );
     }
 
     @Test
-    public void should_not_allow_requests_without_valid_user_authorisation_and_return_403_response_code() {
+    public void should_not_allow_requests_without_valid_user_authorisation_and_return_401_response_code() {
 
         String serviceToken =
             authorizationHeadersProvider
@@ -116,7 +134,7 @@ public class EndpointSecurityTest {
                 .when()
                 .post(callbackEndpoint)
                 .then()
-                .statusCode(HttpStatus.FORBIDDEN.value())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
         );
     }
 

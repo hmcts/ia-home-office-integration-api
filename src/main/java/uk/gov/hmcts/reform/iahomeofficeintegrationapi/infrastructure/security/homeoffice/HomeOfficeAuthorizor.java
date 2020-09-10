@@ -67,6 +67,7 @@ public class HomeOfficeAuthorizor {
 
         } catch (RestClientResponseException e) {
 
+            log.error("Error retrieving token from Home Office: " + e.getMessage());
             throw new IdentityManagerResponseException(
                 "Could not get auth code with Home Office",
                 e
