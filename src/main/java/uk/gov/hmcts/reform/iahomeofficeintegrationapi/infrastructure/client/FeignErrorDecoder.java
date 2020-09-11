@@ -29,14 +29,16 @@ public class FeignErrorDecoder implements ErrorDecoder {
         switch (response.status()) {
             case 400:
                 String errMessage = "";
+                String errorCode = "";
                 try {
                     if (response.body() != null && response.body().asInputStream() != null) {
                         HomeOfficeInstructResponse homeOfficeError = objectMapper.readValue(
                             response.body().asInputStream(),
                             HomeOfficeInstructResponse.class);
                         if (homeOfficeError != null) {
+                            errorCode = homeOfficeError.getErrorDetail().getErrorCode();
                             errMessage = String.format("Home office error code: %s, message: %s",
-                                homeOfficeError.getErrorDetail().getErrorCode(),
+                                errorCode,
                                 homeOfficeError.getErrorDetail().getMessageText());
                         }
                     }
@@ -52,7 +54,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                     errMessage = String.format(errorLog, ex.getMessage());
                     log.error(errorLog, ex.getMessage());
                 }
-                return new HomeOfficeResponseException(String.format(
+                return new HomeOfficeResponseException(errorCode, String.format(
                     "StatusCode: %d, methodKey: %s, reason: %s, message: %s",
                     response.status(),
                     methodKey,

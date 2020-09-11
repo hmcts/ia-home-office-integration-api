@@ -57,8 +57,31 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Home
 @SuppressWarnings("unchecked")
 public class AsylumCaseStatusSearchHandlerTest {
 
-    private static final String HOME_OFFICE_ERROR_MESSAGE = "The service has been "
-        + "unable to retrieve the Home Office information about this appeal.";
+    private static final String HOME_OFFICE_CALL_ERROR_MESSAGE = "### There is a problem\n\n"
+        + "The service has been unable t"
+        + "o retrieve the Home Office information about this appeal.\n\n"
+        + "[Request the Home Office information](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/requestHomeOfficeData) to"
+        + " try again. This may take a few minutes.";
+
+    private static final String HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE = "### There is a problem\n\n"
+        + "The appellant entered the "
+        + "Home Office reference number incorrectly. You can contact the appellant to check the reference number"
+        + " if you need this information to validate the appeal";
+
+    private static final String HOME_OFFICE_REFERENCE_NOT_FOUND_ERROR_MESSAGE = "### There is a problem\n\n"
+        + "The appellant’s Home Office reference"
+        + " number could not be found. You can contact the Home Office to check the reference"
+        + " if you need this information to validate the appeal";
+
+    private static final String HOME_OFFICE_APPELLANT_NOT_FOUND_ERROR_MESSAGE = "### There is a problem\n\n"
+        + "The service has been unable to retrieve the Home Office information about this appeal "
+        + "because the Home Office reference number does not have any matching appellant data in the system. "
+        + "You can contact the Home Office if you need more information to validate the appeal.";
+
+    private static final String HOME_OFFICE_MAIN_APPLICANT_NOT_FOUND_ERROR_MESSAGE = "**Note:** "
+        + "The service was unable to retrieve any appellant details from the Home Office because the Home Office data "
+        + "does not include a main applicant. You can contact the Home Office if you need this information "
+        + "to validate the appeal.";
 
     private static HomeOfficeSearchResponse homeOfficeSearchResponse;
     private static HomeOfficeSearchResponse homeOfficeNullFieldResponse;
@@ -132,7 +155,7 @@ public class AsylumCaseStatusSearchHandlerTest {
         verify(asylumCase, times(1))
             .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
-            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_ERROR_MESSAGE);
+            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
 
     }
 
@@ -155,7 +178,7 @@ public class AsylumCaseStatusSearchHandlerTest {
         verify(asylumCase, times(1))
             .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
-            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_ERROR_MESSAGE);
+            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
 
     }
 
@@ -176,9 +199,7 @@ public class AsylumCaseStatusSearchHandlerTest {
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
         verify(asylumCase, times(1))
-            .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
-        verify(asylumCase, times(1))
-            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_ERROR_MESSAGE);
+            .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
 
     }
 
@@ -192,7 +213,63 @@ public class AsylumCaseStatusSearchHandlerTest {
             .thenReturn(Optional.of(someHomeOfficeReference));
         when(homeOfficeSearchService.getCaseStatus(anyString())).thenReturn(mockResponse);
         when(mockResponse.getErrorDetail()).thenReturn(new HomeOfficeError(
-            "1010",
+            "1020",
+            "No document found",
+            true
+        ));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        verify(asylumCase, times(1))
+            .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+        verify(asylumCase, times(1))
+            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_REFERENCE_NOT_FOUND_ERROR_MESSAGE);
+
+    }
+
+    @Test
+    void check_handler_validates_no_appellant_error_from_home_office_data_returns_fail() throws Exception {
+
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(someHomeOfficeReference));
+        when(homeOfficeSearchService.getCaseStatus(anyString())).thenReturn(mockResponse);
+        when(mockResponse.getErrorDetail()).thenReturn(new HomeOfficeError(
+            "1030",
+            "No service details",
+            true
+        ));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        verify(asylumCase, times(1))
+            .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+        verify(asylumCase, times(1))
+            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_APPELLANT_NOT_FOUND_ERROR_MESSAGE);
+
+    }
+
+    @Test
+    void check_handler_validates_ho_not_found_from_home_office_data_returns_fail() throws Exception {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(someHomeOfficeReference));
+        when(homeOfficeSearchService.getCaseStatus(anyString())).thenReturn(mockResponse);
+        when(mockResponse.getErrorDetail()).thenReturn(new HomeOfficeError(
+            "1060",
             "UAN format is invalid",
             true
         ));
@@ -206,7 +283,30 @@ public class AsylumCaseStatusSearchHandlerTest {
         verify(asylumCase, times(1))
             .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
-            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_ERROR_MESSAGE);
+            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE);
+
+    }
+
+    @Test
+    void check_handler_validates_main_applicant_not_found_from_home_office_data_returns_fail() throws Exception {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(someHomeOfficeReference));
+        when(homeOfficeSearchService.getCaseStatus(anyString())).thenReturn(mockResponse);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        verify(asylumCase, times(1))
+            .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+        verify(asylumCase, times(1))
+            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_MAIN_APPLICANT_NOT_FOUND_ERROR_MESSAGE);
 
     }
 
@@ -229,7 +329,7 @@ public class AsylumCaseStatusSearchHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -363,6 +463,50 @@ public class AsylumCaseStatusSearchHandlerTest {
         assertFalse(metadata.isPresent());
         metadata = asylumCaseStatusSearchHandler.selectMetadata(Collections.EMPTY_LIST);
         assertFalse(metadata.isPresent());
+    }
+
+    @Test
+    void set_error_for_ho_reference_not_found_sets_values_in_asylum_case() {
+
+        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(asylumCase, "1020", "Not found");
+        verify(asylumCase, times(1))
+            .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+        verify(asylumCase, times(1))
+            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_REFERENCE_NOT_FOUND_ERROR_MESSAGE);
+
+    }
+
+    @Test
+    void set_error_for_ho_appellant_not_found_sets_values_in_asylum_case() {
+
+        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(asylumCase, "1010", "Not found");
+        verify(asylumCase, times(1))
+            .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+        verify(asylumCase, times(1))
+            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_APPELLANT_NOT_FOUND_ERROR_MESSAGE);
+
+    }
+
+    @Test
+    void set_error_for_invalid_format_sets_values_in_asylum_case() {
+
+        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(asylumCase, "1060", "Format error");
+        verify(asylumCase, times(1))
+            .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+        verify(asylumCase, times(1))
+            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE);
+
+    }
+
+    @Test
+    void set_error_for_general_error_sets_values_in_asylum_case() {
+
+        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(asylumCase, null, null);
+        verify(asylumCase, times(1))
+            .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+        verify(asylumCase, times(1))
+            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+
     }
 
     private HomeOfficeSearchResponse getSampleResponse() throws Exception {

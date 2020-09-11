@@ -26,14 +26,41 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeSearchService;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeDateFormatter;
 
 @Slf4j
 @Component
 public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final String HOME_OFFICE_CALL_ERROR_MESSAGE = "The service has been unable t"
-        + "o retrieve the Home Office information about this appeal.";
+    private static final String PROBLEM_MESSAGE = "### There is a problem\n\n";
+
+    private static final String HOME_OFFICE_CALL_ERROR_MESSAGE = PROBLEM_MESSAGE
+        + "The service has been unable t"
+        + "o retrieve the Home Office information about this appeal.\n\n"
+        + "[Request the Home Office information](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/requestHomeOfficeData) to"
+        + " try again. This may take a few minutes.";
+
+    private static final String HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE = PROBLEM_MESSAGE
+        + "The appellant entered the "
+        + "Home Office reference number incorrectly. You can contact the appellant to check the reference number"
+        + " if you need this information to validate the appeal";
+
+    private static final String HOME_OFFICE_REFERENCE_NOT_FOUND_ERROR_MESSAGE = PROBLEM_MESSAGE
+        + "The appellant’s Home Office reference"
+        + " number could not be found. You can contact the Home Office to check the reference"
+        + " if you need this information to validate the appeal";
+
+    private static final String HOME_OFFICE_APPELLANT_NOT_FOUND_ERROR_MESSAGE = PROBLEM_MESSAGE
+        + "The service has been unable to retrieve the Home Office information about this appeal "
+        + "because the Home Office reference number does not have any matching appellant data in the system. "
+        + "You can contact the Home Office if you need more information to validate the appeal.";
+
+    private static final String HOME_OFFICE_MAIN_APPLICANT_NOT_FOUND_ERROR_MESSAGE = "**Note:** "
+        + "The service was unable to retrieve any appellant details from the Home Office because the Home Office data "
+        + "does not include a main applicant. You can contact the Home Office if you need this information "
+        + "to validate the appeal.";
+
 
     private HomeOfficeSearchService homeOfficeSearchService;
 
@@ -67,6 +94,14 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
         final String homeOfficeReferenceNumber = asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
             .orElseThrow(() -> new IllegalStateException("Home office reference for the appeal is not present"));
 
+        if (homeOfficeReferenceNumber.length() > 30) {
+            log.info("Home office reference invalid (>30 characters)");
+            asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
+            asylumCase.write(
+                AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE);
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
+
         HomeOfficeSearchResponse searchResponse;
         try {
             searchResponse = homeOfficeSearchService.getCaseStatus(homeOfficeReferenceNumber);
@@ -75,10 +110,8 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
                 final String errMessage = String.format("Error code: %s, message: %s",
                     searchResponse.getErrorDetail().getErrorCode(),
                     searchResponse.getErrorDetail().getMessageText());
-                log.info("Home office response returned with error." + errMessage);
-                asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
-                asylumCase.write(
-                    AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+                setErrorMessageForErrorCode(asylumCase, searchResponse.getErrorDetail().getErrorCode(), errMessage);
+
                 return new PreSubmitCallbackResponse<>(asylumCase);
             }
 
@@ -87,25 +120,24 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
                 log.info("Unable to find MAIN APPLICANT in Home office response");
                 asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
                 asylumCase.write(
-                    AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+                    AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE,
+                    HOME_OFFICE_MAIN_APPLICANT_NOT_FOUND_ERROR_MESSAGE);
 
             } else {
-                Person person = selectedApplicant.get().getPerson();
-                ApplicationStatus applicationStatus = selectedApplicant.get().getApplicationStatus();
-                if (isNull(person) || isNull(applicationStatus)) {
-                    log.info("Unable to find Person/application details for the applicant in Home office response");
-                    asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
-                    asylumCase.write(
-                        AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
-                    return new PreSubmitCallbackResponse<>(asylumCase);
-                }
 
                 asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
                 HomeOfficeCaseStatus selectedMainApplicant = selectedApplicant.get();
-                selectedMainApplicant.setDisplayDateOfBirth(
-                    HomeOfficeDateFormatter.getPersonDateOfBirth(
-                        person.getDayOfBirth(), person.getMonthOfBirth(), person.getYearOfBirth())
-                );
+                Person person = selectedMainApplicant.getPerson();
+                ApplicationStatus applicationStatus = selectedMainApplicant.getApplicationStatus();
+                if (isNull(person)) {
+                    log.info("Note: Unable to find Person details for the applicant in Home office response");
+                } else {
+                    selectedMainApplicant.setDisplayDateOfBirth(
+                        HomeOfficeDateFormatter.getPersonDateOfBirth(
+                            person.getDayOfBirth(), person.getMonthOfBirth(), person.getYearOfBirth())
+                    );
+                }
+
                 selectedMainApplicant.setDisplayDecisionDate(
                     HomeOfficeDateFormatter.getIacDateTime(applicationStatus.getDecisionDate()));
                 if (applicationStatus.getDecisionCommunication() != null) {
@@ -129,6 +161,8 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
                 asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_CASE_STATUS_DATA, selectedMainApplicant);
 
             }
+        } catch (HomeOfficeResponseException hoe) {
+            setErrorMessageForErrorCode(asylumCase, hoe.getErrorCode(), hoe.getMessage());
         } catch (Exception e) {
             log.error("Error while calling Home office case status search: " + e.getMessage());
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
@@ -178,4 +212,40 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
         }
         return metadata;
     }
+
+    public void setErrorMessageForErrorCode(AsylumCase asylumCase, String errorCodeStr, String errMessage) {
+        final int errorCode = errorCodeStr != null ? Integer.valueOf(errorCodeStr) : 0;
+        switch (errorCode) {
+            case 1010:
+            case 1030:
+                asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                asylumCase.write(
+                    AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE,
+                    HOME_OFFICE_APPELLANT_NOT_FOUND_ERROR_MESSAGE);
+                log.info("Home office response returned with Appellant Not found error." + errMessage);
+                break;
+            case 1020:
+                asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                asylumCase.write(
+                    AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE,
+                    HOME_OFFICE_REFERENCE_NOT_FOUND_ERROR_MESSAGE);
+                log.info("Home office response returned with HO data Not found error." + errMessage);
+                break;
+            case 1060:
+                asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                asylumCase.write(
+                    AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE,
+                    HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE);
+                log.info("Home office response returned with HO format error." + errMessage);
+                break;
+            default:
+                asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                asylumCase.write(
+                    AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+                log.info("Home office response returned with error." + errMessage);
+                break;
+
+        }
+    }
+
 }

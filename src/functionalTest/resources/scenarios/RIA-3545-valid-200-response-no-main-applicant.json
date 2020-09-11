@@ -1,0 +1,30 @@
+{
+  "description": "RIA-3545 Mock 200 response with no main applicant found error",
+  "disabled": true,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "X00002222"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "X00002222",
+        "homeOfficeSearchStatus": "FAIL",
+        "homeOfficeSearchStatusMessage": "**Note:** The service was unable to retrieve any appellant details from the Home Office because the Home Office data does not include a main applicant. You can contact the Home Office if you need this information to validate the appeal."
+      }
+    }
+  }
+}
