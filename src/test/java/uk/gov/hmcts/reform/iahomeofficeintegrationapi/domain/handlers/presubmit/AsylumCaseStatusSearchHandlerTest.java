@@ -13,6 +13,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_CASE_STATUS_DATA;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -40,7 +43,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOffice
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeSearchResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -80,9 +82,9 @@ public class AsylumCaseStatusSearchHandlerTest {
     @Test
     void check_handler_returns_case_data_with_home_office_fields() throws Exception {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
+        when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(someHomeOfficeReference));
@@ -105,9 +107,9 @@ public class AsylumCaseStatusSearchHandlerTest {
     @Test
     void check_handler_returns_case_data_with_errors_data() throws Exception {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
+        when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(someHomeOfficeReference));
@@ -128,9 +130,9 @@ public class AsylumCaseStatusSearchHandlerTest {
     @Test
     void check_handler_validates_person_null_value_from_home_office_data() throws Exception {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(PAY_AND_SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
+        when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(someHomeOfficeReference));
@@ -150,9 +152,9 @@ public class AsylumCaseStatusSearchHandlerTest {
     @Test
     void check_handler_returns_case_data_with_error_status() throws Exception {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
+        when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(someHomeOfficeReference));
@@ -188,21 +190,22 @@ public class AsylumCaseStatusSearchHandlerTest {
     }
 
     @Test
-    void it_can_handle_callback() {
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
+    public void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
                 boolean canHandle = asylumCaseStatusSearchHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.SUBMIT_APPEAL
-                    && callbackStage == ABOUT_TO_SUBMIT) {
-
+                if (callbackStage == ABOUT_TO_SUBMIT
+                    && (callback.getEvent() == SUBMIT_APPEAL
+                    || callback.getEvent() == PAY_AND_SUBMIT_APPEAL)
+                    && callback.getCaseDetails().getState() == APPEAL_SUBMITTED
+                ) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -237,9 +240,9 @@ public class AsylumCaseStatusSearchHandlerTest {
     @Test
     void should_not_allow_empty_home_office_reference() {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
+        when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         assertThatThrownBy(() -> asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback))

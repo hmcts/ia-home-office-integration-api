@@ -51,6 +51,7 @@ security:
       - "submitAppeal"
     caseworker-ia-legalrep-solicitor:
       - "submitAppeal"
+      - "payAndSubmitAppeal"
     caseworker-ia-caseofficer:
     caseworker-ia-admofficer:
     caseworker-ia-homeofficeapc:
