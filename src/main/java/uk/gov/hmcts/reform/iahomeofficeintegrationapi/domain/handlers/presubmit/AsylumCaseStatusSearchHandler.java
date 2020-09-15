@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit
 import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State.APPEAL_SUBMITTED_OUT_OF_TIME;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
@@ -47,10 +45,7 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
             && (callback.getEvent() == Event.SUBMIT_APPEAL
             || callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
-            || callback.getEvent() == Event.MARK_APPEAL_PAID)
-            && (callback.getCaseDetails().getState() == APPEAL_SUBMITTED
-            || callback.getCaseDetails().getState() == APPEAL_SUBMITTED_OUT_OF_TIME);
-
+            || callback.getEvent() == Event.MARK_APPEAL_PAID);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

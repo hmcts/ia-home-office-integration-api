@@ -16,7 +16,6 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -85,7 +84,6 @@ public class AsylumCaseStatusSearchHandlerTest {
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(someHomeOfficeReference));
@@ -110,7 +108,6 @@ public class AsylumCaseStatusSearchHandlerTest {
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(someHomeOfficeReference));
@@ -133,7 +130,6 @@ public class AsylumCaseStatusSearchHandlerTest {
 
         when(callback.getEvent()).thenReturn(PAY_AND_SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(someHomeOfficeReference));
@@ -155,7 +151,6 @@ public class AsylumCaseStatusSearchHandlerTest {
 
         when(callback.getEvent()).thenReturn(MARK_APPEAL_PAID);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(someHomeOfficeReference));
@@ -206,7 +201,6 @@ public class AsylumCaseStatusSearchHandlerTest {
                     && (callback.getEvent() == SUBMIT_APPEAL
                     || callback.getEvent() == PAY_AND_SUBMIT_APPEAL
                     || callback.getEvent() == MARK_APPEAL_PAID)
-                    && callback.getCaseDetails().getState() == APPEAL_SUBMITTED
                 ) {
                     assertTrue(canHandle);
                 } else {
@@ -244,7 +238,6 @@ public class AsylumCaseStatusSearchHandlerTest {
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         assertThatThrownBy(() -> asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback))
