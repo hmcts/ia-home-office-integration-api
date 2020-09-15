@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum Event {
     SUBMIT_APPEAL("submitAppeal"),
     PAY_AND_SUBMIT_APPEAL("payAndSubmitAppeal"),
+    MARK_APPEAL_PAID("markAppealPaid"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 

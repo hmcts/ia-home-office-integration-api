@@ -13,6 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_CASE_STATUS_DATA;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
@@ -152,7 +153,7 @@ public class AsylumCaseStatusSearchHandlerTest {
     @Test
     void check_handler_returns_case_data_with_error_status() throws Exception {
 
-        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(MARK_APPEAL_PAID);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -203,7 +204,8 @@ public class AsylumCaseStatusSearchHandlerTest {
 
                 if (callbackStage == ABOUT_TO_SUBMIT
                     && (callback.getEvent() == SUBMIT_APPEAL
-                    || callback.getEvent() == PAY_AND_SUBMIT_APPEAL)
+                    || callback.getEvent() == PAY_AND_SUBMIT_APPEAL
+                    || callback.getEvent() == MARK_APPEAL_PAID)
                     && callback.getCaseDetails().getState() == APPEAL_SUBMITTED
                 ) {
                     assertTrue(canHandle);

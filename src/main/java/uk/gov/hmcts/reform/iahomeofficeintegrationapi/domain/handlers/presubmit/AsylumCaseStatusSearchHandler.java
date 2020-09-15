@@ -46,7 +46,8 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
             && (callback.getEvent() == Event.SUBMIT_APPEAL
-            || callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL)
+            || callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
+            || callback.getEvent() == Event.MARK_APPEAL_PAID)
             && (callback.getCaseDetails().getState() == APPEAL_SUBMITTED
             || callback.getCaseDetails().getState() == APPEAL_SUBMITTED_OUT_OF_TIME);
 
