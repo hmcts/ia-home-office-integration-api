@@ -39,9 +39,6 @@ class HomeOfficeAuthorizorTest {
     private static final String CLIENT_ID = "1234";
     private static final String CLIENT_SECRET = "badgers";
 
-    //private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdG9rZW4iOiJzb21lX2FjY2V"
-    //                                        + "zc190b2tlbiIsInNjb3BlIjoicmVhZCIsInRva2VuX3R5cGUiOiJiZWFyZXIiLCJleHBpc"
-    //                                        + "mVzX2luIjoyOTl9.rsrnW2pMzmSJiY_80IxvgOTgglgLGBiYtAFRRuNVVqc";
     private static final String JWT_TOKEN = "{"
                                             + "\"access_token\": \"some_access_token\","
                                             + "\"expires_in\": 300,"
@@ -120,7 +117,7 @@ class HomeOfficeAuthorizorTest {
 
         assertThatThrownBy(() -> homeOfficeAuthorizor.fetchCodeAuthorization())
             .isExactlyInstanceOf(IdentityManagerResponseException.class)
-            .hasMessage("Could not get auth code with Home Office");
+            .hasMessage("Could not get auth code from the Home Office");
 
     }
 
@@ -140,7 +137,7 @@ class HomeOfficeAuthorizorTest {
 
         assertThatThrownBy(() -> homeOfficeAuthorizor.fetchCodeAuthorization())
             .isExactlyInstanceOf(IdentityManagerResponseException.class)
-            .hasMessage("Could not get auth code with Home Office");
+            .hasMessage("Could not get auth code from the Home Office");
 
     }
 }

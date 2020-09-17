@@ -51,7 +51,7 @@ public class HomeOfficeAuthorizor {
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
-        log.info("Requesting JWT token from Home Office: {}, clid: {} ", baseUrl + tokenPath, clientId);
+        log.info("Requesting JWT token from Home Office: {} ", baseUrl + tokenPath);
 
         String response;
         try {
@@ -63,13 +63,13 @@ public class HomeOfficeAuthorizor {
                         requestEntity,
                         new ParameterizedTypeReference<String>() {}
                     ).getBody();
-            log.info("Received JWT token response from Home Office: " + response);
+            log.info("Received JWT token response from the Home Office");
 
         } catch (RestClientResponseException e) {
 
-            log.error("Error retrieving token from Home Office: " + e.getMessage());
+            log.error("Error retrieving token from the Home Office: " + e.getMessage());
             throw new IdentityManagerResponseException(
-                "Could not get auth code with Home Office",
+                "Could not get auth code from the Home Office",
                 e
             );
         }
@@ -80,7 +80,7 @@ public class HomeOfficeAuthorizor {
 
         JacksonJsonParser jsonParser = new JacksonJsonParser();
         final String accessToken = jsonParser.parseMap(response).get("access_token").toString();
-        log.info("Extracted access token from the response : " + accessToken);
+        log.info("Extracted access token from the response.");
         return accessToken;
     }
 }
