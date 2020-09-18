@@ -1,6 +1,5 @@
 {
-  "description": "RIA-3545 Mock 200 response with generic error code 2000",
-  "disabled": true,
+  "description": "RIA-3545 Error response for invalid HO Reference, more than 30 characters",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -10,7 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "X00002000"
+          "homeOfficeReferenceNumber": "123456789012345678901234567890A"
         }
       }
     }
@@ -21,9 +20,9 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "X00002000",
+        "homeOfficeReferenceNumber": "123456789012345678901234567890A",
         "homeOfficeSearchStatus": "FAIL",
-        "homeOfficeSearchStatusMessage": "### There is a problem\n\nThe service has been unable to retrieve the Home Office information about this appeal.\n\n[Request the Home Office information](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/requestHomeOfficeData) to try again. This may take a few minutes."
+        "homeOfficeSearchStatusMessage": "### There is a problem\n\nThe appellant entered the Home Office reference number incorrectly. You can contact the appellant to check the reference number if you need this information to validate the appeal"
       }
     }
   }
