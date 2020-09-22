@@ -11,6 +11,8 @@ public class HomeOfficeCaseStatus {
     private String displayDecisionSentDate;
     private String displayMetadataValueBoolean;
     private String displayMetadataValueDateTime;
+    private String displayAppellantDetailsTitle;
+    private String displayApplicationDetailsTitle;
 
 
     public HomeOfficeCaseStatus(Person person, ApplicationStatus applicationStatus) {
@@ -76,5 +78,21 @@ public class HomeOfficeCaseStatus {
 
     public void setDisplayMetadataValueDateTime(String displayMetadataValueDateTime) {
         this.displayMetadataValueDateTime = displayMetadataValueDateTime;
+    }
+
+    public String getDisplayAppellantDetailsTitle() {
+        return displayAppellantDetailsTitle;
+    }
+
+    public void setDisplayAppellantDetailsTitle(String displayAppellantDetailsTitle) {
+        this.displayAppellantDetailsTitle = displayAppellantDetailsTitle;
+    }
+
+    public String getDisplayApplicationDetailsTitle() {
+        return displayApplicationDetailsTitle;
+    }
+
+    public void setDisplayApplicationDetailsTitle(String displayApplicationDetailsTitle) {
+        this.displayApplicationDetailsTitle = displayApplicationDetailsTitle;
     }
 }
