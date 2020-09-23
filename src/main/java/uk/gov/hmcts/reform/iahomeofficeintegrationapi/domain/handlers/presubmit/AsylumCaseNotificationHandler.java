@@ -53,6 +53,7 @@ public class AsylumCaseNotificationHandler implements PreSubmitCallbackHandler<A
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
+
         /*
         final String correlationId = HomeOfficeRequestUuidGenerator.generateUuid();
         try {
