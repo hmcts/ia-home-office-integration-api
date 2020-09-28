@@ -3,29 +3,25 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 public class HomeOfficeInstruct {
 
     private ConsumerReference consumerReference;
-    private CourtOutcome courtOutcome;
     private String hoReference;
     private MessageHeader messageHeader;
     private String messageType;
+    private String note;
 
-    private HomeOfficeInstruct() {
+    protected HomeOfficeInstruct() {
     }
 
-    public HomeOfficeInstruct(ConsumerReference consumerReference, CourtOutcome courtOutcome, String hoReference,
-                              MessageHeader messageHeader, String messageType) {
+    public HomeOfficeInstruct(ConsumerReference consumerReference, String hoReference,
+                              MessageHeader messageHeader, String messageType, String note) {
         this.consumerReference = consumerReference;
-        this.courtOutcome = courtOutcome;
         this.hoReference = hoReference;
         this.messageHeader = messageHeader;
         this.messageType = messageType;
+        this.note = note;
     }
 
     public ConsumerReference getConsumerReference() {
         return consumerReference;
-    }
-
-    public CourtOutcome getCourtOutcome() {
-        return courtOutcome;
     }
 
     public String getHoReference() {
@@ -38,6 +34,10 @@ public class HomeOfficeInstruct {
 
     public String getMessageType() {
         return messageType;
+    }
+
+    public String getNote() {
+        return note;
     }
 
 }

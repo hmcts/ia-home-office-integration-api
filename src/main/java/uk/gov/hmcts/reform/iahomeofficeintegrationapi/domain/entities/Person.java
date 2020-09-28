@@ -60,4 +60,67 @@ public class Person {
         return yearOfBirth;
     }
 
+
+    public static final class PersonBuilder {
+        private CodeWithDescription gender;
+        private CodeWithDescription nationality;
+        private String givenName;
+        private String familyName;
+        private String fullName;
+        private int dayOfBirth;
+        private int monthOfBirth;
+        private int yearOfBirth;
+
+        private PersonBuilder() {
+        }
+
+        public static PersonBuilder person() {
+            return new PersonBuilder();
+        }
+
+        public PersonBuilder withGender(CodeWithDescription gender) {
+            this.gender = gender;
+            return this;
+        }
+
+        public PersonBuilder withNationality(CodeWithDescription nationality) {
+            this.nationality = nationality;
+            return this;
+        }
+
+        public PersonBuilder withGivenName(String givenName) {
+            this.givenName = givenName;
+            return this;
+        }
+
+        public PersonBuilder withFamilyName(String familyName) {
+            this.familyName = familyName;
+            return this;
+        }
+
+        public PersonBuilder withFullName(String fullName) {
+            this.fullName = fullName;
+            return this;
+        }
+
+        public PersonBuilder withDayOfBirth(int dayOfBirth) {
+            this.dayOfBirth = dayOfBirth;
+            return this;
+        }
+
+        public PersonBuilder withMonthOfBirth(int monthOfBirth) {
+            this.monthOfBirth = monthOfBirth;
+            return this;
+        }
+
+        public PersonBuilder withYearOfBirth(int yearOfBirth) {
+            this.yearOfBirth = yearOfBirth;
+            return this;
+        }
+
+        public Person build() {
+            return
+                new Person(gender, nationality, givenName, familyName, fullName, dayOfBirth, monthOfBirth, yearOfBirth);
+        }
+    }
 }

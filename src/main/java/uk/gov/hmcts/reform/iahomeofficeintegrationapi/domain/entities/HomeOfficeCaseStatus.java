@@ -11,11 +11,35 @@ public class HomeOfficeCaseStatus {
     private String displayDecisionSentDate;
     private String displayMetadataValueBoolean;
     private String displayMetadataValueDateTime;
+    private String displayAppellantDetailsTitle;
+    private String displayApplicationDetailsTitle;
 
 
     public HomeOfficeCaseStatus(Person person, ApplicationStatus applicationStatus) {
         this.person = person;
         this.applicationStatus = applicationStatus;
+    }
+
+    public HomeOfficeCaseStatus(Person person,
+                                ApplicationStatus applicationStatus,
+                                String displayDateOfBirth,
+                                String displayRejectionReasons,
+                                String displayDecisionDate,
+                                String displayDecisionSentDate,
+                                String displayMetadataValueBoolean,
+                                String displayMetadataValueDateTime,
+                                String displayAppellantDetailsTitle,
+                                String displayApplicationDetailsTitle) {
+        this.person = person;
+        this.applicationStatus = applicationStatus;
+        this.displayDateOfBirth = displayDateOfBirth;
+        this.displayRejectionReasons = displayRejectionReasons;
+        this.displayDecisionDate = displayDecisionDate;
+        this.displayDecisionSentDate = displayDecisionSentDate;
+        this.displayMetadataValueBoolean = displayMetadataValueBoolean;
+        this.displayMetadataValueDateTime = displayMetadataValueDateTime;
+        this.displayAppellantDetailsTitle = displayAppellantDetailsTitle;
+        this.displayApplicationDetailsTitle = displayApplicationDetailsTitle;
     }
 
     private HomeOfficeCaseStatus() {
@@ -77,4 +101,13 @@ public class HomeOfficeCaseStatus {
     public void setDisplayMetadataValueDateTime(String displayMetadataValueDateTime) {
         this.displayMetadataValueDateTime = displayMetadataValueDateTime;
     }
+
+    public String getDisplayAppellantDetailsTitle() {
+        return displayAppellantDetailsTitle;
+    }
+
+    public String getDisplayApplicationDetailsTitle() {
+        return displayApplicationDetailsTitle;
+    }
+
 }
