@@ -43,6 +43,7 @@ public class AsylumCaseNotificationHandler implements PreSubmitCallbackHandler<A
             throw new IllegalStateException("Cannot handle callback");
         }
 
+
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         final String homeOfficeReferenceNumber = asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
