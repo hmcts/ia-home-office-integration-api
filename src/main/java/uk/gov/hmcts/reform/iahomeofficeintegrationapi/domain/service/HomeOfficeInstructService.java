@@ -1,45 +1,14 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_SUBMISSION_DATE;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_DATE_OF_BIRTH;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_FAMILY_NAME;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_GIVEN_NAMES;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_NATIONALITIES;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTIONS;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person.PersonBuilder.person;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties.LookupReferenceData;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealTierType;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerReference;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Direction;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.DirectionTag;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeChallenge;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHeader;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceBundleInstructMessage.RequestEvidenceBundleInstructMessageBuilder;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Nationality;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.NationalityFieldValue;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeInstructApi;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeDateFormatter;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AccessTokenProvider;
 
 
@@ -47,17 +16,14 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.Ac
 @Slf4j
 public class HomeOfficeInstructService {
 
-    private final HomeOfficeProperties homeOfficeProperties;
     private final HomeOfficeInstructApi homeOfficeInstructApi;
     private final AccessTokenProvider accessTokenProvider;
     private final ObjectMapper objectMapper;
 
     public HomeOfficeInstructService(
-        HomeOfficeProperties homeOfficeProperties,
         HomeOfficeInstructApi homeOfficeInstructApi,
         @Qualifier("homeOffice") AccessTokenProvider accessTokenProvider,
         ObjectMapper objectMapper) {
-        this.homeOfficeProperties = homeOfficeProperties;
         this.homeOfficeInstructApi = homeOfficeInstructApi;
         this.accessTokenProvider = accessTokenProvider;
         this.objectMapper = objectMapper;

@@ -13,11 +13,12 @@ class EventTest {
         assertEquals("markAppealPaid", Event.MARK_APPEAL_PAID.toString());
         assertEquals("requestHomeOfficeData", Event.REQUEST_HOME_OFFICE_DATA.toString());
         assertEquals("requestRespondentEvidence", Event.REQUEST_RESPONDENT_EVIDENCE.toString());
+        assertEquals("requestRespondentReview", Event.REQUEST_RESPONDENT_REVIEW.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
-    public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(6, Event.values().length);
+    void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
+        assertEquals(7, Event.values().length);
     }
 }

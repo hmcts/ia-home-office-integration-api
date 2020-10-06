@@ -2,15 +2,15 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.REQUEST_EVIDENCE_BUNDLE;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceBundleInstructMessage.RequestEvidenceBundleInstructMessageBuilder.requestEvidenceBundleInstructMessage;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.REQUEST_REVIEW;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceReviewInstructMessage.RequestEvidenceReviewInstructMessageBuilder.requestEvidenceReviewInstructMessage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.DirectionTag;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceBundleInstructMessage;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceReviewInstructMessage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -22,12 +22,12 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.Notificatio
 
 @Slf4j
 @Component
-public class RequestEvidenceBundleNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class RequestEvidenceReviewNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private HomeOfficeInstructService homeOfficeInstructService;
+    private final HomeOfficeInstructService homeOfficeInstructService;
     private NotificationsHelper notificationsHelper;
 
-    public RequestEvidenceBundleNotificationHandler(
+    public RequestEvidenceReviewNotificationHandler(
         HomeOfficeInstructService homeOfficeInstructService,
         NotificationsHelper notificationsHelper
     ) {
@@ -41,7 +41,7 @@ public class RequestEvidenceBundleNotificationHandler implements PreSubmitCallba
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == Event.REQUEST_RESPONDENT_EVIDENCE);
+               && (callback.getEvent() == Event.REQUEST_RESPONDENT_REVIEW);
     }
 
     @Override
@@ -51,7 +51,8 @@ public class RequestEvidenceBundleNotificationHandler implements PreSubmitCallba
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
-        log.info("Preparing to send {} notification to HomeOffice", REQUEST_EVIDENCE_BUNDLE.toString());
+
+        log.info("Preparing to send {} notification to HomeOffice", REQUEST_REVIEW.toString());
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
@@ -60,27 +61,25 @@ public class RequestEvidenceBundleNotificationHandler implements PreSubmitCallba
         final String caseId = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)
             .orElseThrow(() -> new IllegalStateException("Case ID for the appeal is not present"));
 
-        final RequestEvidenceBundleInstructMessage bundleInstructMessage =
-            requestEvidenceBundleInstructMessage()
+        final RequestEvidenceReviewInstructMessage bundleInstructMessage =
+            requestEvidenceReviewInstructMessage()
                 .withConsumerReference(notificationsHelper.getConsumerReference(caseId))
                 .withHoReference(homeOfficeReferenceNumber)
                 .withMessageHeader(notificationsHelper.getMessageHeader())
-                .withMessageType(REQUEST_EVIDENCE_BUNDLE.name())
-                .withChallenge(notificationsHelper.buildHomeOfficeChallenge(asylumCase))
-                .withNote(notificationsHelper.getDirectionContent(asylumCase, DirectionTag.RESPONDENT_EVIDENCE))
-                .withDeadlineDate(
-                    notificationsHelper.getDirectionDeadline(asylumCase, DirectionTag.RESPONDENT_EVIDENCE))
+                .withMessageType(REQUEST_REVIEW.name())
+                .withNote(notificationsHelper.getDirectionContent(asylumCase, DirectionTag.RESPONDENT_REVIEW))
+                .withDeadlineDate(notificationsHelper.getDirectionDeadline(asylumCase, DirectionTag.RESPONDENT_REVIEW))
                 .build();
 
         log.info("Finished constructing {} notification request for caseId: {}, HomeOffice reference: {}",
-            REQUEST_EVIDENCE_BUNDLE.toString(), caseId, homeOfficeReferenceNumber);
+            REQUEST_REVIEW.toString(), caseId, homeOfficeReferenceNumber);
 
         final String notificationStatus = homeOfficeInstructService.sendNotification(bundleInstructMessage);
 
-        asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_INSTRUCT_STATUS, notificationStatus);
+        asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_REQUEST_REVIEW_INSTRUCT_STATUS, notificationStatus);
 
         log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}",
-            REQUEST_EVIDENCE_BUNDLE.toString(), caseId, homeOfficeReferenceNumber, notificationStatus);
+            REQUEST_REVIEW.toString(), caseId, homeOfficeReferenceNumber, notificationStatus);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

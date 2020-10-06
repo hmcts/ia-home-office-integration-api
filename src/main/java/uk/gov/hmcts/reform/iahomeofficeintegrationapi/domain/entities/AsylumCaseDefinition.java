@@ -47,7 +47,13 @@ public enum AsylumCaseDefinition {
         "directions", new TypeReference<List<IdValue<Direction>>>(){}),
 
     HOME_OFFICE_INSTRUCT_STATUS(
-        "homeOfficeInstructStatus", new TypeReference<String>() {});
+        "homeOfficeInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_REQUEST_REVIEW_INSTRUCT_STATUS(
+        "homeOfficeRequestReviewInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_REQUEST_EVIDENCE_INSTRUCT_STATUS(
+        "homeOfficeRequestEvidenceInstructStatus", new TypeReference<String>() {});
 
     private final String value;
     private final TypeReference typeReference;
