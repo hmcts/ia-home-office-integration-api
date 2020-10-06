@@ -9,7 +9,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_INSTRUCT_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REQUEST_REVIEW_INSTRUCT_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -24,9 +24,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.DirectionTag;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeChallenge;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceBundleInstructMessage;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceReviewInstructMessage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -35,22 +34,20 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeI
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class RequestEvidenceBundleNotificationHandlerTest extends AbstractNotificationsHandlerTestBase {
+class RequestEvidenceReviewNotificationHandlerTest extends AbstractNotificationsHandlerTestBase {
 
     @Mock
     private HomeOfficeInstructService homeOfficeInstructService;
-    @Mock
-    private HomeOfficeChallenge homeOfficeChallenge;
 
     @Captor
-    private ArgumentCaptor<RequestEvidenceBundleInstructMessage> requestEvidenceBundleInstructMessage;
+    private ArgumentCaptor<RequestEvidenceReviewInstructMessage> evidenceReviewInstructMessageArgumentCaptor;
 
-    private RequestEvidenceBundleNotificationHandler requestEvidenceBundleNotificationHandler;
+    private RequestEvidenceReviewNotificationHandler requestEvidenceReviewNotificationHandler;
 
     @BeforeEach
     void setUp() {
-        requestEvidenceBundleNotificationHandler =
-            new RequestEvidenceBundleNotificationHandler(
+        requestEvidenceReviewNotificationHandler =
+            new RequestEvidenceReviewNotificationHandler(
                 homeOfficeInstructService, notificationsHelper
             );
     }
@@ -59,63 +56,58 @@ class RequestEvidenceBundleNotificationHandlerTest extends AbstractNotifications
     @MockitoSettings(strictness = Strictness.WARN)
     void check_handler_returns_case_data_for_valid_input() {
 
-        setupCase(Event.REQUEST_RESPONDENT_EVIDENCE);
+        setupCase(Event.REQUEST_RESPONDENT_REVIEW);
         setupCaseData();
-        setupHelperResponses(DirectionTag.RESPONDENT_EVIDENCE);
-
-        when(homeOfficeInstructService.sendNotification(any(RequestEvidenceBundleInstructMessage.class)))
-            .thenReturn("OK");
-        when(notificationsHelper.buildHomeOfficeChallenge(asylumCase)).thenReturn(homeOfficeChallenge);
+        setupHelperResponses(DirectionTag.RESPONDENT_REVIEW);
+        when(homeOfficeInstructService.sendNotification(any())).thenReturn("OK");
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            requestEvidenceBundleNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+            requestEvidenceReviewNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
         assertTrue(response.getErrors().isEmpty());
-        verify(asylumCase, times(1)).write(HOME_OFFICE_INSTRUCT_STATUS, "OK");
-        verify(homeOfficeInstructService).sendNotification(requestEvidenceBundleInstructMessage.capture());
+        verify(asylumCase, times(1)).write(HOME_OFFICE_REQUEST_REVIEW_INSTRUCT_STATUS, "OK");
+        verify(homeOfficeInstructService).sendNotification(evidenceReviewInstructMessageArgumentCaptor.capture());
+        final RequestEvidenceReviewInstructMessage instructMessage =
+            evidenceReviewInstructMessageArgumentCaptor.getValue();
 
-        final RequestEvidenceBundleInstructMessage instructMessage = requestEvidenceBundleInstructMessage.getValue();
         assertNotificationInstructMessage(instructMessage);
     }
 
-    private void assertNotificationInstructMessage(RequestEvidenceBundleInstructMessage instructMessage) {
+    private void assertNotificationInstructMessage(RequestEvidenceReviewInstructMessage instructMessage) {
         assertThat(instructMessage.getConsumerReference()).isEqualTo(consumerReference);
-        assertThat(instructMessage.getChallenge()).isEqualTo(homeOfficeChallenge);
         assertThat(instructMessage.getMessageHeader()).isEqualTo(messageHeader);
         assertThat(instructMessage.getDeadlineDate()).isEqualTo(dueDate);
         assertThat(instructMessage.getNote()).isEqualTo(directionExplanation);
         assertThat(instructMessage.getHoReference()).isEqualTo(someDocumentReference);
-        assertThat(instructMessage.getMessageType()).isEqualTo(MessageType.REQUEST_EVIDENCE_BUNDLE.toString());
+        assertThat(instructMessage.getMessageType()).isEqualTo(MessageType.REQUEST_REVIEW.toString());
     }
 
     @Test
     @MockitoSettings(strictness = Strictness.WARN)
     void check_handler_returns_error_status() {
 
-        setupCase(Event.REQUEST_RESPONDENT_EVIDENCE);
+        setupCase(Event.REQUEST_RESPONDENT_REVIEW);
         setupCaseData();
-        setupHelperResponses(DirectionTag.RESPONDENT_EVIDENCE);
-        when(homeOfficeInstructService.sendNotification(any(RequestEvidenceBundleInstructMessage.class)))
+        setupHelperResponses(DirectionTag.RESPONDENT_REVIEW);
+        when(homeOfficeInstructService.sendNotification(any(RequestEvidenceReviewInstructMessage.class)))
             .thenReturn("FAIL");
-        when(notificationsHelper.buildHomeOfficeChallenge(asylumCase)).thenReturn(homeOfficeChallenge);
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            requestEvidenceBundleNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+            requestEvidenceReviewNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
         assertThat(response.getErrors()).isEmpty();
-        verify(asylumCase, times(1)).write(HOME_OFFICE_INSTRUCT_STATUS, "FAIL");
+        verify(asylumCase, times(1)).write(HOME_OFFICE_REQUEST_REVIEW_INSTRUCT_STATUS, "FAIL");
+        verify(homeOfficeInstructService).sendNotification(evidenceReviewInstructMessageArgumentCaptor.capture());
 
-        verify(homeOfficeInstructService).sendNotification(requestEvidenceBundleInstructMessage.capture());
-        final RequestEvidenceBundleInstructMessage instructMessage = requestEvidenceBundleInstructMessage.getValue();
-
+        final RequestEvidenceReviewInstructMessage instructMessage =
+            evidenceReviewInstructMessageArgumentCaptor.getValue();
         assertNotificationInstructMessage(instructMessage);
-
     }
 
     @Test
@@ -123,7 +115,7 @@ class RequestEvidenceBundleNotificationHandlerTest extends AbstractNotifications
 
         when(callback.getEvent()).thenReturn(Event.UNKNOWN);
 
-        assertThatThrownBy(() -> requestEvidenceBundleNotificationHandler.handle(ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> requestEvidenceReviewNotificationHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -131,7 +123,7 @@ class RequestEvidenceBundleNotificationHandlerTest extends AbstractNotifications
     @Test
     void handling_should_throw_if_not_bound_to__about_to_submit__callback_stage() {
 
-        assertThatThrownBy(() -> requestEvidenceBundleNotificationHandler.handle(ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> requestEvidenceReviewNotificationHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -146,9 +138,9 @@ class RequestEvidenceBundleNotificationHandlerTest extends AbstractNotifications
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = requestEvidenceBundleNotificationHandler.canHandle(callbackStage, callback);
+                boolean canHandle = requestEvidenceReviewNotificationHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.REQUEST_RESPONDENT_EVIDENCE
+                if (event == Event.REQUEST_RESPONDENT_REVIEW
                     && callbackStage == ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
@@ -164,19 +156,19 @@ class RequestEvidenceBundleNotificationHandlerTest extends AbstractNotifications
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> requestEvidenceBundleNotificationHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> requestEvidenceReviewNotificationHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestEvidenceBundleNotificationHandler.canHandle(ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> requestEvidenceReviewNotificationHandler.canHandle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestEvidenceBundleNotificationHandler.handle(null, callback))
+        assertThatThrownBy(() -> requestEvidenceReviewNotificationHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestEvidenceBundleNotificationHandler.handle(ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> requestEvidenceReviewNotificationHandler.handle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -184,11 +176,10 @@ class RequestEvidenceBundleNotificationHandlerTest extends AbstractNotifications
     @Test
     void should_throw_error_for_case_reference_null_value() {
 
-        setupCase(Event.REQUEST_RESPONDENT_EVIDENCE);
+        setupCase(Event.REQUEST_RESPONDENT_REVIEW);
 
-        assertThatThrownBy(() -> requestEvidenceBundleNotificationHandler.handle(ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> requestEvidenceReviewNotificationHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Case ID for the appeal is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
-
     }
 }
