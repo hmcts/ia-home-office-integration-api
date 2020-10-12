@@ -283,6 +283,12 @@ public class CcdScenarioRunnerTest {
                 .getLegalRepresentativeAuthorization();
         }
 
+        if ("AdminOfficer".equalsIgnoreCase(credentials)) {
+
+            return authorizationHeadersProvider
+                .getAdminOfficerAuthorization();
+        }
+
         return new Headers();
     }
 }

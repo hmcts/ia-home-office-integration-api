@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOffice
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RejectionReason;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -44,8 +43,9 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.SUBMIT_APPEAL
-               && callback.getCaseDetails().getState() == State.APPEAL_SUBMITTED;
+            && (callback.getEvent() == Event.SUBMIT_APPEAL
+            || callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
+            || callback.getEvent() == Event.MARK_APPEAL_PAID);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

@@ -1,10 +1,10 @@
 {
-  "description": "RIA-3271 Gets Home Office data for the IA appeal reference",
+  "description": "RIA-3332 Gets Home Office data for the IA appeal reference for Pay Later Mark as Paid event",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "LegalRepresentative",
+    "credentials": "AdminOfficer",
     "input": {
-      "eventId": "submitAppeal",
+      "eventId": "markAppealPaid",
       "state": "appealSubmitted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
