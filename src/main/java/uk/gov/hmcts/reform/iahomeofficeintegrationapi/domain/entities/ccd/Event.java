@@ -7,6 +7,7 @@ public enum Event {
     SUBMIT_APPEAL("submitAppeal"),
     PAY_AND_SUBMIT_APPEAL("payAndSubmitAppeal"),
     MARK_APPEAL_PAID("markAppealPaid"),
+    REQUEST_HOME_OFFICE_DATA("requestHomeOfficeData"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 

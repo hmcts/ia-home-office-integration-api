@@ -53,6 +53,7 @@ security:
       - "submitAppeal"
       - "payAndSubmitAppeal"
     caseworker-ia-caseofficer:
+      - "requestHomeOfficeData"
     caseworker-ia-admofficer:
       - "markAppealPaid"
     caseworker-ia-homeofficeapc:
