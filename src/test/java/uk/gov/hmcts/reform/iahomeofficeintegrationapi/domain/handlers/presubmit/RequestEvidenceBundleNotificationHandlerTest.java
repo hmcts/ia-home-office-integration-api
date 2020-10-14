@@ -61,7 +61,8 @@ class RequestEvidenceBundleNotificationHandlerTest extends AbstractNotifications
 
         setupCase(Event.REQUEST_RESPONDENT_EVIDENCE);
         setupCaseData();
-        setupHelperResponses(DirectionTag.RESPONDENT_EVIDENCE);
+        setupHelperResponses();
+        setupHelperDirection(DirectionTag.RESPONDENT_EVIDENCE);
 
         when(homeOfficeInstructService.sendNotification(any(RequestEvidenceBundleInstructMessage.class)))
             .thenReturn("OK");
@@ -97,7 +98,8 @@ class RequestEvidenceBundleNotificationHandlerTest extends AbstractNotifications
 
         setupCase(Event.REQUEST_RESPONDENT_EVIDENCE);
         setupCaseData();
-        setupHelperResponses(DirectionTag.RESPONDENT_EVIDENCE);
+        setupHelperResponses();
+        setupHelperDirection(DirectionTag.RESPONDENT_EVIDENCE);
         when(homeOfficeInstructService.sendNotification(any(RequestEvidenceBundleInstructMessage.class)))
             .thenReturn("FAIL");
         when(notificationsHelper.buildHomeOfficeChallenge(asylumCase)).thenReturn(homeOfficeChallenge);

@@ -58,7 +58,8 @@ class RequestEvidenceReviewNotificationHandlerTest extends AbstractNotifications
 
         setupCase(Event.REQUEST_RESPONDENT_REVIEW);
         setupCaseData();
-        setupHelperResponses(DirectionTag.RESPONDENT_REVIEW);
+        setupHelperResponses();
+        setupHelperDirection(DirectionTag.RESPONDENT_REVIEW);
         when(homeOfficeInstructService.sendNotification(any())).thenReturn("OK");
 
         PreSubmitCallbackResponse<AsylumCase> response =
@@ -91,7 +92,8 @@ class RequestEvidenceReviewNotificationHandlerTest extends AbstractNotifications
 
         setupCase(Event.REQUEST_RESPONDENT_REVIEW);
         setupCaseData();
-        setupHelperResponses(DirectionTag.RESPONDENT_REVIEW);
+        setupHelperResponses();
+        setupHelperDirection(DirectionTag.RESPONDENT_REVIEW);
         when(homeOfficeInstructService.sendNotification(any(RequestEvidenceReviewInstructMessage.class)))
             .thenReturn("FAIL");
 

@@ -82,10 +82,14 @@ abstract class AbstractNotificationsHandlerTestBase {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
-    protected void setupHelperResponses(DirectionTag directionTag) {
+    protected void setupHelperResponses() {
         when(notificationsHelper.getHomeOfficeReference(asylumCase)).thenReturn(someDocumentReference);
         when(notificationsHelper.getConsumerReference(someCaseReference)).thenReturn(consumerReference);
         when(notificationsHelper.getMessageHeader()).thenReturn(messageHeader);
+        //setupHelperDirection(directionTag);
+    }
+
+    protected void setupHelperDirection(DirectionTag directionTag) {
         when(notificationsHelper.getDirectionContent(asylumCase, directionTag)).thenReturn(directionExplanation);
         when(notificationsHelper.getDirectionDeadline(asylumCase, directionTag)).thenReturn(dueDate);
     }
