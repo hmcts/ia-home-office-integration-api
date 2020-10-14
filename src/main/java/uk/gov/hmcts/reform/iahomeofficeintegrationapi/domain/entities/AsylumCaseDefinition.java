@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HearingCentre;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.NationalityFieldValue;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.WitnessDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 
 public enum AsylumCaseDefinition {
@@ -46,11 +48,47 @@ public enum AsylumCaseDefinition {
     DIRECTIONS(
         "directions", new TypeReference<List<IdValue<Direction>>>(){}),
 
+    ARIA_LISTING_REFERENCE(
+        "ariaListingReference", new TypeReference<String>(){}),
+
+    LIST_CASE_HEARING_CENTRE(
+        "listCaseHearingCentre",  new TypeReference<HearingCentre>(){}),
+
+    LIST_CASE_HEARING_DATE(
+        "listCaseHearingDate",  new TypeReference<String>(){}),
+
+    WITNESS_COUNT(
+        "witnessCount", new TypeReference<String>() {}),
+
+    WITNESS_DETAILS(
+        "witnessDetails", new TypeReference<List<IdValue<WitnessDetails>>>() {}),
+
+    VULNERABILITIES_TRIBUNAL_RESPONSE(
+        "vulnerabilitiesTribunalResponse", new TypeReference<String>(){}),
+
+    MULTIMEDIA_TRIBUNAL_RESPONSE(
+        "multimediaTribunalResponse", new TypeReference<String>(){}),
+
+    SINGLE_SEX_COURT_TRIBUNAL_RESPONSE(
+        "singleSexCourtTribunalResponse", new TypeReference<String>(){}),
+
+    IN_CAMERA_COURT_TRIBUNAL_RESPONSE(
+        "inCameraCourtTribunalResponse", new TypeReference<String>(){}),
+
+    ADDITIONAL_TRIBUNAL_RESPONSE(
+        "additionalTribunalResponse", new TypeReference<String>(){}),
+
+    DECISION_HEARING_FEE_OPTION(
+        "decisionHearingFeeOption", new TypeReference<String>(){}),
+
     HOME_OFFICE_INSTRUCT_STATUS(
         "homeOfficeInstructStatus", new TypeReference<String>() {}),
 
     HOME_OFFICE_REQUEST_REVIEW_INSTRUCT_STATUS(
         "homeOfficeRequestReviewInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_HEARING_INSTRUCT_STATUS(
+        "homeOfficeHearingInstructStatus", new TypeReference<String>() {}),
 
     HOME_OFFICE_REQUEST_EVIDENCE_INSTRUCT_STATUS(
         "homeOfficeRequestEvidenceInstructStatus", new TypeReference<String>() {});
