@@ -1,0 +1,29 @@
+{
+  "description": "RIA-3545 Valid 200 response with appellant not found 1030 error",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "123123123"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "123123123",
+        "homeOfficeSearchStatus": "FAIL",
+        "homeOfficeSearchStatusMessage": "### There is a problem\n\nThe service has been unable to retrieve the Home Office information about this appeal because the Home Office reference number does not have any matching appellant data in the system. You can contact the Home Office if you need more information to validate the appeal."
+      }
+    }
+  }
+}

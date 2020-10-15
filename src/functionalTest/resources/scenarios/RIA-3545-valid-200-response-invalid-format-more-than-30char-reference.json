@@ -1,0 +1,29 @@
+{
+  "description": "RIA-3545 Error response for invalid HO Reference, more than 30 characters",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "123456789012345678901234567890A"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "123456789012345678901234567890A",
+        "homeOfficeSearchStatus": "FAIL",
+        "homeOfficeSearchStatusMessage": "### There is a problem\n\nThe appellant entered the Home Office reference number incorrectly. You can contact the appellant to check the reference number if you need this information to validate the appeal"
+      }
+    }
+  }
+}

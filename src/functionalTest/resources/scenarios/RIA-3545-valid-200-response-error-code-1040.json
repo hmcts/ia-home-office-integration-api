@@ -1,0 +1,30 @@
+{
+  "description": "RIA-3545 Mock 200 response with generic error code 1040",
+  "disabled": true,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "X00001040"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "X00001040",
+        "homeOfficeSearchStatus": "FAIL",
+        "homeOfficeSearchStatusMessage": "### There is a problem\n\nThe service has been unable to retrieve the Home Office information about this appeal.\n\n[Request the Home Office information](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/requestHomeOfficeData) to try again. This may take a few minutes."
+      }
+    }
+  }
+}
