@@ -1,5 +1,6 @@
 {
   "description": "RIA-3545 Valid 200 response with appellant not found 1030 error",
+  "disabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
