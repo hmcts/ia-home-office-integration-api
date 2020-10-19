@@ -15,11 +15,12 @@ class EventTest {
         assertEquals("requestRespondentEvidence", Event.REQUEST_RESPONDENT_EVIDENCE.toString());
         assertEquals("requestRespondentReview", Event.REQUEST_RESPONDENT_REVIEW.toString());
         assertEquals("listCase", Event.LIST_CASE.toString());
+        assertEquals("editCaseListing", Event.EDIT_CASE_LISTING.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(8, Event.values().length);
+        assertEquals(9, Event.values().length);
     }
 }

@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.ARIA_LISTING_REFERENCE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_EDIT_LISTING_INSTRUCT_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_HEARING_INSTRUCT_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.LIST_CASE_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.LIST_CASE_HEARING_DATE;
@@ -21,12 +22,15 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -70,11 +74,12 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
                 dateTimeExtractor);
     }
 
-    @Test
+    @ParameterizedTest
     @MockitoSettings(strictness = Strictness.WARN)
-    void check_handler_returns_case_data_for_valid_input() {
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "EDIT_CASE_LISTING"})
+    void check_handler_returns_case_data_for_valid_input(Event event) {
 
-        setupCase(Event.LIST_CASE);
+        setupCase(event);
         setupCaseData();
         setupHelperResponses();
         when(homeOfficeInstructService.sendNotification(any())).thenReturn("OK");
@@ -87,7 +92,11 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
         assertTrue(response.getErrors().isEmpty());
-        verify(asylumCase, times(1)).write(HOME_OFFICE_HEARING_INSTRUCT_STATUS, "OK");
+        if (event.name().equals("EDIT_CASE_LISTING")) {
+            verify(asylumCase, times(1)).write(HOME_OFFICE_EDIT_LISTING_INSTRUCT_STATUS, "OK");
+        } else {
+            verify(asylumCase, times(1)).write(HOME_OFFICE_HEARING_INSTRUCT_STATUS, "OK");
+        }
         verify(homeOfficeInstructService).sendNotification(hearingInstructMessageArgumentCaptor.capture());
 
         final HearingInstructMessage instructMessage = hearingInstructMessageArgumentCaptor.getValue();
@@ -155,11 +164,12 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
 
     }
 
-    @Test
+    @ParameterizedTest
     @MockitoSettings(strictness = Strictness.WARN)
-    void check_handler_returns_error_status() {
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "EDIT_CASE_LISTING"})
+    void check_handler_returns_error_status(Event event) {
 
-        setupCase(Event.LIST_CASE);
+        setupCase(event);
         setupCaseData();
         setupHelperResponses();
         when(homeOfficeInstructService.sendNotification(any(HearingInstructMessage.class)))
@@ -174,7 +184,12 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
         assertThat(response.getErrors()).isEmpty();
-        verify(asylumCase, times(1)).write(HOME_OFFICE_HEARING_INSTRUCT_STATUS, "FAIL");
+
+        if (event.name().equals("EDIT_CASE_LISTING")) {
+            verify(asylumCase, times(1)).write(HOME_OFFICE_EDIT_LISTING_INSTRUCT_STATUS, "FAIL");
+        } else {
+            verify(asylumCase, times(1)).write(HOME_OFFICE_HEARING_INSTRUCT_STATUS, "FAIL");
+        }
         verify(homeOfficeInstructService).sendNotification(hearingInstructMessageArgumentCaptor.capture());
 
         final HearingInstructMessage instructMessage =
@@ -212,8 +227,11 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
 
                 boolean canHandle = listCaseNotificationHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.LIST_CASE
-                    && callbackStage == ABOUT_TO_SUBMIT) {
+                if (callbackStage == ABOUT_TO_SUBMIT
+                    && Arrays.asList(
+                    Event.LIST_CASE,
+                    Event.EDIT_CASE_LISTING
+                ).contains(callback.getEvent())) {
 
                     assertTrue(canHandle);
                 } else {
@@ -245,10 +263,11 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    @Test
-    void should_throw_error_for_case_reference_null_value() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "EDIT_CASE_LISTING"})
+    void should_throw_error_for_case_reference_null_value(Event event) {
 
-        setupCase(Event.LIST_CASE);
+        setupCase(event);
 
         assertThatThrownBy(() -> listCaseNotificationHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Case ID for the appeal is not present")
