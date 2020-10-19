@@ -15,6 +15,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Hea
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HearingInstructMessage.HearingInstructMessageBuilder.hearingInstructMessage;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.HEARING;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -63,7 +64,10 @@ public class ListCaseNotificationHandler implements PreSubmitCallbackHandler<Asy
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == Event.LIST_CASE);
+               && Arrays.asList(
+                Event.LIST_CASE,
+                Event.EDIT_CASE_LISTING
+                ).contains(callback.getEvent());
     }
 
     @Override
@@ -98,10 +102,14 @@ public class ListCaseNotificationHandler implements PreSubmitCallbackHandler<Asy
 
         final String notificationStatus = homeOfficeInstructService.sendNotification(bundleInstructMessage);
 
-        asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_HEARING_INSTRUCT_STATUS, notificationStatus);
+        if (callback.getEvent().equals(Event.EDIT_CASE_LISTING)) {
+            asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_EDIT_LISTING_INSTRUCT_STATUS, notificationStatus);
+        } else {
+            asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_HEARING_INSTRUCT_STATUS, notificationStatus);
+        }
 
-        log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}",
-            HEARING.toString(), caseId, homeOfficeReferenceNumber, notificationStatus);
+        log.info("SENT: {} Event for {} notification for caseId: {}, HomeOffice reference: {}, status: {}",
+            callback.getEvent(), HEARING.toString(), caseId, homeOfficeReferenceNumber, notificationStatus);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

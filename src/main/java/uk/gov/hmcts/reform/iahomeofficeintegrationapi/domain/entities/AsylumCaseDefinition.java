@@ -90,6 +90,9 @@ public enum AsylumCaseDefinition {
     HOME_OFFICE_HEARING_INSTRUCT_STATUS(
         "homeOfficeHearingInstructStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_EDIT_LISTING_INSTRUCT_STATUS(
+        "homeOfficeEditListingInstructStatus", new TypeReference<String>() {}),
+
     HOME_OFFICE_REQUEST_EVIDENCE_INSTRUCT_STATUS(
         "homeOfficeRequestEvidenceInstructStatus", new TypeReference<String>() {});
 
