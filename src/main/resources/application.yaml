@@ -57,10 +57,12 @@ security:
       - "requestRespondentEvidence"
       - "requestRespondentReview"
       - "editCaseListing"
+      - "adjournHearingWithoutDate"
     caseworker-ia-admofficer:
       - "markAppealPaid"
       - "listCase"
       - "editCaseListing"
+      - "adjournHearingWithoutDate"
     caseworker-ia-homeofficeapc:
     caseworker-ia-homeofficelart:
     caseworker-ia-homeofficepou:

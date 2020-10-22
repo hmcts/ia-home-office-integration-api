@@ -52,7 +52,8 @@ public class RequestEvidenceReviewNotificationHandler implements PreSubmitCallba
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        log.info("Preparing to send {} notification to HomeOffice", REQUEST_REVIEW.toString());
+        log.info("Preparing to send {} notification to HomeOffice for event {}",
+            REQUEST_REVIEW.toString(), callback.getEvent());
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 

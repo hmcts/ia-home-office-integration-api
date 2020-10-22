@@ -19,13 +19,13 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.Notificatio
 
 @Slf4j
 @Component
-public class ListCaseNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class EditCaseListingNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     protected final HomeOfficeInstructService homeOfficeInstructService;
     protected final NotificationsHelper notificationsHelper;
     protected final ListingNotificationHelper listingNotificationHelper;
 
-    public ListCaseNotificationHandler(
+    public EditCaseListingNotificationHandler(
         HomeOfficeInstructService homeOfficeInstructService,
         NotificationsHelper notificationsHelper,
         ListingNotificationHelper listingNotificationHelper) {
@@ -40,7 +40,7 @@ public class ListCaseNotificationHandler implements PreSubmitCallbackHandler<Asy
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == Event.LIST_CASE);
+               && (callback.getEvent() == Event.EDIT_CASE_LISTING);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class ListCaseNotificationHandler implements PreSubmitCallbackHandler<Asy
         log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}",
             HEARING.toString(), caseId, homeOfficeReferenceNumber, notificationStatus);
 
-        asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_HEARING_INSTRUCT_STATUS, notificationStatus);
+        asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_EDIT_LISTING_INSTRUCT_STATUS, notificationStatus);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

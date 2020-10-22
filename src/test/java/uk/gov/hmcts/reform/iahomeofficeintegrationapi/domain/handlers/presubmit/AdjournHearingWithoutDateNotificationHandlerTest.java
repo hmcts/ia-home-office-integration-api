@@ -10,7 +10,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_HEARING_INSTRUCT_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_ADJOURN_WITHOUT_DATE_INSTRUCT_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.HEARING;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -37,7 +37,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.ListingNoti
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBase {
+class AdjournHearingWithoutDateNotificationHandlerTest extends AbstractNotificationsHandlerTestBase {
 
     @Mock
     private HomeOfficeInstructService homeOfficeInstructService;
@@ -48,7 +48,7 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
     @Captor
     private ArgumentCaptor<HearingInstructMessage> hearingInstructMessageArgumentCaptor;
 
-    private ListCaseNotificationHandler listCaseNotificationHandler;
+    private AdjournHearingWithoutDateNotificationHandler adjournHearingWithoutDateNotificationHandler;
 
     Hearing hearing = Hearing.HearingBuilder.hearing()
         .withHearingType("ORAL")
@@ -68,12 +68,13 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
             .withMessageHeader(messageHeader)
             .withMessageType(HEARING.name())
             .withHearing(hearing)
-            .withNote("Hearing requirements:").build();
+            .withNote("listCaseHearingDateAdjourned").build();
 
     @BeforeEach
     void setUp() {
-        listCaseNotificationHandler =
-            new ListCaseNotificationHandler(
+
+        adjournHearingWithoutDateNotificationHandler =
+            new AdjournHearingWithoutDateNotificationHandler(
                 homeOfficeInstructService,
                 notificationsHelper,
                 listingNotificationHelper);
@@ -83,23 +84,23 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
     @MockitoSettings(strictness = Strictness.WARN)
     void check_handler_returns_case_data_for_valid_input() {
 
-        setupCase(Event.LIST_CASE);
+        setupCase(Event.ADJOURN_HEARING_WITHOUT_DATE);
+        setupCaseData();
         setupHelperResponses();
-        when(homeOfficeInstructService.sendNotification(any(HearingInstructMessage.class))).thenReturn("OK");
+        when(homeOfficeInstructService.sendNotification(any())).thenReturn("OK");
 
-        when(listingNotificationHelper.getHearingInstructMessage(
+        when(listingNotificationHelper.getAdjournHearingInstructMessage(
                 any(AsylumCase.class), any(),
                 any(), anyString())).thenReturn(hearingInstructMessage);
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            listCaseNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+            adjournHearingWithoutDateNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
         assertTrue(response.getErrors().isEmpty());
-        verify(asylumCase, times(1)).write(HOME_OFFICE_HEARING_INSTRUCT_STATUS, "OK");
-
+        verify(asylumCase, times(1)).write(HOME_OFFICE_ADJOURN_WITHOUT_DATE_INSTRUCT_STATUS, "OK");
         verify(homeOfficeInstructService).sendNotification(hearingInstructMessageArgumentCaptor.capture());
 
         final HearingInstructMessage instructMessage = hearingInstructMessageArgumentCaptor.getValue();
@@ -110,32 +111,33 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
     @MockitoSettings(strictness = Strictness.WARN)
     void check_handler_returns_error_status() {
 
-        setupCase(Event.LIST_CASE);
+        setupCase(Event.ADJOURN_HEARING_WITHOUT_DATE);
         setupHelperResponses();
         when(homeOfficeInstructService.sendNotification(any(HearingInstructMessage.class)))
             .thenReturn("FAIL");
-        when(listingNotificationHelper.getHearingInstructMessage(
+        when(listingNotificationHelper.getAdjournHearingInstructMessage(
                 any(AsylumCase.class), any(),
                 any(), anyString())).thenReturn(hearingInstructMessage);
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            listCaseNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+            adjournHearingWithoutDateNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
         assertThat(response.getErrors()).isEmpty();
-        verify(asylumCase, times(1)).write(HOME_OFFICE_HEARING_INSTRUCT_STATUS, "FAIL");
+        verify(asylumCase, times(1)).write(HOME_OFFICE_ADJOURN_WITHOUT_DATE_INSTRUCT_STATUS, "FAIL");
         verify(homeOfficeInstructService).sendNotification(hearingInstructMessageArgumentCaptor.capture());
 
-        final HearingInstructMessage instructMessage = hearingInstructMessageArgumentCaptor.getValue();
+        final HearingInstructMessage instructMessage =
+            hearingInstructMessageArgumentCaptor.getValue();
         assertNotificationInstructMessage(instructMessage);
     }
 
     private void assertNotificationInstructMessage(HearingInstructMessage instructMessage) {
         assertThat(instructMessage.getHoReference()).isEqualTo(someDocumentReference);
         assertThat(instructMessage.getMessageType()).isEqualTo(MessageType.HEARING.toString());
-        assertThat(instructMessage.getNote()).isEqualTo("Hearing requirements:");
+        assertThat(instructMessage.getNote()).isEqualTo("listCaseHearingDateAdjourned");
 
         final Hearing hearing = instructMessage.getHearing();
         assertThat(hearing.getHearingDate()).isEqualTo("2020-10-01");
@@ -152,7 +154,7 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
 
         when(callback.getEvent()).thenReturn(Event.UNKNOWN);
 
-        assertThatThrownBy(() -> listCaseNotificationHandler.handle(ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> adjournHearingWithoutDateNotificationHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -160,7 +162,7 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
     @Test
     void handling_should_throw_if_not_bound_to__about_to_submit__callback_stage() {
 
-        assertThatThrownBy(() -> listCaseNotificationHandler.handle(ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> adjournHearingWithoutDateNotificationHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -175,9 +177,9 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = listCaseNotificationHandler.canHandle(callbackStage, callback);
+                boolean canHandle = adjournHearingWithoutDateNotificationHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.LIST_CASE
+                if (event == Event.ADJOURN_HEARING_WITHOUT_DATE
                     && callbackStage == ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
@@ -192,19 +194,19 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> listCaseNotificationHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> adjournHearingWithoutDateNotificationHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> listCaseNotificationHandler.canHandle(ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> adjournHearingWithoutDateNotificationHandler.canHandle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> listCaseNotificationHandler.handle(null, callback))
+        assertThatThrownBy(() -> adjournHearingWithoutDateNotificationHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> listCaseNotificationHandler.handle(ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> adjournHearingWithoutDateNotificationHandler.handle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
