@@ -1,0 +1,81 @@
+{
+  "description": "RIA-3316 Sends adjourn hearing without date notification to Home office API for state prehearing by CaseOfficer",
+  "disabled": false,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "adjournHearingWithoutDate",
+      "state": "preHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+          "appealReferenceNumber": "DC/50001/2020",
+          "decisionHearingFeeOption": "decisionWithHearing",
+          "listCaseHearingCentre": "coventry",
+          "hearingDocuments": [],
+          "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
+          "listCaseRequirementsMultimedia": "something around Multimedia",
+          "listCaseRequirementsSingleSexCourt": "something around SingleSexCourt",
+          "listCaseRequirementsInCameraCourt": "something around InCameraCourt",
+          "listCaseRequirementsOther": "something around Other",
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "ariaListingReference": "LP/12345/2019",
+          "witnessCount": "2",
+          "witnessDetails": [
+            {
+              "id": "1",
+              "value": {
+                "witnessName": "WitnessA"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "witnessName": "WitnessB"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+        "appealReferenceNumber": "DC/50001/2020",
+        "hearingDocuments": [],
+        "decisionHearingFeeOption": "decisionWithHearing",
+        "listCaseHearingCentre": "coventry",
+        "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
+        "listCaseRequirementsMultimedia": "something around Multimedia",
+        "listCaseRequirementsSingleSexCourt": "something around SingleSexCourt",
+        "listCaseRequirementsInCameraCourt": "something around InCameraCourt",
+        "listCaseRequirementsOther": "something around Other",
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "ariaListingReference": "LP/12345/2019",
+        "witnessCount": "2",
+        "witnessDetails": [
+          {
+            "id": "1",
+            "value": {
+              "witnessName": "WitnessA"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "witnessName": "WitnessB"
+            }
+          }
+        ],
+        "homeOfficeAdjournWithoutDateInstructStatus": "OK"
+      }
+    }
+  }
+}

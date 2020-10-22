@@ -51,7 +51,8 @@ public class RequestEvidenceBundleNotificationHandler implements PreSubmitCallba
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
-        log.info("Preparing to send {} notification to HomeOffice", REQUEST_EVIDENCE_BUNDLE.toString());
+        log.info("Preparing to send {} notification to HomeOffice for event {}",
+            REQUEST_EVIDENCE_BUNDLE.toString(), callback.getEvent());
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
