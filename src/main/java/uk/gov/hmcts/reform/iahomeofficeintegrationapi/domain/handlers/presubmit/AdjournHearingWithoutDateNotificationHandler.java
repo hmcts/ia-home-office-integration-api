@@ -19,13 +19,13 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.Notificatio
 
 @Slf4j
 @Component
-public class ListCaseNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class AdjournHearingWithoutDateNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     protected final HomeOfficeInstructService homeOfficeInstructService;
     protected final NotificationsHelper notificationsHelper;
     protected final ListingNotificationHelper listingNotificationHelper;
 
-    public ListCaseNotificationHandler(
+    public AdjournHearingWithoutDateNotificationHandler(
         HomeOfficeInstructService homeOfficeInstructService,
         NotificationsHelper notificationsHelper,
         ListingNotificationHelper listingNotificationHelper) {
@@ -40,7 +40,7 @@ public class ListCaseNotificationHandler implements PreSubmitCallbackHandler<Asy
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == Event.LIST_CASE);
+               && (callback.getEvent() == Event.ADJOURN_HEARING_WITHOUT_DATE);
     }
 
     @Override
@@ -60,20 +60,21 @@ public class ListCaseNotificationHandler implements PreSubmitCallbackHandler<Asy
         final String caseId = notificationsHelper.getCaseId(asylumCase);
 
         final HearingInstructMessage hearingInstructMessage
-            = listingNotificationHelper.getHearingInstructMessage(
+            = listingNotificationHelper.getAdjournHearingInstructMessage(
                 asylumCase, notificationsHelper.getConsumerReference(caseId),
                 notificationsHelper.getMessageHeader(), homeOfficeReferenceNumber);
 
         log.info("Finished constructing {} notification request for caseId: {}, HomeOffice reference: {}",
             HEARING.toString(), caseId, homeOfficeReferenceNumber);
 
-        String notificationStatus = homeOfficeInstructService.sendNotification(hearingInstructMessage);
+        final String notificationStatus = homeOfficeInstructService.sendNotification(hearingInstructMessage);
 
         log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}",
             HEARING.toString(), caseId, homeOfficeReferenceNumber, notificationStatus);
 
-        asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_HEARING_INSTRUCT_STATUS, notificationStatus);
+        asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_ADJOURN_WITHOUT_DATE_INSTRUCT_STATUS, notificationStatus);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
+
 }

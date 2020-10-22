@@ -51,6 +51,7 @@ abstract class AbstractNotificationsHandlerTestBase {
     protected final String directionExplanation = "direction explanation";
     protected final String dueDate = "2020-10-10";
     protected final String eventDateTime = "some-time";
+    protected final String someCaseId = "someCaseId";
 
     @Mock
     protected Callback<AsylumCase> callback;
@@ -86,6 +87,7 @@ abstract class AbstractNotificationsHandlerTestBase {
         when(notificationsHelper.getHomeOfficeReference(asylumCase)).thenReturn(someDocumentReference);
         when(notificationsHelper.getConsumerReference(someCaseReference)).thenReturn(consumerReference);
         when(notificationsHelper.getMessageHeader()).thenReturn(messageHeader);
+        when(notificationsHelper.getCaseId(asylumCase)).thenReturn(someCaseId);
         //setupHelperDirection(directionTag);
     }
 

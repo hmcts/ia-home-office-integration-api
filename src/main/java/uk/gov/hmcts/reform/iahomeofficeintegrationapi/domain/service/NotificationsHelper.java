@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
 import static org.springframework.util.StringUtils.isEmpty;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_SUBMISSION_DATE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_DATE_OF_BIRTH;
@@ -167,6 +168,12 @@ public class NotificationsHelper {
         return homeOfficeReferenceNumber;
     }
 
+    public String getCaseId(AsylumCase asylumCase) {
+
+        return asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)
+            .orElseThrow(() -> new IllegalStateException("Case ID for the appeal is not present"));
+    }
+
     private Optional<Direction> getDirection(AsylumCase asylumCase, DirectionTag directionTag) {
         Optional<List<IdValue<Direction>>> maybeExistingDirections = asylumCase.read(DIRECTIONS);
 
@@ -177,4 +184,5 @@ public class NotificationsHelper {
             .filter(direction -> directionTag.equals(direction.getTag()))
             .findFirst();
     }
+
 }

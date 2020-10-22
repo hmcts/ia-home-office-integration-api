@@ -12,6 +12,7 @@ public enum Event {
     REQUEST_RESPONDENT_REVIEW("requestRespondentReview"),
     LIST_CASE("listCase"),
     EDIT_CASE_LISTING("editCaseListing"),
+    ADJOURN_HEARING_WITHOUT_DATE("adjournHearingWithoutDate"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 

@@ -10,7 +10,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_HEARING_INSTRUCT_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_EDIT_LISTING_INSTRUCT_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.HEARING;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -37,7 +37,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.ListingNoti
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBase {
+class EditCaseListingNotificationHandlerTest extends AbstractNotificationsHandlerTestBase {
 
     @Mock
     private HomeOfficeInstructService homeOfficeInstructService;
@@ -48,7 +48,7 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
     @Captor
     private ArgumentCaptor<HearingInstructMessage> hearingInstructMessageArgumentCaptor;
 
-    private ListCaseNotificationHandler listCaseNotificationHandler;
+    private EditCaseListingNotificationHandler editCaseListingNotificationHandler;
 
     Hearing hearing = Hearing.HearingBuilder.hearing()
         .withHearingType("ORAL")
@@ -72,8 +72,9 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
 
     @BeforeEach
     void setUp() {
-        listCaseNotificationHandler =
-            new ListCaseNotificationHandler(
+
+        editCaseListingNotificationHandler =
+            new EditCaseListingNotificationHandler(
                 homeOfficeInstructService,
                 notificationsHelper,
                 listingNotificationHelper);
@@ -83,23 +84,23 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
     @MockitoSettings(strictness = Strictness.WARN)
     void check_handler_returns_case_data_for_valid_input() {
 
-        setupCase(Event.LIST_CASE);
+        setupCase(Event.EDIT_CASE_LISTING);
+        setupCaseData();
         setupHelperResponses();
-        when(homeOfficeInstructService.sendNotification(any(HearingInstructMessage.class))).thenReturn("OK");
+        when(homeOfficeInstructService.sendNotification(any())).thenReturn("OK");
 
         when(listingNotificationHelper.getHearingInstructMessage(
                 any(AsylumCase.class), any(),
                 any(), anyString())).thenReturn(hearingInstructMessage);
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            listCaseNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+            editCaseListingNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
         assertTrue(response.getErrors().isEmpty());
-        verify(asylumCase, times(1)).write(HOME_OFFICE_HEARING_INSTRUCT_STATUS, "OK");
-
+        verify(asylumCase, times(1)).write(HOME_OFFICE_EDIT_LISTING_INSTRUCT_STATUS, "OK");
         verify(homeOfficeInstructService).sendNotification(hearingInstructMessageArgumentCaptor.capture());
 
         final HearingInstructMessage instructMessage = hearingInstructMessageArgumentCaptor.getValue();
@@ -110,7 +111,7 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
     @MockitoSettings(strictness = Strictness.WARN)
     void check_handler_returns_error_status() {
 
-        setupCase(Event.LIST_CASE);
+        setupCase(Event.EDIT_CASE_LISTING);
         setupHelperResponses();
         when(homeOfficeInstructService.sendNotification(any(HearingInstructMessage.class)))
             .thenReturn("FAIL");
@@ -119,13 +120,13 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
                 any(), anyString())).thenReturn(hearingInstructMessage);
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            listCaseNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+            editCaseListingNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
         assertThat(response.getErrors()).isEmpty();
-        verify(asylumCase, times(1)).write(HOME_OFFICE_HEARING_INSTRUCT_STATUS, "FAIL");
+        verify(asylumCase, times(1)).write(HOME_OFFICE_EDIT_LISTING_INSTRUCT_STATUS, "FAIL");
         verify(homeOfficeInstructService).sendNotification(hearingInstructMessageArgumentCaptor.capture());
 
         final HearingInstructMessage instructMessage = hearingInstructMessageArgumentCaptor.getValue();
@@ -135,7 +136,6 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
     private void assertNotificationInstructMessage(HearingInstructMessage instructMessage) {
         assertThat(instructMessage.getHoReference()).isEqualTo(someDocumentReference);
         assertThat(instructMessage.getMessageType()).isEqualTo(MessageType.HEARING.toString());
-        assertThat(instructMessage.getNote()).isEqualTo("Hearing requirements:");
 
         final Hearing hearing = instructMessage.getHearing();
         assertThat(hearing.getHearingDate()).isEqualTo("2020-10-01");
@@ -152,7 +152,7 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
 
         when(callback.getEvent()).thenReturn(Event.UNKNOWN);
 
-        assertThatThrownBy(() -> listCaseNotificationHandler.handle(ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> editCaseListingNotificationHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -160,7 +160,7 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
     @Test
     void handling_should_throw_if_not_bound_to__about_to_submit__callback_stage() {
 
-        assertThatThrownBy(() -> listCaseNotificationHandler.handle(ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> editCaseListingNotificationHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -175,9 +175,9 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = listCaseNotificationHandler.canHandle(callbackStage, callback);
+                boolean canHandle = editCaseListingNotificationHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.LIST_CASE
+                if (event == Event.EDIT_CASE_LISTING
                     && callbackStage == ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
@@ -192,19 +192,19 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> listCaseNotificationHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> editCaseListingNotificationHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> listCaseNotificationHandler.canHandle(ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> editCaseListingNotificationHandler.canHandle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> listCaseNotificationHandler.handle(null, callback))
+        assertThatThrownBy(() -> editCaseListingNotificationHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> listCaseNotificationHandler.handle(ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> editCaseListingNotificationHandler.handle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
