@@ -14,16 +14,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Request.HttpMethod;
 import feign.RequestTemplate;
 import feign.Response;
+import feign.RetryableException;
 import feign.Util;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collections;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.web.server.ResponseStatusException;
 
-public class FeignErrorDecoderTest {
+class FeignErrorDecoderTest {
 
     @Mock
     private Response response;
@@ -34,14 +36,14 @@ public class FeignErrorDecoderTest {
     private FeignErrorDecoder feignErrorDecoder;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
         feignErrorDecoder = new FeignErrorDecoder(objectMapper);
     }
 
     @Test
-    public void should_decode_for_500() {
+    void should_decode_for_500() {
 
         response = builder()
             .status(500)
@@ -51,12 +53,12 @@ public class FeignErrorDecoderTest {
             .body("Internal server error", Util.UTF_8)
             .build();
 
-        assertThat(feignErrorDecoder.decode("someMethod", response),
-            instanceOf(ResponseStatusException.class));
+        Assertions.assertThatThrownBy(() -> feignErrorDecoder.decode("someMethod", response))
+            .isInstanceOf(RetryableException.class);
     }
 
     @Test
-    public void should_decode_for_default() {
+    void should_decode_for_default() {
 
         response = builder()
             .status(403)
@@ -71,7 +73,7 @@ public class FeignErrorDecoderTest {
     }
 
     @Test
-    public void should_decode_for_404() {
+    void should_decode_for_404() {
 
         response = builder()
             .status(404)
@@ -86,7 +88,7 @@ public class FeignErrorDecoderTest {
     }
 
     @Test
-    public void should_decode_for_400() {
+    void should_decode_for_400() {
 
         response = builder()
             .status(400)
@@ -101,7 +103,7 @@ public class FeignErrorDecoderTest {
     }
 
     @Test
-    public void handle_sneaky_exception() throws IOException {
+    void handle_sneaky_exception() throws IOException {
 
         Body body = mock(Body.class);
         when(body.asReader(Charset.forName("UTF-8")))
@@ -120,7 +122,7 @@ public class FeignErrorDecoderTest {
     }
 
     @Test
-    public void should_decode_for_400_home_office_error() {
+    void should_decode_for_400_home_office_error() {
 
         response = builder()
             .status(400)

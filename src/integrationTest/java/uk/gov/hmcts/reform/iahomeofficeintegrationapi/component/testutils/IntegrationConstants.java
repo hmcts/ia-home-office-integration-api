@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils;
 
 public class IntegrationConstants {
 
-    public static final String HOME_OFFICE_API_URL = "/ichallenge/applicationStatus/getBySearchParameters";
+    public static final String  HOME_OFFICE_API_URL = "/ichallenge/applicationStatus/getBySearchParameters";
 
     public static final String HOME_OFFICE_ACCESS_TOKEN = "some_access_token";
 
