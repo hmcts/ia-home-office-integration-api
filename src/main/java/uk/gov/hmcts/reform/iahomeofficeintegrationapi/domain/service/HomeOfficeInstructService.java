@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeInstructApi;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.RetriesExceededException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AccessTokenProvider;
 
 
@@ -33,12 +33,11 @@ public class HomeOfficeInstructService {
         HomeOfficeInstruct request
     ) {
 
-        final String accessToken = accessTokenProvider.getAccessToken();
-        ObjectWriter objectWriter = this.objectMapper.writer().withDefaultPrettyPrinter();
-
         HomeOfficeInstructResponse instructResponse;
         String status;
         try {
+            final String accessToken = accessTokenProvider.getAccessToken();
+            ObjectWriter objectWriter = this.objectMapper.writer().withDefaultPrettyPrinter();
             log.info("HomeOffice-Instruct request: {}", objectWriter.writeValueAsString(request));
             instructResponse = homeOfficeInstructApi.sendNotification(accessToken, request);
             log.info("HomeOffice-Instruct response: {}", objectWriter.writeValueAsString(instructResponse));
@@ -49,8 +48,8 @@ public class HomeOfficeInstructService {
             } else {
                 status = "OK";
             }
-        } catch (JsonProcessingException e) {
-            log.error("Json error sending notification to Home office for reference {}, Message: {}: "
+        } catch (RetriesExceededException e) {
+            log.error("Server error sending notification to Home office for reference {}, Message: {}: "
                       + e.getMessage());
             status = "FAIL";
 

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
+import feign.RetryableException;
 import feign.codec.ErrorDecoder;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -16,8 +17,8 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOffice
 @Slf4j
 public class FeignErrorDecoder implements ErrorDecoder {
 
-    private final String errorLog = "Error in reading response body %s";
-    private ObjectMapper objectMapper;
+    private static final String ERROR_LOG = "Error in reading response body %s";
+    private final ObjectMapper objectMapper;
 
     public FeignErrorDecoder(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
@@ -51,8 +52,8 @@ public class FeignErrorDecoder implements ErrorDecoder {
                             IOUtils.toString(response.body().asReader(Charset.defaultCharset()))));
 
                 } catch (IOException ex) {
-                    errMessage = String.format(errorLog, ex.getMessage());
-                    log.error(errorLog, ex.getMessage());
+                    errMessage = String.format(ERROR_LOG, ex.getMessage());
+                    log.error(ERROR_LOG, ex.getMessage());
                 }
                 return new HomeOfficeResponseException(errorCode, String.format(
                     "StatusCode: %d, methodKey: %s, reason: %s, message: %s",
@@ -70,7 +71,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                         response.reason(),
                         IOUtils.toString(response.body().asReader(Charset.defaultCharset())));
                 } catch (IOException ex) {
-                    log.error(errorLog, ex.getMessage());
+                    log.error(ERROR_LOG, ex.getMessage());
                 }
                 return new ResponseStatusException(HttpStatus.valueOf(response.status()), response.reason());
 
@@ -79,8 +80,8 @@ public class FeignErrorDecoder implements ErrorDecoder {
                     response.status(),
                     methodKey,
                     response.reason());
-
-                return new ResponseStatusException(HttpStatus.valueOf(response.status()), response.reason());
+                throw new RetryableException(response.status(), response.reason(), response.request().httpMethod(),
+                    null, response.request());
 
             default:
                 log.error("StatusCode: {}, methodKey: {}, reason: {}",
