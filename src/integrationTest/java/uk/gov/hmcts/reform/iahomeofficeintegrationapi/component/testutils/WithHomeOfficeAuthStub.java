@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.serviceUnavailable;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 
@@ -24,11 +26,11 @@ public interface WithHomeOfficeAuthStub {
         server.addStubMapping(
             new StubMapping(
                 newRequestPattern(RequestMethod.POST, urlEqualTo("/ichallenge/token"))
-                    .withHeader("Content-Type", equalTo("application/x-www-form-urlencoded;charset=UTF-8"))
+                    .withHeader("Content-Type", containing("application/x-www-form-urlencoded"))
                     .withRequestBody(
-                        equalTo("client_id=ho-client-id"
+                        equalTo("grant_type=client_credentials"
                                 + "&client_secret=something"
-                                + "&grant_type=client_credentials"
+                                + "&client_id=ho-client-id"
                         )
                     )
                     .build(),
@@ -42,4 +44,21 @@ public interface WithHomeOfficeAuthStub {
         );
     }
 
+    default void addHomeOfficeAuthToken503ServiceUnavailableStub(WireMockServer server) {
+
+        server.addStubMapping(
+            new StubMapping(
+                newRequestPattern(RequestMethod.POST, urlEqualTo("/ichallenge/token"))
+                    .withHeader("Content-Type", containing("application/x-www-form-urlencoded"))
+                    .withRequestBody(
+                        equalTo("grant_type=client_credentials"
+                                + "&client_secret=something"
+                                + "&client_id=ho-client-id"
+                        )
+                    )
+                    .build(),
+                serviceUnavailable().build()
+            )
+        );
+    }
 }
