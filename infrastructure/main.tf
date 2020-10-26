@@ -20,33 +20,3 @@ data "azurerm_key_vault" "ia_key_vault" {
   name                = local.key_vault_name
   resource_group_name = local.key_vault_name
 }
-
-data "azurerm_key_vault_secret" "idam_client_id" {
-  name      = "idam-client-id"
-  vault_uri = data.azurerm_key_vault.ia_key_vault.vault_uri
-}
-
-data "azurerm_key_vault_secret" "idam_secret" {
-  name      = "idam-secret"
-  vault_uri = data.azurerm_key_vault.ia_key_vault.vault_uri
-}
-
-data "azurerm_key_vault_secret" "s2s_secret" {
-  name      = "s2s-secret"
-  vault_uri = data.azurerm_key_vault.ia_key_vault.vault_uri
-}
-
-data "azurerm_key_vault_secret" "s2s_microservice" {
-  name      = "s2s-microservice"
-  vault_uri = data.azurerm_key_vault.ia_key_vault.vault_uri
-}
-
-data "azurerm_key_vault_secret" "homeoffice-client-id" {
-  name      = "homeoffice-client-id"
-  vault_uri = data.azurerm_key_vault.ia_key_vault.vault_uri
-}
-
-data "azurerm_key_vault_secret" "homeoffice-secret" {
-  name      = "homeoffice-secret"
-  vault_uri = data.azurerm_key_vault.ia_key_vault.vault_uri
-}
