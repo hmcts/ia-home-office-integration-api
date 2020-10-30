@@ -15,6 +15,8 @@ public enum Event {
     ADJOURN_HEARING_WITHOUT_DATE("adjournHearingWithoutDate"),
     SEND_DECISION_AND_REASONS("sendDecisionAndReasons"),
     ASYNC_STITCHING_COMPLETE("asyncStitchingComplete"),
+    APPLY_FOR_FTPA_APPELLANT("applyForFTPAAppellant"),
+    APPLY_FOR_FTPA_RESPONDENT("applyForFTPARespondent"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 

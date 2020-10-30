@@ -4,18 +4,19 @@ import static junit.framework.TestCase.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class CourtTypeTest {
+class CourtTypeTest {
 
     @Test
-    public void has_correct_values() {
+    void has_correct_values() {
         assertEquals("FIRST_TIER", CourtType.FIRST_TIER.toString());
-        assertEquals("FTPA", CourtType.FTPA.toString());
-        assertEquals("UTPA", CourtType.UTPA.toString());
+        assertEquals("UPPER_TRIBUNAL", CourtType.UPPER_TRIBUNAL.toString());
+        assertEquals("SUPREME_COURT", CourtType.SUPREME_COURT.toString());
+        assertEquals("COURT_OF_APPEAL", CourtType.COURT_OF_APPEAL.toString());
 
     }
 
     @Test
-    public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(3, CourtType.values().length);
+    void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
+        assertEquals(4, CourtType.values().length);
     }
 }

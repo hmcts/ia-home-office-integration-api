@@ -109,6 +109,12 @@ public enum AsylumCaseDefinition {
     HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_STATUS(
         "homeOfficeAppealDecidedInstructStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_FTPA_APPELLANT_INSTRUCT_STATUS(
+        "homeOfficeFtpaAppellantInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_FTPA_RESPONDENT_INSTRUCT_STATUS(
+        "homeOfficeFtpaRespondentInstructStatus", new TypeReference<String>() {}),
+
     HOME_OFFICE_REQUEST_EVIDENCE_INSTRUCT_STATUS(
         "homeOfficeRequestEvidenceInstructStatus", new TypeReference<String>() {}),
 

@@ -336,6 +336,18 @@ public class CcdScenarioRunnerTest {
                 .getJudgeAuthorization();
         }
 
+        if ("HomeOfficePou".equalsIgnoreCase(credentials)) {
+
+            return authorizationHeadersProvider
+                .getHomeOfficePouAuthorization();
+        }
+
+        if ("HomeOfficeGeneric".equalsIgnoreCase(credentials)) {
+
+            return authorizationHeadersProvider
+                .getHomeOfficeGenericAuthorization();
+        }
+
         return new Headers();
     }
 }

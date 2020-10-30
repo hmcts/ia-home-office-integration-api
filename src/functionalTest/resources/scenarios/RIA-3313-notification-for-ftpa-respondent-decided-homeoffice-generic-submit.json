@@ -1,0 +1,29 @@
+{
+  "description": "RIA-3313 FTPA respondent (Generic) in time application submission - Decided state",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "HomeOfficeGeneric",
+    "input": {
+      "id": 1234,
+      "eventId": "applyForFTPARespondent",
+      "state": "decided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaRespondentSubmissionOutOfTime": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "ftpaRespondentSubmissionOutOfTime": "No",
+        "homeOfficeFtpaRespondentInstructStatus": "OK"
+      }
+    }
+  }
+}
