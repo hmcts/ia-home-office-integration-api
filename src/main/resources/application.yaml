@@ -57,6 +57,7 @@ security:
       - "requestRespondentEvidence"
       - "requestRespondentReview"
       - "editCaseListing"
+      - "asyncStitchingComplete"
       - "adjournHearingWithoutDate"
       - "sendDecisionAndReasons"
     caseworker-ia-admofficer:

@@ -13,6 +13,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Hearing.HearingBuilder.hearing;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HearingInstructMessage.HearingInstructMessageBuilder.hearingInstructMessage;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.HEARING;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.HEARING_BUNDLE_READY;
 
 import java.util.List;
 import java.util.Optional;
@@ -74,6 +75,15 @@ public class ListingNotificationHelper {
                 .withWitnessNames(getWitnesses(asylumCase));
     }
 
+    public HearingBuilder getHearingBundleReadyBuilderData(AsylumCase asylumCase) {
+
+        final HearingBuilder hearing = hearing();
+
+        return hearing
+            .withHmctsHearingRef(getHearingReference(asylumCase))
+            .withHearingType(getHearingType(asylumCase));
+    }
+
     public HearingInstructMessage.HearingInstructMessageBuilder getHearingBuilderWithCoreFields(
         ConsumerReference consumerReference,
         MessageHeader messageHeader,
@@ -98,6 +108,32 @@ public class ListingNotificationHelper {
             homeOfficeReferenceNumber)
             .withNote(getAdjournHearingNotificationContent(asylumCase))
             .withHearing(getHearingData(asylumCase))
+            .build();
+    }
+
+    public HearingInstructMessage.HearingInstructMessageBuilder getHearingBundleReadyWithCoreFields(
+        ConsumerReference consumerReference,
+        MessageHeader messageHeader,
+        String homeOfficeReferenceNumber) {
+
+        return hearingInstructMessage()
+            .withConsumerReference(consumerReference)
+            .withHoReference(homeOfficeReferenceNumber)
+            .withMessageHeader(messageHeader)
+            .withMessageType(HEARING_BUNDLE_READY.name());
+    }
+
+    public HearingInstructMessage getHearingBundleReadyInstructMessage(
+        AsylumCase asylumCase,
+        ConsumerReference consumerReference,
+        MessageHeader messageHeader,
+        String homeOfficeReferenceNumber) {
+
+        return getHearingBundleReadyWithCoreFields(
+            consumerReference,
+            messageHeader,
+            homeOfficeReferenceNumber)
+            .withHearing(getHearingBundleReadyBuilderData(asylumCase).build())
             .build();
     }
 
@@ -142,7 +178,7 @@ public class ListingNotificationHelper {
         return witnesses;
     }
 
-    public int getWitnessCount(AsylumCase asylumCase) {
+    public Integer getWitnessCount(AsylumCase asylumCase) {
         return Integer.parseInt(asylumCase
                 .read(AsylumCaseDefinition.WITNESS_COUNT, String.class).orElse("0"));
     }

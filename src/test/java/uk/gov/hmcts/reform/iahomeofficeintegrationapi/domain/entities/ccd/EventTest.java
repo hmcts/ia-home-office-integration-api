@@ -18,6 +18,7 @@ class EventTest {
         assertEquals("editCaseListing", Event.EDIT_CASE_LISTING.toString());
         assertEquals("adjournHearingWithoutDate", Event.ADJOURN_HEARING_WITHOUT_DATE.toString());
         assertEquals("sendDecisionAndReasons", Event.SEND_DECISION_AND_REASONS.toString());
+        assertEquals("asyncStitchingComplete", Event.ASYNC_STITCHING_COMPLETE.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 

@@ -7,11 +7,11 @@ public class Hearing {
     private String hearingDate;
     private String hearingTime;
     private String hearingType;
-    private int witnessQty;
+    private Integer witnessQty;
     private String witnessNames;
 
     public Hearing(String hmctsHearingRef, String hearingLocation, String hearingDate, String hearingTime,
-                   String hearingType, int witnessQty, String witnessNames) {
+                   String hearingType, Integer witnessQty, String witnessNames) {
 
         this.hmctsHearingRef = hmctsHearingRef;
         this.hearingLocation = hearingLocation;
@@ -45,7 +45,7 @@ public class Hearing {
         return hearingType;
     }
 
-    public int getWitnessQty() {
+    public Integer getWitnessQty() {
         return witnessQty;
     }
 
@@ -60,7 +60,7 @@ public class Hearing {
         private String hearingDate;
         private String hearingTime;
         private String hearingType;
-        private int witnessQty;
+        private Integer witnessQty;
         private String witnessNames;
 
         private HearingBuilder() {
@@ -95,7 +95,7 @@ public class Hearing {
             return this;
         }
 
-        public HearingBuilder withWitnessQty(int witnessQty) {
+        public HearingBuilder withWitnessQty(Integer witnessQty) {
             this.witnessQty = witnessQty;
             return this;
         }
