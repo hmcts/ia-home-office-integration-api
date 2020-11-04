@@ -10,22 +10,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class CourtOutcomeTest {
+class CourtOutcomeTest {
     private CourtOutcome courtOutcome;
 
     @BeforeEach
     void setUp() {
-        courtOutcome = new CourtOutcome(CourtType.FIRST_TIER.toString(), Outcome.ALLOWED.toString());
+        courtOutcome = new CourtOutcome(CourtType.FIRST_TIER, Outcome.ALLOWED);
     }
 
     @Test
-    public void has_correct_values_after_setting() {
-        assertEquals("FIRST_TIER", courtOutcome.getCourtType());
-        assertEquals("ALLOWED", courtOutcome.getOutcome());
+    void has_correct_values_after_setting() {
+        assertEquals(CourtType.FIRST_TIER, courtOutcome.getCourtType());
+        assertEquals(Outcome.ALLOWED, courtOutcome.getOutcome());
     }
 
     @Test
-    public void throws_error_if_values_are_not_set() {
+    void throws_error_if_values_are_not_set() {
         courtOutcome = new CourtOutcome(null, null);
 
         assertThatThrownBy(() -> courtOutcome.getCourtType())

@@ -17,11 +17,12 @@ class EventTest {
         assertEquals("listCase", Event.LIST_CASE.toString());
         assertEquals("editCaseListing", Event.EDIT_CASE_LISTING.toString());
         assertEquals("adjournHearingWithoutDate", Event.ADJOURN_HEARING_WITHOUT_DATE.toString());
+        assertEquals("sendDecisionAndReasons", Event.SEND_DECISION_AND_REASONS.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(10, Event.values().length);
+        assertEquals(11, Event.values().length);
     }
 }

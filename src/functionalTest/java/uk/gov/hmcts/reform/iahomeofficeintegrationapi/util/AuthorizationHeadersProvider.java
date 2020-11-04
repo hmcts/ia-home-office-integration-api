@@ -55,6 +55,15 @@ public class AuthorizationHeadersProvider {
 
     }
 
+    public Headers getJudgeAuthorization() {
+
+        return getAuthorizationForRole(
+            "Judge",
+            "TEST_JUDGE_X_USERNAME",
+            "TEST_JUDGE_X_PASSWORD");
+
+    }
+
     public Headers getAuthorizationForRole(String role, String username, String password) {
 
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
