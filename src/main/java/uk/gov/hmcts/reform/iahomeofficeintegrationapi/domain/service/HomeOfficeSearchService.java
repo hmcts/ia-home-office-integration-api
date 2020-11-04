@@ -41,16 +41,25 @@ public class HomeOfficeSearchService {
         this.accessTokenProvider = accessTokenProvider;
     }
 
-    public HomeOfficeSearchResponse getCaseStatus(String homeOfficeReferenceNumber) throws JsonProcessingException {
+    public HomeOfficeSearchResponse getCaseStatus(
+        long caseId,
+        String homeOfficeReferenceNumber) throws JsonProcessingException {
 
         final String accessToken = accessTokenProvider.getAccessToken();
         HomeOfficeSearch request = makeRequestBody(homeOfficeReferenceNumber);
         ObjectWriter objectWriter = this.objectMapper.writer().withDefaultPrettyPrinter();
 
-        log.info("HomeOffice-CaseStatusSearch request: {}", objectWriter.writeValueAsString(request));
+        log.info(
+            "HomeOffice-CaseStatusSearch request is to be sent for caseId: {} and reference number: {}",
+            caseId,
+            homeOfficeReferenceNumber
+        );
         String searchResponse = homeOfficeSearchApi.getStatus(accessToken, request);
-        log.info("HomeOffice-CaseStatusSearch response for reference number {} : {}",
-            homeOfficeReferenceNumber, searchResponse);
+        log.info(
+            "HomeOffice-CaseStatusSearch response has been received for caseId: {} and reference number: {}",
+            caseId,
+            homeOfficeReferenceNumber
+        );
 
         return objectMapper.readValue(searchResponse, HomeOfficeSearchResponse.class);
     }
