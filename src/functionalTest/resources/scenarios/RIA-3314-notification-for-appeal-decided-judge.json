@@ -1,0 +1,35 @@
+{
+  "description": "RIA-3314 Sends appeal decided notification to Home office API - Judge",
+  "disabled": false,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "eventId": "sendDecisionAndReasons",
+      "state": "decision",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+          "appealReferenceNumber": "DC/50001/2020",
+          "ariaListingReference": "LP/12345/2019",
+          "isDecisionAllowed": "allowed"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+        "appealReferenceNumber": "DC/50001/2020",
+        "ariaListingReference": "LP/12345/2019",
+        "isDecisionAllowed": "allowed",
+        "homeOfficeAppealDecidedInstructStatus": "OK"
+      }
+    }
+  }
+}

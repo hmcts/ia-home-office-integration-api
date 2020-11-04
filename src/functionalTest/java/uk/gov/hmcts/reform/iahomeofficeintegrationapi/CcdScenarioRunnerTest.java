@@ -282,16 +282,6 @@ public class CcdScenarioRunnerTest {
             return authorizationHeadersProvider
                 .getLegalRepresentativeAuthorization();
         }
-        if ("CaseOfficer".equalsIgnoreCase(credentials)) {
-
-            return
-                authorizationHeadersProvider.getCaseOfficerAuthorization();
-        }
-        if ("AdminOfficer".equalsIgnoreCase(credentials)) {
-
-            return
-                authorizationHeadersProvider.getAdminOfficerAuthorization();
-        }
 
         if ("CaseOfficer".equalsIgnoreCase(credentials)) {
 
@@ -303,6 +293,12 @@ public class CcdScenarioRunnerTest {
 
             return authorizationHeadersProvider
                 .getAdminOfficerAuthorization();
+        }
+
+        if ("Judge".equalsIgnoreCase(credentials)) {
+
+            return authorizationHeadersProvider
+                .getJudgeAuthorization();
         }
 
         return new Headers();

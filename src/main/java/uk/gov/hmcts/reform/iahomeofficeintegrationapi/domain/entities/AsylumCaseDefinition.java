@@ -12,6 +12,9 @@ public enum AsylumCaseDefinition {
     HOME_OFFICE_REFERENCE_NUMBER(
         "homeOfficeReferenceNumber", new TypeReference<String>() {}),
 
+    ALLOWED_NOTE(
+        "allowedNote", new TypeReference<String>() {}),
+
     APPEAL_REFERENCE_NUMBER(
         "appealReferenceNumber", new TypeReference<String>(){}),
 
@@ -81,6 +84,9 @@ public enum AsylumCaseDefinition {
     DECISION_HEARING_FEE_OPTION(
         "decisionHearingFeeOption", new TypeReference<String>(){}),
 
+    IS_DECISION_ALLOWED(
+        "isDecisionAllowed", new TypeReference<AppealDecision>(){}),
+
     HOME_OFFICE_INSTRUCT_STATUS(
         "homeOfficeInstructStatus", new TypeReference<String>() {}),
 
@@ -95,6 +101,9 @@ public enum AsylumCaseDefinition {
 
     HOME_OFFICE_ADJOURN_WITHOUT_DATE_INSTRUCT_STATUS(
         "homeOfficeAdjournWithoutDateInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_STATUS(
+        "homeOfficeAppealDecidedInstructStatus", new TypeReference<String>() {}),
 
     HOME_OFFICE_REQUEST_EVIDENCE_INSTRUCT_STATUS(
         "homeOfficeRequestEvidenceInstructStatus", new TypeReference<String>() {});

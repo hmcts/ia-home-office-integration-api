@@ -58,16 +58,19 @@ security:
       - "requestRespondentReview"
       - "editCaseListing"
       - "adjournHearingWithoutDate"
+      - "sendDecisionAndReasons"
     caseworker-ia-admofficer:
       - "markAppealPaid"
       - "listCase"
       - "editCaseListing"
       - "adjournHearingWithoutDate"
+      - "sendDecisionAndReasons"
     caseworker-ia-homeofficeapc:
     caseworker-ia-homeofficelart:
     caseworker-ia-homeofficepou:
     caseworker-ia-respondentofficer:
     caseworker-ia-iacjudge:
+      - "sendDecisionAndReasons"
 
 #OpenID
 idam:
