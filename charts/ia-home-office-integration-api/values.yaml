@@ -2,6 +2,7 @@ java:
   applicationPort: 8094
   image: 'https://hmctspublic.azurecr.io/ia/homeoffice-integration-api:latest'
   aadIdentityName: ia
+  ingressHost: ia-home-office-integration-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   environment:
     IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
     OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
