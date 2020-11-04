@@ -45,6 +45,7 @@ class HomeOfficeSearchServiceTest {
     @Mock
     private @Qualifier("requestUser") AccessTokenProvider accessTokenProvider;
 
+    private long caseId = 1234;
     private HomeOfficeSearchService homeOfficeSearchService;
 
     @BeforeEach
@@ -62,7 +63,7 @@ class HomeOfficeSearchServiceTest {
             getSampleResponse()
         );
 
-        HomeOfficeSearchResponse response = homeOfficeSearchService.getCaseStatus(someHoReference);
+        HomeOfficeSearchResponse response = homeOfficeSearchService.getCaseStatus(caseId, someHoReference);
 
         assertNotNull(response);
         assertNotNull(response.getMessageHeader());
@@ -98,7 +99,7 @@ class HomeOfficeSearchServiceTest {
     @Test
     void should_throw_for_null_home_office_reference() {
 
-        assertThatThrownBy(() -> homeOfficeSearchService.getCaseStatus(null))
+        assertThatThrownBy(() -> homeOfficeSearchService.getCaseStatus(caseId,null))
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
