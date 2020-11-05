@@ -149,7 +149,19 @@ public enum AsylumCaseDefinition {
         "homeOfficeHearingBundleReadyInstructStatus", new TypeReference<String>() {}),
 
     CASE_FLAG_SET_ASIDE_REHEARD_EXISTS(
-        "caseFlagSetAsideReheardExists", new TypeReference<YesOrNo>() {});
+        "caseFlagSetAsideReheardExists", new TypeReference<YesOrNo>() {}),
+
+    HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS(
+        "homeOfficeEndAppealInstructStatus", new TypeReference<String>() {}),
+
+    END_APPEAL_DATE(
+        "endAppealDate", new TypeReference<String>(){}),
+
+    END_APPEAL_OUTCOME(
+        "endAppealOutcome", new TypeReference<String>(){}),
+
+    END_APPEAL_OUTCOME_REASON(
+        "endAppealOutcomeReason", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;

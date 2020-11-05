@@ -52,7 +52,6 @@ public class AuthorizationHeadersProvider {
             "AdminOfficer",
             "TEST_ADMINOFFICER_USERNAME",
             "TEST_ADMINOFFICER_PASSWORD");
-
     }
 
     public Headers getJudgeAuthorization() {

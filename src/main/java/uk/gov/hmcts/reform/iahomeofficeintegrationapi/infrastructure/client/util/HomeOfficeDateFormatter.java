@@ -62,4 +62,24 @@ public class HomeOfficeDateFormatter {
         return hoDateOfBirth;
     }
 
+    public static String getIacDateAndTime(String homeOfficeDate) {
+
+        final String timeFactor = "T00:00:00Z";
+
+        try {
+            if (homeOfficeDate != null) {
+
+                if (homeOfficeDate.length() < 11) {
+                    homeOfficeDate = homeOfficeDate + timeFactor;
+                }
+                LocalDate parsedDate = LocalDate.parse(homeOfficeDate, HO_DATE_TIME_FORMATTER);
+
+                return parsedDate.format(HO_DATE_TIME_FORMATTER);
+            }
+
+        } catch (Exception e) {
+            log.info("HO date format error. HO date {}", homeOfficeDate);
+        }
+        return homeOfficeDate;
+    }
 }

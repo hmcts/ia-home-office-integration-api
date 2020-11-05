@@ -75,4 +75,18 @@ public class HomeOfficeDateFormatterTest {
         assertNotNull(iacDate);
         assertEquals("00/00/0", iacDate);
     }
+
+    @Test
+    void date_returned_in_iac_format_for_valid_ho_date_no_time() {
+        String iacDate = HomeOfficeDateFormatter.getIacDateAndTime("2017-07-21");
+        assertNotNull(iacDate);
+        assertEquals("2017-07-21T00:00:00Z", iacDate);
+    }
+
+    @Test
+    void date_returned_in_iac_format_for_valid_ho_date_and_time() {
+        String iacDate = HomeOfficeDateFormatter.getIacDateAndTime("2017-07-21T02:10:00Z");
+        assertNotNull(iacDate);
+        assertEquals("2017-07-21T02:10:00Z", iacDate);
+    }
 }

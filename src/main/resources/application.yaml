@@ -61,12 +61,14 @@ security:
       - "asyncStitchingComplete"
       - "adjournHearingWithoutDate"
       - "sendDecisionAndReasons"
+      - "endAppeal"
     caseworker-ia-admofficer:
       - "markAppealPaid"
       - "listCase"
       - "editCaseListing"
       - "adjournHearingWithoutDate"
       - "sendDecisionAndReasons"
+      - "endAppeal"
     caseworker-ia-homeofficeapc:
     caseworker-ia-homeofficelart:
     caseworker-ia-homeofficepou:
@@ -77,6 +79,7 @@ security:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
       - "residentJudgeFtpaDecision"
+      - "endAppeal"
 
 #OpenID
 idam:
