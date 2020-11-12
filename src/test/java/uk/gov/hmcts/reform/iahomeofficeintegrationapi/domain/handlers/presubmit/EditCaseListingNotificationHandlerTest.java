@@ -70,6 +70,16 @@ class EditCaseListingNotificationHandlerTest extends AbstractNotificationsHandle
             .withHearing(hearing)
             .withNote("Hearing requirements:").build();
 
+    HearingInstructMessage hearingInstructMessageReheard =
+        HearingInstructMessage.HearingInstructMessageBuilder
+            .hearingInstructMessage()
+            .withConsumerReference(consumerReference)
+            .withHoReference(someDocumentReference)
+            .withMessageHeader(messageHeader)
+            .withMessageType(HEARING.name())
+            .withHearing(hearing)
+            .withNote("This is a reheard case.\nHearing requirements:").build();
+
     @BeforeEach
     void setUp() {
 
@@ -105,6 +115,34 @@ class EditCaseListingNotificationHandlerTest extends AbstractNotificationsHandle
 
         final HearingInstructMessage instructMessage = hearingInstructMessageArgumentCaptor.getValue();
         assertNotificationInstructMessage(instructMessage);
+    }
+
+    @Test
+    @MockitoSettings(strictness = Strictness.WARN)
+    void check_handler_returns_reheard_case_data_for_valid_input() {
+
+        setupCase(Event.EDIT_CASE_LISTING);
+        setupCaseData();
+        setupHelperResponses();
+        when(homeOfficeInstructService.sendNotification(any())).thenReturn("OK");
+
+        when(listingNotificationHelper.getHearingInstructMessage(
+            any(AsylumCase.class), any(),
+            any(), anyString())).thenReturn(hearingInstructMessageReheard);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            editCaseListingNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertTrue(response.getErrors().isEmpty());
+        verify(asylumCase, times(1)).write(HOME_OFFICE_EDIT_LISTING_INSTRUCT_STATUS, "OK");
+        verify(homeOfficeInstructService).sendNotification(hearingInstructMessageArgumentCaptor.capture());
+
+        final HearingInstructMessage instructMessage = hearingInstructMessageArgumentCaptor.getValue();
+        assertNotificationInstructMessage(instructMessage);
+        assertThat(instructMessage.getNote()).isEqualTo("This is a reheard case.\nHearing requirements:");
     }
 
     @Test

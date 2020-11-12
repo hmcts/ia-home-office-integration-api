@@ -69,8 +69,8 @@ public class EditCaseListingNotificationHandler implements PreSubmitCallbackHand
 
         String notificationStatus = homeOfficeInstructService.sendNotification(hearingInstructMessage);
 
-        log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}",
-            HEARING.toString(), caseId, homeOfficeReferenceNumber, notificationStatus);
+        log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
+            HEARING.toString(), caseId, homeOfficeReferenceNumber, notificationStatus, callback.getEvent());
 
         asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_EDIT_LISTING_INSTRUCT_STATUS, notificationStatus);
 

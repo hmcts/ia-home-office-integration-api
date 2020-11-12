@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Hearin
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.WitnessDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 
 public enum AsylumCaseDefinition {
 
@@ -112,7 +113,10 @@ public enum AsylumCaseDefinition {
         "homeOfficeRequestEvidenceInstructStatus", new TypeReference<String>() {}),
 
     HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS(
-        "homeOfficeHearingBundleReadyInstructStatus", new TypeReference<String>() {});
+        "homeOfficeHearingBundleReadyInstructStatus", new TypeReference<String>() {}),
+
+    CASE_FLAG_SET_ASIDE_REHEARD_EXISTS(
+        "caseFlagSetAsideReheardExists", new TypeReference<YesOrNo>() {});
 
     private final String value;
     private final TypeReference typeReference;

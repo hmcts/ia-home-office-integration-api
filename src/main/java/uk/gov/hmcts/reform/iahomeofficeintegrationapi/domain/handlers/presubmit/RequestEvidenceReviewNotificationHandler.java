@@ -79,8 +79,8 @@ public class RequestEvidenceReviewNotificationHandler implements PreSubmitCallba
 
         asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_REQUEST_REVIEW_INSTRUCT_STATUS, notificationStatus);
 
-        log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}",
-            REQUEST_REVIEW.toString(), caseId, homeOfficeReferenceNumber, notificationStatus);
+        log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
+            REQUEST_REVIEW.toString(), caseId, homeOfficeReferenceNumber, notificationStatus, callback.getEvent());
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

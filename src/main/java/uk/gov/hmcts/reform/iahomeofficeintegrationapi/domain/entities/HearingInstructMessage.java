@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class HearingInstructMessage extends HomeOfficeInstruct {
 
     private Hearing hearing;
@@ -65,7 +67,9 @@ public class HearingInstructMessage extends HomeOfficeInstruct {
         }
 
         public HearingInstructMessageBuilder withNote(String note) {
-            this.note = note;
+            if (StringUtils.isNotBlank(note)) {
+                this.note = note;
+            }
             return this;
         }
 
