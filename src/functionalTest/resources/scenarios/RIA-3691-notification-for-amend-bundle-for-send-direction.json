@@ -1,0 +1,79 @@
+{
+  "description": "RIA-3691 Sends amend bundle ho notification for event send direction",
+  "disabled": false,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "sendDirection",
+      "state": "awaitingRespondentEvidence",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+          "appealReferenceNumber": "DC/50001/2020",
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "tag": "",
+                "dateDue": "2020-10-10",
+                "parties": "respondent",
+                "dateSent": "2020-09-22",
+                "explanation": "You must now tell us why you think the Home Office decision to refuse your claim is wrong.",
+                "previousDates": []
+              }
+            },
+            {
+              "id": "1",
+              "value": {
+                "tag": "",
+                "dateDue": "2020-10-08",
+                "parties": "respondent",
+                "dateSent": "2020-09-20",
+                "explanation": "Tell us why you think the Home Office decision to refuse your claim is wrong.",
+                "previousDates": []
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+        "appealReferenceNumber": "DC/50001/2020",
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "tag": "",
+              "dateDue": "2020-10-10",
+              "parties": "respondent",
+              "dateSent": "2020-09-22",
+              "explanation": "You must now tell us why you think the Home Office decision to refuse your claim is wrong.",
+              "previousDates": []
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "tag": "",
+              "dateDue": "2020-10-08",
+              "parties": "respondent",
+              "dateSent": "2020-09-20",
+              "explanation": "Tell us why you think the Home Office decision to refuse your claim is wrong.",
+              "previousDates": []
+            }
+          }
+        ],
+        "homeOfficeAmendBundleInstructStatus": "OK"
+      }
+    }
+  }
+}

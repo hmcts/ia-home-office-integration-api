@@ -62,6 +62,7 @@ security:
       - "adjournHearingWithoutDate"
       - "sendDecisionAndReasons"
       - "endAppeal"
+      - "sendDirection"
     caseworker-ia-admofficer:
       - "markAppealPaid"
       - "listCase"
