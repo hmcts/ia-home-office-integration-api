@@ -1,0 +1,33 @@
+{
+  "description": "RIA-3307 Home Office notification: Leadership judge record FTPA respondent decision - granted",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 1234,
+      "eventId": "leadershipJudgeFtpaDecision",
+      "state": "ftpaDecided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "ftpaApplicantType": "respondent",
+          "ftpaRespondentDecisionOutcomeType": "granted"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "ftpaApplicantType": "respondent",
+        "ftpaRespondentDecisionOutcomeType": "granted",
+        "homeOfficeFtpaRespondentDecidedInstructStatus": "OK"
+      }
+    }
+  }
+}
