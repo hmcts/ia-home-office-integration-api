@@ -90,6 +90,27 @@ public enum AsylumCaseDefinition {
     IS_DECISION_ALLOWED(
         "isDecisionAllowed", new TypeReference<AppealDecision>(){}),
 
+    FTPA_APPLICANT_TYPE(
+        "ftpaApplicantType", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_DECISION_OUTCOME_TYPE(
+        "ftpaAppellantDecisionOutcomeType", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE(
+        "ftpaAppellantRjDecisionOutcomeType", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_DECISION_OUTCOME_TYPE(
+        "ftpaRespondentDecisionOutcomeType", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE(
+        "ftpaRespondentRjDecisionOutcomeType", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_DECISION_REMADE_RULE_32(
+        "ftpaAppellantDecisionRemadeRule32", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_DECISION_REMADE_RULE_32(
+        "ftpaRespondentDecisionRemadeRule32", new TypeReference<String>(){}),
+
     HOME_OFFICE_INSTRUCT_STATUS(
         "homeOfficeInstructStatus", new TypeReference<String>() {}),
 
@@ -107,6 +128,12 @@ public enum AsylumCaseDefinition {
 
     HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_STATUS(
         "homeOfficeAppealDecidedInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS(
+        "homeOfficeFtpaAppellantDecidedInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_FTPA_RESPONDENT_DECIDED_INSTRUCT_STATUS(
+        "homeOfficeFtpaRespondentDecidedInstructStatus", new TypeReference<String>() {}),
 
     HOME_OFFICE_REQUEST_EVIDENCE_INSTRUCT_STATUS(
         "homeOfficeRequestEvidenceInstructStatus", new TypeReference<String>() {});

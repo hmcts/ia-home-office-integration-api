@@ -71,6 +71,8 @@ security:
     caseworker-ia-respondentofficer:
     caseworker-ia-iacjudge:
       - "sendDecisionAndReasons"
+      - "leadershipJudgeFtpaDecision"
+      - "residentJudgeFtpaDecision"
 
 #OpenID
 idam:

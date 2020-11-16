@@ -1,0 +1,35 @@
+{
+  "description": "RIA-3307 Home Office notification: Resident judge record FTPA respondent decision - remade Rule 32 (Allowed)",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 1234,
+      "eventId": "residentJudgeFtpaDecision",
+      "state": "ftpaSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "ftpaApplicantType": "respondent",
+          "ftpaRespondentRjDecisionOutcomeType": "remadeRule32",
+          "ftpaRespondentDecisionRemadeRule32": "allowed"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "ftpaApplicantType": "respondent",
+        "ftpaRespondentRjDecisionOutcomeType": "remadeRule32",
+        "ftpaRespondentDecisionRemadeRule32": "allowed",
+        "homeOfficeFtpaRespondentDecidedInstructStatus": "OK"
+      }
+    }
+  }
+}
