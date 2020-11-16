@@ -17,6 +17,8 @@ public enum Event {
     ASYNC_STITCHING_COMPLETE("asyncStitchingComplete"),
     APPLY_FOR_FTPA_APPELLANT("applyForFTPAAppellant"),
     APPLY_FOR_FTPA_RESPONDENT("applyForFTPARespondent"),
+    LEADERSHIP_JUDGE_FTPA_DECISION("leadershipJudgeFtpaDecision"),
+    RESIDENT_JUDGE_FTPA_DECISION("residentJudgeFtpaDecision"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 

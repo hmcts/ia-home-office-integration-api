@@ -21,11 +21,13 @@ class EventTest {
         assertEquals("asyncStitchingComplete", Event.ASYNC_STITCHING_COMPLETE.toString());
         assertEquals("applyForFTPAAppellant", Event.APPLY_FOR_FTPA_APPELLANT.toString());
         assertEquals("applyForFTPARespondent", Event.APPLY_FOR_FTPA_RESPONDENT.toString());
+        assertEquals("leadershipJudgeFtpaDecision", Event.LEADERSHIP_JUDGE_FTPA_DECISION.toString());
+        assertEquals("residentJudgeFtpaDecision", Event.RESIDENT_JUDGE_FTPA_DECISION.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(14, Event.values().length);
+        assertEquals(16, Event.values().length);
     }
 }
