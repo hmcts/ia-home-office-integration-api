@@ -60,7 +60,7 @@ public class EndAppealNotificationHandler implements PreSubmitCallbackHandler<As
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         final String homeOfficeReferenceNumber = notificationsHelper.getHomeOfficeReference(asylumCase);
 
-        final String caseId = notificationsHelper.getHomeOfficeReference(asylumCase);
+        final String caseId = notificationsHelper.getCaseId(asylumCase);
 
         final EndAppealInstructMessage endAppealInstructMessage
             = endAppealInstructMessage()

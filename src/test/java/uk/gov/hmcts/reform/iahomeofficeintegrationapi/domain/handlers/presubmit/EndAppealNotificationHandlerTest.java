@@ -142,6 +142,7 @@ class EndAppealNotificationHandlerTest extends AbstractNotificationsHandlerTestB
 
     protected void setupEndAppealCaseData() {
 
+        when(notificationsHelper.getCaseId(asylumCase)).thenReturn(someCaseId);
         when(notificationsHelper.getHomeOfficeReference(asylumCase)).thenReturn(someDocumentReference);
         when(notificationsHelper.getMessageHeader()).thenReturn(messageHeader);
         when(notificationsHelper.getConsumerReference(anyString())).thenReturn(consumerReference);

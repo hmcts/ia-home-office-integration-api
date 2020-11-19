@@ -27,6 +27,10 @@ public class EndAppealInstructMessage extends HomeOfficeInstruct {
         return endReason;
     }
 
+    public String getEndChallengeDate() {
+        return endChallengeDate;
+    }
+
     public static final class EndAppealInstructMessageBuilder {
         private String endReason;
         private String endChallengeDate;

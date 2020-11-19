@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -72,7 +73,7 @@ public class HomeOfficeDateFormatter {
                 if (homeOfficeDate.length() < 11) {
                     homeOfficeDate = homeOfficeDate + timeFactor;
                 }
-                LocalDate parsedDate = LocalDate.parse(homeOfficeDate, HO_DATE_TIME_FORMATTER);
+                LocalDateTime parsedDate = LocalDateTime.parse(homeOfficeDate, HO_DATE_TIME_FORMATTER);
 
                 return parsedDate.format(HO_DATE_TIME_FORMATTER);
             }
