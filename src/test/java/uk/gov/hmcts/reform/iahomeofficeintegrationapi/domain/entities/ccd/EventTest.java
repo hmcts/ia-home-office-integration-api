@@ -25,11 +25,12 @@ class EventTest {
         assertEquals("residentJudgeFtpaDecision", Event.RESIDENT_JUDGE_FTPA_DECISION.toString());
         assertEquals("endAppeal", Event.END_APPEAL.toString());
         assertEquals("sendDirection", Event.SEND_DIRECTION.toString());
+        assertEquals("requestResponseAmend", Event.REQUEST_RESPONSE_AMEND.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(18, Event.values().length);
+        assertEquals(19, Event.values().length);
     }
 }

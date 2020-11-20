@@ -21,6 +21,7 @@ public enum Event {
     RESIDENT_JUDGE_FTPA_DECISION("residentJudgeFtpaDecision"),
     END_APPEAL("endAppeal"),
     SEND_DIRECTION("sendDirection"),
+    REQUEST_RESPONSE_AMEND("requestResponseAmend"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 

@@ -1,0 +1,79 @@
+{
+  "description": "RIA-3692 Sends request response amend notification to Home office API for state RespondentReview",
+  "disabled": false,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestResponseAmend",
+      "state": "respondentReview",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+          "appealReferenceNumber": "DC/50001/2020",
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "tag": "requestResponseAmend",
+                "dateDue": "2020-10-10",
+                "parties": "respondent",
+                "dateSent": "2020-09-22",
+                "explanation": "You have to review the appellant's argument and evidence.",
+                "previousDates": []
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "tag": "requestResponseAmend",
+                "dateDue": "2020-10-18",
+                "parties": "respondent",
+                "dateSent": "2020-09-20",
+                "explanation": "You do have 14 days to review the appellant's argument and evidence.",
+                "previousDates": []
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+        "appealReferenceNumber": "DC/50001/2020",
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "tag": "requestResponseAmend",
+              "dateDue": "2020-10-10",
+              "parties": "respondent",
+              "dateSent": "2020-09-22",
+              "explanation": "You have to review the appellant's argument and evidence.",
+              "previousDates": []
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "tag": "requestResponseAmend",
+              "dateDue": "2020-10-18",
+              "parties": "respondent",
+              "dateSent": "2020-09-20",
+              "explanation": "You do have 14 days to review the appellant's argument and evidence.",
+              "previousDates": []
+            }
+          }
+        ],
+        "homeOfficeAmendResponseInstructStatus": "OK"
+      }
+    }
+  }
+}
