@@ -325,10 +325,10 @@ public class CcdScenarioRunnerTest {
                 .getCaseOfficerAuthorization();
         }
 
-        if ("AdminOfficer".equalsIgnoreCase(credentials)) {
+        if ("Judge".equalsIgnoreCase(credentials)) {
 
             return authorizationHeadersProvider
-                .getAdminOfficerAuthorization();
+                .getJudgeAuthorization();
         }
 
         if ("Judge".equalsIgnoreCase(credentials)) {

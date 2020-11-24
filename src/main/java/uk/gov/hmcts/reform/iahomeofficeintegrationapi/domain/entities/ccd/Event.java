@@ -22,6 +22,7 @@ public enum Event {
     END_APPEAL("endAppeal"),
     SEND_DIRECTION("sendDirection"),
     REQUEST_RESPONSE_AMEND("requestResponseAmend"),
+    CHANGE_DIRECTION_DUE_DATE("changeDirectionDueDate"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 

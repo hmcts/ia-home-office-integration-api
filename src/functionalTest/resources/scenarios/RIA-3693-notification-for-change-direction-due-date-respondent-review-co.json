@@ -1,0 +1,63 @@
+{
+  "description": "RIA-3693 Sends changed direction due date notification to Home office API for requestRespondentReview - co",
+  "disabled": false,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "changeDirectionDueDate",
+      "state": "respondentReview",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "9999-2222-3333-4444",
+          "sendDirectionExplanation": "A notice of appeal has been lodged against this decision.",
+          "sendDirectionDateDue": "{$TODAY+28}",
+          "sendDirectionParties": "respondent",
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "explanation": "A notice of appeal has been lodged against this decision.",
+                "parties": "respondent",
+                "dateDue": "{$TODAY+28}",
+                "dateSent": "{$TODAY}",
+                "tag": "respondentEvidence"
+              }
+            }
+          ],
+          "directionEditExplanation": "A notice of appeal has been lodged against this decision.",
+          "directionEditDateDue": "{$TODAY+28}"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "9999-2222-3333-4444",
+        "sendDirectionExplanation": "A notice of appeal has been lodged against this decision.",
+        "sendDirectionDateDue": "{$TODAY+28}",
+        "sendDirectionParties": "respondent",
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "explanation": "A notice of appeal has been lodged against this decision.",
+              "parties": "respondent",
+              "dateDue": "{$TODAY+28}",
+              "dateSent": "{$TODAY}",
+              "tag": "respondentEvidence"
+            }
+          }
+        ],
+        "directionEditExplanation": "A notice of appeal has been lodged against this decision.",
+        "directionEditDateDue": "{$TODAY+28}",
+        "homeOfficeReviewChangeDirectionDueDateInstructStatus": "OK"
+      }
+    }
+  }
+}
