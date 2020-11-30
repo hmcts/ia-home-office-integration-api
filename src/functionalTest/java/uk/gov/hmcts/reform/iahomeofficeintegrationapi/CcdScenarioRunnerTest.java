@@ -32,6 +32,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.util.AuthorizationHeadersProvider;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.util.LaunchDarklyFunctionalTestClient;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.util.MapMerger;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.util.MapSerializer;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.util.MapValueExpander;
@@ -56,6 +57,8 @@ public class CcdScenarioRunnerTest {
     private ObjectMapper objectMapper;
     @Autowired
     private List<Verifier> verifiers;
+
+    @Autowired private LaunchDarklyFunctionalTestClient launchDarklyFunctionalTestClient;
 
     @Before
     public void setUp() {
@@ -94,8 +97,39 @@ public class CcdScenarioRunnerTest {
 
             Map<String, Object> scenario = deserializeWithExpandedValues(scenarioSource);
 
+            final Headers authorizationHeaders = getAuthorizationHeaders(scenario);
+
             String description = MapValueExtractor.extract(scenario, "description");
-            if (MapValueExtractor.extractOrDefault(scenario, "disabled", false)) {
+
+            Object scenarioEnabled = MapValueExtractor.extract(scenario, "enabled") == null
+                ? MapValueExtractor.extract(scenario, "launchDarklyKey")
+                : MapValueExtractor.extract(scenario, "enabled");
+
+            if (scenarioEnabled == null) {
+                scenarioEnabled = true;
+            } else if (scenarioEnabled instanceof String) {
+
+                if (String.valueOf(scenarioEnabled).contains("feature")) {
+
+                    String[] keys = ((String) scenarioEnabled).split(":");
+
+                    scenarioEnabled = launchDarklyFunctionalTestClient
+                                          .getKey(keys[0], authorizationHeaders.getValue("Authorization"))
+                                      && Boolean.valueOf(keys[1]);
+                } else {
+                    scenarioEnabled = Boolean.valueOf((String) scenarioEnabled);
+                }
+            }
+
+            Object scenarioDisabled = MapValueExtractor.extract(scenario, "disabled");
+
+            if (scenarioDisabled == null) {
+                scenarioDisabled = false;
+            } else if (scenarioDisabled instanceof String) {
+                scenarioDisabled = Boolean.valueOf((String) scenarioDisabled);
+            }
+
+            if (!((Boolean) scenarioEnabled) || ((Boolean) scenarioDisabled)) {
                 System.out.println((char) 27 + "[31m" + "SCENARIO: " + description + " **disabled**");
                 continue;
             }
@@ -117,7 +151,6 @@ public class CcdScenarioRunnerTest {
                 templatesByFilename
             );
 
-            final Headers authorizationHeaders = getAuthorizationHeaders(scenario);
             final String requestUri = MapValueExtractor.extract(scenario, "request.uri");
             final int expectedStatus = MapValueExtractor.extractOrDefault(scenario, "expectation.status", 200);
 
@@ -135,6 +168,8 @@ public class CcdScenarioRunnerTest {
                     .extract()
                     .body()
                     .asString();
+
+            System.out.println("Response body: " + actualResponseBody);
 
             String expectedResponseBody = buildCallbackResponseBody(
                 MapValueExtractor.extract(scenario, "expectation"),
@@ -163,7 +198,7 @@ public class CcdScenarioRunnerTest {
         StreamSupport
             .stream(propertySources.spliterator(), false)
             .filter(propertySource -> propertySource instanceof EnumerablePropertySource)
-            .map(ropertySource -> ((EnumerablePropertySource) ropertySource).getPropertyNames())
+            .map(propertySource -> ((EnumerablePropertySource) propertySource).getPropertyNames())
             .flatMap(Arrays::stream)
             .forEach(name -> MapValueExpander.ENVIRONMENT_PROPERTIES.setProperty(name, environment.getProperty(name)));
     }

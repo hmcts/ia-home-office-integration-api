@@ -29,6 +29,7 @@ def secrets = [
 
         secret('idam-url', 'IDAM_URL'),
         secret('s2s-url', 'S2S_URL'),
+        secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
 
         secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
         secret('idam-secret', 'IA_IDAM_SECRET'),

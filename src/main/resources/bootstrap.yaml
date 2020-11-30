@@ -14,3 +14,4 @@ spring:
         homeoffice-client-id: IA_HOMEOFFICE_CLIENT_ID
         homeoffice-secret: IA_HOMEOFFICE_SECRET
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
+        launch-darkly-sdk-key: LAUNCH_DARKLY_SDK_KEY
