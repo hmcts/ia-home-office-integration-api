@@ -12,9 +12,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_DATE_DUE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_EXPLANATION;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_PARTIES;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
+import java.util.Arrays;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +33,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -101,6 +104,7 @@ class ChangeDirectionDueDateNotificationHandlerTest extends AbstractNotification
         when(notificationsHelper.getConsumerReference(anyString())).thenReturn(consumerReference);
         when(asylumCase.read(DIRECTION_EDIT_DATE_DUE, String.class)).thenReturn(Optional.of(dueDate));
         when(asylumCase.read(DIRECTION_EDIT_EXPLANATION, String.class)).thenReturn(Optional.of(directionExplanation));
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
     }
 
     @ParameterizedTest
@@ -157,19 +161,32 @@ class ChangeDirectionDueDateNotificationHandlerTest extends AbstractNotification
 
         for (Event event : Event.values()) {
 
-            when(callback.getEvent()).thenReturn(event);
+            for (State state : State.values()) {
 
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+                for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = changeDirectionDueDateNotificationHandler.canHandle(callbackStage, callback);
+                    when(callback.getEvent()).thenReturn(event);
+                    when(callback.getCaseDetails()).thenReturn(caseDetails);
+                    when(callback.getCaseDetails().getState()).thenReturn(state);
+                    when(caseDetails.getCaseData()).thenReturn(asylumCase);
+                    when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class))
+                        .thenReturn(Optional.of(Parties.RESPONDENT));
 
-                if (event == Event.CHANGE_DIRECTION_DUE_DATE && callbackStage == ABOUT_TO_SUBMIT) {
+                    boolean canHandle = changeDirectionDueDateNotificationHandler.canHandle(callbackStage, callback);
 
-                    assertTrue(canHandle);
-                } else {
-                    assertFalse(canHandle);
+                    if (event == Event.CHANGE_DIRECTION_DUE_DATE && callbackStage == ABOUT_TO_SUBMIT
+                        && (Arrays.asList(
+                                State.AWAITING_RESPONDENT_EVIDENCE,
+                                State.RESPONDENT_REVIEW
+                            ).contains(callback.getCaseDetails().getState()))
+                        ) {
+                        assertTrue(canHandle);
+                    } else {
+                        assertFalse(canHandle);
+                    }
                 }
             }
+
         }
         reset(callback);
     }

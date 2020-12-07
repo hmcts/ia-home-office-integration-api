@@ -3,14 +3,17 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_DATE_DUE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_EXPLANATION;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_PARTIES;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REVIEW_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.DEFAULT;
 
+import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
@@ -41,7 +44,12 @@ public class ChangeDirectionDueDateNotificationHandler implements PreSubmitCallb
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE;
+               && callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE
+               && isDirectionForRespondentParties(callback.getCaseDetails().getCaseData())
+               && (Arrays.asList(
+                    State.AWAITING_RESPONDENT_EVIDENCE,
+                    State.RESPONDENT_REVIEW
+                ).contains(callback.getCaseDetails().getState()));
     }
 
     @Override
@@ -101,4 +109,11 @@ public class ChangeDirectionDueDateNotificationHandler implements PreSubmitCallb
         return "The due date for this direction has changed to " + dueDateChanged + "\n" + explanation + "\n";
     }
 
+    protected boolean isDirectionForRespondentParties(AsylumCase asylumCase) {
+
+        Parties parties = asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)
+            .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present"));
+
+        return parties.equals(parties.RESPONDENT);
+    }
 }

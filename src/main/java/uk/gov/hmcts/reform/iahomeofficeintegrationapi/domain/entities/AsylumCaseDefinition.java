@@ -118,6 +118,9 @@ public enum AsylumCaseDefinition {
     DIRECTION_EDIT_EXPLANATION(
         "directionEditExplanation", new TypeReference<String>(){}),
 
+    DIRECTION_EDIT_PARTIES(
+        "directionEditParties", new TypeReference<Parties>(){}),
+
     HOME_OFFICE_INSTRUCT_STATUS(
         "homeOfficeInstructStatus", new TypeReference<String>() {}),
 
