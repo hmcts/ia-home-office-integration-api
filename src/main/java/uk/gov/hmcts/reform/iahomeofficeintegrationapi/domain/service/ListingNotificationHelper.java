@@ -211,7 +211,8 @@ public class ListingNotificationHelper {
         return getReheardNote(asylumCase)
                + asylumCase.read(ADJOURN_HEARING_WITHOUT_DATE_REASONS, String.class).orElse("")
                + "\n"
-               + getHearingRequirementNotificationContent(asylumCase);    }
+               + getHearingRequirementNotificationContent(asylumCase);
+    }
 
     public String getHearingNotificationContent(AsylumCase asylumCase) {
 

@@ -123,7 +123,7 @@ class ListingNotificationHelperTest {
     void shouldGetAdjournHearingInstructMessage() {
 
         when(asylumCase.read(ADJOURN_HEARING_WITHOUT_DATE_REASONS, String.class))
-            .thenReturn(Optional.of("Some reason for adjourn hearing without date"));
+            .thenReturn(Optional.of("Some reasons for adjournment"));
 
         HearingInstructMessage hearingInstructMessage
             = listingNotificationHelper.getAdjournHearingInstructMessage(
@@ -135,7 +135,7 @@ class ListingNotificationHelperTest {
         assertEquals("HEARING", hearingInstructMessage.getMessageType());
         assertEquals(messageHeader, hearingInstructMessage.getMessageHeader());
         assertEquals(consumerReference, hearingInstructMessage.getConsumerReference());
-        assertEquals("Some reason for adjourn hearing without date\nHearing requirements:\n"
+        assertEquals("Some reasons for adjournment\nHearing requirements:\n"
                      + "* Adjustments to accommodate vulnerabilities: "
                      + "No special adjustments are being made to accommodate vulnerabilities\n"
                      + "* Multimedia equipment: No multimedia equipment is being provided\n"
@@ -151,6 +151,8 @@ class ListingNotificationHelperTest {
 
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(ADJOURN_HEARING_WITHOUT_DATE_REASONS, String.class))
+            .thenReturn(Optional.of("Some reasons for adjournment"));
 
         HearingInstructMessage hearingInstructMessage
             = listingNotificationHelper.getAdjournHearingInstructMessage(
@@ -162,7 +164,7 @@ class ListingNotificationHelperTest {
         assertEquals("HEARING", hearingInstructMessage.getMessageType());
         assertEquals(messageHeader, hearingInstructMessage.getMessageHeader());
         assertEquals(consumerReference, hearingInstructMessage.getConsumerReference());
-        assertEquals("This is a reheard case.\nlistCaseHearingDateAdjourned\nHearing requirements:\n"
+        assertEquals("This is a reheard case.\nSome reasons for adjournment\nHearing requirements:\n"
                      + "* Adjustments to accommodate vulnerabilities: "
                      + "No special adjustments are being made to accommodate vulnerabilities\n"
                      + "* Multimedia equipment: No multimedia equipment is being provided\n"
@@ -395,12 +397,12 @@ class ListingNotificationHelperTest {
     void shouldAdjournHearingNotificationContent() {
 
         when(asylumCase.read(ADJOURN_HEARING_WITHOUT_DATE_REASONS, String.class))
-            .thenReturn(Optional.of("Some reason for adjourn hearing without date"));
+            .thenReturn(Optional.of("Some reasons for adjournment"));
 
         final String adjournHearingNotificationContent
             = listingNotificationHelper.getAdjournHearingNotificationContent(asylumCase);
 
-        assertEquals("Some reason for adjourn hearing without date\nHearing requirements:\n"
+        assertEquals("Some reasons for adjournment\nHearing requirements:\n"
                      + "* Adjustments to accommodate vulnerabilities: "
                      + "No special adjustments are being made to accommodate vulnerabilities\n"
                      + "* Multimedia equipment: No multimedia equipment is being provided\n"

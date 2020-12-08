@@ -1,11 +1,11 @@
 {
-  "description": "RIA-3310 Sends reheard customise hearing bundle notification to Home office API for state finalBundling by CaseOfficer",
+  "description": "RIA-3310 Sends reheard async stitching somplete notification to Home office API for state finalBundling by CaseOfficer",
   "disabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
-      "eventId": "customiseHearingBundle",
+      "eventId": "asyncStitchingComplete",
       "state": "finalBundling",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
