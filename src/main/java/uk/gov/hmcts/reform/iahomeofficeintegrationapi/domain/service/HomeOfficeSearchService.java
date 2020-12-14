@@ -47,18 +47,24 @@ public class HomeOfficeSearchService {
 
         final String accessToken = accessTokenProvider.getAccessToken();
         HomeOfficeSearch request = makeRequestBody(homeOfficeReferenceNumber);
+
+        String correlationId = request.getMessageHeader().getCorrelationId();
         ObjectWriter objectWriter = this.objectMapper.writer().withDefaultPrettyPrinter();
 
         log.info(
-            "HomeOffice-CaseStatusSearch request is to be sent for caseId: {} and reference number: {}",
+            "HomeOffice-CaseStatusSearch request is to be sent for caseId: {} and reference number: {} "
+            + "and correlation ID: {}",
             caseId,
-            homeOfficeReferenceNumber
+            homeOfficeReferenceNumber,
+            correlationId
         );
         String searchResponse = homeOfficeSearchApi.getStatus(accessToken, request);
         log.info(
-            "HomeOffice-CaseStatusSearch response has been received for caseId: {} and reference number: {}",
+            "HomeOffice-CaseStatusSearch response has been received for caseId: {} and reference number: {} "
+            + "and correlation ID: {}",
             caseId,
-            homeOfficeReferenceNumber
+            homeOfficeReferenceNumber,
+            correlationId
         );
 
         return objectMapper.readValue(searchResponse, HomeOfficeSearchResponse.class);

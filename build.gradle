@@ -211,7 +211,7 @@ dependencyManagement {
     dependencySet(group: 'com.google.guava', version: '29.0-jre') {
       entry 'guava'
     }
-    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.37') {
+    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.40') {
           entry 'tomcat-embed-core'
           entry 'tomcat-embed-el'
           entry 'tomcat-embed-websocket'
@@ -282,13 +282,14 @@ dependencies {
 
   compileOnly 'org.projectlombok:lombok:1.18.12'
   annotationProcessor 'org.projectlombok:lombok:1.18.12'
-  implementation group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'
+  testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
   implementation group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.2.RELEASE'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Hoxton.SR4'
   compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
+  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.2'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
