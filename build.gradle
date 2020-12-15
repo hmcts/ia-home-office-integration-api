@@ -87,11 +87,6 @@ tasks.withType(Test) {
   }
 }
 
-test {
-  useJUnitPlatform()
-  failFast = true
-}
-
 task functional(type: Test) {
   description = "Runs functional tests"
   group = "Verification"
@@ -165,10 +160,12 @@ sonarqube {
 project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
 
 pitest {
+  junit5PluginVersion = '0.12'
   targetClasses = ['uk.gov.hmcts.reform.iahomeofficeintegrationapi.*']
   excludedClasses = [
           'uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.*',
-          'uk.gov.hmcts.reform.iahomeofficeintegrationapi.Application'
+          'uk.gov.hmcts.reform.iahomeofficeintegrationapi.Application',
+          'uk.gov.hmcts.reform.iahomeofficeintegrationapi.CcdScenarioRunnerTest'
   ]
   threads = 10
   outputFormats = ['XML', 'HTML']
@@ -291,22 +288,30 @@ dependencies {
   compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.2'
 
-  testImplementation libraries.junit5
-  testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
-    exclude group: 'junit', module: 'junit'
-    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+  testCompile 'pl.pragmatists:JUnitParams:1.1.1'
+  testCompile "org.junit.jupiter:junit-jupiter-params:5.4.2"
+
+  testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.2",
+          "org.junit.jupiter:junit-jupiter-params:5.4.2",
+          "org.junit.platform:junit-platform-commons:1.6.2"
+
+  testRuntimeOnly "org.junit.platform:junit-platform-engine:1.6.2",
+          "org.junit.jupiter:junit-jupiter-engine:5.6.2",
+          "org.junit.vintage:junit-vintage-engine:5.6.2"
+
+  testCompile "com.github.tomakehurst:wiremock:2.19.0"
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.5.0'
+  testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.7'
+  testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot) {
+    exclude group: "com.vaadin.external.google", module: "android-json"
   }
+  testCompile "ru.lanwen.wiremock:wiremock-junit5:1.3.1"
+
+
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
   testCompileOnly 'org.projectlombok:lombok:1.18.12'
   testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
-  testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
-  testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.7'
-
-  testImplementation("org.hamcrest:hamcrest-junit:2.0.0.0") {
-    exclude group: "org.hamcrest", module: "hamcrest-core"
-    exclude group: "org.hamcrest", module: "hamcrest-library"
-  }
 
   testImplementation group: 'org.pitest', name: 'pitest', version: '1.5.2'
 
