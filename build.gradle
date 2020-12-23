@@ -263,7 +263,7 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: versions.springBoot
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: versions.springBoot
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.2.RELEASE'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.0.0'
 
   // CVE-2019-17195
   implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '7.9'
@@ -283,7 +283,7 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
   implementation group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
 
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.2.RELEASE'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.0.0'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Hoxton.SR4'
   compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.2'
