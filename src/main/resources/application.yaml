@@ -72,6 +72,11 @@ idam:
   s2s-authorised:
     services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
 
+launchDarkly:
+  sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
+  connectionTimeout: 5
+  socketTimeout: 5
+
 home-office:
   api:
     url: ${HOME_OFFICE_ENDPOINT:http://localhost:8098}
