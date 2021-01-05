@@ -77,5 +77,4 @@ public class AuthorizationHeadersProvider {
             new Header("Authorization", accessToken)
         );
     }
-
 }

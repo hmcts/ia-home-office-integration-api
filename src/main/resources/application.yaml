@@ -54,6 +54,7 @@ security:
       - "payAndSubmitAppeal"
     caseworker-ia-caseofficer:
       - "requestHomeOfficeData"
+      - "requestRespondentEvidence"
     caseworker-ia-admofficer:
       - "markAppealPaid"
     caseworker-ia-homeofficeapc:

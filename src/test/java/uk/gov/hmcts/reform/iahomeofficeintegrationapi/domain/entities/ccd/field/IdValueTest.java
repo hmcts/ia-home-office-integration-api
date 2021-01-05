@@ -4,21 +4,17 @@ import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
-public class IdValueTest {
+class IdValueTest {
     private final String id = "1";
     private final Integer value = 1234;
 
-    private IdValue<Integer> addressUk = new IdValue<>(id, value);
-
-    @Mock
-    private IdValue<Integer> mockIdValue;
+    private IdValue<Integer> integerIdValue = new IdValue<>(id, value);
 
     @Test
     void should_hold_onto_values() {
-        assertEquals(id, addressUk.getId());
-        assertEquals(value, addressUk.getValue());
+        assertEquals(id, integerIdValue.getId());
+        assertEquals(value, integerIdValue.getValue());
     }
 
     @Test
