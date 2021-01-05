@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.Ac
 
 
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 class HomeOfficeInstructServiceTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -65,49 +64,6 @@ class HomeOfficeInstructServiceTest {
             homeOfficeInstructService.sendNotification(buildRequestMessage());
 
         assertThat(response).isEqualTo("FAIL");
-    }
-
-    private void assertMessageHeader(MessageHeader messageHeader) {
-
-        assertThat(messageHeader).isNotNull();
-        assertThat(messageHeader.getCorrelationId()).isEqualTo(someCorrelationId);
-        assertThat(messageHeader.getConsumer().getCode()).isEqualTo("HMCTS");
-        assertThat(messageHeader.getConsumer().getDescription()).isEqualTo("HM Courts and Tribunal Service");
-    }
-
-    private void assertConsumerReference(ConsumerReference consumerReference) {
-
-        assertThat(consumerReference).isNotNull();
-        assertThat(consumerReference.getValue()).isEqualTo(someCaseReference);
-        assertThat(consumerReference.getCode()).isEqualTo("HMCTS_CHALLENGE_REF");
-        assertThat(consumerReference.getConsumer().getCode()).isEqualTo("HMCTS");
-        assertThat(consumerReference.getConsumer().getDescription())
-            .isEqualTo("HM Courts and Tribunal Service");
-    }
-
-    private void assertPerson(Person person) {
-
-        assertThat(person).isNotNull();
-        assertThat(person.getGivenName()).isEqualTo(firstName);
-        assertThat(person.getFamilyName()).isEqualTo(surname);
-        assertThat(person.getFullName()).isEqualTo(firstName + " " + surname);
-        assertThat(person.getDayOfBirth()).isEqualTo(1);
-        assertThat(person.getMonthOfBirth()).isEqualTo(1);
-        assertThat(person.getYearOfBirth()).isEqualTo(2000);
-        assertThat(person.getGender()).isNull();
-    }
-
-    private void assertNationality(Person person) {
-        assertThat(person.getNationality()).isNotNull();
-        assertThat(person.getNationality().getCode()).isEqualTo("AU");
-        assertThat(person.getNationality().getDescription()).isEqualTo("Australia");
-    }
-
-    private void setupApplicantDetails() {
-
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of(firstName));
-        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of(surname));
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("2000-01-01"));
     }
 
     private HomeOfficeInstruct buildRequestMessage() {
