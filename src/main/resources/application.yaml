@@ -58,6 +58,7 @@ security:
       - "requestRespondentReview"
     caseworker-ia-admofficer:
       - "markAppealPaid"
+      - "listCase"
     caseworker-ia-homeofficeapc:
     caseworker-ia-homeofficelart:
     caseworker-ia-homeofficepou:
