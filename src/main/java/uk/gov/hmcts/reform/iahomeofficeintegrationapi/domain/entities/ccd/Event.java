@@ -9,6 +9,7 @@ public enum Event {
     MARK_APPEAL_PAID("markAppealPaid"),
     REQUEST_HOME_OFFICE_DATA("requestHomeOfficeData"),
     REQUEST_RESPONDENT_EVIDENCE("requestRespondentEvidence"),
+    REQUEST_RESPONDENT_REVIEW("requestRespondentReview"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 
