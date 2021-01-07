@@ -56,9 +56,11 @@ security:
       - "requestHomeOfficeData"
       - "requestRespondentEvidence"
       - "requestRespondentReview"
+      - "editCaseListing"
     caseworker-ia-admofficer:
       - "markAppealPaid"
       - "listCase"
+      - "editCaseListing"
     caseworker-ia-homeofficeapc:
     caseworker-ia-homeofficelart:
     caseworker-ia-homeofficepou:

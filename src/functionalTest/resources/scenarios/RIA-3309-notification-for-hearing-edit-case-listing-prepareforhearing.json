@@ -1,0 +1,70 @@
+{
+  "description": "RIA-3309 Sends edit case listing notification to Home office API for state prepareforhearing",
+  "launchDarklyKey": "home-office-notification-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "editCaseListing",
+      "state": "prepareForHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+          "appealReferenceNumber": "DC/50001/2020",
+          "decisionHearingFeeOption": "decisionWithHearing",
+          "hearingDocuments": [],
+          "listCaseHearingCentre": "coventry",
+          "listCaseHearingLength": "60",
+          "listCaseHearingDate": "2018-12-31T12:34:56",
+          "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
+          "listCaseRequirementsMultimedia": "something around Multimedia",
+          "listCaseRequirementsSingleSexCourt": "something around SingleSexCourt",
+          "listCaseRequirementsInCameraCourt": "something around InCameraCourt",
+          "listCaseRequirementsOther": "something around Other",
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "ariaListingReference": "LP/12345/2019",
+          "witnessCount": "2",
+          "witnessDetails": [
+            {
+              "id": "1",
+              "value": {
+                "witnessName": "WitnessA"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "witnessName": "WitnessB"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+        "appealReferenceNumber": "DC/50001/2020",
+        "hearingDocuments": [],
+        "decisionHearingFeeOption": "decisionWithHearing",
+        "listCaseHearingCentre": "coventry",
+        "listCaseHearingLength": "60",
+        "listCaseHearingDate": "2018-12-31T12:34:56",
+        "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
+        "listCaseRequirementsMultimedia": "something around Multimedia",
+        "listCaseRequirementsSingleSexCourt": "something around SingleSexCourt",
+        "listCaseRequirementsInCameraCourt": "something around InCameraCourt",
+        "listCaseRequirementsOther": "something around Other",
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "ariaListingReference": "LP/12345/2019",
+        "homeOfficeEditListingInstructStatus": "OK"
+      }
+    }
+  }
+}
