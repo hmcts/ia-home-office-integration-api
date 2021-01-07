@@ -1,7 +1,11 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_SUBMISSION_DATE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_NATIONALITIES;
@@ -107,7 +111,7 @@ class NotificationsHelperTest extends AbstractNotificationsHandlerTestBase {
     }
 
     @Test
-    void shouldReturnHomeOfficeReferenceFromCaseWhenDocumentReferenceNotFoundInValidationResponse() {
+    void shouldReturnHomeOfficeReferenceFromCaseWhenEmptyDocumentReferenceInValidationResponse() {
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(someHomeOfficeReference));
@@ -120,6 +124,17 @@ class NotificationsHelperTest extends AbstractNotificationsHandlerTestBase {
         final String homeOfficeReference = notificationsHelper.getHomeOfficeReference(asylumCase);
 
         assertThat(homeOfficeReference).isNotEqualTo(someHomeOfficeReference).isEqualTo(someDocumentReference);
+    }
+
+    @Test
+    void shouldReturnHomeOfficeReferenceFromCaseWhenDocumentReferenceNotFoundInValidationResponse() {
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(someHomeOfficeReference));
+
+        final String homeOfficeReference = notificationsHelper.getHomeOfficeReference(asylumCase);
+
+        assertThat(homeOfficeReference).isEqualTo(someHomeOfficeReference).isNotEqualTo(someDocumentReference);
     }
 
     @Test
@@ -186,6 +201,19 @@ class NotificationsHelperTest extends AbstractNotificationsHandlerTestBase {
     }
 
     @Test
+    void shouldReturnNullWhenDirectionNotFoundFromCase() {
+
+        when(asylumCase.read(DIRECTIONS)).thenReturn(
+            Optional.of(
+                Collections.singletonList(
+                    new IdValue<>("1", requestEvidenceDirection)
+                )
+            )
+        );
+        assertNull(notificationsHelper.getDirectionDeadline(asylumCase, DirectionTag.RESPONDENT_EVIDENCE));
+    }
+
+    @Test
     void shouldExtractDirectionContentFromCase() {
 
         final String directionExplanation = "direction explanation";
@@ -205,5 +233,25 @@ class NotificationsHelperTest extends AbstractNotificationsHandlerTestBase {
             notificationsHelper.getDirectionContent(asylumCase, DirectionTag.RESPONDENT_EVIDENCE);
 
         assertThat(directionContent).isEqualTo(directionExplanation);
+    }
+
+    @Test
+    @MockitoSettings(strictness = Strictness.WARN)
+    void shouldGetCaseId() {
+
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of("some-appeal-reference-number"));
+
+        String caseId = notificationsHelper.getCaseId(asylumCase);
+        assertEquals("some-appeal-reference-number", caseId);
+    }
+
+    @Test
+    @MockitoSettings(strictness = Strictness.WARN)
+    void shouldThrowErrorCaseIdNotPresent() {
+
+        assertThatThrownBy(() -> notificationsHelper.getCaseId(asylumCase))
+            .hasMessage("Case ID for the appeal is not present")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 }
