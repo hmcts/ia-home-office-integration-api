@@ -4,23 +4,23 @@ import static java.util.Objects.requireNonNull;
 
 public class CourtOutcome {
 
-    private String courtType;
-    private String outcome;
+    private CourtType courtType;
+    private Outcome outcome;
 
     private CourtOutcome() {
     }
 
-    public CourtOutcome(String courtType, String outcome) {
+    public CourtOutcome(CourtType courtType, Outcome outcome) {
         this.courtType = courtType;
         this.outcome = outcome;
     }
 
-    public String getCourtType() {
+    public CourtType getCourtType() {
         requireNonNull(courtType);
         return courtType;
     }
 
-    public String getOutcome() {
+    public Outcome getOutcome() {
         requireNonNull(outcome);
         return outcome;
     }

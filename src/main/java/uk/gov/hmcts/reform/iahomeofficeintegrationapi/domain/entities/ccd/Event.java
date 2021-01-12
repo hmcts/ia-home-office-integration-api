@@ -13,6 +13,7 @@ public enum Event {
     LIST_CASE("listCase"),
     EDIT_CASE_LISTING("editCaseListing"),
     ADJOURN_HEARING_WITHOUT_DATE("adjournHearingWithoutDate"),
+    SEND_DECISION_AND_REASONS("sendDecisionAndReasons"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 
