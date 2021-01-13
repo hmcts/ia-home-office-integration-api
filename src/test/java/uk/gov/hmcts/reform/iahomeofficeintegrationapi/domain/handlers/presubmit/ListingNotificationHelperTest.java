@@ -145,6 +145,19 @@ class ListingNotificationHelperTest {
 
     @Test
     @MockitoSettings(strictness = Strictness.WARN)
+    void shouldGetHearingBundleReadyInstructMessage() {
+
+        HearingInstructMessage hearingBundleReadyInstructMessage
+            = listingNotificationHelper.getHearingBundleReadyInstructMessage(asylumCase,
+            consumerReference, messageHeader, "1111-2222-3333-4444");
+
+        assertEquals("ORAL", hearingBundleReadyInstructMessage.getHearing().getHearingType());
+        assertEquals("ariaListingReference", hearingBundleReadyInstructMessage.getHearing().getHmctsHearingRef());
+        assertEquals("HEARING_BUNDLE_READY", hearingBundleReadyInstructMessage.getMessageType());
+    }
+
+    @Test
+    @MockitoSettings(strictness = Strictness.WARN)
     void shouldGetHearingInstructMessage() {
 
         HearingInstructMessage hearingInstructMessage

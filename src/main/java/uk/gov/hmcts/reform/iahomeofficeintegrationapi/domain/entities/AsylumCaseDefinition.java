@@ -109,7 +109,10 @@ public enum AsylumCaseDefinition {
         "homeOfficeAppealDecidedInstructStatus", new TypeReference<String>() {}),
 
     HOME_OFFICE_REQUEST_EVIDENCE_INSTRUCT_STATUS(
-        "homeOfficeRequestEvidenceInstructStatus", new TypeReference<String>() {});
+        "homeOfficeRequestEvidenceInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS(
+        "homeOfficeHearingBundleReadyInstructStatus", new TypeReference<String>() {});
 
     private final String value;
     private final TypeReference typeReference;

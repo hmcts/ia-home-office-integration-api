@@ -14,6 +14,7 @@ public enum Event {
     EDIT_CASE_LISTING("editCaseListing"),
     ADJOURN_HEARING_WITHOUT_DATE("adjournHearingWithoutDate"),
     SEND_DECISION_AND_REASONS("sendDecisionAndReasons"),
+    ASYNC_STITCHING_COMPLETE("asyncStitchingComplete"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 

@@ -87,7 +87,6 @@ abstract class AbstractNotificationsHandlerTestBase {
         when(notificationsHelper.getHomeOfficeReference(asylumCase)).thenReturn(someDocumentReference);
         when(notificationsHelper.getConsumerReference(someCaseReference)).thenReturn(consumerReference);
         when(notificationsHelper.getMessageHeader()).thenReturn(messageHeader);
-        when(notificationsHelper.getCaseId(asylumCase)).thenReturn(someCaseId);
         //setupHelperDirection(directionTag);
     }
 
