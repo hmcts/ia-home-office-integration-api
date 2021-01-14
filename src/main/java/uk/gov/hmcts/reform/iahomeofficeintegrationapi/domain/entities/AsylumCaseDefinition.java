@@ -88,9 +88,6 @@ public enum AsylumCaseDefinition {
     DECISION_HEARING_FEE_OPTION(
         "decisionHearingFeeOption", new TypeReference<String>(){}),
 
-    ADJOURN_HEARING_WITHOUT_DATE_REASONS(
-        "adjournHearingWithoutDateReasons", new TypeReference<String>(){}),
-
     IS_DECISION_ALLOWED(
         "isDecisionAllowed", new TypeReference<AppealDecision>(){}),
 
