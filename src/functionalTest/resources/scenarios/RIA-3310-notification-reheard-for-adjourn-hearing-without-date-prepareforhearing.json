@@ -1,12 +1,12 @@
 {
-  "description": "RIA-3316 Sends adjourn hearing without date notification to Home office API for state decision",
+  "description": "RIA-3310 Sends reheard adjourn hearing without date notification to Home office API for state prepareforhearing",
   "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
     "input": {
       "eventId": "adjournHearingWithoutDate",
-      "state": "decision",
+      "state": "prepareForHearing",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
@@ -16,7 +16,6 @@
           "adjournHearingWithoutDateReasons": "Some known reason for adjournment",
           "listCaseHearingCentre": "coventry",
           "hearingDocuments": [],
-          "adjournHearingWithoutDateReasons": "Court closed",
           "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
           "listCaseRequirementsMultimedia": "something around Multimedia",
           "listCaseRequirementsSingleSexCourt": "something around SingleSexCourt",
@@ -24,6 +23,7 @@
           "listCaseRequirementsOther": "something around Other",
           "uploadAdditionalEvidenceActionAvailable": "Yes",
           "ariaListingReference": "LP/12345/2019",
+          "caseFlagSetAsideReheardExists": "Yes",
           "witnessCount": "2",
           "witnessDetails": [
             {

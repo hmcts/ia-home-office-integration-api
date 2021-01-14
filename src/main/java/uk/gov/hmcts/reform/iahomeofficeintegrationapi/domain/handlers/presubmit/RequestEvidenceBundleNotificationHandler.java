@@ -80,8 +80,9 @@ public class RequestEvidenceBundleNotificationHandler implements PreSubmitCallba
 
         asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_INSTRUCT_STATUS, notificationStatus);
 
-        log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}",
-            REQUEST_EVIDENCE_BUNDLE.toString(), caseId, homeOfficeReferenceNumber, notificationStatus);
+        log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
+            REQUEST_EVIDENCE_BUNDLE.toString(), caseId, homeOfficeReferenceNumber,
+            notificationStatus, callback.getEvent());
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

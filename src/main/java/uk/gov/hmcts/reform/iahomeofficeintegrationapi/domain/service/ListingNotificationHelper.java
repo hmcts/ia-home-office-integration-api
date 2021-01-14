@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.ADDITIONAL_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.ADJOURN_HEARING_WITHOUT_DATE_REASONS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.ARIA_LISTING_REFERENCE;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DECISION_HEARING_FEE_OPTION;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.IN_CAMERA_COURT_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.LIST_CASE_HEARING_CENTRE;
@@ -31,6 +32,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHea
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HearingCentre;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.WitnessDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.DateTimeExtractor;
 
 @Slf4j
@@ -134,6 +136,7 @@ public class ListingNotificationHelper {
             messageHeader,
             homeOfficeReferenceNumber)
             .withHearing(getHearingBundleReadyBuilderData(asylumCase).build())
+            .withNote(getReheardNote(asylumCase))
             .build();
     }
 
@@ -205,12 +208,19 @@ public class ListingNotificationHelper {
 
     public String getAdjournHearingNotificationContent(AsylumCase asylumCase) {
 
-        return asylumCase.read(ADJOURN_HEARING_WITHOUT_DATE_REASONS, String.class).orElse("")
+        return getReheardNote(asylumCase)
+               + asylumCase.read(ADJOURN_HEARING_WITHOUT_DATE_REASONS, String.class).orElse("")
                + "\n"
-               + getHearingNotificationContent(asylumCase);
+               + getHearingRequirementNotificationContent(asylumCase);
     }
 
     public String getHearingNotificationContent(AsylumCase asylumCase) {
+
+        return getReheardNote(asylumCase)
+               + getHearingRequirementNotificationContent(asylumCase);
+    }
+
+    public String getHearingRequirementNotificationContent(AsylumCase asylumCase) {
 
         return "Hearing requirements:\n"
                + readStringCaseField(asylumCase, VULNERABILITIES_TRIBUNAL_RESPONSE,
@@ -238,5 +248,14 @@ public class ListingNotificationHelper {
                 ? optionalFieldValue.get()
                 : defaultIfNotPresent)
             + "\n";
+    }
+
+    public boolean isReheardCase(AsylumCase asylumCase) {
+        return asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS,
+            YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false);
+    }
+
+    public String getReheardNote(AsylumCase asylumCase) {
+        return isReheardCase(asylumCase) ? "This is a reheard case.\n" : "";
     }
 }

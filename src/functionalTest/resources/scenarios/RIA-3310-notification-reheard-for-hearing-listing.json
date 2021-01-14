@@ -1,22 +1,22 @@
 {
-  "description": "RIA-3316 Sends adjourn hearing without date notification to Home office API for state decision",
+  "description": "RIA-3310 Sends reheard case listed notification to Home office API",
   "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
     "input": {
-      "eventId": "adjournHearingWithoutDate",
-      "state": "decision",
+      "eventId": "listCase",
+      "state": "listing",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "homeOfficeReferenceNumber": "1111-2222-3333-4444",
           "appealReferenceNumber": "DC/50001/2020",
           "decisionHearingFeeOption": "decisionWithHearing",
-          "adjournHearingWithoutDateReasons": "Some known reason for adjournment",
-          "listCaseHearingCentre": "coventry",
           "hearingDocuments": [],
-          "adjournHearingWithoutDateReasons": "Court closed",
+          "listCaseHearingCentre": "coventry",
+          "listCaseHearingLength": "60",
+          "listCaseHearingDate": "2018-12-31T12:34:56",
           "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
           "listCaseRequirementsMultimedia": "something around Multimedia",
           "listCaseRequirementsSingleSexCourt": "something around SingleSexCourt",
@@ -24,6 +24,7 @@
           "listCaseRequirementsOther": "something around Other",
           "uploadAdditionalEvidenceActionAvailable": "Yes",
           "ariaListingReference": "LP/12345/2019",
+          "caseFlagSetAsideReheardExists": "Yes",
           "witnessCount": "2",
           "witnessDetails": [
             {
@@ -54,6 +55,8 @@
         "hearingDocuments": [],
         "decisionHearingFeeOption": "decisionWithHearing",
         "listCaseHearingCentre": "coventry",
+        "listCaseHearingLength": "60",
+        "listCaseHearingDate": "2018-12-31T12:34:56",
         "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
         "listCaseRequirementsMultimedia": "something around Multimedia",
         "listCaseRequirementsSingleSexCourt": "something around SingleSexCourt",
@@ -61,22 +64,7 @@
         "listCaseRequirementsOther": "something around Other",
         "uploadAdditionalEvidenceActionAvailable": "Yes",
         "ariaListingReference": "LP/12345/2019",
-        "witnessCount": "2",
-        "witnessDetails": [
-          {
-            "id": "1",
-            "value": {
-              "witnessName": "WitnessA"
-            }
-          },
-          {
-            "id": "2",
-            "value": {
-              "witnessName": "WitnessB"
-            }
-          }
-        ],
-        "homeOfficeAdjournWithoutDateInstructStatus": "OK"
+        "homeOfficeHearingInstructStatus": "OK"
       }
     }
   }

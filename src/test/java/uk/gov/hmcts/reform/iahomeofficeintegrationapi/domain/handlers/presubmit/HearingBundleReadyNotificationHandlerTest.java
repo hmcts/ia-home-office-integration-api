@@ -59,6 +59,17 @@ class HearingBundleReadyNotificationHandlerTest extends AbstractNotificationsHan
             .withMessageType(HEARING_BUNDLE_READY.name())
             .withHearing(hearing).build();
 
+    HearingInstructMessage hearingInstructMessageReheard =
+        HearingInstructMessage.HearingInstructMessageBuilder
+            .hearingInstructMessage()
+            .withConsumerReference(consumerReference)
+            .withHoReference(someDocumentReference)
+            .withMessageHeader(messageHeader)
+            .withMessageType(HEARING_BUNDLE_READY.name())
+            .withHearing(hearing)
+            .withNote("This is a reheard case.\n")
+            .build();
+
     @BeforeEach
     void setUp() {
 

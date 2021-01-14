@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.ADDITIONAL_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.ADJOURN_HEARING_WITHOUT_DATE_REASONS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.ARIA_LISTING_REFERENCE;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DECISION_HEARING_FEE_OPTION;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.IN_CAMERA_COURT_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.LIST_CASE_HEARING_CENTRE;
@@ -35,6 +36,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHea
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HearingCentre;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.WitnessDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.ListingNotificationHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.DateTimeExtractor;
 
@@ -121,7 +123,7 @@ class ListingNotificationHelperTest {
     void shouldGetAdjournHearingInstructMessage() {
 
         when(asylumCase.read(ADJOURN_HEARING_WITHOUT_DATE_REASONS, String.class))
-            .thenReturn(Optional.of("Some reason for adjourn hearing without date"));
+            .thenReturn(Optional.of("Some reasons for adjournment"));
 
         HearingInstructMessage hearingInstructMessage
             = listingNotificationHelper.getAdjournHearingInstructMessage(
@@ -133,7 +135,36 @@ class ListingNotificationHelperTest {
         assertEquals("HEARING", hearingInstructMessage.getMessageType());
         assertEquals(messageHeader, hearingInstructMessage.getMessageHeader());
         assertEquals(consumerReference, hearingInstructMessage.getConsumerReference());
-        assertEquals("Some reason for adjourn hearing without date\nHearing requirements:\n"
+        assertEquals("Some reasons for adjournment\nHearing requirements:\n"
+                     + "* Adjustments to accommodate vulnerabilities: "
+                     + "No special adjustments are being made to accommodate vulnerabilities\n"
+                     + "* Multimedia equipment: No multimedia equipment is being provided\n"
+                     + "* Single-sex court: The court will not be single sex\n"
+                     + "* In camera court: The hearing will be held in public court\n"
+                     + "* Other adjustments: No other adjustments are being made\n",
+            hearingInstructMessage.getNote());
+    }
+
+    @Test
+    @MockitoSettings(strictness = Strictness.WARN)
+    void shouldGetReheardAdjournHearingInstructMessage() {
+
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(ADJOURN_HEARING_WITHOUT_DATE_REASONS, String.class))
+            .thenReturn(Optional.of("Some reasons for adjournment"));
+
+        HearingInstructMessage hearingInstructMessage
+            = listingNotificationHelper.getAdjournHearingInstructMessage(
+            asylumCase, consumerReference, messageHeader, "1111-2222-3333-4444");
+
+        assertEquals("ORAL", hearingInstructMessage.getHearing().getHearingType());
+        assertEquals("ariaListingReference", hearingInstructMessage.getHearing().getHmctsHearingRef());
+        assertEquals("Manchester", hearingInstructMessage.getHearing().getHearingLocation());
+        assertEquals("HEARING", hearingInstructMessage.getMessageType());
+        assertEquals(messageHeader, hearingInstructMessage.getMessageHeader());
+        assertEquals(consumerReference, hearingInstructMessage.getConsumerReference());
+        assertEquals("This is a reheard case.\nSome reasons for adjournment\nHearing requirements:\n"
                      + "* Adjustments to accommodate vulnerabilities: "
                      + "No special adjustments are being made to accommodate vulnerabilities\n"
                      + "* Multimedia equipment: No multimedia equipment is being provided\n"
@@ -158,6 +189,23 @@ class ListingNotificationHelperTest {
 
     @Test
     @MockitoSettings(strictness = Strictness.WARN)
+    void shouldGetReheardHearingBundleReadyInstructMessage() {
+
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+
+        HearingInstructMessage hearingBundleReadyInstructMessage
+            = listingNotificationHelper.getHearingBundleReadyInstructMessage(asylumCase,
+            consumerReference, messageHeader, "1111-2222-3333-4444");
+
+        assertEquals("ORAL", hearingBundleReadyInstructMessage.getHearing().getHearingType());
+        assertEquals("ariaListingReference", hearingBundleReadyInstructMessage.getHearing().getHmctsHearingRef());
+        assertEquals("HEARING_BUNDLE_READY", hearingBundleReadyInstructMessage.getMessageType());
+        assertEquals("This is a reheard case.\n", hearingBundleReadyInstructMessage.getNote());
+    }
+
+    @Test
+    @MockitoSettings(strictness = Strictness.WARN)
     void shouldGetHearingInstructMessage() {
 
         HearingInstructMessage hearingInstructMessage
@@ -165,6 +213,27 @@ class ListingNotificationHelperTest {
                 consumerReference, messageHeader, "1111-2222-3333-4444");
 
         assertHearingDataWithContent(hearingInstructMessage);
+    }
+
+    @Test
+    @MockitoSettings(strictness = Strictness.WARN)
+    void shouldGetReheardHearingInstructMessage() {
+
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+
+        HearingInstructMessage hearingInstructMessage
+            = listingNotificationHelper.getHearingInstructMessage(asylumCase,
+            consumerReference, messageHeader, "1111-2222-3333-4444");
+
+        assertEquals("This is a reheard case.\nHearing requirements:\n"
+                     + "* Adjustments to accommodate vulnerabilities: "
+                     + "No special adjustments are being made to accommodate vulnerabilities\n"
+                     + "* Multimedia equipment: No multimedia equipment is being provided\n"
+                     + "* Single-sex court: The court will not be single sex\n"
+                     + "* In camera court: The hearing will be held in public court\n"
+                     + "* Other adjustments: No other adjustments are being made\n",
+            hearingInstructMessage.getNote());
     }
 
     private void assertHearingDataWithContent(HearingInstructMessage hearingInstructMessage) {
@@ -328,12 +397,12 @@ class ListingNotificationHelperTest {
     void shouldAdjournHearingNotificationContent() {
 
         when(asylumCase.read(ADJOURN_HEARING_WITHOUT_DATE_REASONS, String.class))
-            .thenReturn(Optional.of("Some reason for adjourn hearing without date"));
+            .thenReturn(Optional.of("Some reasons for adjournment"));
 
         final String adjournHearingNotificationContent
             = listingNotificationHelper.getAdjournHearingNotificationContent(asylumCase);
 
-        assertEquals("Some reason for adjourn hearing without date\nHearing requirements:\n"
+        assertEquals("Some reasons for adjournment\nHearing requirements:\n"
                      + "* Adjustments to accommodate vulnerabilities: "
                      + "No special adjustments are being made to accommodate vulnerabilities\n"
                      + "* Multimedia equipment: No multimedia equipment is being provided\n"
@@ -358,7 +427,8 @@ class ListingNotificationHelperTest {
         when(asylumCase.read(ADDITIONAL_TRIBUNAL_RESPONSE, String.class))
             .thenReturn(Optional.of("something around Other"));
 
-        final String hearingNotificationContent = listingNotificationHelper.getHearingNotificationContent(asylumCase);
+        final String hearingNotificationContent
+            = listingNotificationHelper.getHearingRequirementNotificationContent(asylumCase);
 
         assertEquals("Hearing requirements:\n"
             + "* Adjustments to accommodate vulnerabilities: something around Vulnerabilities\n"

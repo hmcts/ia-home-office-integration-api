@@ -1,44 +1,26 @@
 {
-  "description": "RIA-3316 Sends adjourn hearing without date notification to Home office API for state decision",
+  "description": "RIA-3310 Sends reheard async stitching somplete notification to Home office API for state finalBundling by CaseOfficer",
   "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "AdminOfficer",
+    "credentials": "CaseOfficer",
     "input": {
-      "eventId": "adjournHearingWithoutDate",
-      "state": "decision",
+      "eventId": "asyncStitchingComplete",
+      "state": "finalBundling",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "homeOfficeReferenceNumber": "1111-2222-3333-4444",
           "appealReferenceNumber": "DC/50001/2020",
           "decisionHearingFeeOption": "decisionWithHearing",
-          "adjournHearingWithoutDateReasons": "Some known reason for adjournment",
-          "listCaseHearingCentre": "coventry",
           "hearingDocuments": [],
-          "adjournHearingWithoutDateReasons": "Court closed",
           "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
           "listCaseRequirementsMultimedia": "something around Multimedia",
           "listCaseRequirementsSingleSexCourt": "something around SingleSexCourt",
           "listCaseRequirementsInCameraCourt": "something around InCameraCourt",
           "listCaseRequirementsOther": "something around Other",
-          "uploadAdditionalEvidenceActionAvailable": "Yes",
           "ariaListingReference": "LP/12345/2019",
-          "witnessCount": "2",
-          "witnessDetails": [
-            {
-              "id": "1",
-              "value": {
-                "witnessName": "WitnessA"
-              }
-            },
-            {
-              "id": "2",
-              "value": {
-                "witnessName": "WitnessB"
-              }
-            }
-          ]
+          "caseFlagSetAsideReheardExists": "Yes"
         }
       }
     }
@@ -53,30 +35,13 @@
         "appealReferenceNumber": "DC/50001/2020",
         "hearingDocuments": [],
         "decisionHearingFeeOption": "decisionWithHearing",
-        "listCaseHearingCentre": "coventry",
         "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
         "listCaseRequirementsMultimedia": "something around Multimedia",
         "listCaseRequirementsSingleSexCourt": "something around SingleSexCourt",
         "listCaseRequirementsInCameraCourt": "something around InCameraCourt",
         "listCaseRequirementsOther": "something around Other",
-        "uploadAdditionalEvidenceActionAvailable": "Yes",
         "ariaListingReference": "LP/12345/2019",
-        "witnessCount": "2",
-        "witnessDetails": [
-          {
-            "id": "1",
-            "value": {
-              "witnessName": "WitnessA"
-            }
-          },
-          {
-            "id": "2",
-            "value": {
-              "witnessName": "WitnessB"
-            }
-          }
-        ],
-        "homeOfficeAdjournWithoutDateInstructStatus": "OK"
+        "homeOfficeHearingBundleReadyInstructStatus": "OK"
       }
     }
   }
