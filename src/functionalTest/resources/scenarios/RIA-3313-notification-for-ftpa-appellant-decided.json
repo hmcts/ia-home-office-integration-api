@@ -1,0 +1,32 @@
+{
+  "description": "RIA-3313 FTPA appellant in time application submission notification - Decided state",
+  "launchDarklyKey": "home-office-notification-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 1234,
+      "eventId": "applyForFTPAAppellant",
+      "state": "decided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaAppellantSubmissionOutOfTime": "No",
+          "ftpaAppellantSubmitted": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "ftpaAppellantSubmissionOutOfTime": "No",
+        "ftpaAppellantSubmitted": "Yes",
+        "homeOfficeFtpaAppellantInstructStatus": "OK"
+      }
+    }
+  }
+}

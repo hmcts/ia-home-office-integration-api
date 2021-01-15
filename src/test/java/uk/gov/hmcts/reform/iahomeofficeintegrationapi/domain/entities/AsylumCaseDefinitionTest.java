@@ -8,10 +8,10 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 
-public class AsylumCaseDefinitionTest {
+class AsylumCaseDefinitionTest {
 
     @Test
-    public void mapped_to_equivalent_field_name() {
+    void mapped_to_equivalent_field_name() {
         Stream.of(AsylumCaseDefinition.values())
                 .forEach(v -> assertThat(UPPER_UNDERSCORE.to(LOWER_CAMEL, v.name()))
                         .isEqualTo(v.value()));

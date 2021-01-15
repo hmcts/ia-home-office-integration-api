@@ -52,6 +52,7 @@ security:
     caseworker-ia-legalrep-solicitor:
       - "submitAppeal"
       - "payAndSubmitAppeal"
+      - "applyForFTPAAppellant"
     caseworker-ia-caseofficer:
       - "requestHomeOfficeData"
       - "requestRespondentEvidence"
@@ -69,7 +70,9 @@ security:
     caseworker-ia-homeofficeapc:
     caseworker-ia-homeofficelart:
     caseworker-ia-homeofficepou:
+      - "applyForFTPARespondent"
     caseworker-ia-respondentofficer:
+      - "applyForFTPARespondent"
     caseworker-ia-iacjudge:
       - "sendDecisionAndReasons"
 

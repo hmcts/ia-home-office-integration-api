@@ -64,6 +64,22 @@ public class AuthorizationHeadersProvider {
 
     }
 
+    public Headers getHomeOfficePouAuthorization() {
+
+        return getAuthorizationForRole(
+            "HomeOfficePou",
+            "TEST_HOMEOFFICE_POU_USERNAME",
+            "TEST_HOMEOFFICE_POU_PASSWORD");
+    }
+
+    public Headers getHomeOfficeGenericAuthorization() {
+
+        return getAuthorizationForRole(
+            "HomeOfficeGeneric",
+            "TEST_HOMEOFFICE_GENERIC_USERNAME",
+            "TEST_HOMEOFFICE_GENERIC_PASSWORD");
+    }
+
     public Headers getAuthorizationForRole(String role, String username, String password) {
 
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
