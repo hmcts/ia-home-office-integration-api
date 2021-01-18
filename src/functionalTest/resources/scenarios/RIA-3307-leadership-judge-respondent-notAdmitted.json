@@ -1,5 +1,6 @@
 {
   "description": "RIA-3307 Home Office notification: Leadership judge record FTPA respondent decision - not admitted",
+  "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",
