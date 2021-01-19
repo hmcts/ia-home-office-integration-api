@@ -63,6 +63,7 @@ security:
       - "sendDecisionAndReasons"
       - "endAppeal"
       - "sendDirection"
+      - "requestResponseAmend"
     caseworker-ia-admofficer:
       - "markAppealPaid"
       - "listCase"

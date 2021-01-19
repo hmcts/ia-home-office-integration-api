@@ -164,7 +164,10 @@ public enum AsylumCaseDefinition {
         "endAppealOutcomeReason", new TypeReference<String>(){}),
 
     HOME_OFFICE_AMEND_BUNDLE_INSTRUCT_STATUS(
-        "homeOfficeAmendBundleInstructStatus", new TypeReference<String>() {});
+        "homeOfficeAmendBundleInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_AMEND_RESPONSE_INSTRUCT_STATUS(
+        "homeOfficeAmendResponseInstructStatus", new TypeReference<String>() {});
 
     private final String value;
     private final TypeReference typeReference;

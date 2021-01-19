@@ -77,7 +77,8 @@ public class CcdScenarioRunnerTest {
 
         loadPropertiesIntoMapValueExpander();
 
-        String scenarioPattern = System.getProperty("scenarios");
+        String scenarioPattern = System.getProperty("scenario");
+        System.out.println("scenarioPattern:" + scenarioPattern);
         if (scenarioPattern == null) {
             scenarioPattern = "*.json";
         } else {
