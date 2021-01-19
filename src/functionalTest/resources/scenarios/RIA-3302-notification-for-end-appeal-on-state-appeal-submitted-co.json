@@ -1,0 +1,34 @@
+{
+  "description": "RIA 3302 sends notification for end appeal on state appeal submitted by Case Officer",
+  "launchDarklyKey": "home-office-notification-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "endAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+          "appealReferenceNumber": "DC/50001/2020",
+          "endAppealDate": "2020-01-01",
+          "endAppealOutcome": "Struck out",
+          "endAppealOutcomeReason": "fees not paid"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+        "appealReferenceNumber": "DC/50001/2020",
+        "homeOfficeEndAppealInstructStatus": "OK"
+      }
+    }
+  }
+}
