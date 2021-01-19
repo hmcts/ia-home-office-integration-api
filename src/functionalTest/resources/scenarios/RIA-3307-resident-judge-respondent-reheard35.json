@@ -1,0 +1,34 @@
+{
+  "description": "RIA-3307 Home Office notification: Resident judge record FTPA respondent decision - reheard Rule 35",
+  "launchDarklyKey": "home-office-notification-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 1234,
+      "eventId": "residentJudgeFtpaDecision",
+      "state": "ftpaSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "ftpaApplicantType": "respondent",
+          "ftpaRespondentRjDecisionOutcomeType": "reheardRule35"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "ftpaApplicantType": "respondent",
+        "ftpaRespondentRjDecisionOutcomeType": "reheardRule35",
+        "homeOfficeFtpaRespondentDecidedInstructStatus": "OK"
+      }
+    }
+  }
+}
