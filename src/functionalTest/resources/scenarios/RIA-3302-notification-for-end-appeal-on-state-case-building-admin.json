@@ -1,6 +1,6 @@
 {
   "description": "RIA 3302 sends notification for end appeal on state case building by Admin",
-  "disabled": false,
+  "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
