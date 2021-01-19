@@ -1,6 +1,6 @@
 {
   "description": "RIA-3691 Sends amend bundle ho notification for event send direction",
-  "disabled": false,
+  "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
