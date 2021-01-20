@@ -325,10 +325,10 @@ public class CcdScenarioRunnerTest {
                 .getCaseOfficerAuthorization();
         }
 
-        if ("Judge".equalsIgnoreCase(credentials)) {
+        if ("AdminOfficer".equalsIgnoreCase(credentials)) {
 
             return authorizationHeadersProvider
-                .getJudgeAuthorization();
+                .getAdminOfficerAuthorization();
         }
 
         if ("Judge".equalsIgnoreCase(credentials)) {
@@ -347,12 +347,6 @@ public class CcdScenarioRunnerTest {
 
             return authorizationHeadersProvider
                 .getHomeOfficeGenericAuthorization();
-        }
-
-        if ("Judge".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
-                .getJudgeAuthorization();
         }
 
         return new Headers();
