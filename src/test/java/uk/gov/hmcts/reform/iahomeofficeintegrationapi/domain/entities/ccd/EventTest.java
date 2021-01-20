@@ -26,11 +26,12 @@ class EventTest {
         assertEquals("endAppeal", Event.END_APPEAL.toString());
         assertEquals("sendDirection", Event.SEND_DIRECTION.toString());
         assertEquals("requestResponseAmend", Event.REQUEST_RESPONSE_AMEND.toString());
+        assertEquals("changeDirectionDueDate", Event.CHANGE_DIRECTION_DUE_DATE.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(19, Event.values().length);
+        assertEquals(20, Event.values().length);
     }
 }

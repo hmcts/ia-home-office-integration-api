@@ -112,6 +112,15 @@ public enum AsylumCaseDefinition {
     FTPA_RESPONDENT_DECISION_REMADE_RULE_32(
         "ftpaRespondentDecisionRemadeRule32", new TypeReference<String>(){}),
 
+    DIRECTION_EDIT_DATE_DUE(
+        "directionEditDateDue", new TypeReference<String>(){}),
+
+    DIRECTION_EDIT_EXPLANATION(
+        "directionEditExplanation", new TypeReference<String>(){}),
+
+    DIRECTION_EDIT_PARTIES(
+        "directionEditParties", new TypeReference<Parties>(){}),
+
     HOME_OFFICE_INSTRUCT_STATUS(
         "homeOfficeInstructStatus", new TypeReference<String>() {}),
 
@@ -167,7 +176,13 @@ public enum AsylumCaseDefinition {
         "homeOfficeAmendBundleInstructStatus", new TypeReference<String>() {}),
 
     HOME_OFFICE_AMEND_RESPONSE_INSTRUCT_STATUS(
-        "homeOfficeAmendResponseInstructStatus", new TypeReference<String>() {});
+        "homeOfficeAmendResponseInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_REVIEW_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS(
+        "homeOfficeReviewChangeDirectionDueDateInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS(
+        "homeOfficeEvidenceChangeDirectionDueDateInstructStatus", new TypeReference<String>() {});
 
     private final String value;
     private final TypeReference typeReference;
