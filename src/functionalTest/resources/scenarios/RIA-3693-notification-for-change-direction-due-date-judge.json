@@ -1,6 +1,6 @@
 {
   "description": "RIA-3693 Sends changed direction due date notification to Home office API for awaitingRespondentEvidence - Judge",
-  "disabled": false,
+  "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",
