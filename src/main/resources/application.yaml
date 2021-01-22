@@ -11,6 +11,10 @@ management:
       exposure:
         include: health, info, prometheus
 
+  health:
+    probes:
+      enabled: true
+
 spring:
   application:
     name: Home Office Integration API
@@ -37,6 +41,7 @@ security:
     - "/"
     - "/health"
     - "/health/liveness"
+    - "/health/readiness"
     - "/loggers/**"
     - "/swagger-ui.html"
     - "/swagger-resources/**"
