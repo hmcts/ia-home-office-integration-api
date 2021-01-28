@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Qualifier;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerReference;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHeader;
@@ -71,8 +72,17 @@ class HomeOfficeInstructServiceTest {
         String someHoReference = "some-ho-reference";
         return
             new RequestEvidenceBundleInstructMessage(
-                null, someHoReference, null, "someMessageType", "01-01-2021", null, "direction content"
+                buildConsumerReference(), someHoReference, buildTestMessageHeader(),
+                "someMessageType", "01-01-2021", null, "direction content"
             );
+    }
+
+    private MessageHeader buildTestMessageHeader() {
+        return new MessageHeader(new CodeWithDescription("", ""), "test-correlation-id", "01-01-2021");
+    }
+
+    private ConsumerReference buildConsumerReference() {
+        return new ConsumerReference("hmcts", new CodeWithDescription("", ""), "HMCTS API", "HMCTS REF");
     }
 
     private HomeOfficeInstructResponse getResponse() {

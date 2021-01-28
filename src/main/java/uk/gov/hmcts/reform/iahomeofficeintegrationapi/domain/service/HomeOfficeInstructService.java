@@ -35,27 +35,64 @@ public class HomeOfficeInstructService {
 
         HomeOfficeInstructResponse instructResponse;
         String status;
+        final String correlationId = request.getMessageHeader().getCorrelationId();
+        final String caseId = request.getConsumerReference().getValue();
+        final String homeOfficeReferenceNumber = request.getHoReference();
+        final String messageType = request.getMessageType();
         try {
             final String accessToken = accessTokenProvider.getAccessToken();
             ObjectWriter objectWriter = this.objectMapper.writer().withDefaultPrettyPrinter();
             log.info("HomeOffice-Instruct request: {}", objectWriter.writeValueAsString(request));
+            log.info(
+                "HomeOffice-Notification request is to be sent for caseId: {},  reference number: {}, "
+                + "message type: {} and correlation ID: {}",
+                caseId,
+                homeOfficeReferenceNumber,
+                messageType,
+                correlationId
+            );
             instructResponse = homeOfficeInstructApi.sendNotification(accessToken, request);
             log.info("HomeOffice-Instruct response: {}", objectWriter.writeValueAsString(instructResponse));
 
             if (instructResponse == null || instructResponse.getMessageHeader() == null) {
-                log.error("Error sending notification to Home Office for reference ID {}", request.getHoReference());
+                log.error("Error sending notification to Home Office for caseId: {},  reference number: {}, "
+                          + "message type: {} and correlation ID: {}",
+                    caseId,
+                    homeOfficeReferenceNumber,
+                    messageType,
+                    correlationId
+                );
                 status = "FAIL";
             } else {
+                log.info(
+                    "HomeOffice-Notification request response received for caseId: {},  reference number: {}, "
+                    + "message type: {} and correlation ID: {}",
+                    caseId,
+                    homeOfficeReferenceNumber,
+                    messageType,
+                    correlationId
+                );
                 status = "OK";
             }
         } catch (RetriesExceededException e) {
-            log.error("Server error sending notification to Home office for reference {}, Message: {}: "
-                      + e.getMessage());
+            log.error("Server error sending notification to Home office for caseId: {},  reference number: {}, "
+                      + "message type: {} and correlation ID: {}, Message: {}: ",
+                caseId,
+                homeOfficeReferenceNumber,
+                messageType,
+                correlationId,
+                e.getMessage());
             status = "FAIL";
 
         } catch (Exception e) {
-            log.error("Error sending notification to Home office for reference {}, Message: {}",
-                request.getHoReference(), e.getMessage());
+            log.error("Error sending notification to Home office for caseId: {},  reference number: {}, "
+                      + "message type: {} and correlation ID: {}, Message: {}: ",
+                caseId,
+                homeOfficeReferenceNumber,
+                messageType,
+                correlationId,
+                e.getMessage());
+
             status = "FAIL";
         }
 
