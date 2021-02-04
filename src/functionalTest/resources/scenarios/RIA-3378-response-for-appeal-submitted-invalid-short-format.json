@@ -1,5 +1,6 @@
 {
   "description": "RIA-3378 Response for appeal submitted invalid reference short format",
+  "disabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
