@@ -118,14 +118,16 @@ home-office:
         description: HMCTS challenge reference
   feign:
     retry:
-      count: 3
-      wait-in-millis: 5000
+      count: 2
+      wait-in-millis: 1000
 
 feign:
   client:
     config:
       default:
         loggerLevel: full
+        connectTimeout: 5000
+        readTimeout: 5000
 
 auth.homeoffice.client.baseUrl: ${HOME_OFFICE_ENDPOINT:http://127.0.0.1:8098}
 auth.homeoffice.token.path: /ichallenge/token
