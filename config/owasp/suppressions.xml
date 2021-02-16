@@ -3,14 +3,6 @@
 
     <suppress until="2030-01-01">
         <notes><![CDATA[
-             Shadowed dependency from AppInsights-Core. Unfortunately, not propagating and applying an override for transitive dependencies.
-             Anyway, this is specific to deserialisation of AtomicDoubleArray and CompoundOrdering classes: https://github.com/google/guava/wiki/CVE-2018-10237
-            ]]></notes>
-        <gav regex="true">^com\.google\.guava:guava:.*$</gav>
-        <cve>CVE-2018-10237</cve>
-    </suppress>
-    <suppress until="2030-01-01">
-        <notes><![CDATA[
      Suppressing as it's a false positive (see: https://pivotal.io/security/cve-2018-1258)
    ]]></notes>
         <gav regex="true">^org\.springframework\.security:spring-security-crypto:5.2.[0-2].RELEASE</gav>
@@ -24,12 +16,6 @@
          Additionally, we do not use Spring method security annotations which are the specific vulnerability
         ]]></notes>
         <cve>CVE-2018-1258</cve>
-    </suppress>
-    <suppress until="2030-01-01">
-        <notes><![CDATA[
-     It is transitive dependency from Launch Darkly Client
-   ]]></notes>
-        <cve>CVE-2017-18640</cve>
     </suppress>
     <suppress until="2030-01-01">
         <notes><![CDATA[
@@ -52,13 +38,6 @@
       more details https://nvd.nist.gov/vuln/detail/CVE-2020-13956
     ]]></notes>
         <cve>CVE-2020-13956</cve>
-    </suppress>
-    <suppress until="2099-06-01">
-        <notes><![CDATA[
-      Only Java >7 version is affected
-      more details https://nvd.nist.gov/vuln/detail/CVE-2020-8908
-    ]]></notes>
-        <cve>CVE-2020-8908</cve>
     </suppress>
     <suppress until="2099-06-01">
         <notes><![CDATA[
