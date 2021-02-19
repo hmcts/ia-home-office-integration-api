@@ -18,7 +18,8 @@ public enum HearingCentre {
     NORTH_SHIELDS("northShields", "North Shields"),
     NOTTINGHAM("nottingham", "Nottingham Justice Centre"),
     TAYLOR_HOUSE("taylorHouse", "Taylor House"),
-    NEWCASTLE("newcastle", "Newcastle Civil & Family Courts and Tribunals Centre");
+    NEWCASTLE("newcastle", "Newcastle Civil & Family Courts and Tribunals Centre"),
+    REMOTE_HEARING("remoteHearing","Remote hearing");
 
     @JsonValue
     private final String id;
