@@ -1,6 +1,5 @@
 {
   "description": "RIA-3378: valid appeal reference which is not an asylum case",
-  "disabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

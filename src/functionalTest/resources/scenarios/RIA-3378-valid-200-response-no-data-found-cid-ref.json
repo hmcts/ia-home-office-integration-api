@@ -1,6 +1,5 @@
 {
   "description": "RIA-3378 Valid 200 response for CID appeal reference no data found",
-  "disabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

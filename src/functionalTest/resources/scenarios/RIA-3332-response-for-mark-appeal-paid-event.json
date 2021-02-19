@@ -1,6 +1,5 @@
 {
   "description": "RIA-3332 Gets Home Office data for the IA appeal reference for Pay Later Mark as Paid event",
-  "disabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
