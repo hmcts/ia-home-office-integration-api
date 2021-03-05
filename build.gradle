@@ -199,7 +199,7 @@ dependencyCheck {
 dependencyManagement {
   dependencies {
     // CVE-2018-10237 - Unbounded memory allocation
-    dependencySet(group: 'com.google.guava', version: '29.0-jre') {
+    dependencySet(group: 'com.google.guava', version: '30.0-jre') {
       entry 'guava'
     }
     dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.40') {
@@ -300,7 +300,7 @@ dependencies {
 
 
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
-  testImplementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.14.1'
+  testImplementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.2'
 
   testCompileOnly 'org.projectlombok:lombok:1.18.12'
   testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
@@ -318,7 +318,7 @@ dependencies {
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
   //PACT testing
-  contractTestCompile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
+  contractTestCompile group: 'com.google.guava', name: 'guava', version: '30.0-jre'
   contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   contractTestCompile("org.assertj:assertj-core:3.16.1")
   //pact contract testing
