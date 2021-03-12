@@ -10,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
           "appealReferenceNumber": "DC/50001/2020",
           "decisionHearingFeeOption": "decisionWithHearing",
           "hearingDocuments": [],
@@ -30,7 +30,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
         "appealReferenceNumber": "DC/50001/2020",
         "hearingDocuments": [],
         "decisionHearingFeeOption": "decisionWithHearing",
