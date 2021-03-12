@@ -11,6 +11,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
           "ftpaAppellantSubmissionOutOfTime": "No",
           "ftpaAppellantSubmitted": "Yes"
         }
@@ -23,6 +24,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
         "ftpaAppellantSubmissionOutOfTime": "No",
         "ftpaAppellantSubmitted": "Yes",
         "homeOfficeFtpaAppellantInstructStatus": "OK"
