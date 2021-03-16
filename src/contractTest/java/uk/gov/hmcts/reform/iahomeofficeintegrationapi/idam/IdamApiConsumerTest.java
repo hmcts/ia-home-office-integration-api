@@ -46,7 +46,7 @@ public class IdamApiConsumerTest {
             .put("Content-Type", "application/json")
             .build();
 
-    @Pact(provider = "idamApi_oidc", consumer = "hmcts")
+    @Pact(provider = "idamApi_oidc", consumer = "ia_homeOfficeIntegrationApi")
     public RequestResponsePact generatePactFragmentUser(PactDslWithProvider builder) {
         return builder
                 .given("userinfo is requested")
@@ -62,7 +62,7 @@ public class IdamApiConsumerTest {
 
     }
 
-    @Pact(provider = "idamApi_oidc", consumer = "hmcts")
+    @Pact(provider = "idamApi_oidc", consumer = "ia_homeOfficeIntegrationApi")
     public RequestResponsePact generatePactFragmentToken(PactDslWithProvider builder) throws JSONException {
 
         return builder
