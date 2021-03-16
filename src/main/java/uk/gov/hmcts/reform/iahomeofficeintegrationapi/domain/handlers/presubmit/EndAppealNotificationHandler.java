@@ -106,7 +106,7 @@ public class EndAppealNotificationHandler implements PreSubmitCallbackHandler<As
 
         return endAppealOutcomeName.isPresent()
                     ? endAppealOutcomeName.get().name()
-                    : EndAppealOutcome.INCORRECT_DETAILS.name();
+                    : null;
     }
 
     private String getEndAppealOutcomeReason(AsylumCase asylumCase) {

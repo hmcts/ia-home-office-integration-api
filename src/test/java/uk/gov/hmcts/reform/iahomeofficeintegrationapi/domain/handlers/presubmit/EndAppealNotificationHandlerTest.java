@@ -80,6 +80,32 @@ class EndAppealNotificationHandlerTest extends AbstractNotificationsHandlerTestB
     }
 
     @Test
+    void check_handler_returns_case_data_for_invalid_input() {
+
+        setupCase(Event.END_APPEAL);
+        setupEndAppealCaseData();
+
+        when(asylumCase.read(END_APPEAL_OUTCOME, String.class))
+            .thenReturn(Optional.of("Invalid"));
+        when(homeOfficeInstructService.sendNotification(any(EndAppealInstructMessage.class)))
+            .thenReturn("OK");
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            endAppealNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertTrue(response.getErrors().isEmpty());
+        verify(asylumCase, times(1)).write(HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, "OK");
+        verify(homeOfficeInstructService).sendNotification(endAppealInstructMessage.capture());
+
+        final EndAppealInstructMessage instructMessage = endAppealInstructMessage.getValue();
+        assertNotificationInstructMessage(instructMessage);
+        assertThat(instructMessage.getEndReason()).isNull();
+    }
+
+    @Test
     void check_handler_returns_error_status() {
 
         setupCase(Event.END_APPEAL);
@@ -104,32 +130,6 @@ class EndAppealNotificationHandlerTest extends AbstractNotificationsHandlerTestB
 
         assertNotificationInstructMessage(instructMessage);
         assertThat(instructMessage.getEndReason()).isEqualTo("STRUCK_OUT");
-    }
-
-    @Test
-    void check_handler_returns_case_data_for_incorrect_end_appeal_outcome() {
-
-        setupCase(Event.END_APPEAL);
-        setupEndAppealCaseData();
-
-        when(asylumCase.read(END_APPEAL_OUTCOME, String.class))
-            .thenReturn(Optional.of("xxxxxx"));
-        when(homeOfficeInstructService.sendNotification(any(EndAppealInstructMessage.class)))
-            .thenReturn("OK");
-
-        PreSubmitCallbackResponse<AsylumCase> response =
-            endAppealNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getData()).isNotEmpty();
-        assertThat(response.getData()).isEqualTo(asylumCase);
-        assertTrue(response.getErrors().isEmpty());
-        verify(asylumCase, times(1)).write(HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, "OK");
-        verify(homeOfficeInstructService).sendNotification(endAppealInstructMessage.capture());
-
-        final EndAppealInstructMessage instructMessage = endAppealInstructMessage.getValue();
-        assertNotificationInstructMessage(instructMessage);
-        assertThat(instructMessage.getEndReason()).isEqualTo("INCORRECT_DETAILS");
     }
 
     private void assertNotificationInstructMessage(EndAppealInstructMessage instructMessage) {

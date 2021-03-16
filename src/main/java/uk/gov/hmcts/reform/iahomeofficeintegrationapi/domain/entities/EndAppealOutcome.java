@@ -10,8 +10,7 @@ public enum EndAppealOutcome {
     STRUCK_OUT("Struck out"),
     ABANDONED("Abandoned"),
     WITHDRAWN("Withdrawn"),
-    NOT_VALID("No valid appeal"),
-    INCORRECT_DETAILS("Incorrect details");
+    NOT_VALID("No valid appeal");
 
     @JsonValue
     private String value;
