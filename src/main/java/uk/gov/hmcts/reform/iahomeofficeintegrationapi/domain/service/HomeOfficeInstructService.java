@@ -42,7 +42,6 @@ public class HomeOfficeInstructService {
         try {
             final String accessToken = accessTokenProvider.getAccessToken();
             ObjectWriter objectWriter = this.objectMapper.writer().withDefaultPrettyPrinter();
-            log.info("HomeOffice-Instruct request: {}", objectWriter.writeValueAsString(request));
             log.info(
                 "HomeOffice-Notification request is to be sent for caseId: {},  reference number: {}, "
                 + "message type: {} and correlation ID: {}",
@@ -52,7 +51,6 @@ public class HomeOfficeInstructService {
                 correlationId
             );
             instructResponse = homeOfficeInstructApi.sendNotification(accessToken, request);
-            log.info("HomeOffice-Instruct response: {}", objectWriter.writeValueAsString(instructResponse));
 
             if (instructResponse == null || instructResponse.getMessageHeader() == null) {
                 log.error("Error sending notification to Home Office for caseId: {},  reference number: {}, "
