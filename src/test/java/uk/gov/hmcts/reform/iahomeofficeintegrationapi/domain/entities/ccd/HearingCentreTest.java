@@ -20,6 +20,7 @@ class HearingCentreTest {
         assertEquals("nottingham", HearingCentre.NOTTINGHAM.getId());
         assertEquals("taylorHouse", HearingCentre.TAYLOR_HOUSE.getId());
         assertEquals("newcastle", HearingCentre.NEWCASTLE.getId());
+        assertEquals("remoteHearing", HearingCentre.REMOTE_HEARING.getId());
 
     }
 
@@ -37,6 +38,7 @@ class HearingCentreTest {
         assertEquals(HearingCentre.fromId("nottingham"), HearingCentre.NOTTINGHAM);
         assertEquals(HearingCentre.fromId("taylorHouse"), HearingCentre.TAYLOR_HOUSE);
         assertEquals(HearingCentre.fromId("newcastle"), HearingCentre.NEWCASTLE);
+        assertEquals(HearingCentre.fromId("remoteHearing"), HearingCentre.REMOTE_HEARING);
     }
 
     @Test
@@ -53,10 +55,12 @@ class HearingCentreTest {
         assertEquals("Nottingham Justice Centre", HearingCentre.NOTTINGHAM.getValue());
         assertEquals("Taylor House", HearingCentre.TAYLOR_HOUSE.getValue());
         assertEquals("Newcastle Civil & Family Courts and Tribunals Centre", HearingCentre.NEWCASTLE.getValue());
+        assertEquals("Remote hearing", HearingCentre.REMOTE_HEARING.getValue());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(12, HearingCentre.values().length);
+        assertEquals(13, HearingCentre.values().length);
     }
+
 }
