@@ -182,7 +182,12 @@ public enum AsylumCaseDefinition {
         "homeOfficeReviewChangeDirectionDueDateInstructStatus", new TypeReference<String>() {}),
 
     HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS(
-        "homeOfficeEvidenceChangeDirectionDueDateInstructStatus", new TypeReference<String>() {});
+        "homeOfficeEvidenceChangeDirectionDueDateInstructStatus", new TypeReference<String>() {}),
+
+    REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE(
+            "remoteVideoCallTribunalResponse", new TypeReference<String>(){})
+
+    ;
 
     private final String value;
     private final TypeReference typeReference;
