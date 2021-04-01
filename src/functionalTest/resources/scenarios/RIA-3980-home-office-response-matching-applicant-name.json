@@ -1,5 +1,5 @@
 {
-  "description": "RIA-3271 Gets Home Office data for the IA appeal reference",
+  "description": "RIA-3980 Gets Home Office data for the matching IA appellant names",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -9,7 +9,9 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "1212-0099-0062-8083"
+          "homeOfficeReferenceNumber": "1234-1111-5678-2222",
+          "appellantGivenNames": "Jo",
+          "appellantFamilyName": "King"
         }
       }
     }
@@ -20,8 +22,10 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
-        "homeOfficeSearchStatus": "FAIL"
+        "homeOfficeReferenceNumber": "1234-1111-5678-2222",
+        "appellantGivenNames": "Jo",
+        "appellantFamilyName": "King",
+        "homeOfficeSearchStatus": "SUCCESS"
       }
     }
   }
