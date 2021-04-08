@@ -69,10 +69,15 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
         + "does not include a main applicant. You can contact the Home Office if you need this information "
         + "to validate the appeal.";
 
-    private static final DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
+    private static final String HOME_OFFICE_WRONG_APPLICANT_NOT_FOUND_ERROR_MESSAGE = "**Note:** "
+            + "The service has been unable to retrieve the Home Office information about this appeal "
+            + "because the Case ID, Date of Birth and Family Name entered does not match any details "
+            + "stored within the Home Office system."
+            + "Please check the information, change as required, and "
+            + "[retry](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/requestHomeOfficeData). "
+            + "You can contact the Home Office if you need this information to validate the appeal.";
 
-    private static final DateTimeFormatter hoDecisionDateFormatter =
-        DateTimeFormatter.ofPattern("yyyy-M-d'T'HH:mm:ss'Z'");
+    private static final DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
 
     private HomeOfficeSearchService homeOfficeSearchService;
 
@@ -151,56 +156,70 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
             }
 
             Optional<HomeOfficeCaseStatus> selectedApplicant =
-                selectMainApplicant(caseId, searchResponse.getStatus(), appellant.build(), appellantDateOfBirth);
+                    selectAnyApplicant(caseId, searchResponse.getStatus());
 
             if (!selectedApplicant.isPresent()) {
-                log.warn("Unable to find MAIN APPLICANT in Home office response, caseId: {}", caseId);
+                log.warn("Unable to find Any APPLICANT in Home office response, caseId: {}", caseId);
                 asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
                 asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_MAIN_APPLICANT_NOT_FOUND_ERROR_MESSAGE);
 
             } else {
+                selectedApplicant =
+                        selectMainApplicant(caseId,
+                                searchResponse.getStatus(),
+                                appellant.build(),
+                                appellantDateOfBirth);
 
-                asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
-                HomeOfficeCaseStatus selectedMainApplicant = selectedApplicant.get();
-                Person person = selectedMainApplicant.getPerson();
-                ApplicationStatus applicationStatus = selectedMainApplicant.getApplicationStatus();
-                if (isNull(person)) {
-                    log.warn(
-                        "Note: Unable to find Person details for the applicant in Home office response, caseId: {}",
-                        caseId
-                    );
+                if (!selectedApplicant.isPresent()) {
+                    log.warn("Unable to find MAIN APPLICANT in Home office response, caseId: {}", caseId);
+                    asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                    asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE,
+                            HOME_OFFICE_WRONG_APPLICANT_NOT_FOUND_ERROR_MESSAGE);
+
                 } else {
-                    selectedMainApplicant.setDisplayDateOfBirth(
-                        HomeOfficeDateFormatter.getPersonDateOfBirth(
-                            person.getDayOfBirth(), person.getMonthOfBirth(), person.getYearOfBirth())
-                    );
-                }
+                    asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
+                    HomeOfficeCaseStatus selectedMainApplicant = selectedApplicant.get();
+                    Person person = selectedMainApplicant.getPerson();
+                    ApplicationStatus applicationStatus = selectedMainApplicant.getApplicationStatus();
+                    if (isNull(person)) {
+                        log.warn(
+                                "Note: Unable to find Person details "
+                                        + "for the applicant in Home office response, caseId: {}",
+                                caseId
+                        );
+                    } else {
+                        selectedMainApplicant.setDisplayDateOfBirth(
+                                HomeOfficeDateFormatter.getPersonDateOfBirth(
+                                        person.getDayOfBirth(), person.getMonthOfBirth(), person.getYearOfBirth())
+                        );
+                    }
 
-                selectedMainApplicant.setDisplayDecisionDate(
-                    HomeOfficeDateFormatter.getIacDateTime(applicationStatus.getDecisionDate()));
-                if (applicationStatus.getDecisionCommunication() != null) {
-                    selectedMainApplicant.setDisplayDecisionSentDate(
-                        HomeOfficeDateFormatter.getIacDateTime(
-                            applicationStatus.getDecisionCommunication().getSentDate()
-                        )
-                    );
-                }
+                    selectedMainApplicant.setDisplayDecisionDate(
+                            HomeOfficeDateFormatter.getIacDateTime(applicationStatus.getDecisionDate()));
+                    if (applicationStatus.getDecisionCommunication() != null) {
+                        selectedMainApplicant.setDisplayDecisionSentDate(
+                                HomeOfficeDateFormatter.getIacDateTime(
+                                        applicationStatus.getDecisionCommunication().getSentDate()
+                                )
+                        );
+                    }
 
-                Optional<HomeOfficeMetadata> metadata = selectMetadata(
-                    caseId,
-                    applicationStatus.getHomeOfficeMetadata()
-                );
-                if (metadata.isPresent()) {
-                    selectedMainApplicant.setDisplayMetadataValueBoolean(
-                        ("true".equals(metadata.get().getValueBoolean())) ? "Yes" : "No"
+                    Optional<HomeOfficeMetadata> metadata = selectMetadata(
+                            caseId,
+                            applicationStatus.getHomeOfficeMetadata()
                     );
+                    if (metadata.isPresent()) {
+                        selectedMainApplicant.setDisplayMetadataValueBoolean(
+                                ("true".equals(metadata.get().getValueBoolean())) ? "Yes" : "No"
+                        );
 
-                    selectedMainApplicant.setDisplayMetadataValueDateTime(
-                        HomeOfficeDateFormatter.getIacDateTime(metadata.get().getValueDateTime()));
+                        selectedMainApplicant.setDisplayMetadataValueDateTime(
+                                HomeOfficeDateFormatter.getIacDateTime(metadata.get().getValueDateTime()));
+                    }
+                    selectedMainApplicant.setDisplayRejectionReasons(
+                            getRejectionReasonString(applicationStatus.getRejectionReasons()));
+                    asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_CASE_STATUS_DATA, selectedMainApplicant);
                 }
-                selectedMainApplicant.setDisplayRejectionReasons(
-                    getRejectionReasonString(applicationStatus.getRejectionReasons()));
-                asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_CASE_STATUS_DATA, selectedMainApplicant);
 
             }
         } catch (HomeOfficeResponseException hoe) {
@@ -239,7 +258,7 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
                     .filter(a -> "APPLICANT".equalsIgnoreCase(a.getApplicationStatus().getRoleType().getCode()))
                     .filter(p -> isApplicantMatched(p, appellant, appellantDateOfBirth))
                     .max(Comparator.comparing(p ->
-                        LocalDate.parse(p.getApplicationStatus().getDecisionDate(), hoDecisionDateFormatter)));
+                            getFormattedDecisionDate(p.getApplicationStatus().getDecisionDate())));
 
             } catch (Exception e) {
                 log.warn("Unable to find MAIN APPLICANT in Home office response, caseId: {}", caseId, e);
@@ -247,6 +266,29 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
         }
         return searchStatus;
     }
+
+    LocalDate getFormattedDecisionDate(String decisionDate) {
+        boolean dateWithTime = decisionDate.contains("T");
+        return dateWithTime
+                ? LocalDate.parse(decisionDate.split("T")[0], dtFormatter)
+                : LocalDate.parse(decisionDate, dtFormatter);
+    }
+
+    Optional<HomeOfficeCaseStatus> selectAnyApplicant(long caseId, List<HomeOfficeCaseStatus> statuses) {
+        Optional<HomeOfficeCaseStatus> searchStatus = Optional.empty();
+        if (statuses != null && !statuses.isEmpty()) {
+            try {
+                searchStatus = statuses.stream()
+                        .filter(a -> "APPLICANT".equalsIgnoreCase(a.getApplicationStatus().getRoleType().getCode()))
+                        .findAny();
+
+            } catch (Exception e) {
+                log.warn("Unable to find APPLICANT in Home office response, caseId: {}", caseId, e);
+            }
+        }
+        return searchStatus;
+    }
+
 
     Optional<HomeOfficeMetadata> selectMetadata(long caseId, List<HomeOfficeMetadata> metadataList) {
         Optional<HomeOfficeMetadata> metadata = Optional.empty();
