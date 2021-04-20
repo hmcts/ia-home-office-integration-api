@@ -72,7 +72,7 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
     private static final DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
 
     private static final DateTimeFormatter hoDecisionDateFormatter =
-        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        DateTimeFormatter.ofPattern("yyyy-M-d'T'HH:mm:ss'Z'");
 
     private HomeOfficeSearchService homeOfficeSearchService;
 
