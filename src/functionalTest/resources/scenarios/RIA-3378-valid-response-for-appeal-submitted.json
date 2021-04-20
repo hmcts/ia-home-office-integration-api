@@ -9,7 +9,8 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "1212-0099-0062-8083"
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "appellantDateOfBirth": "1995-4-4"
         }
       }
     }
@@ -21,7 +22,8 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "homeOfficeReferenceNumber": "1212-0099-0062-8083",
-        "homeOfficeSearchStatus": "FAIL"
+        "appellantDateOfBirth": "1995-4-4",
+        "homeOfficeSearchStatus": "SUCCESS"
       }
     }
   }
