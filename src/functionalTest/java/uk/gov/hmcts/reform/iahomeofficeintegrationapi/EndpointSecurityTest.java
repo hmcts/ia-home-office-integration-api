@@ -169,7 +169,10 @@ public class EndpointSecurityTest {
         caseDetails.put("jurisdiction", "IA");
         caseDetails.put("state", State.APPEAL_STARTED.toString());
         caseDetails.put("created_date", LocalDateTime.now().toString());
-        caseData.put("homeOfficeReferenceNumber","A123456");
+        caseData.put("homeOfficeReferenceNumber","1234-1111-5678-1111");
+        caseData.put("appellantDateOfBirth", "1980-11-11");
+        caseData.put("appellantFamilyName", "Fenn");
+        caseData.put("appellantGivenNames", "Stephen");
         caseDetails.put("case_data", caseData);
         callback.put("event_id", Event.SUBMIT_APPEAL.toString());
         callback.put("case_details", caseDetails);

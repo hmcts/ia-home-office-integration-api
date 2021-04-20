@@ -3,11 +3,11 @@ appVersion: "1.0"
 description: Helm chart for ia-home-office-integration-api microservice
 name: ia-home-office-integration-api
 home: https://github.com/hmcts/ia-home-office-integration-api
-version: 0.0.15
+version: 0.0.16
 maintainers:
   - name: HMCTS Immigration & Asylum Team
     email: ImmigrationandAsylum@HMCTS.NET
 dependencies:
   - name: java
-    version: 3.4.4
+    version: 3.4.5
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/

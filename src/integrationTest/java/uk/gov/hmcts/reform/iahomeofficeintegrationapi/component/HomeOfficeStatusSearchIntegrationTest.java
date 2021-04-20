@@ -43,8 +43,12 @@ public class HomeOfficeStatusSearchIntegrationTest
         WithIdamStub, WithServiceAuthStub,
         WithHomeOfficeStatusSearchStub, WithHomeOfficeInstructStub, WithHomeOfficeAuthStub {
 
+    public static final String APPELLANT_FAMILY_NAME = "appellantFamilyName";
+    public static final String APPELLANT_GIVEN_NAME = "appellantGivenName";
+    public static final String APPELLANT_DATE_OF_BIRTH = "1970-1-21";
     public static final String APPEAL_REFERENCE_NUMBER = "some-appeal-reference-number";
     public static final String SUCCESS = "SUCCESS";
+    public static final String FAIL = "FAIL";
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
@@ -68,6 +72,9 @@ public class HomeOfficeStatusSearchIntegrationTest
                 .state(State.APPEAL_SUBMITTED)
                 .caseData(anAsylumCase()
                     .with(AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER, APPEAL_REFERENCE_NUMBER)
+                    .with(AsylumCaseDefinition.APPELLANT_GIVEN_NAMES, APPELLANT_GIVEN_NAME)
+                    .with(AsylumCaseDefinition.APPELLANT_FAMILY_NAME, APPELLANT_FAMILY_NAME)
+                    .with(AsylumCaseDefinition.APPELLANT_DATE_OF_BIRTH, APPELLANT_DATE_OF_BIRTH)
                     .with(HOME_OFFICE_REFERENCE_NUMBER, homeOfficeReference)));
 
 
@@ -113,6 +120,7 @@ public class HomeOfficeStatusSearchIntegrationTest
                 .state(State.APPEAL_SUBMITTED)
                 .caseData(anAsylumCase()
                     .with(AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER, APPEAL_REFERENCE_NUMBER)
+                    .with(AsylumCaseDefinition.APPELLANT_DATE_OF_BIRTH, "1980-11-11")
                     .with(HOME_OFFICE_REFERENCE_NUMBER, homeOfficeReference)));
 
 
@@ -122,10 +130,10 @@ public class HomeOfficeStatusSearchIntegrationTest
 
         assertNotNull(response);
         assertNotNull(asylumCase);
-        assertEquals(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class), Optional.of(SUCCESS));
+        assertEquals(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class), Optional.of(FAIL));
         final Optional<HomeOfficeCaseStatus> homeOfficeCaseStatus
             = asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class);
-        assertTrue(homeOfficeCaseStatus.isPresent());
+        assertTrue(!homeOfficeCaseStatus.isPresent());
         if (homeOfficeCaseStatus.isPresent()) {
             HomeOfficeCaseStatus caseStatus = homeOfficeCaseStatus.get();
             Person person = caseStatus.getPerson();
@@ -199,6 +207,9 @@ public class HomeOfficeStatusSearchIntegrationTest
                 .state(State.APPEAL_SUBMITTED)
                 .caseData(anAsylumCase()
                     .with(AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER, APPEAL_REFERENCE_NUMBER)
+                    .with(AsylumCaseDefinition.APPELLANT_GIVEN_NAMES, APPELLANT_GIVEN_NAME)
+                    .with(AsylumCaseDefinition.APPELLANT_FAMILY_NAME, APPELLANT_FAMILY_NAME)
+                    .with(AsylumCaseDefinition.APPELLANT_DATE_OF_BIRTH, APPELLANT_DATE_OF_BIRTH)
                     .with(HOME_OFFICE_REFERENCE_NUMBER, homeOfficeReference)));
 
 
@@ -300,6 +311,9 @@ public class HomeOfficeStatusSearchIntegrationTest
                 .state(State.APPEAL_SUBMITTED)
                 .caseData(anAsylumCase()
                     .with(AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER, APPEAL_REFERENCE_NUMBER)
+                    .with(AsylumCaseDefinition.APPELLANT_GIVEN_NAMES, APPELLANT_GIVEN_NAME)
+                    .with(AsylumCaseDefinition.APPELLANT_FAMILY_NAME, APPELLANT_FAMILY_NAME)
+                    .with(AsylumCaseDefinition.APPELLANT_DATE_OF_BIRTH, APPELLANT_DATE_OF_BIRTH)
                     .with(HOME_OFFICE_REFERENCE_NUMBER, homeOfficeReference)));
 
         return iaCaseHomeOfficeIntegrationApiClient.aboutToSubmit(callback);

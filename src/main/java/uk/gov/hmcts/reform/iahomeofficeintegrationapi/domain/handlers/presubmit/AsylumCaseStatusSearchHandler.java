@@ -2,13 +2,21 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_DATE_OF_BIRTH;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person.PersonBuilder.person;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +69,10 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
         + "does not include a main applicant. You can contact the Home Office if you need this information "
         + "to validate the appeal.";
 
+    private static final DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
+
+    private static final DateTimeFormatter hoDecisionDateFormatter =
+        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     private HomeOfficeSearchService homeOfficeSearchService;
 
@@ -99,11 +111,19 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
                 )
             );
 
+        final String appellantDateOfBirth = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)
+            .orElseThrow(() -> new IllegalStateException("Appellant date of birth is not present."));
+
+        final Person.PersonBuilder appellant =
+            person()
+                .withGivenName(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class).orElse(""))
+                .withFamilyName(asylumCase.read(APPELLANT_FAMILY_NAME, String.class).orElse(""));
+
         if (homeOfficeReferenceNumber.length() > 30) {
             log.warn("Home office reference invalid (>30 characters), caseId: {}", caseId);
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
             asylumCase.write(
-                AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE);
+                HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE);
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
@@ -130,13 +150,13 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
                 return new PreSubmitCallbackResponse<>(asylumCase);
             }
 
-            Optional<HomeOfficeCaseStatus> selectedApplicant = selectMainApplicant(caseId, searchResponse.getStatus());
+            Optional<HomeOfficeCaseStatus> selectedApplicant =
+                selectMainApplicant(caseId, searchResponse.getStatus(), appellant.build(), appellantDateOfBirth);
+
             if (!selectedApplicant.isPresent()) {
                 log.warn("Unable to find MAIN APPLICANT in Home office response, caseId: {}", caseId);
                 asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
-                asylumCase.write(
-                    AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE,
-                    HOME_OFFICE_MAIN_APPLICANT_NOT_FOUND_ERROR_MESSAGE);
+                asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_MAIN_APPLICANT_NOT_FOUND_ERROR_MESSAGE);
 
             } else {
 
@@ -210,14 +230,17 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
         return sb.toString();
     }
 
-    Optional<HomeOfficeCaseStatus> selectMainApplicant(long caseId, List<HomeOfficeCaseStatus> statuses) {
+    Optional<HomeOfficeCaseStatus> selectMainApplicant(long caseId, List<HomeOfficeCaseStatus> statuses,
+                                                       Person appellant, String appellantDateOfBirth) {
         Optional<HomeOfficeCaseStatus> searchStatus = Optional.empty();
         if (statuses != null && !statuses.isEmpty()) {
             try {
-                searchStatus = statuses.stream().filter(
-                    status -> "APPLICANT".equalsIgnoreCase(
-                        status.getApplicationStatus().getRoleType().getCode()))
-                    .findFirst();
+                searchStatus = statuses.stream()
+                    .filter(a -> "APPLICANT".equalsIgnoreCase(a.getApplicationStatus().getRoleType().getCode()))
+                    .filter(p -> isApplicantMatched(p, appellant, appellantDateOfBirth))
+                    .max(Comparator.comparing(p ->
+                        LocalDate.parse(p.getApplicationStatus().getDecisionDate(), hoDecisionDateFormatter)));
+
             } catch (Exception e) {
                 log.warn("Unable to find MAIN APPLICANT in Home office response, caseId: {}", caseId, e);
             }
@@ -238,6 +261,42 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
             }
         }
         return metadata;
+    }
+
+    boolean isApplicantMatched(HomeOfficeCaseStatus status, Person appellant, String appellantDateOfBirth) {
+        
+        if (isApplicantNameMatched(status, appellant)
+            || isApplicantDobMatched(status, appellantDateOfBirth)) {
+
+            return true;
+        }
+
+        return false;
+    }
+
+    boolean isApplicantDobMatched(HomeOfficeCaseStatus status, String appellantDateOfBirth) {
+
+        Person person = status.getPerson();
+
+        LocalDate applicantDob =
+            LocalDate.parse(person.getYearOfBirth()
+                            + "-" + person.getMonthOfBirth()
+                            + "-" + person.getDayOfBirth(), dtFormatter);
+
+        return applicantDob.equals(LocalDate.parse(appellantDateOfBirth, dtFormatter));
+    }
+
+    boolean isApplicantNameMatched(HomeOfficeCaseStatus status, Person appellant) {
+
+        Person person = status.getPerson();
+
+        if (person.getGivenName() != null && person.getFamilyName() != null) {
+
+            return person.getGivenName().equalsIgnoreCase(appellant.getGivenName())
+                   && person.getFamilyName().equalsIgnoreCase(appellant.getFamilyName());
+        }
+
+        return false;
     }
 
     void setErrorMessageForErrorCode(long caseId, AsylumCase asylumCase, String errorCodeStr, String errMessage) {
