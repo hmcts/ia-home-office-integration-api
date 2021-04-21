@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -174,6 +175,27 @@ public class AsylumCaseStatusSearchHandlerTest {
             .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
             .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+
+    }
+
+    @Test
+    void check_get_formatted_decision_date_returns_date_when_date_is_geven() {
+
+        LocalDate formattedDecisionDate = asylumCaseStatusSearchHandler.getFormattedDecisionDate("1998-01-30");
+
+        assertThat(formattedDecisionDate).isNotNull();
+        assertEquals(formattedDecisionDate,LocalDate.parse("1998-01-30"));
+
+    }
+
+    @Test
+    void check_get_formatted_decision_date_returns_date_when_date_time_is_geven() {
+
+        LocalDate formattedDecisionDate =
+                asylumCaseStatusSearchHandler.getFormattedDecisionDate("2003-03-28T18:04:52Z");
+
+        assertThat(formattedDecisionDate).isNotNull();
+        assertEquals(formattedDecisionDate,LocalDate.parse("2003-03-28"));
 
     }
 
