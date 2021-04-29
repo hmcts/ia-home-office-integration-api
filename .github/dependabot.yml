@@ -1,0 +1,48 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: net.serenity-bdd:serenity-gradle-plugin
+    versions:
+    - 2.3.12
+    - 2.3.13
+    - 2.3.31
+    - 2.4.2
+  - dependency-name: au.com.dius.pact
+    versions:
+    - 4.1.15
+    - 4.1.16
+    - 4.1.17
+    - 4.2.0
+    - 4.2.1
+    - 4.2.2
+    - 4.2.3
+  - dependency-name: org.springframework.boot
+    versions:
+    - 2.4.2
+    - 2.4.3
+    - 2.4.4
+  - dependency-name: org.springframework.cloud:spring-cloud-starter-netflix-hystrix
+    versions:
+    - 2.2.6.RELEASE
+    - 2.2.7.RELEASE
+  - dependency-name: org.springframework.cloud:spring-cloud-dependencies
+    versions:
+    - Hoxton.SR10
+    - Hoxton.SR9
+  - dependency-name: org.springframework.cloud:spring-cloud-starter-openfeign
+    versions:
+    - 3.0.1
+  - dependency-name: org.apache.tomcat.embed:tomcat-embed-websocket
+    versions:
+    - 10.0.0
+  - dependency-name: org.apache.tomcat.embed:tomcat-embed-el
+    versions:
+    - 10.0.0
+  - dependency-name: org.apache.tomcat.embed:tomcat-embed-core
+    versions:
+    - 10.0.0
