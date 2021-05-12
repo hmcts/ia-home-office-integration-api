@@ -13,8 +13,8 @@ plugins {
   id 'checkstyle'
   id 'pmd'
   id 'jacoco'
-  id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-  id 'org.springframework.boot' version '2.3.9.RELEASE'
+  id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+  id 'org.springframework.boot' version '2.4.5'
   id 'uk.gov.hmcts.java' version '0.12.5'
   id 'org.owasp.dependencycheck' version '6.0.2'
   id 'com.github.ben-manes.versions' version '0.28.0'
@@ -195,7 +195,9 @@ dependencyCheck {
     assemblyEnabled = false
   }
 }
-
+ext {
+  set('springCloudVersion', "2020.0.2")
+}
 dependencyManagement {
   dependencies {
     // CVE-2018-10237 - Unbounded memory allocation
@@ -207,6 +209,9 @@ dependencyManagement {
           entry 'tomcat-embed-el'
           entry 'tomcat-embed-websocket'
     }
+  }
+  imports {
+    mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
   }
 }
 
@@ -223,10 +228,11 @@ def versions = [
   junit           : '5.6.2',
   junitPlatform   : '1.6.2',
   reformLogging   : '5.1.1',
-  springBoot      : '2.3.9.RELEASE',
+  springBoot      : '2.4.5',
   springfoxSwagger: '2.9.2',
   pact_version    : '3.5.24',
-  serenity        : '2.2.12'
+  serenity        : '2.2.12',
+  springCloudVersion: '2020.0.2'
 ]
 
 ext.libraries = [
@@ -257,10 +263,8 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: versions.springBoot
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: versions.springBoot
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.2.RELEASE'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
 
-  // CVE-2019-17195
-  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '7.9'
 
   implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
@@ -277,8 +281,8 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
   implementation group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
 
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.2.RELEASE'
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Hoxton.SR4'
+
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: versions.springCloudVersion
   compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.2'
 
