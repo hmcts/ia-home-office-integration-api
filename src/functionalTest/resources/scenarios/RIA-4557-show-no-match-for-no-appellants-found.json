@@ -1,0 +1,41 @@
+{
+  "description": "RIA-4557 Show only No match if no matching appellants found in the HO response",
+  "launchDarklyKey": "home-office-uan-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestHomeOfficeData",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1001-1111-5678-0010"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1001-1111-5678-0010",
+        "matchingAppellantDetailsFound": "No",
+        "homeOfficeAppellantsList": {
+          "value": {
+            "code": "NoMatch",
+            "label": "No Match"
+          },
+          "list_items": [
+            {
+              "code": "NoMatch",
+              "label": "No Match"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
