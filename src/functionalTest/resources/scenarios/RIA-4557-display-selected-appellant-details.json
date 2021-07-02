@@ -1,0 +1,89 @@
+{
+  "description": "RIA-4557 Should display the selected appellant details",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestHomeOfficeData",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "appellantDateOfBirth": "1995-4-4",
+          "homeOfficeAppellantsList": {
+            "value": {
+              "code": "Asylumcase TestSix",
+              "label": "Asylumcase TestSix"
+            },
+            "list_items": [
+              {
+                "code": "Asylumcase TestSix",
+                "label": "Asylumcase TestSix"
+              },
+              {
+                "code": "NoMatch",
+                "label": "No Match"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "appellantDateOfBirth": "1995-4-4",
+        "homeOfficeSearchStatus": "SUCCESS",
+        "homeOfficeCaseStatusData": {
+          "person": {
+            "givenName": null,
+            "familyName": "TestSix",
+            "fullName": "Asylumcase TestSix",
+            "gender": {
+              "code": "F",
+              "description": "Female"
+            },
+            "dayOfBirth": 4,
+            "monthOfBirth": 4,
+            "yearOfBirth": 1995,
+            "nationality": {
+              "code": "CHL",
+              "description": "Chile"
+            }
+          },
+          "applicationStatus": {
+            "documentReference": "1212-0099-0062-8083",
+            "roleType": {
+              "code": "APPLICANT",
+              "description": "Applicant"
+            },
+            "roleSubType": null,
+            "applicationType": {
+              "code": "ASYLUM",
+              "description": "Asylum and Protection"
+            },
+            "claimReasonType": null,
+            "decisionType": {
+              "code": "REFUSE",
+              "description": "SD outcome"
+            },
+            "decisionDate": "2020-07-30T00:00:00Z",
+            "decisionCommunication": null,
+            "rejectionReasons": [
+              {
+                "reason": "Refused asylum"
+              }
+            ],
+            "metadata": null
+          }
+        }
+      }
+    }
+  }
+}

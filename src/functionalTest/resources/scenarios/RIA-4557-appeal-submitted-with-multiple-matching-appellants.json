@@ -1,24 +1,24 @@
 {
-  "description": "RIA-3390 Request Home Office data and fails to get data",
+  "description": "RIA-4557 Appeal submit with matching multiple appellants should show fail",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "CaseOfficer",
+    "credentials": "LegalRepresentative",
     "input": {
-      "eventId": "requestHomeOfficeData",
+      "eventId": "submitAppeal",
       "state": "appealSubmitted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "123123123",
+          "homeOfficeReferenceNumber": "1234-1111-5678-1111",
           "homeOfficeAppellantsList": {
             "value": {
-              "code": "Paige Turner",
-              "label": "Paige Turner"
+              "code": "AsylumcaseTestFive",
+              "label": "AsylumcaseTestFive"
             },
             "list_items": [
               {
-                "code": "Paige Turner",
-                "label": "Paige Turner"
+                "code": "AsylumcaseTestFive",
+                "label": "AsylumcaseTestFive"
               },
               {
                 "code": "NoMatch",
@@ -36,7 +36,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "123123123",
+        "homeOfficeReferenceNumber": "1234-1111-5678-1111",
         "homeOfficeSearchStatus": "FAIL"
       }
     }

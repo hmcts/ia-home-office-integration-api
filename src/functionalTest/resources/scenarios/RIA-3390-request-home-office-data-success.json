@@ -10,7 +10,23 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "homeOfficeReferenceNumber": "1212-0099-0062-8083",
-          "appellantDateOfBirth": "1995-4-4"
+          "appellantDateOfBirth": "1995-4-4",
+          "homeOfficeAppellantsList": {
+            "value": {
+              "code": "Asylumcase TestSix",
+              "label": "Asylumcase TestSix"
+            },
+            "list_items": [
+              {
+                "code": "Asylumcase TestSix",
+                "label": "Asylumcase TestSix"
+              },
+              {
+                "code": "NoMatch",
+                "label": "No Match"
+              }
+            ]
+          }
         }
       }
     }
