@@ -45,11 +45,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                     }
 
                     log.error("StatusCode: {}, methodKey: {}, reason: {}, message: {}",
-                        response.status(),
-                        methodKey,
-                        response.reason(),
-                        (!errMessage.equals("") ? errMessage :
-                            IOUtils.toString(response.body().asReader(Charset.defaultCharset()))));
+                        response.status(), methodKey, response.reason(), errMessage);
 
                 } catch (IOException ex) {
                     errMessage = String.format(ERROR_LOG, ex.getMessage());

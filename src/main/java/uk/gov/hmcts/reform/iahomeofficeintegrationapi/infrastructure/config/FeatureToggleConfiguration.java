@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iahomeofficeintegrationapi.util;
+package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config;
 
 import com.launchdarkly.sdk.server.Components;
 import com.launchdarkly.sdk.server.LDClient;
@@ -24,12 +24,12 @@ public class FeatureToggleConfiguration {
     @Bean
     public LDConfig ldConfig() {
         return new LDConfig.Builder()
-            .http(Components
-                .httpConfiguration()
-                .connectTimeout(Duration.ofMillis(connectionTimeout))
-                .socketTimeout(Duration.ofMillis(socketTimeout))
-            )
-            .build();
+                .http(Components
+                        .httpConfiguration()
+                        .connectTimeout(Duration.ofMillis(connectionTimeout))
+                        .socketTimeout(Duration.ofMillis(socketTimeout))
+                )
+                .build();
     }
 
     @Bean

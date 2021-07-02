@@ -46,4 +46,14 @@ public class AsylumCaseTest {
             .isEqualTo("some-appeal-reference-number");
     }
 
+    @Test
+    void clears_value() throws IOException {
+
+        String caseData = "{\"appealReferenceNumber\": \"PA/50222/2019\"}";
+        AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
+
+        asylumCase.clear(APPEAL_REFERENCE_NUMBER);
+
+        assertThat(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).isEmpty();
+    }
 }

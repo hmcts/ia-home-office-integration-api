@@ -1,0 +1,245 @@
+{
+  "messageHeader": {
+    "consumer": {
+      "code": "HMCTS",
+      "description": "HM Courts and Tribunal Service"
+    },
+    "correlationId": "ABC2344BCED2234EA",
+    "eventDateTime": "2020-07-21T17:32:28Z"
+  },
+  "messageType": "RESPONSE_RIGHT_OF_APPEAL_DETAILS",
+  "status": [
+    {
+      "applicationStatus": {
+        "applicationType": {
+          "code": "ASYLUM",
+          "description": "Asylum and Protection"
+        },
+        "claimReasonType": {
+          "code": "HUMANRIGHTS",
+          "description": "Human Rights"
+        },
+        "decisionCommunication": {
+          "description": "E-mail",
+          "dispatchDate": "2021-02-21T17:32:28Z",
+          "sentDate": "2021-02-21T17:32:28Z",
+          "type": "EMAIL"
+        },
+        "decisionDate": "2021-02-21T17:32:28Z",
+        "decisionType": {
+          "code": "REJECTION",
+          "description": "Rejected"
+        },
+        "documentReference": "1234-1111-5678-1111",
+        "metadata": [
+          {
+            "code": "APPEALABLE or DISPATCH_DATE",
+            "valueBoolean": true,
+            "valueDateTime": "2021-02-21T17:32:28Z",
+            "valueString": "Some extra decision data"
+          }
+        ],
+        "rejectionReasons": [
+          {
+            "reason": "Application not completed properly"
+          }
+        ],
+        "roleSubType": null,
+        "roleType": {
+          "code": "APPLICANT",
+          "description": "Applicant"
+        }
+      },
+      "person": {
+        "dayOfBirth": 11,
+        "monthOfBirth": 11,
+        "yearOfBirth": 1980,
+        "givenName": "Paige",
+        "familyName": "Turner",
+        "fullName": "Paige Turner",
+        "gender": {
+          "code": "M (denoting male)",
+          "description": "Male"
+        },
+        "nationality": {
+          "code": "GR",
+          "description": "Greece"
+        }
+      }
+    },
+    {
+      "applicationStatus": {
+        "applicationType": {
+          "code": "ASYLUM",
+          "description": "Asylum and Protection"
+        },
+        "claimReasonType": {
+          "code": "HUMANRIGHTS",
+          "description": "Human Rights"
+        },
+        "decisionCommunication": {
+          "description": "E-mail",
+          "dispatchDate": "2021-02-21T17:32:28Z",
+          "sentDate": "2021-02-21T17:32:28Z",
+          "type": "EMAIL"
+        },
+        "decisionDate": "2021-02-21T17:32:28Z",
+        "decisionType": {
+          "code": "REJECTION",
+          "description": "Rejected"
+        },
+        "documentReference": "1234-1111-5678-1111",
+        "metadata": [
+          {
+            "code": "APPEALABLE or DISPATCH_DATE",
+            "valueBoolean": true,
+            "valueDateTime": "2021-02-21T17:32:28Z",
+            "valueString": "Some extra decision data"
+          }
+        ],
+        "rejectionReasons": [
+          {
+            "reason": "Application not completed properly"
+          }
+        ],
+        "roleSubType": null,
+        "roleType": {
+          "code": "APPLICANT",
+          "description": "Applicant"
+        }
+      },
+      "person": {
+        "dayOfBirth": 11,
+        "monthOfBirth": 11,
+        "yearOfBirth": 1980,
+        "givenName": "Stephen",
+        "familyName": "Fenn",
+        "fullName": "Stephen Fenn",
+        "gender": {
+          "code": "M (denoting male)",
+          "description": "Male"
+        },
+        "nationality": {
+          "code": "GR",
+          "description": "Greece"
+        }
+      }
+    },
+    {
+      "applicationStatus": {
+        "applicationType": {
+          "code": "ASYLUM",
+          "description": "Asylum and Protection"
+        },
+        "claimReasonType": {
+          "code": "HUMANRIGHTS",
+          "description": "Human Rights"
+        },
+        "decisionCommunication": {
+          "description": "E-mail",
+          "dispatchDate": "2021-02-21T17:32:28Z",
+          "sentDate": "2021-02-21T17:32:28Z",
+          "type": "EMAIL"
+        },
+        "decisionDate": "2021-02-21T17:32:28Z",
+        "decisionType": {
+          "code": "REJECTION",
+          "description": "Rejected"
+        },
+        "documentReference": "1234-1111-5678-1111",
+        "metadata": [
+          {
+            "code": "APPEALABLE or DISPATCH_DATE",
+            "valueBoolean": true,
+            "valueDateTime": "2021-02-21T17:32:28Z",
+            "valueString": "Some extra decision data"
+          }
+        ],
+        "rejectionReasons": [
+          {
+            "reason": "Application not completed properly"
+          }
+        ],
+        "roleSubType": null,
+        "roleType": {
+          "code": "APPLICANT",
+          "description": "Applicant"
+        }
+      },
+      "person": {
+        "dayOfBirth": 27,
+        "monthOfBirth": 4,
+        "yearOfBirth": 1978,
+        "givenName": "Pirouz",
+        "familyName": "Mojgan",
+        "fullName": "Pirouz Mojgan",
+        "gender": {
+          "code": "M (denoting male)",
+          "description": "Male"
+        },
+        "nationality": {
+          "code": "GR",
+          "description": "Greece"
+        }
+      }
+    },
+    {
+      "applicationStatus": {
+        "applicationType": {
+          "code": "ASYLUM",
+          "description": "Asylum and Protection"
+        },
+        "claimReasonType": {
+          "code": "HUMANRIGHTS",
+          "description": "Human Rights"
+        },
+        "decisionCommunication": {
+          "description": "E-mail",
+          "dispatchDate": "2021-02-21T17:32:28Z",
+          "sentDate": "2021-02-21T17:32:28Z",
+          "type": "EMAIL"
+        },
+        "decisionDate": "2021-04-21T17:32:28Z",
+        "decisionType": {
+          "code": "REJECTION",
+          "description": "Rejected"
+        },
+        "documentReference": "1234-1111-5678-1111",
+        "metadata": [
+          {
+            "code": "APPEALABLE or DISPATCH_DATE",
+            "valueBoolean": true,
+            "valueDateTime": "2021-02-21T17:32:28Z",
+            "valueString": "Some extra decision data"
+          }
+        ],
+        "rejectionReasons": [
+          {
+            "reason": "Applicant data-of-birth mismatch"
+          }
+        ],
+        "roleSubType": null,
+        "roleType": {
+          "code": "APPLICANT",
+          "description": "Applicant"
+        }
+      },
+      "person": {
+        "dayOfBirth": 11,
+        "monthOfBirth": 11,
+        "yearOfBirth": 1980,
+        "givenName": "Ben",
+        "familyName": "Dover",
+        "fullName": "Ben Dover",
+        "gender": {
+          "code": "M (denoting male)",
+          "description": "Male"
+        },
+        "nationality": {
+          "code": "GR",
+          "description": "Greece"
+        }
+      }
+    }
+  ]
+}

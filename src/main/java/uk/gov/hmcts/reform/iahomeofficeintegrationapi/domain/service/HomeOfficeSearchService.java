@@ -4,7 +4,6 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.conf
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -49,7 +48,6 @@ public class HomeOfficeSearchService {
         HomeOfficeSearch request = makeRequestBody(homeOfficeReferenceNumber);
 
         String correlationId = request.getMessageHeader().getCorrelationId();
-        ObjectWriter objectWriter = this.objectMapper.writer().withDefaultPrettyPrinter();
 
         log.info(
             "HomeOffice-CaseStatusSearch request is to be sent for caseId: {} and reference number: {} "
