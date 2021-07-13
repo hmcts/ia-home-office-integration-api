@@ -1,0 +1,62 @@
+{
+  "description": "RIA-4557 Should display No match if NoMatch is selected",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestHomeOfficeData",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1234-1111-5678-1111",
+          "homeOfficeAppellantsList": {
+            "value": {
+              "code": "NoMatch",
+              "label": "No Match"
+            },
+            "list_items": [
+              {
+                "code": "AsylumcaseTestFive",
+                "label": "AsylumcaseTestFive"
+              },
+              {
+                "code": "NoMatch",
+                "label": "No Match"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1234-1111-5678-1111",
+        "homeOfficeSearchStatus": "SUCCESS",
+        "homeOfficeSearchNoMatch": "NO_MATCH",
+        "homeOfficeCaseStatusData": {
+          "person": {
+            "gender": {
+              "code": "No match",
+              "description": "No match"
+            },
+            "givenName": "No match",
+            "dayOfBirth": 0,
+            "familyName": "No match",
+            "nationality": {
+              "code": "No match",
+              "description": "No match"
+            },
+            "yearOfBirth": 0,
+            "monthOfBirth": 0
+          }
+        }
+      }
+    }
+  }
+}

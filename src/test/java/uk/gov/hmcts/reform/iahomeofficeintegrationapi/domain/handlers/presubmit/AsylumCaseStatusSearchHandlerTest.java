@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -20,7 +21,6 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -38,11 +38,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.util.FileCopyUtils;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataErrorsHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeCaseStatus;
@@ -104,6 +106,8 @@ public class AsylumCaseStatusSearchHandlerTest {
     private HomeOfficeCaseStatus caseStatus;
     @Mock
     private HomeOfficeSearchResponse mockResponse;
+    @Spy
+    private HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper;
 
     @Value("classpath:home-office-sample-response.json")
     private Resource resource;
@@ -116,7 +120,8 @@ public class AsylumCaseStatusSearchHandlerTest {
 
     @BeforeEach
     void setUp() {
-        asylumCaseStatusSearchHandler = new AsylumCaseStatusSearchHandler(homeOfficeSearchService);
+        asylumCaseStatusSearchHandler =
+                new AsylumCaseStatusSearchHandler(homeOfficeSearchService, homeOfficeDataErrorsHelper);
     }
 
     @Test
@@ -202,7 +207,7 @@ public class AsylumCaseStatusSearchHandlerTest {
     @Test
     void check_handler_returns_case_data_with_error_status_for_null_fields() throws Exception {
 
-        when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -405,6 +410,31 @@ public class AsylumCaseStatusSearchHandlerTest {
     }
 
     @Test
+    void handle_should_return_failure_for_null_ho_response() throws Exception {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
+                .thenReturn(Optional.of(someHomeOfficeReference));
+        when(homeOfficeSearchService.getCaseStatus(eq(caseId), anyString())).thenReturn(null);
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Stephen"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Fenn"));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        verify(asylumCase, times(1))
+                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+        verify(asylumCase, times(1))
+                .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+    }
+
+    @Test
     void handler_should_throw_if_event_not_applicable() {
 
         when(callback.getEvent()).thenReturn(Event.UNKNOWN);
@@ -437,8 +467,7 @@ public class AsylumCaseStatusSearchHandlerTest {
                 if (callbackStage == ABOUT_TO_SUBMIT
                     && (callback.getEvent() == SUBMIT_APPEAL
                     || callback.getEvent() == PAY_AND_SUBMIT_APPEAL
-                    || callback.getEvent() == MARK_APPEAL_PAID
-                    || callback.getEvent() == REQUEST_HOME_OFFICE_DATA)
+                    || callback.getEvent() == MARK_APPEAL_PAID)
                 ) {
                     assertTrue(canHandle);
                 } else {
@@ -510,17 +539,17 @@ public class AsylumCaseStatusSearchHandlerTest {
 
         Person appellant = Person.PersonBuilder.person().withFamilyName("Fenn").withGivenName("Stephen").build();
 
-        Optional<HomeOfficeCaseStatus> searchStatus = asylumCaseStatusSearchHandler.selectMainApplicant(
+        List<HomeOfficeCaseStatus> searchStatus = asylumCaseStatusSearchHandler.selectMainApplicant(
             caseId,
             getSampleResponse().getStatus(),
             appellant,
             "1970-01-21"
         );
 
-        Person person = searchStatus.get().getPerson();
+        Person person = searchStatus.get(0).getPerson();
 
         assertNotNull(searchStatus);
-        assertTrue(searchStatus.isPresent());
+        assertTrue(!searchStatus.isEmpty());
         assertThat(person.getFamilyName()).isEqualTo("Smith");
         assertThat(person.getGivenName()).isEqualTo("Capability");
     }
@@ -530,17 +559,17 @@ public class AsylumCaseStatusSearchHandlerTest {
 
         Person appellant = Person.PersonBuilder.person().withFamilyName("Smith").withGivenName("Capability").build();
 
-        Optional<HomeOfficeCaseStatus> searchStatus = asylumCaseStatusSearchHandler.selectMainApplicant(
+        List<HomeOfficeCaseStatus> searchStatus = asylumCaseStatusSearchHandler.selectMainApplicant(
             caseId,
             getSampleResponse().getStatus(),
             appellant,
             "1976-11-21"
         );
 
-        Person person = searchStatus.get().getPerson();
+        Person person = searchStatus.get(0).getPerson();
 
         assertNotNull(searchStatus);
-        assertTrue(searchStatus.isPresent());
+        assertTrue(!searchStatus.isEmpty());
         assertThat(person.getFamilyName()).isEqualTo("Smith");
         assertThat(person.getGivenName()).isEqualTo("Capability");
 
@@ -553,7 +582,7 @@ public class AsylumCaseStatusSearchHandlerTest {
 
         List<HomeOfficeCaseStatus> invalidList = new ArrayList<>();
         invalidList.add(getSampleResponse().getStatus().get(0));
-        Optional<HomeOfficeCaseStatus> searchStatus =
+        List<HomeOfficeCaseStatus> searchStatus =
             asylumCaseStatusSearchHandler.selectMainApplicant(
                 caseId,
                 invalidList,
@@ -562,7 +591,7 @@ public class AsylumCaseStatusSearchHandlerTest {
             );
 
         assertNotNull(searchStatus);
-        assertFalse(searchStatus.isPresent());
+        assertFalse(!searchStatus.isEmpty());
     }
 
     @Test
@@ -570,17 +599,17 @@ public class AsylumCaseStatusSearchHandlerTest {
 
         Person appellant = Person.PersonBuilder.person().withFamilyName("Smith").withGivenName("Capability").build();
 
-        Optional<HomeOfficeCaseStatus> searchStatus = asylumCaseStatusSearchHandler.selectMainApplicant(
+        List<HomeOfficeCaseStatus> searchStatus = asylumCaseStatusSearchHandler.selectMainApplicant(
             caseId,
             getSampleResponse().getStatus(),
             appellant,
             "1976-11-21"
         );
 
-        Person person = searchStatus.get().getPerson();
+        Person person = searchStatus.get(0).getPerson();
 
         assertNotNull(searchStatus);
-        assertTrue(searchStatus.isPresent());
+        assertTrue(!searchStatus.isEmpty());
         assertThat(person.getFamilyName()).isEqualTo("Smith");
         assertThat(person.getGivenName()).isEqualTo("Capability");
     }
@@ -590,21 +619,21 @@ public class AsylumCaseStatusSearchHandlerTest {
 
         Person appellant = Person.PersonBuilder.person().withFamilyName("Fenn").withGivenName("Stephen").build();
 
-        Optional<HomeOfficeCaseStatus> searchStatus =
+        List<HomeOfficeCaseStatus> searchStatus =
             asylumCaseStatusSearchHandler.selectMainApplicant(
                 caseId,
                 null,
                 appellant,
                 "1980-11-11"
             );
-        assertFalse(searchStatus.isPresent());
+        assertNull(searchStatus);
         searchStatus = asylumCaseStatusSearchHandler.selectMainApplicant(
             caseId,
             Collections.EMPTY_LIST,
             appellant,
             "1980-11-11"
         );
-        assertFalse(searchStatus.isPresent());
+        assertNull(searchStatus);
     }
 
     @Test
@@ -641,18 +670,27 @@ public class AsylumCaseStatusSearchHandlerTest {
     @Test
     void set_error_for_ho_reference_not_found_sets_values_in_asylum_case() {
 
-        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, "1020", "Not found");
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, "1020", "Not found");
         verify(asylumCase, times(1))
             .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
             .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_REFERENCE_NOT_FOUND_ERROR_MESSAGE);
+    }
 
+    @Test
+    void set_error_for_empty_error_code() {
+
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, "", "Not found");
+        verify(asylumCase, times(1))
+                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+        verify(asylumCase, times(1))
+                .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
     }
 
     @Test
     void set_error_for_ho_appellant_not_found_sets_values_in_asylum_case() {
 
-        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, "1010", "Not found");
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, "1010", "Not found");
         verify(asylumCase, times(1))
             .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
@@ -663,7 +701,7 @@ public class AsylumCaseStatusSearchHandlerTest {
     @Test
     void set_error_for_invalid_format_sets_values_in_asylum_case() {
 
-        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, "1060", "Format error");
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, "1060", "Format error");
         verify(asylumCase, times(1))
             .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
@@ -674,7 +712,7 @@ public class AsylumCaseStatusSearchHandlerTest {
     @Test
     void set_error_for_general_error_sets_values_in_asylum_case() {
 
-        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, null, null);
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, null, null);
         verify(asylumCase, times(1))
             .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
