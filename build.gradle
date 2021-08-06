@@ -274,6 +274,8 @@ dependencies {
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.2.RELEASE'
   implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
 
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.2'
+
   compileOnly 'org.projectlombok:lombok:1.18.12'
   annotationProcessor 'org.projectlombok:lombok:1.18.12'
   testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'

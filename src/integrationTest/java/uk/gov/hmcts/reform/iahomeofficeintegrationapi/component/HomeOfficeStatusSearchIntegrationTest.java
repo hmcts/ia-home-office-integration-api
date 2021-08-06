@@ -14,9 +14,12 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import groovy.util.logging.Slf4j;
+import java.util.Collections;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.CallbackForTest.CallbackForTestBuilder;
@@ -28,13 +31,16 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithHo
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithHomeOfficeStatusSearchStub;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithIdamStub;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithServiceAuthStub;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ApplicationStatus;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeCaseStatus;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdamUserDetails;
 
 @Slf4j
 public class HomeOfficeStatusSearchIntegrationTest
@@ -50,6 +56,9 @@ public class HomeOfficeStatusSearchIntegrationTest
     public static final String SUCCESS = "SUCCESS";
     public static final String FAIL = "FAIL";
 
+    @MockBean
+    private UserDetailsProvider userDetailsProvider;
+
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
     public void shouldRetirieveHomeOfficeUserDetails(@WiremockResolver
@@ -57,6 +66,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
         final String homeOfficeReference = "CustRef123";
 
+        mockUserDetailsProvider();
         addServiceAuthStub(server);
         addUserInfoStub(server);
         addHomeOfficeAuthTokenStub(server);
@@ -105,6 +115,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
         final String homeOfficeReference = "CustRef000";
 
+        mockUserDetailsProvider();
         addServiceAuthStub(server);
         addUserInfoStub(server);
         addHomeOfficeAuthTokenStub(server);
@@ -167,6 +178,8 @@ public class HomeOfficeStatusSearchIntegrationTest
         .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         final String homeOfficeReference = "1212-0099-0036-2016";
+
+        mockUserDetailsProvider();
         addServiceAuthStub(server);
         addUserInfoStub(server);
         addHomeOfficeAuthTokenStub(server);
@@ -192,6 +205,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
         final String homeOfficeReference = "extra-fields-ref-number";
 
+        mockUserDetailsProvider();
         addServiceAuthStub(server);
         addUserInfoStub(server);
         addHomeOfficeAuthTokenStub(server);
@@ -240,6 +254,8 @@ public class HomeOfficeStatusSearchIntegrationTest
         .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         final String homeOfficeReference = "1212-0099-0036-1000";
+
+        mockUserDetailsProvider();
         addServiceAuthStub(server);
         addUserInfoStub(server);
         addHomeOfficeAuthTokenStub(server);
@@ -264,6 +280,8 @@ public class HomeOfficeStatusSearchIntegrationTest
         .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         final String homeOfficeReference = "1212-0099-0036-XXXX";
+
+        mockUserDetailsProvider();
         addServiceAuthStub(server);
         addUserInfoStub(server);
         addHomeOfficeAuthTokenStub(server);
@@ -288,6 +306,8 @@ public class HomeOfficeStatusSearchIntegrationTest
         .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         final String homeOfficeReference = "1212-0099-0036-0500";
+
+        mockUserDetailsProvider();
         addServiceAuthStub(server);
         addUserInfoStub(server);
         addHomeOfficeAuthTokenStub(server);
@@ -317,5 +337,16 @@ public class HomeOfficeStatusSearchIntegrationTest
                     .with(HOME_OFFICE_REFERENCE_NUMBER, homeOfficeReference)));
 
         return iaCaseHomeOfficeIntegrationApiClient.aboutToSubmit(callback);
+    }
+
+    private void mockUserDetailsProvider() {
+        UserDetails userDetails = new IdamUserDetails(
+                "Bearer eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9PNk92VnYxK3krV2dySDV",
+                "75211309-2318-451a-8cd3-00cdccb4be76",
+                Collections.singletonList("ia-caseworker"),
+                "some@email.com",
+                "some forename",
+                "some surname");
+        BDDMockito.given(userDetailsProvider.getUserDetails()).willReturn(userDetails);
     }
 }

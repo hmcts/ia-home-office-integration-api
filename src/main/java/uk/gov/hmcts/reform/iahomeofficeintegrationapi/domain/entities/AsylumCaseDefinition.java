@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.DynamicList;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HearingCentre;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.WitnessDetails;
@@ -185,7 +186,25 @@ public enum AsylumCaseDefinition {
         "homeOfficeEvidenceChangeDirectionDueDateInstructStatus", new TypeReference<String>() {}),
 
     REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE(
-            "remoteVideoCallTribunalResponse", new TypeReference<String>(){})
+            "remoteVideoCallTribunalResponse", new TypeReference<String>(){}),
+
+    HOME_OFFICE_APPELLANTS_LIST(
+            "homeOfficeAppellantsList", new TypeReference<DynamicList>(){}),
+
+    HOME_OFFICE_SEARCH_NO_MATCH(
+            "homeOfficeSearchNoMatch", new TypeReference<String>() {}),
+
+    MATCHING_APPELLANT_DETAILS_FOUND(
+            "matchingAppellantDetailsFound", new TypeReference<YesOrNo>(){}),
+
+    APPELLANT_FULL_NAME(
+            "appellantFullName", new TypeReference<String>(){}),
+
+    HOME_OFFICE_SEARCH_RESPONSE(
+            "homeOfficeSearchResponse", new TypeReference<String>() {}),
+
+    HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT(
+            "homeOfficeReferenceNumberBeforeEdit", new TypeReference<String>() {}),
 
     ;
 
