@@ -691,9 +691,9 @@ public class AsylumCaseStatusSearchHandlerTest {
 
         asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, "", null);
         verify(asylumCase, times(1))
-            .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
-            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+                .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
     }
 
     @Test
@@ -701,9 +701,9 @@ public class AsylumCaseStatusSearchHandlerTest {
 
         asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, "abc", null);
         verify(asylumCase, times(1))
-            .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
-            .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+                .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
     }
 
     private HomeOfficeSearchResponse getSampleResponse() throws Exception {

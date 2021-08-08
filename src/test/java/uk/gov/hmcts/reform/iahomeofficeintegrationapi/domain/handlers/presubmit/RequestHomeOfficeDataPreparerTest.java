@@ -11,6 +11,10 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_OUT_OF_COUNTRY;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_DATE_OF_BIRTH;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS_LIST;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT;
@@ -40,6 +44,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.util.FileCopyUtils;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataErrorsHelper;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataMatchHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeCaseStatus;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeError;
@@ -90,6 +95,8 @@ public class RequestHomeOfficeDataPreparerTest {
     private MessageHeader messageHeader;
     @Spy
     private HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper;
+    @Spy
+    private HomeOfficeDataMatchHelper homeOfficeDataMatchHelper;
 
     @org.springframework.beans.factory.annotation.Value("classpath:home-office-sample-response.json")
     private Resource resource;
@@ -102,7 +109,8 @@ public class RequestHomeOfficeDataPreparerTest {
     void setUp() {
 
         requestHomeOfficeDataPreparer =
-                new RequestHomeOfficeDataPreparer(homeOfficeSearchService, homeOfficeDataErrorsHelper, featureToggler);
+                new RequestHomeOfficeDataPreparer(
+                        homeOfficeSearchService, homeOfficeDataErrorsHelper, homeOfficeDataMatchHelper, featureToggler);
     }
 
     @Test
@@ -126,6 +134,26 @@ public class RequestHomeOfficeDataPreparerTest {
     }
 
     @Test
+    void handler_should_return_error_for_out_of_country_appeals() {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                requestHomeOfficeDataPreparer.handle(ABOUT_TO_START, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getErrors()).isNotEmpty();
+        assertThat(response.getErrors()).contains("You cannot request Home Office data for an out of country appeal");
+    }
+
+    @Test
     void check_handler_returns_case_data_with_errors_data() throws Exception {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
@@ -133,6 +161,12 @@ public class RequestHomeOfficeDataPreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Stephen"));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Fenn"));
+
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(someHomeOfficeReference));
         when(homeOfficeSearchService.getCaseStatus(eq(caseId), anyString()))
@@ -158,6 +192,12 @@ public class RequestHomeOfficeDataPreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Stephen"));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Fenn"));
+
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(someHomeOfficeReference));
         when(homeOfficeSearchService.getCaseStatus(eq(caseId), anyString())).thenReturn(null);
@@ -186,6 +226,12 @@ public class RequestHomeOfficeDataPreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1980-01-21"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Stephen"));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Fenn"));
+
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(someHomeOfficeReference));
         when(homeOfficeSearchService.getCaseStatus(eq(caseId), anyString())).thenReturn(mockResponse);
@@ -218,6 +264,11 @@ public class RequestHomeOfficeDataPreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Stephen"));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Fenn"));
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of("1234-1234-5678-5678"));
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT, String.class))
@@ -254,6 +305,12 @@ public class RequestHomeOfficeDataPreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Stephen"));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Fenn"));
+
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of("1234-1234-5678-5678"));
         when(homeOfficeSearchService.getCaseStatus(eq(caseId), anyString())).thenReturn(getSampleResponse());
@@ -284,6 +341,12 @@ public class RequestHomeOfficeDataPreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Stephen"));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Fenn"));
+
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(someHomeOfficeReference));
         when(homeOfficeSearchService.getCaseStatus(eq(caseId), anyString()))

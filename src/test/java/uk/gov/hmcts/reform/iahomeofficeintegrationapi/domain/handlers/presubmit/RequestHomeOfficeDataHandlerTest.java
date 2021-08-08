@@ -170,6 +170,7 @@ public class RequestHomeOfficeDataHandlerTest {
         verify(asylumCase, times(1)).write(HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
         verify(asylumCase, times(1)).clear(HOME_OFFICE_SEARCH_RESPONSE);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_SEARCH_NO_MATCH);
     }
 
     @Test

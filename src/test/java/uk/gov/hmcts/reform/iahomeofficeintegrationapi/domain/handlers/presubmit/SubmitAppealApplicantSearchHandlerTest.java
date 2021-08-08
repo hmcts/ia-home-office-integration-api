@@ -48,6 +48,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.util.FileCopyUtils;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataErrorsHelper;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataMatchHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeCaseStatus;
@@ -126,6 +127,8 @@ public class SubmitAppealApplicantSearchHandlerTest {
     private HomeOfficeSearchResponse mockResponse;
     @Spy
     private HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper;
+    @Spy
+    private HomeOfficeDataMatchHelper homeOfficeDataMatchHelper;
 
     @Value("classpath:home-office-sample-response.json")
     private Resource resource;
@@ -142,7 +145,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
     void setUp() {
         submitAppealApplicantSearchHandler =
                 new SubmitAppealApplicantSearchHandler(
-                        homeOfficeSearchService, homeOfficeDataErrorsHelper, featureToggler);
+                        homeOfficeSearchService, homeOfficeDataErrorsHelper, homeOfficeDataMatchHelper, featureToggler);
     }
 
     @ParameterizedTest
@@ -272,12 +275,46 @@ public class SubmitAppealApplicantSearchHandlerTest {
                 .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
                 .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_WRONG_APPLICANT_NOT_FOUND_ERROR_MESSAGE);
+        verify(asylumCase, times(0)).write(HOME_OFFICE_SEARCH_RESPONSE, jsonStr);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL", "MARK_APPEAL_PAID" })
+    void handler_should_write_ho_response_into_case_data_if_any_applicants_details_matches() throws Exception {
+
+        String jsonStr = new ObjectMapper().writeValueAsString(getMultipleApplicantsResponse());
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Capability"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Smith"));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1980-11-11"));
+
+        when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
+                .thenReturn(Optional.of("1234-1111-5678-1111"));
+        when(homeOfficeSearchService.getCaseStatus(eq(caseId), anyString()))
+                .thenReturn(getMultipleApplicantsResponse());
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                submitAppealApplicantSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        verify(asylumCase, times(1))
+                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "MULTIPLE");
+        verify(asylumCase, times(1))
+                .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_MULTIPLE_APPELLANTS_ERROR_MESSAGE);
         verify(asylumCase, times(1)).write(HOME_OFFICE_SEARCH_RESPONSE, jsonStr);
 
     }
 
     @Test
-    void check_get_formatted_decision_date_returns_date_when_date_is_geven() {
+    void check_get_formatted_decision_date_returns_date_when_date_is_given() {
 
         LocalDate formattedDecisionDate = submitAppealApplicantSearchHandler.getFormattedDecisionDate("1998-01-30");
 
@@ -666,7 +703,12 @@ public class SubmitAppealApplicantSearchHandlerTest {
             "1976-11-21"
         );
 
-        Person person = searchStatus.get(0).getPerson();
+        Person person = searchStatus.stream().filter(p ->
+                p.getPerson().getFamilyName().equalsIgnoreCase(appellant.getFamilyName())
+                        && p.getPerson().getGivenName().equalsIgnoreCase(appellant.getGivenName()))
+                .findAny()
+                .get()
+                .getPerson();
 
         assertNotNull(searchStatus);
         assertTrue(!searchStatus.isEmpty());
@@ -706,7 +748,12 @@ public class SubmitAppealApplicantSearchHandlerTest {
             "1976-11-21"
         );
 
-        Person person = searchStatus.get(0).getPerson();
+        Person person = searchStatus.stream().filter(p ->
+                p.getPerson().getFamilyName().equalsIgnoreCase(appellant.getFamilyName())
+                        && p.getPerson().getGivenName().equalsIgnoreCase(appellant.getGivenName()))
+                .findAny()
+                .get()
+                .getPerson();
 
         assertNotNull(searchStatus);
         assertTrue(!searchStatus.isEmpty());

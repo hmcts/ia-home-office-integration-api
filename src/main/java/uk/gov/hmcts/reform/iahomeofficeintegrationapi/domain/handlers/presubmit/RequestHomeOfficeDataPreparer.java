@@ -1,6 +1,11 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_OUT_OF_COUNTRY;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_DATE_OF_BIRTH;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_FULL_NAME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS_LIST;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT;
@@ -17,10 +22,12 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataErrorsHelper;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataMatchHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeCaseStatus;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeSearchResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person.PersonBuilder;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.DynamicList;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Value;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
@@ -50,12 +57,16 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
 
     private HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper;
 
+    private HomeOfficeDataMatchHelper homeOfficeDataMatchHelper;
+
     public RequestHomeOfficeDataPreparer(HomeOfficeSearchService homeOfficeSearchService,
                                          HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper,
+                                         HomeOfficeDataMatchHelper homeOfficeDataMatchHelper,
                                          FeatureToggler featureToggler) {
 
         this.homeOfficeSearchService = homeOfficeSearchService;
         this.homeOfficeDataErrorsHelper = homeOfficeDataErrorsHelper;
+        this.homeOfficeDataMatchHelper = homeOfficeDataMatchHelper;
         this.featureToggler = featureToggler;
     }
 
@@ -84,9 +95,34 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         final long caseId = callback.getCaseDetails().getId();
+
+
+        final YesOrNo isAppealOutOfCountry = asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).orElse(YesOrNo.NO);
+
+        if (isAppealOutOfCountry == YesOrNo.YES) {
+
+            PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+            response.addError("You cannot request Home Office data for an out of country appeal");
+            return response;
+        }
+
+
         final String homeOfficeReferenceNumber = asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
                 .orElseThrow(() -> new IllegalStateException(
                         "Home office reference for the appeal is not present, caseId: " + caseId));
+
+        final String appellantDateOfBirth = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)
+                .orElseThrow(() -> new IllegalStateException("Appellant date of birth is not present."));
+
+        final String appellantGiveName = asylumCase.read(APPELLANT_GIVEN_NAMES, String.class).orElse("");
+        final String appellantFamilyName = asylumCase.read(APPELLANT_FAMILY_NAME, String.class).orElse("");
+
+        final PersonBuilder appellant =
+                PersonBuilder.person()
+                        .withGivenName(appellantGiveName)
+                        .withFamilyName(appellantFamilyName);
+
+        asylumCase.write(APPELLANT_FULL_NAME, appellantGiveName + " " + appellantFamilyName);
 
         HomeOfficeSearchResponse searchResponse;
         DynamicList dynamicList = null;
@@ -127,7 +163,13 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
             }
 
             List<HomeOfficeCaseStatus> matchedApplicants =
-                    findAllApplicants(searchResponse.getStatus(), homeOfficeReferenceNumber);
+                    findMatchingApplicants(
+                            searchResponse.getStatus(), homeOfficeReferenceNumber,
+                            appellant.build(), appellantDateOfBirth);
+
+            matchedApplicants = matchedApplicants.size() > 0
+                    ? findAllApplicants(searchResponse.getStatus(), homeOfficeReferenceNumber)
+                    : matchedApplicants;
 
             final List<Value> values = new ArrayList<>();
             if (!matchedApplicants.isEmpty()) {
@@ -175,6 +217,17 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
 
         return new PreSubmitCallbackResponse<>(asylumCase);
 
+    }
+
+    List<HomeOfficeCaseStatus> findMatchingApplicants(
+            List<HomeOfficeCaseStatus> statuses, String homeOfficeReferenceNumber,
+            Person appellant, String appellantDob) {
+
+        return statuses.stream()
+                .filter(a ->
+                        a.getApplicationStatus().getDocumentReference().contains(homeOfficeReferenceNumber)
+                        && homeOfficeDataMatchHelper.isApplicantMatched(a, appellant, appellantDob))
+                .collect(Collectors.toList());
     }
 
     List<HomeOfficeCaseStatus> findAllApplicants(

@@ -158,6 +158,8 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
 
                     asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
                     asylumCase.write(HOME_OFFICE_CASE_STATUS_DATA, matchedApplicant);
+
+                    asylumCase.clear(HOME_OFFICE_SEARCH_NO_MATCH);
                 }
             }
         } catch (Exception e) {
