@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataErrorsHelper;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataMatchHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ApplicationStatus;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
@@ -89,13 +90,17 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
 
     private HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper;
 
+    private HomeOfficeDataMatchHelper homeOfficeDataMatchHelper;
+
     private final FeatureToggler featureToggler;
 
     public SubmitAppealApplicantSearchHandler(HomeOfficeSearchService homeOfficeSearchService,
                                               HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper,
+                                              HomeOfficeDataMatchHelper homeOfficeDataMatchHelper,
                                               FeatureToggler featureToggler) {
         this.homeOfficeSearchService = homeOfficeSearchService;
         this.homeOfficeDataErrorsHelper = homeOfficeDataErrorsHelper;
+        this.homeOfficeDataMatchHelper = homeOfficeDataMatchHelper;
         this.featureToggler = featureToggler;
     }
 
@@ -169,7 +174,6 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                 }
 
                 String homeOfficeSearchResponseJsonStr = new ObjectMapper().writeValueAsString(searchResponse);
-                asylumCase.write(HOME_OFFICE_SEARCH_RESPONSE, homeOfficeSearchResponseJsonStr);
 
                 Optional<HomeOfficeCaseStatus> selectedApplicant =
                         selectAnyApplicant(caseId, searchResponse.getStatus());
@@ -196,10 +200,12 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                     } else if (matchedApplicants.size() > 1) {
 
                         log.warn("More than one MAIN APPLICANT found in Home office response, caseId: {}", caseId);
+                        asylumCase.write(HOME_OFFICE_SEARCH_RESPONSE, homeOfficeSearchResponseJsonStr);
                         asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "MULTIPLE");
                         asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE,
                                 HOME_OFFICE_MULTIPLE_APPELLANTS_ERROR_MESSAGE);
                     } else {
+                        asylumCase.write(HOME_OFFICE_SEARCH_RESPONSE, homeOfficeSearchResponseJsonStr);
                         asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
 
                         matchedApplicants.stream().forEach(a -> {
@@ -288,8 +294,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
         if (statuses != null && !statuses.isEmpty()) {
             try {
                 return statuses.stream()
-                    .filter(a -> "APPLICANT".equalsIgnoreCase(a.getApplicationStatus().getRoleType().getCode()))
-                    .filter(p -> isApplicantMatched(p, appellant, appellantDateOfBirth))
+                    .filter(p -> homeOfficeDataMatchHelper.isApplicantMatched(p, appellant, appellantDateOfBirth))
                     .collect(Collectors.toList());
 
             } catch (Exception e) {
@@ -335,41 +340,5 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
             }
         }
         return metadata;
-    }
-
-    boolean isApplicantMatched(HomeOfficeCaseStatus status, Person appellant, String appellantDateOfBirth) {
-        
-        if (isApplicantNameMatched(status, appellant)
-            || isApplicantDobMatched(status, appellantDateOfBirth)) {
-
-            return true;
-        }
-
-        return false;
-    }
-
-    boolean isApplicantDobMatched(HomeOfficeCaseStatus status, String appellantDateOfBirth) {
-
-        Person person = status.getPerson();
-
-        LocalDate applicantDob =
-            LocalDate.parse(person.getYearOfBirth()
-                            + "-" + person.getMonthOfBirth()
-                            + "-" + person.getDayOfBirth(), dtFormatter);
-
-        return applicantDob.equals(LocalDate.parse(appellantDateOfBirth, dtFormatter));
-    }
-
-    boolean isApplicantNameMatched(HomeOfficeCaseStatus status, Person appellant) {
-
-        Person person = status.getPerson();
-
-        if (person.getGivenName() != null && person.getFamilyName() != null) {
-
-            return person.getGivenName().equalsIgnoreCase(appellant.getGivenName())
-                   && person.getFamilyName().equalsIgnoreCase(appellant.getFamilyName());
-        }
-
-        return false;
     }
 }

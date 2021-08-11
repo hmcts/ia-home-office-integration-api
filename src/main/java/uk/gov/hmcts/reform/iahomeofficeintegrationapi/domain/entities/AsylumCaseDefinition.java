@@ -206,6 +206,9 @@ public enum AsylumCaseDefinition {
     HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT(
             "homeOfficeReferenceNumberBeforeEdit", new TypeReference<String>() {}),
 
+    APPEAL_OUT_OF_COUNTRY(
+            "appealOutOfCountry", new TypeReference<YesOrNo>() {}),
+
     ;
 
     private final String value;
