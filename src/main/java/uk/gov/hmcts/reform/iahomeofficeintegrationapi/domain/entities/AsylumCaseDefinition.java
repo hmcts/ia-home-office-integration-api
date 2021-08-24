@@ -29,6 +29,9 @@ public enum AsylumCaseDefinition {
     HOME_OFFICE_SEARCH_STATUS_MESSAGE(
         "homeOfficeSearchStatusMessage", new TypeReference<String>() {}),
 
+    HOME_OFFICE_API_ERROR(
+            "homeOfficeApiError", new TypeReference<String>() {}),
+
     APPELLANT_GIVEN_NAMES(
         "appellantGivenNames", new TypeReference<String>(){}),
 

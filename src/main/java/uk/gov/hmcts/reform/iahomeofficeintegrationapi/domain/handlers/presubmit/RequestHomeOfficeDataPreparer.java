@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_FAMILY_NAME;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_FULL_NAME;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_API_ERROR;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS_LIST;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT;
@@ -13,6 +14,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.MATCHING_APPELLANT_DETAILS_FOUND;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,6 +52,9 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
             + "o retrieve the Home Office information about this appeal.\n\n"
             + "[Request the Home Office information](/case/IA/Asylum/${[CASE_REFERENCE]}/"
             + "trigger/requestHomeOfficeData) to try again. This may take a few minutes.";
+
+    private static final String INVALID_HOME_OFFICE_REFERENCE = "The Home office does not recognise the submitted "
+            + "appellant reference";
 
     private final FeatureToggler featureToggler;
 
@@ -126,6 +131,8 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
 
         HomeOfficeSearchResponse searchResponse;
         DynamicList dynamicList = null;
+        final List<Value> values = new ArrayList<>();
+
         try {
             String homeOfficeSearchResponseJsonStr =
                     asylumCase.read(HOME_OFFICE_SEARCH_RESPONSE, String.class).orElse("");
@@ -171,7 +178,6 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
                     ? findAllApplicants(searchResponse.getStatus(), homeOfficeReferenceNumber)
                     : matchedApplicants;
 
-            final List<Value> values = new ArrayList<>();
             if (!matchedApplicants.isEmpty()) {
 
                 homeOfficeSearchResponseJsonStr = new ObjectMapper().writeValueAsString(searchResponse);
@@ -186,19 +192,13 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
                     values.add(new Value(a.getPerson().getFullName(),
                             a.getPerson().getFullName() + "-" + applicantDob));
                 });
-                values.add(new Value("NoMatch", "No Match"));
-                dynamicList = new DynamicList(values.get(0), values);
 
                 asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
                 asylumCase.write(MATCHING_APPELLANT_DETAILS_FOUND, YesOrNo.YES);
             } else {
 
-                values.add(new Value("NoMatch", "No Match"));
-
-                dynamicList = new DynamicList(values.get(0), values);
                 asylumCase.write(MATCHING_APPELLANT_DETAILS_FOUND, YesOrNo.NO);
             }
-            asylumCase.write(HOME_OFFICE_APPELLANTS_LIST, dynamicList);
 
 
         } catch (HomeOfficeResponseException hoe) {
@@ -213,7 +213,12 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
             ;
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+            asylumCase.write(HOME_OFFICE_API_ERROR, INVALID_HOME_OFFICE_REFERENCE);
         }
+
+        values.add(new Value("NoMatch", "No Match"));
+        dynamicList = new DynamicList(values.get(0), values);
+        asylumCase.write(HOME_OFFICE_APPELLANTS_LIST, dynamicList);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
 

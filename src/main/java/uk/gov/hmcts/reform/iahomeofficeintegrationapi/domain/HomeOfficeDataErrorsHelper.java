@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain;
 
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_API_ERROR;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,9 @@ public class HomeOfficeDataErrorsHelper {
             + "because the Home Office reference number does not have any matching appellant data in the system. "
             + "You can contact the Home Office if you need more information to validate the appeal.";
 
+    private static final String INVALID_HOME_OFFICE_REFERENCE = "The Home office does not recognise the submitted "
+            + "appellant reference";
+
     public void setErrorMessageForErrorCode(
             long caseId, AsylumCase asylumCase, String errorCodeStr, String errMessage) {
         final int errorCode = errorCodeStr != null && !errorCodeStr.isEmpty() ? Integer.valueOf(errorCodeStr) : 0;
@@ -48,6 +52,7 @@ public class HomeOfficeDataErrorsHelper {
                                        String homeOfficeReferenceNotFoundErrorMessage,
                                        String homeOfficeInvalidReferenceErrorMessage,
                                        String homeOfficeCallErrorMessage) {
+
         switch (errorCode) {
             case 1010:
             case 1030:
@@ -94,5 +99,7 @@ public class HomeOfficeDataErrorsHelper {
                 );
                 break;
         }
+
+        asylumCase.write(HOME_OFFICE_API_ERROR, INVALID_HOME_OFFICE_REFERENCE);
     }
 }

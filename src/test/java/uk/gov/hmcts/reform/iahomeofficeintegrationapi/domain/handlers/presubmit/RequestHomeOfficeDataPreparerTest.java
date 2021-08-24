@@ -15,6 +15,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_DATE_OF_BIRTH;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_FAMILY_NAME;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_API_ERROR;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS_LIST;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT;
@@ -74,6 +75,9 @@ public class RequestHomeOfficeDataPreparerTest {
             + "o retrieve the Home Office information about this appeal.\n\n"
             + "[Request the Home Office information](/case/IA/Asylum/${[CASE_REFERENCE]}/"
             + "trigger/requestHomeOfficeData) to try again. This may take a few minutes.";
+
+    private static final String INVALID_HOME_OFFICE_REFERENCE = "The Home office does not recognise the submitted "
+            + "appellant reference";
 
     private static HomeOfficeSearchResponse homeOfficeSearchResponse;
     private final String someHomeOfficeReference = "some-reference";
@@ -156,6 +160,10 @@ public class RequestHomeOfficeDataPreparerTest {
     @Test
     void check_handler_returns_case_data_with_errors_data() throws Exception {
 
+        final List<Value> values = new ArrayList<>();
+        values.add(new Value("NoMatch", "No Match"));
+        DynamicList appellantsList = new DynamicList(values.get(0), values);
+
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -182,6 +190,8 @@ public class RequestHomeOfficeDataPreparerTest {
                 .write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
                 .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+        verify(asylumCase, times(1)).write(HOME_OFFICE_APPELLANTS_LIST, appellantsList);
+        verify(asylumCase, times(1)).write(HOME_OFFICE_API_ERROR, INVALID_HOME_OFFICE_REFERENCE);
     }
 
     @Test
