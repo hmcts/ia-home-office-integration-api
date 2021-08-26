@@ -15,7 +15,6 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.MATCHING_APPELLANT_DETAILS_FOUND;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -214,11 +213,12 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
             asylumCase.write(HOME_OFFICE_API_ERROR, INVALID_HOME_OFFICE_REFERENCE);
-        }
+        } finally {
 
-        values.add(new Value("NoMatch", "No Match"));
-        dynamicList = new DynamicList(values.get(0), values);
-        asylumCase.write(HOME_OFFICE_APPELLANTS_LIST, dynamicList);
+            values.add(new Value("NoMatch", "No Match"));
+            dynamicList = new DynamicList(values.get(0), values);
+            asylumCase.write(HOME_OFFICE_APPELLANTS_LIST, dynamicList);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
 
