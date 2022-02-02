@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.
 public class Direction {
 
     private String explanation;
+    private String uniqueId;
+    private String directionType;
     private Parties parties;
     private String dateDue;
     private String dateSent;
@@ -32,7 +34,9 @@ public class Direction {
         String dateSent,
         DirectionTag tag,
         List<IdValue<PreviousDates>> previousDates,
-        List<IdValue<ClarifyingQuestion>> clarifyingQuestions
+        List<IdValue<ClarifyingQuestion>> clarifyingQuestions,
+        String uniqueId,
+        String directionType
     ) {
         requireNonNull(explanation);
         requireNonNull(parties);
@@ -48,6 +52,21 @@ public class Direction {
         this.tag = tag;
         this.previousDates = previousDates;
         this.clarifyingQuestions = clarifyingQuestions;
+        this.uniqueId = uniqueId;
+        this.directionType = directionType;
+    }
+
+    public Direction(
+            String explanation,
+            Parties parties,
+            String dateDue,
+            String dateSent,
+            DirectionTag tag,
+            List<IdValue<PreviousDates>> previousDates,
+            List<IdValue<ClarifyingQuestion>> clarifyingQuestions
+
+    ) {
+        this(explanation, parties, dateDue, dateSent, tag, previousDates, clarifyingQuestions, null, null);
     }
 
     public Direction(
@@ -58,7 +77,7 @@ public class Direction {
             DirectionTag tag,
             List<IdValue<PreviousDates>> previousDates
     ) {
-        this(explanation, parties, dateDue, dateSent, tag, previousDates, null);
+        this(explanation, parties, dateDue, dateSent, tag, previousDates, null, null, null);
     }
 
     public String getExplanation() {
@@ -92,5 +111,14 @@ public class Direction {
 
     public List<IdValue<ClarifyingQuestion>> getClarifyingQuestions() {
         return clarifyingQuestions;
+    }
+
+
+    public String getUniqueId() {
+        return uniqueId;
+    }
+
+    public String getDirectionType() {
+        return directionType;
     }
 }
