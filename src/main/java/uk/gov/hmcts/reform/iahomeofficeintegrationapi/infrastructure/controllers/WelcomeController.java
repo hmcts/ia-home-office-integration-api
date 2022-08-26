@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.controllers;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -26,23 +25,25 @@ public class WelcomeController {
      *
      * @return Welcome message from the service.
      */
-    @ApiOperation("Welcome message for the Immigration & Asylum Home Office Integration API")
-    @ApiResponses({
-        @ApiResponse(
-            code = 200,
-            message = "Welcome message",
-            response = String.class
-        )
-    })
+    @Operation(
+            summary = "Welcome message for the Immigration & Asylum Home Office Integration API",
+            responses =
+                    {
+                            @ApiResponse(
+                                    responseCode = "200",
+                                    description = "Welcome message"
+                            ),
+                    }
+    )
     @GetMapping("/")
     public ResponseEntity<String> welcome() {
 
         final String message = "Welcome to Home Office Integration API";
 
         return ResponseEntity
-            .ok()
-            .cacheControl(CacheControl.noCache())
-            .contentType(MediaType.APPLICATION_JSON)
-            .body("{\"message\": \"" + message + "\"}");
+                .ok()
+                .cacheControl(CacheControl.noCache())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body("{\"message\": \"" + message + "\"}");
     }
 }
