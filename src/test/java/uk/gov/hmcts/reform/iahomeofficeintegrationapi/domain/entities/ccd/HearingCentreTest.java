@@ -13,6 +13,7 @@ class HearingCentreTest {
         assertEquals("coventry", HearingCentre.COVENTRY.getId());
         assertEquals("glasgow", HearingCentre.GLASGOW.getId());
         assertEquals("glasgowTribunalsCentre", HearingCentre.GLASGOW_TRIBUNAL_CENTRE.getId());
+        assertEquals("harmondsworth", HearingCentre.HARMONDSWORTH.getId());
         assertEquals("hattonCross", HearingCentre.HATTON_CROSS.getId());
         assertEquals("manchester", HearingCentre.MANCHESTER.getId());
         assertEquals("newport", HearingCentre.NEWPORT.getId());
@@ -32,6 +33,7 @@ class HearingCentreTest {
         assertEquals(HearingCentre.fromId("coventry"), HearingCentre.COVENTRY);
         assertEquals(HearingCentre.fromId("glasgow"), HearingCentre.GLASGOW);
         assertEquals(HearingCentre.fromId("glasgowTribunalsCentre"), HearingCentre.GLASGOW_TRIBUNAL_CENTRE);
+        assertEquals(HearingCentre.fromId("harmondsworth"), HearingCentre.HARMONDSWORTH);
         assertEquals(HearingCentre.fromId("hattonCross"), HearingCentre.HATTON_CROSS);
         assertEquals(HearingCentre.fromId("manchester"), HearingCentre.MANCHESTER);
         assertEquals(HearingCentre.fromId("northShields"), HearingCentre.NORTH_SHIELDS);
@@ -50,6 +52,7 @@ class HearingCentreTest {
         assertEquals("Coventry Magistrates Court", HearingCentre.COVENTRY.getValue());
         assertEquals("Glasgow (Eagle Building)", HearingCentre.GLASGOW.getValue());
         assertEquals("Glasgow Tribunals Centre", HearingCentre.GLASGOW_TRIBUNAL_CENTRE.getValue());
+        assertEquals("Harmondsworth", HearingCentre.HARMONDSWORTH.getValue());
         assertEquals("Hatton Cross", HearingCentre.HATTON_CROSS.getValue());
         assertEquals("Manchester", HearingCentre.MANCHESTER.getValue());
         assertEquals("North Shields", HearingCentre.NORTH_SHIELDS.getValue());
@@ -63,7 +66,7 @@ class HearingCentreTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(14, HearingCentre.values().length);
+        assertEquals(15, HearingCentre.values().length);
     }
 
 }
