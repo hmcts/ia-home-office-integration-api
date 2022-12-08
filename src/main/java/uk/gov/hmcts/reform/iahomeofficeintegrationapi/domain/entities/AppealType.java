@@ -11,7 +11,8 @@ public enum AppealType {
     PROTECTION("protection"),
     EEA("refusalOfEu"),
     HUMAN_RIGHTS("refusalOfHumanRights"),
-    DEPRIVATION_OF_CITIZENSHIP("deprivation");
+    DEPRIVATION_OF_CITIZENSHIP("deprivation"),
+    EU("euSettlementScheme");
 
     @JsonValue
     private String value;
