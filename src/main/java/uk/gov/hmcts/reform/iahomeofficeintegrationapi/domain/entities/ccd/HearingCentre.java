@@ -21,6 +21,7 @@ public enum HearingCentre {
     TAYLOR_HOUSE("taylorHouse", "Taylor House"),
     NEWCASTLE("newcastle", "Newcastle Civil & Family Courts and Tribunals Centre"),
     BELFAST("belfast", "Belfast"),
+    YARLSWOOD("yarlswood", "Yarlswood"),
     REMOTE_HEARING("remoteHearing","Remote hearing");
 
     @JsonValue
