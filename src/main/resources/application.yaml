@@ -70,7 +70,6 @@ security:
       - "sendDirection"
       - "requestResponseAmend"
       - "changeDirectionDueDate"
-      - "markAppealPaid"
     caseworker-ia-admofficer:
       - "markAppealPaid"
       - "submitAppeal"
