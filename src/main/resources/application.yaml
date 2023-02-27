@@ -73,6 +73,7 @@ security:
     caseworker-ia-admofficer:
       - "markAppealPaid"
       - "submitAppeal"
+      - "applyForFTPAAppellant"
       - "listCase"
       - "editCaseListing"
       - "adjournHearingWithoutDate"
