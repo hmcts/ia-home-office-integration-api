@@ -66,5 +66,6 @@
  	<cve>CVE-2022-45143</cve>
  	<cve>CVE-2021-22053</cve>
  	<cve>CVE-2021-22044</cve>
-    </suppress>    
+ 	<cve>CVE-2022-45688</cve>
+    </suppress>
 </suppressions>
