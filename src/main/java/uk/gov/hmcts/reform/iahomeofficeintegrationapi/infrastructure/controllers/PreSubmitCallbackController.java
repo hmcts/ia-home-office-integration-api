@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.controller
 import static java.util.Objects.requireNonNull;
 import static org.springframework.http.ResponseEntity.ok;
 
-
 import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -42,14 +41,16 @@ public class PreSubmitCallbackController {
 
 
     @PostMapping(path = "/ccdAboutToStart")
-    public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdAboutToStart(@NotNull @RequestBody Callback<AsylumCase> callback
+    public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdAboutToStart(
+        @NotNull @RequestBody Callback<AsylumCase> callback
     ) {
         return performStageRequest(PreSubmitCallbackStage.ABOUT_TO_START, callback);
     }
 
 
     @PostMapping(path = "/ccdAboutToSubmit")
-    public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdAboutToSubmit(@NotNull @RequestBody Callback<AsylumCase> callback) {
+    public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdAboutToSubmit(
+        @NotNull @RequestBody Callback<AsylumCase> callback) {
 
         return performStageRequest(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
