@@ -18,6 +18,7 @@ class SwaggerPublisher extends SpringBootIntegrationTest {
 
     @DisplayName("Generate swagger documentation")
     @Test
+    @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     void generateDocs() throws Exception {
         byte[] specs = mockMvc
             .perform(get("/v2/api-docs?group=ia-home-office-integration-api"))
