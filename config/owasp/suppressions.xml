@@ -13,6 +13,13 @@
         <cve>CVE-2022-1471</cve>
     </suppress>
     <suppress>
+        <!-- 2022-09: Not applicable to us. We don't use HTTP Invoker nor do we communicate through native java bean serialization.
+        We use JSON instead. Suppressed for a year to allow re-assessing in the unlikely event we decide to introduce it. -->
+        <notes><![CDATA[ springframework spring-* packages:
+            https://github.com/spring-projects/spring-framework/issues/24434#issuecomment-1132113566]]></notes>
+        <cve>CVE-2016-1000027</cve>
+    </suppress>
+    <suppress>
         <!-- A temp directory creation vulnerability exists in all versions of Guava, allowing an attacker
         with access to the machine to potentially access data in a temporary directory created by the Guava API
         com.google.common.io.Files.createTempDir(). By default, on unix-like systems,
