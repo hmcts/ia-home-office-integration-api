@@ -197,6 +197,10 @@ dependencyCheck {
 
 dependencyManagement {
   dependencies {
+
+      dependencySet(group: 'org.yaml', version: '1.33') {
+          entry 'snakeyaml'
+      }
     // CVE-2018-10237 - Unbounded memory allocation
     dependencySet(group: 'com.google.guava', version: '30.0-jre') {
       entry 'guava'
@@ -242,6 +246,11 @@ dependencyManagement {
       entry 'log4j-api'
       entry 'log4j-to-slf4j'
     }
+
+      dependencySet(group: 'com.fasterxml.jackson.core', version: '2.14.1') {
+          entry 'jackson-databind'
+          entry 'jackson-core'
+      }
   }
 }
 
@@ -319,10 +328,9 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
   implementation group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
 
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.2.RELEASE'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Hoxton.SR4'
   compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
-  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.2'
+  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
 
   implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
   implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
@@ -361,7 +369,6 @@ dependencies {
 
   //PACT testing
   contractTestCompile group: 'com.google.guava', name: 'guava', version: '30.0-jre'
-  contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
   contractTestCompile("org.assertj:assertj-core:3.16.1")
   //pact contract testing
   contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: versions.pact_version
