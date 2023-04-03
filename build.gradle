@@ -198,9 +198,9 @@ dependencyCheck {
 dependencyManagement {
   dependencies {
 
-      dependencySet(group: 'org.yaml', version: '1.33') {
-          entry 'snakeyaml'
-      }
+    dependencySet(group: 'org.yaml', version: '1.33') {
+      entry 'snakeyaml'
+    }
     // CVE-2018-10237 - Unbounded memory allocation
     dependencySet(group: 'com.google.guava', version: '30.0-jre') {
       entry 'guava'
@@ -212,9 +212,6 @@ dependencyManagement {
           entry 'tomcat-embed-el'
           entry 'tomcat-embed-websocket'
     }
-
-    // CVE-2021-22060
-    dependency(group: 'org.springframework', name: 'spring-core', version: '5.3.15')
 
     //CVE-2021-22119
     dependency group: 'org.springframework.security', name: 'spring-security-core',  version: '5.6.1'
@@ -247,10 +244,10 @@ dependencyManagement {
       entry 'log4j-to-slf4j'
     }
 
-      dependencySet(group: 'com.fasterxml.jackson.core', version: '2.14.1') {
-          entry 'jackson-databind'
-          entry 'jackson-core'
-      }
+    dependencySet(group: 'com.fasterxml.jackson.core', version: '2.14.1') {
+        entry 'jackson-databind'
+        entry 'jackson-core'
+    }
   }
 }
 
