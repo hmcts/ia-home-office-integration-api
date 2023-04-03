@@ -136,6 +136,10 @@ pmd {
   ]
 }
 
+jacoco {
+  toolVersion = "0.8.4"
+}
+
 jacocoTestReport {
   executionData(test, integration)
   reports {
@@ -302,8 +306,12 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: versions.springCloud
 
+  compile group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
+  compile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
+  compile group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: versions.springSecurity
+
   // CVE-2019-17195
-  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '7.9'
+  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.22'
 
   // CVE-2021-27568
   implementation group: 'net.minidev', name: 'json-smart', version: '2.3.1'
