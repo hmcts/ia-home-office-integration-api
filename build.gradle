@@ -217,8 +217,6 @@ dependencyManagement {
           entry 'tomcat-embed-websocket'
     }
 
-    //CVE-2021-22119
-    dependency group: 'org.springframework.security', name: 'spring-security-core',  version: '5.6.1'
 
     //CVE-2021-42550
     dependencySet(group: 'ch.qos.logback', version: '1.2.10') {
@@ -268,7 +266,7 @@ def versions = [
   junit           : '5.6.2',
   junitPlatform   : '1.6.2',
   reformLogging   : '5.1.7',
-  springBoot      : '2.6.3',
+  springBoot      : '2.7.2',
   pact_version    : '3.5.24',
   serenity        : '2.2.12',
   springCloud        : '3.1.1'
@@ -304,10 +302,6 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: versions.springCloud
-
-  compile group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
-  compile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
-  compile group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: versions.springSecurity
 
   // CVE-2019-17195
   implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.22'
