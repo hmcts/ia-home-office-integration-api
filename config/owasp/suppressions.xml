@@ -7,12 +7,6 @@
         <cve>CVE-2022-45688</cve>
     </suppress>
     <suppress>
-        <notes><![CDATA[
-                file name: snakeyaml-1.33.jar
-         ]]></notes>
-        <cve>CVE-2022-1471</cve>
-    </suppress>
-    <suppress>
         <!-- 2022-09: Not applicable to us. We don't use HTTP Invoker nor do we communicate through native java bean serialization.
         We use JSON instead. Suppressed for a year to allow re-assessing in the unlikely event we decide to introduce it. -->
         <notes><![CDATA[ springframework spring-* packages:
@@ -39,12 +33,15 @@
         <notes>False positive spring-security-crypto-5.7.1.jar</notes>
         <cve>CVE-2020-5408</cve>
     </suppress>
-    <suppress>
-        <cve>CVE-2023-28708</cve>
+    <suppress until="2023-06-08">
+        <notes><![CDATA[
+                file name: snakeyaml-1.33.jar
+         ]]></notes>
+        <cve>CVE-2022-1471</cve>
+    </suppress>
+    <suppress until="2023-06-08">
+        <notes>pkg:maven/org.springframework/spring-aop@5.3.23</notes>
         <cve>CVE-2023-20861</cve>
         <cve>CVE-2023-20860</cve>
-    </suppress>
-    <suppress>
-        <cve>CVE-2022-42004</cve>
     </suppress>
 </suppressions>
