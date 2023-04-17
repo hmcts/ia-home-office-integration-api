@@ -70,6 +70,7 @@
         <cve>CVE-2023-24998</cve>
     </suppress>
     <suppress>
+        <cve>CVE-2022-1471</cve>
         <cve>CVE-2023-24998</cve>
         <cve>CVE-2023-28708</cve>
         <cve>CVE-2023-20861</cve>
