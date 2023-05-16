@@ -11,7 +11,7 @@ variable "location" {
 }
 
 variable "deployment_namespace" {
-  type = "string"
+  type = string
   default = ""
 }
 
@@ -20,7 +20,7 @@ variable "env" {}
 variable "subscription" {}
 
 variable "common_tags" {
-  type = "map"
+  type = map
 }
 
 variable "appinsights_instrumentation_key" {
