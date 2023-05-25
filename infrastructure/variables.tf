@@ -10,11 +10,6 @@ variable "location" {
   default = "UK South"
 }
 
-variable "deployment_namespace" {
-  type = string
-  default = ""
-}
-
 variable "env" {}
 
 variable "subscription" {}
