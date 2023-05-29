@@ -236,7 +236,14 @@ dependencyManagement {
     }
 
     dependencySet(group: 'net.logstash.logback', version: '6.4') {
-      entry 'logstash-logback-encoder'
+    }
+
+    dependencySet(group: 'net.minidev', version: '2.4.10') {
+      entry 'json-smart'
+    }
+
+    dependencySet(group: 'commons-io', version: '2.12.0') {
+      entry 'commons-io'
     }
   }
 }
@@ -255,8 +262,7 @@ def versions = [
   junitPlatform   : '1.6.2',
   reformLogging   : '5.1.7',
   pact_version    : '3.5.24',
-  serenity        : '2.2.12',
-  springCloud     : '3.1.1'
+  serenity        : '2.2.12'
 
 ]
 
@@ -288,38 +294,27 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: versions.springCloud
-
-  // CVE-2019-17195
-  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.22'
-
-  // CVE-2021-27568
-  implementation group: 'net.minidev', name: 'json-smart', version: '2.4.10'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix'
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.8'
 
   implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
-
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
   implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
+  implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
+  implementation group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
 
   compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.1.0'
 
-  compileOnly 'org.projectlombok:lombok:1.18.12'
-  annotationProcessor 'org.projectlombok:lombok:1.18.12'
-  testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'
-  implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
-  implementation group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
+  compileOnly 'org.projectlombok:lombok:1.18.26'
+  annotationProcessor 'org.projectlombok:lombok:1.18.26'
 
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Hoxton.SR4'
   compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
 
-  implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
-  implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
-
+  testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'
   testImplementation libraries.junit5
   testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
     exclude group: 'junit', module: 'junit'
@@ -340,7 +335,7 @@ dependencies {
   testImplementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.1.0'
 
   testCompileOnly 'org.projectlombok:lombok:1.18.12'
-  testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+  testAnnotationProcessor 'org.projectlombok:lombok:1.18.26'
 
   testImplementation group: 'org.pitest', name: 'pitest', version: '1.5.2'
 
