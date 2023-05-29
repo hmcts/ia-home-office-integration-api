@@ -246,14 +246,12 @@ dependencyManagement {
       entry 'commons-io'
     }
 
-    dependencySet(group: 'org.springframework.cloud', version: '2.2.10.RELEASE') {
-      entry 'spring-cloud-starter-openfeign'
-      entry 'spring-cloud-starter-netflix-hystrix'
-    }
-
     dependencySet(group: 'org.bouncycastle', version: '1.70') {
       entry 'bcpkix-jdk15on'
     }
+
+    dependency group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
+    dependency group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.3'
   }
 }
 
