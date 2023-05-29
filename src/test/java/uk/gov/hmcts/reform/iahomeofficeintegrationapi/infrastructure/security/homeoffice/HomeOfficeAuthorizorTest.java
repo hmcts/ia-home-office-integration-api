@@ -7,6 +7,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Map;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,21 +43,9 @@ class HomeOfficeAuthorizorTest {
 
     private HomeOfficeAuthorizor homeOfficeAuthorizor;
 
-    @BeforeEach
-    public void setUp() {
-
-        homeOfficeAuthorizor =
-            new HomeOfficeAuthorizor(
-                homeOfficeTokenApi,
-                BASE_URL,
-                TOKEN_PATH,
-                CLIENT_ID,
-                CLIENT_SECRET
-            );
-    }
-
     @Test
     void should_call_homeoffice_api_to_authorize() {
+        homeOfficeAuthorizor = new HomeOfficeAuthorizor(homeOfficeTokenApi, BASE_URL, TOKEN_PATH, CLIENT_ID, CLIENT_SECRET);
 
         doReturn(JWT_TOKEN)
             .when(homeOfficeTokenApi)
@@ -78,6 +68,56 @@ class HomeOfficeAuthorizorTest {
         assertEquals("client_credentials", actualTokenParameters.get("grant_type"));
         assertEquals(CLIENT_ID, actualTokenParameters.get("client_id"));
         assertEquals(CLIENT_SECRET, actualTokenParameters.get("client_secret"));
+    }
+
+    @Test
+    void should_call_homeoffice_api_to_authorize_with_empty_secrets() {
+        // Given
+        homeOfficeAuthorizor = new HomeOfficeAuthorizor(homeOfficeTokenApi, BASE_URL, TOKEN_PATH, "", "");
+
+        doReturn(JWT_TOKEN).when(homeOfficeTokenApi).getAuthorizationToken(anyMap());
+
+        // When
+        String actualAccessToken = homeOfficeAuthorizor.fetchCodeAuthorization();
+
+        // Then
+        Assertions.assertEquals("Bearer some_access_token", actualAccessToken);
+
+        ArgumentCaptor<Map<String, ?>> requestCaptor = ArgumentCaptor.forClass(Map.class);
+
+        verify(homeOfficeTokenApi, times(1)).getAuthorizationToken(requestCaptor.capture());
+
+        final Map<String, ?> actualTokenParameters = requestCaptor.getValue();
+
+        Assertions.assertEquals("client_credentials", actualTokenParameters.get("grant_type"));
+        Assertions.assertEquals("", actualTokenParameters.get("client_id"));
+        Assertions.assertEquals("", actualTokenParameters.get("client_secret"));
+    }
+
+    @Test
+    void should_call_homeoffice_api_to_authorize_and_get_empty_token() {
+        // Given
+        homeOfficeAuthorizor = new HomeOfficeAuthorizor(homeOfficeTokenApi, BASE_URL, TOKEN_PATH, CLIENT_ID, CLIENT_SECRET);
+
+        doReturn("{\"access_token\": \"\",\"expires_in\": 300,\"token_type\": \"bearer\","
+            + "\"not-before-policy\": 0,\"scope\": \"email profile\"}")
+            .when(homeOfficeTokenApi).getAuthorizationToken(anyMap());
+
+        // When
+        String actualAccessToken = homeOfficeAuthorizor.fetchCodeAuthorization();
+
+        // Then
+        Assertions.assertEquals("Bearer ", actualAccessToken);
+
+        ArgumentCaptor<Map<String, ?>> requestCaptor = ArgumentCaptor.forClass(Map.class);
+
+        verify(homeOfficeTokenApi, times(1)).getAuthorizationToken(requestCaptor.capture());
+
+        final Map<String, ?> actualTokenParameters = requestCaptor.getValue();
+
+        Assertions.assertEquals("client_credentials", actualTokenParameters.get("grant_type"));
+        Assertions.assertEquals(CLIENT_ID, actualTokenParameters.get("client_id"));
+        Assertions.assertEquals(CLIENT_SECRET, actualTokenParameters.get("client_secret"));
     }
 
 }
