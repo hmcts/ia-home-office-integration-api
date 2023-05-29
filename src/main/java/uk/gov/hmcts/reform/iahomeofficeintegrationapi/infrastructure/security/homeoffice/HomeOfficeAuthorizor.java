@@ -62,12 +62,12 @@ public class HomeOfficeAuthorizor {
 
     private void warnAboutMissingSecrets() {
         if (StringUtils.isBlank(clientId)) {
-            log.warn("auth.homeoffice.client.id is null or empty. If you're connecting to a mock API ignore" +
-                " this warning. If you're in a production environment, you may have a problem.");
+            log.warn("auth.homeoffice.client.id is null or empty. If you're connecting to a mock API ignore"
+                + " this warning. If you're in a production environment, you may have a problem.");
         }
         if (StringUtils.isBlank(clientSecret)) {
-            log.warn("auth.homeoffice.client.secret is null or empty. If you're connecting to a mock API ignore" +
-                " this warning. If you're in a production environment, you may have a problem.");
+            log.warn("auth.homeoffice.client.secret is null or empty. If you're connecting to a mock API ignore"
+                + " this warning. If you're in a production environment, you may have a problem.");
 
         }
     }
