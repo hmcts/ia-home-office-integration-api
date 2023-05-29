@@ -7,9 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Map;
-
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -45,7 +43,8 @@ class HomeOfficeAuthorizorTest {
 
     @Test
     void should_call_homeoffice_api_to_authorize() {
-        homeOfficeAuthorizor = new HomeOfficeAuthorizor(homeOfficeTokenApi, BASE_URL, TOKEN_PATH, CLIENT_ID, CLIENT_SECRET);
+        homeOfficeAuthorizor = new HomeOfficeAuthorizor(homeOfficeTokenApi, BASE_URL,
+            TOKEN_PATH, CLIENT_ID, CLIENT_SECRET);
 
         doReturn(JWT_TOKEN)
             .when(homeOfficeTokenApi)
@@ -73,7 +72,8 @@ class HomeOfficeAuthorizorTest {
     @Test
     void should_call_homeoffice_api_to_authorize_with_empty_secrets() {
         // Given
-        homeOfficeAuthorizor = new HomeOfficeAuthorizor(homeOfficeTokenApi, BASE_URL, TOKEN_PATH, "", "");
+        homeOfficeAuthorizor = new HomeOfficeAuthorizor(homeOfficeTokenApi, BASE_URL,
+            TOKEN_PATH, "", "");
 
         doReturn(JWT_TOKEN).when(homeOfficeTokenApi).getAuthorizationToken(anyMap());
 
@@ -97,7 +97,8 @@ class HomeOfficeAuthorizorTest {
     @Test
     void should_call_homeoffice_api_to_authorize_and_get_empty_token() {
         // Given
-        homeOfficeAuthorizor = new HomeOfficeAuthorizor(homeOfficeTokenApi, BASE_URL, TOKEN_PATH, CLIENT_ID, CLIENT_SECRET);
+        homeOfficeAuthorizor = new HomeOfficeAuthorizor(homeOfficeTokenApi, BASE_URL,
+            TOKEN_PATH, CLIENT_ID, CLIENT_SECRET);
 
         doReturn("{\"access_token\": \"\",\"expires_in\": 300,\"token_type\": \"bearer\","
             + "\"not-before-policy\": 0,\"scope\": \"email profile\"}")
