@@ -46,7 +46,7 @@ public class HomeOfficeAuthorizor {
 
         String response = homeOfficeTokenApi.getAuthorizationToken(body);
         if (StringUtils.isBlank(response)) {
-            log.warn("The response from the Home Office Auth Token Api is empty. You may have a problem.");
+            log.error("The response from the Home Office Auth Token Api is empty. This will cause exceptions");
         }
 
         return "Bearer " + extractAccessToken(response);

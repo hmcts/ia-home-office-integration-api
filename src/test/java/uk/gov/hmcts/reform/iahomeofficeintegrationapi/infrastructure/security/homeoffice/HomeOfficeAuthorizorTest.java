@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.homeoffice;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -100,25 +101,13 @@ class HomeOfficeAuthorizorTest {
         homeOfficeAuthorizor = new HomeOfficeAuthorizor(homeOfficeTokenApi, BASE_URL,
             TOKEN_PATH, CLIENT_ID, CLIENT_SECRET);
 
-        doReturn("{\"access_token\": \"\",\"expires_in\": 300,\"token_type\": \"bearer\","
-            + "\"not-before-policy\": 0,\"scope\": \"email profile\"}")
-            .when(homeOfficeTokenApi).getAuthorizationToken(anyMap());
+        doReturn(null).when(homeOfficeTokenApi).getAuthorizationToken(anyMap());
 
         // When
-        String actualAccessToken = homeOfficeAuthorizor.fetchCodeAuthorization();
-
-        // Then
-        Assertions.assertEquals("Bearer ", actualAccessToken);
-
-        ArgumentCaptor<Map<String, ?>> requestCaptor = ArgumentCaptor.forClass(Map.class);
-
-        verify(homeOfficeTokenApi, times(1)).getAuthorizationToken(requestCaptor.capture());
-
-        final Map<String, ?> actualTokenParameters = requestCaptor.getValue();
-
-        Assertions.assertEquals("client_credentials", actualTokenParameters.get("grant_type"));
-        Assertions.assertEquals(CLIENT_ID, actualTokenParameters.get("client_id"));
-        Assertions.assertEquals(CLIENT_SECRET, actualTokenParameters.get("client_secret"));
+        // Then an exception will be thrown
+        assertThrows(Exception.class, () -> {
+            homeOfficeAuthorizor.fetchCodeAuthorization();
+        });
     }
 
 }
