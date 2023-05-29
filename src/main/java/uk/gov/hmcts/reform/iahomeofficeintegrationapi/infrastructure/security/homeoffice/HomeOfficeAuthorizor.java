@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.h
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class HomeOfficeAuthorizor {
     }
 
     public String fetchCodeAuthorization() {
+        warnAboutMissingSecrets();
 
         Map<String, String> body = new HashMap<>();
         body.put("client_id", clientId);
@@ -43,6 +45,9 @@ public class HomeOfficeAuthorizor {
         log.info("Requesting JWT token from Home Office: {}", baseUrl + tokenPath);
 
         String response = homeOfficeTokenApi.getAuthorizationToken(body);
+        if (StringUtils.isBlank(response)) {
+            log.error("The response from the Home Office Auth Token Api is empty. This will cause exceptions");
+        }
 
         return "Bearer " + extractAccessToken(response);
     }
@@ -53,5 +58,17 @@ public class HomeOfficeAuthorizor {
         final String accessToken = jsonParser.parseMap(response).get("access_token").toString();
         log.info("Extracted access token from the response");
         return accessToken;
+    }
+
+    private void warnAboutMissingSecrets() {
+        if (StringUtils.isBlank(clientId)) {
+            log.warn("auth.homeoffice.client.id is null or empty. If you're connecting to a mock API ignore"
+                + " this warning. If you're in a production environment, you may have a problem.");
+        }
+        if (StringUtils.isBlank(clientSecret)) {
+            log.warn("auth.homeoffice.client.secret is null or empty. If you're connecting to a mock API ignore"
+                + " this warning. If you're in a production environment, you may have a problem.");
+
+        }
     }
 }
