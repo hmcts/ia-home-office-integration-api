@@ -236,6 +236,7 @@ dependencyManagement {
     }
 
     dependencySet(group: 'net.logstash.logback', version: '6.4') {
+      entry 'logstash-logback-encoder'
     }
 
     dependencySet(group: 'net.minidev', version: '2.4.10') {
@@ -252,6 +253,11 @@ dependencyManagement {
 
     dependency group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
     dependency group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.7'
+
+    dependency group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.31'
+    dependency group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.20.0'
+    dependency group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.20.0'
+
   }
 }
 
@@ -305,10 +311,10 @@ dependencies {
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.8'
 
-  implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
+  implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
-  implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
+  implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
   implementation group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
 
   implementation group: 'commons-io', name: 'commons-io'
