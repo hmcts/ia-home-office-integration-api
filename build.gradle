@@ -234,10 +234,6 @@ dependencyManagement {
       entry 'jackson-module-parameter-names'
       entry 'jackson-module-afterburner'
     }
-
-    dependencySet(group: 'net.logstash.logback', version: '6.4') {
-      entry 'logstash-logback-encoder'
-    }
   }
 }
 
