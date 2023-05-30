@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.h
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.stereotype.Service;
