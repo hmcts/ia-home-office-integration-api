@@ -32,10 +32,10 @@ public class HomeOfficeAuthorizor {
         this.tokenPath = tokenPath;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+        breakOnMissingSecrets();
     }
 
     public String fetchCodeAuthorization() {
-        warnAboutMissingSecrets();
 
         Map<String, String> body = new HashMap<>();
         body.put("client_id", clientId);
@@ -60,14 +60,16 @@ public class HomeOfficeAuthorizor {
         return accessToken;
     }
 
-    private void warnAboutMissingSecrets() {
+    private void breakOnMissingSecrets() {
         if (StringUtils.isBlank(clientId)) {
-            log.warn("auth.homeoffice.client.id is null or empty. If you're connecting to a mock API ignore"
-                + " this warning. If you're in a production environment, you may have a problem.");
+            throw new IllegalArgumentException("auth.homeoffice.client.id is null or empty."
+                + " This is not allowed and it will break production. This is a secret value stored in a vault"
+                + " (unless running locally). Check application.yaml for further information.");
         }
         if (StringUtils.isBlank(clientSecret)) {
-            log.warn("auth.homeoffice.client.secret is null or empty. If you're connecting to a mock API ignore"
-                + " this warning. If you're in a production environment, you may have a problem.");
+            throw new IllegalArgumentException("auth.homeoffice.client.secret is null or empty."
+                + " This is not allowed and it will break production. This is a secret value stored in a vault"
+                + " (unless running locally). Check application.yaml for further information.");
 
         }
     }
