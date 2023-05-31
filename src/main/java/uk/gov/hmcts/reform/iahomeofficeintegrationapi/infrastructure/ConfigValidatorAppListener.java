@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure;
 
 import java.util.Map;
-
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
