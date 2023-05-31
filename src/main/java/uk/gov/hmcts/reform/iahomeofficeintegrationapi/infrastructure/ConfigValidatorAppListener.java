@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure;
 
 import java.util.Map;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
