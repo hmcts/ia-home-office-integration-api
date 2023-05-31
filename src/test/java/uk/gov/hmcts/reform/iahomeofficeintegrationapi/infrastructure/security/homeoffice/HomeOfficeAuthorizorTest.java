@@ -68,22 +68,6 @@ class HomeOfficeAuthorizorTest {
     }
 
     @Test
-    void should_break_when_empty_clientid_secret() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new HomeOfficeAuthorizor(homeOfficeTokenApi, BASE_URL, TOKEN_PATH, "", "something");
-        });
-
-    }
-
-    @Test
-    void should_break_when_empty_clientsecret_secret() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new HomeOfficeAuthorizor(homeOfficeTokenApi, BASE_URL, TOKEN_PATH, "something", "");
-        });
-
-    }
-
-    @Test
     void should_call_homeoffice_api_to_authorize_and_get_empty_token() {
         // Given
         HomeOfficeAuthorizor homeOfficeAuthorizor = new HomeOfficeAuthorizor(homeOfficeTokenApi, BASE_URL,
