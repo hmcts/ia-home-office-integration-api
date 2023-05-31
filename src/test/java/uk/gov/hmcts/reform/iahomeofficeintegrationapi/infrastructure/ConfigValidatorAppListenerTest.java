@@ -31,6 +31,7 @@ class ConfigValidatorAppListenerTest {
     }
 
     @Test
+    @SuppressWarnings("java:S2699") // suppressing SonarLint warning on assertions as it's ok for this test not to have any
     void runsSuccessfullyWhenHomeOfficeSecretsAreCorrectlySet() {
         // Given
         ConfigValidatorAppListener configValidatorAppListener = new ConfigValidatorAppListener();
