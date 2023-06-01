@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure;
 
-import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -9,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -39,8 +35,8 @@ public class ConfigValidatorAppListener implements ApplicationListener<ContextRe
 
     void breakOnMissingHomeOfficeSecrets() {
         if (homeOfficeBaseUrl.contains("localhost") || homeOfficeBaseUrl.contains("127.0.0.1")) {
-           log.warn("Detected local deployment. Secrets will not be checked.");
-           return;
+            log.warn("Detected local deployment. Secrets will not be checked.");
+            return;
         }
         log.info("Home office base URL: {}", homeOfficeBaseUrl);
         if (StringUtils.isBlank(clientId)) {
