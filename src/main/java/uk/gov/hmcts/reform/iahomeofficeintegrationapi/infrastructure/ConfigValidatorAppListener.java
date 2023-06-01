@@ -65,6 +65,9 @@ public class ConfigValidatorAppListener implements ApplicationListener<ContextRe
             log.info("    {} = {}", entry.getKey(), entry.getValue());
         }
 
+        if (env == null) {
+            return;
+        }
         log.info("Spring environment properties: ");
         for (PropertySource<?> source : ((AbstractEnvironment) env).getPropertySources()) {
             if (source instanceof MapPropertySource) {
