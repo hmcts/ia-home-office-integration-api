@@ -38,8 +38,11 @@ public class ConfigValidatorAppListener implements ApplicationListener<ContextRe
     }
 
     void breakOnMissingHomeOfficeSecrets() {
+        if (homeOfficeBaseUrl.contains("localhost") || homeOfficeBaseUrl.contains("127.0.0.1")) {
+           log.warn("Detected local deployment. Secrets will not be checked.");
+           return;
+        }
         log.info("Home office base URL: {}", homeOfficeBaseUrl);
-        printEnvironment();
         if (StringUtils.isBlank(clientId)) {
             throw new IllegalArgumentException("auth.homeoffice.client.id is null or empty."
                 + " This is not allowed and it will break production. This is a secret value stored in a vault"
@@ -47,34 +50,10 @@ public class ConfigValidatorAppListener implements ApplicationListener<ContextRe
         }
         if (StringUtils.isBlank(clientSecret)) {
             log.info("Home office base URL: {}", homeOfficeBaseUrl);
-            printEnvironment();
             throw new IllegalArgumentException("auth.homeoffice.client.secret is null or empty."
                 + " This is not allowed and it will break production. This is a secret value stored in a vault"
                 + " (unless running locally). Check application.yaml for further information.");
 
         }
-    }
-
-    private void printEnvironment() {
-        log.info("Environment variables: ");
-        Map<String, String> environment = System.getenv();
-
-        for (Map.Entry<String, String> entry : environment.entrySet()) {
-            log.info("    {} = {}", entry.getKey(), entry.getValue());
-        }
-
-        if (env == null) {
-            return;
-        }
-        log.info("Spring environment properties: ");
-        for (PropertySource<?> source : ((AbstractEnvironment) env).getPropertySources()) {
-            if (source instanceof MapPropertySource) {
-                Map<String, Object> props = ((MapPropertySource) source).getSource();
-                for (Map.Entry<String, Object> entry : props.entrySet()) {
-                    log.info("    {} = {}", entry.getKey(), entry.getValue());
-                }
-            }
-        }
-
     }
 }
