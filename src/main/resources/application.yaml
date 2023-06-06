@@ -54,6 +54,7 @@ security:
   roleEventAccess:
     citizen:
       - "submitAppeal"
+      - "applyForFTPAAppellant"
     caseworker-ia-legalrep-solicitor:
       - "submitAppeal"
       - "payAndSubmitAppeal"
