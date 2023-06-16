@@ -35,7 +35,6 @@ public class HomeOfficeAuthorizor {
     }
 
     public String fetchCodeAuthorization() {
-        warnAboutMissingSecrets();
 
         Map<String, String> body = new HashMap<>();
         body.put("client_id", clientId);
@@ -58,17 +57,5 @@ public class HomeOfficeAuthorizor {
         final String accessToken = jsonParser.parseMap(response).get("access_token").toString();
         log.info("Extracted access token from the response");
         return accessToken;
-    }
-
-    private void warnAboutMissingSecrets() {
-        if (StringUtils.isBlank(clientId)) {
-            log.warn("auth.homeoffice.client.id is null or empty. If you're connecting to a mock API ignore"
-                + " this warning. If you're in a production environment, you may have a problem.");
-        }
-        if (StringUtils.isBlank(clientSecret)) {
-            log.warn("auth.homeoffice.client.secret is null or empty. If you're connecting to a mock API ignore"
-                + " this warning. If you're in a production environment, you may have a problem.");
-
-        }
     }
 }
