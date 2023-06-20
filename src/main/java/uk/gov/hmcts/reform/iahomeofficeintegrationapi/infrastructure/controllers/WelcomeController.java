@@ -32,7 +32,7 @@ public class WelcomeController {
             code = 200,
             message = "Welcome message",
             response = String.class
-        )
+            )
     })
     @GetMapping("/")
     public ResponseEntity<String> welcome() {

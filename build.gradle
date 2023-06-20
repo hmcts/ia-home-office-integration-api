@@ -4,7 +4,7 @@ buildscript {
   }
   dependencies {
     classpath("org.yaml:snakeyaml:1.23")
-    classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.11")
+    classpath("net.serenity-bdd:serenity-gradle-plugin:3.2.3")
   }
 }
 
@@ -14,12 +14,12 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-  id 'org.springframework.boot' version '2.3.9.RELEASE'
-  id 'uk.gov.hmcts.java' version '0.12.5'
+  id 'org.springframework.boot' version '2.7.11'
+  id 'uk.gov.hmcts.java' version '0.12.43'
   id 'org.owasp.dependencycheck' version '8.0.2'
   id 'com.github.ben-manes.versions' version '0.28.0'
   id 'org.sonarqube' version '2.8'
-  id 'au.com.dius.pact' version '4.1.7'
+  id 'au.com.dius.pact' version '4.1.38'
   id "info.solidsoft.pitest" version '1.5.2'
 }
 
@@ -33,9 +33,10 @@ def jarName = 'ia-home-office-integration-api.jar'
 group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
 
-allprojects {
-  sourceCompatibility = '11'
-  targetCompatibility = '11'
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(17)
+  }
 }
 
 sourceSets {
@@ -74,6 +75,14 @@ sourceSets {
     }
     resources.srcDir file('src/contactTest/resources')
   }
+}
+
+processFunctionalTestResources {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+processIntegrationTestResources {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 tasks.withType(JavaCompile) {
@@ -119,7 +128,7 @@ task contract(type: Test, description: 'Runs the pact contract tests.', group: '
 
 checkstyle {
   maxWarnings = 0
-  toolVersion = '8.29'
+  toolVersion = '10.12.0'
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
@@ -140,9 +149,9 @@ pmd {
 jacocoTestReport {
   executionData(test, integration)
   reports {
-    xml.enabled = true
-    csv.enabled = false
-    xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+    xml.required = true
+    csv.required = false
+    xml.getOutputLocation().set(file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml"))
   }
 }
 
@@ -260,11 +269,11 @@ ext.libraries = [
 ]
 
 configurations {
-  integrationTestCompile.extendsFrom testCompile
+  integrationTestCompile.extendsFrom testImplementation
   integrationTestRuntime.extendsFrom testRuntime
-  functionalTestCompile.extendsFrom testCompile
+  functionalTestCompile.extendsFrom testImplementation
   functionalTestRuntime.extendsFrom testRuntime
-  contractTestCompile.extendsFrom testCompile
+  contractTestImplementation.extendsFrom testImplementation
   contractTestRuntime.extendsFrom testRuntime
 }
 
@@ -294,17 +303,17 @@ dependencies {
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.2.RELEASE'
   implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
 
-  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.2'
+  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.2'
 
-  compileOnly 'org.projectlombok:lombok:1.18.12'
-  annotationProcessor 'org.projectlombok:lombok:1.18.12'
+  compileOnly 'org.projectlombok:lombok:1.18.28'
+  annotationProcessor 'org.projectlombok:lombok:1.18.28'
   testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
   implementation group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.2.RELEASE'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Hoxton.SR4'
-  compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
+  implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.2'
 
   implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
@@ -316,20 +325,20 @@ dependencies {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
 
-  testCompile "com.github.tomakehurst:wiremock:2.19.0"
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.5.0'
-  testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.7'
-  testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot) {
+  testImplementation "com.github.tomakehurst:wiremock:2.19.0"
+  testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.5.0'
+  testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.7'
+  testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot) {
     exclude group: "com.vaadin.external.google", module: "android-json"
   }
-  testCompile "ru.lanwen.wiremock:wiremock-junit5:1.3.1"
+  testImplementation "ru.lanwen.wiremock:wiremock-junit5:1.3.1"
 
 
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
   testImplementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.2'
 
-  testCompileOnly 'org.projectlombok:lombok:1.18.12'
-  testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+  testCompileOnly 'org.projectlombok:lombok:1.18.28'
+  testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
 
   testImplementation group: 'org.pitest', name: 'pitest', version: '1.5.2'
 
@@ -338,19 +347,19 @@ dependencies {
   testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
   testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
 
-  testCompile group: 'com.github.tomakehurst', name: 'wiremock', version: '2.26.3'
-  testCompile group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.26.3'
+  testImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.26.3'
+  testImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.26.3'
   testImplementation group: 'ru.lanwen.wiremock', name: 'wiremock-junit5', version: '1.3.1'
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
   //PACT testing
-  contractTestCompile group: 'com.google.guava', name: 'guava', version: '30.0-jre'
-  contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
-  contractTestCompile("org.assertj:assertj-core:3.16.1")
+  contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.0-jre'
+  contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
+  contractTestImplementation("org.assertj:assertj-core:3.16.1")
   //pact contract testing
-  contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: versions.pact_version
-  contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: versions.pact_version
-  contractTestCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
+  contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: versions.pact_version
+  contractTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
@@ -361,8 +370,8 @@ dependencies {
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation sourceSets.test.runtimeClasspath
 
-  contractTestCompile sourceSets.main.runtimeClasspath
-  contractTestCompile sourceSets.test.runtimeClasspath
+  contractTestImplementation sourceSets.main.runtimeClasspath
+  contractTestImplementation sourceSets.test.runtimeClasspath
 }
 
 

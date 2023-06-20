@@ -52,30 +52,30 @@ public class PreSubmitCallbackController {
             value = "Handles 'AboutToStartEvent' callbacks from CCD",
             response = PreSubmitCallbackResponse.class,
             authorizations = {
-                    @Authorization(value = "Authorization"),
-                    @Authorization(value = "ServiceAuthorization")
+                @Authorization(value = "Authorization"),
+                @Authorization(value = "ServiceAuthorization")
             }
     )
 
     @ApiResponses({
-            @ApiResponse(
+        @ApiResponse(
                     code = 200,
                     message = "Transformed Asylum case data, with any identified error or warning messages",
                     response = PreSubmitCallbackResponse.class
             ),
-            @ApiResponse(
+        @ApiResponse(
                     code = 400,
                     message = "Bad Request"
             ),
-            @ApiResponse(
+        @ApiResponse(
                     code = 403,
                     message = "Forbidden"
             ),
-            @ApiResponse(
+        @ApiResponse(
                     code = 415,
                     message = "Unsupported Media Type"
             ),
-            @ApiResponse(
+        @ApiResponse(
                     code = 500,
                     message = "Internal Server Error"
             )
@@ -103,23 +103,23 @@ public class PreSubmitCallbackController {
             message = "Transformed Asylum case data with Home Office information,"
                 + " with any identified error or warning messages",
             response = String.class
-        ),
+            ),
         @ApiResponse(
             code = 400,
             message = "Bad Request"
-        ),
+            ),
         @ApiResponse(
             code = 403,
             message = "Forbidden"
-        ),
+            ),
         @ApiResponse(
             code = 415,
             message = "Unsupported Media Type"
-        ),
+            ),
         @ApiResponse(
             code = 500,
             message = "Internal Server Error"
-        )
+            )
     })
     @PostMapping(path = "/ccdAboutToSubmit")
     public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdAboutToSubmit(
