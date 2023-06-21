@@ -4,7 +4,7 @@ buildscript {
   }
   dependencies {
     classpath("org.yaml:snakeyaml:1.23")
-    classpath("net.serenity-bdd:serenity-gradle-plugin:3.2.3")
+    classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.11")
   }
 }
 
@@ -255,7 +255,7 @@ def versions = [
   springBoot      : '2.6.3',
   springfoxSwagger: '2.9.2',
   pact_version    : '3.5.24',
-  serenity        : '3.2.3'
+  serenity        : '2.0.11'
 ]
 
 ext.libraries = [
