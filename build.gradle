@@ -146,6 +146,10 @@ pmd {
   ]
 }
 
+jacoco {
+  toolVersion = "0.8.10"
+}
+
 jacocoTestReport {
   executionData(test, integration)
   reports {
