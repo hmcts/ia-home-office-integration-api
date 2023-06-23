@@ -37,8 +37,8 @@ public class FeignErrorDecoder implements ErrorDecoder {
                             response.body().asInputStream(),
                             HomeOfficeInstructResponse.class);
                         if (homeOfficeError != null) {
-                            log.info("!debug: homeOfficeError.messageHeader=" + homeOfficeError.getMessageHeader()
-                                    + ", homeOfficeError.errorDetail=" + homeOfficeError.getErrorDetail()
+                            log.info("!debug: homeOfficeError.correlationId=" + homeOfficeError.getMessageHeader().getCorrelationId()
+                                    + ", homeOfficeError.errorCode=" + homeOfficeError.getErrorDetail().getErrorCode()
                                     + ", methodKey=" + methodKey);
                             errorCode = homeOfficeError.getErrorDetail().getErrorCode();
                             errMessage = String.format("Home office error code: %s, message: %s",
