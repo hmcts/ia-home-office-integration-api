@@ -330,6 +330,8 @@ dependencies {
   testImplementation group: 'io.rest-assured', name: 'json-path', version: '4.3.1'
   testImplementation group: 'io.rest-assured', name: 'xml-path', version: '4.3.1'
 
+  testImplementation group: 'com.vladsch.flexmark', name: 'flexmark-all', version: '0.64.8'
+
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot, {
     exclude group: 'junit', module: 'junit'
