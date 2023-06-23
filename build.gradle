@@ -319,6 +319,8 @@ dependencies {
   testImplementation group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.12.23'
 
   testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '4.3.1'
+  testImplementation group: 'io.rest-assured', name: 'json-path', version: '4.3.1'
+  implementation group: 'io.rest-assured', name: 'xml-path', version: '4.3.1'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot, {
