@@ -215,6 +215,7 @@ dependencyManagement {
 
     dependency group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
     dependency group: 'com.google.guava', name: 'guava', version: '32.1.2-jre'
+    dependency group: 'org.yaml', name: 'snakeyaml', version: '2.1'
 
     dependencySet(group: 'com.fasterxml.jackson.core', version: '2.15.0') {
       entry 'jackson-databind'
