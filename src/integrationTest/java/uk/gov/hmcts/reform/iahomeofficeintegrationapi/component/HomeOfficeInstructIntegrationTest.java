@@ -13,15 +13,18 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_INSTRUCT_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import groovy.util.logging.Slf4j;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
+import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.CallbackForTest.CallbackForTestBuilder;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.IaCaseHomeOfficeIntegrationApiClient;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.PreSubmitCallbackResponseForTest;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.StaticPortWiremockFactory;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithHomeOfficeAuthStub;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithHomeOfficeInstructStub;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithHomeOfficeStatusSearchStub;
@@ -49,7 +52,8 @@ public class HomeOfficeInstructIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-caseofficer"})
-    public void shouldSendRequestEvidenceNotification() throws Exception {
+    public void shouldSendRequestEvidenceNotification(@WiremockResolver
+        .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         addServiceAuthStub(server);
         addUserInfoStub(server);
@@ -88,7 +92,8 @@ public class HomeOfficeInstructIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-caseofficer"})
-    public void shouldHandle500ErrorResponse() throws Exception {
+    public void shouldHandle500ErrorResponse(@WiremockResolver
+        .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         addServiceAuthStub(server);
         addUserInfoStub(server);
@@ -112,7 +117,8 @@ public class HomeOfficeInstructIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-caseofficer"})
-    public void shouldHandle503ServiceUnavailableErrorResponse() throws Exception {
+    public void shouldHandle503ServiceUnavailableErrorResponse(@WiremockResolver
+        .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         addServiceAuthStub(server);
         addUserInfoStub(server);
@@ -136,7 +142,8 @@ public class HomeOfficeInstructIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-caseofficer"})
-    public void shouldHandle500InternalServerErrorResponse() throws Exception {
+    public void shouldHandle500InternalServerErrorResponse(@WiremockResolver
+        .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         addServiceAuthStub(server);
         addUserInfoStub(server);
@@ -160,7 +167,8 @@ public class HomeOfficeInstructIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-caseofficer"})
-    public void shouldHandle503ServiceUnavailableErrorResponseOnTokenRequest() throws Exception {
+    public void shouldHandle503ServiceUnavailableErrorResponseOnTokenRequest(@WiremockResolver
+        .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         addServiceAuthStub(server);
         addUserInfoStub(server);

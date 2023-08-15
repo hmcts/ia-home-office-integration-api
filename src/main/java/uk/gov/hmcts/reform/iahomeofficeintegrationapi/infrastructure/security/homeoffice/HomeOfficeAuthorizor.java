@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.h
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,9 @@ public class HomeOfficeAuthorizor {
         log.info("Requesting JWT token from Home Office: {}", baseUrl + tokenPath);
 
         String response = homeOfficeTokenApi.getAuthorizationToken(body);
+        if (StringUtils.isBlank(response)) {
+            log.error("The response from the Home Office Auth Token Api is empty. This will cause exceptions");
+        }
 
         return "Bearer " + extractAccessToken(response);
     }
