@@ -309,7 +309,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.2'
 
-  compile group: 'com.github.ben-manes.caffeine', name: 'caffeine'
+  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine'
   compileOnly 'org.projectlombok:lombok:1.18.28'
   annotationProcessor 'org.projectlombok:lombok:1.18.28'
   implementation group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
