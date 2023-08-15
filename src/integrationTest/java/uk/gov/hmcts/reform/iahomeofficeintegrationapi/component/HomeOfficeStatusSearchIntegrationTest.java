@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.component;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.AsylumCaseForTest.anAsylumCase;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.CallbackForTest.CallbackForTestBuilder.callback;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
@@ -12,7 +12,6 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
 import groovy.util.logging.Slf4j;
 import java.util.Collections;
 import java.util.Optional;
@@ -21,18 +20,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.CallbackForTest.CallbackForTestBuilder;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.IaCaseHomeOfficeIntegrationApiClient;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.PreSubmitCallbackResponseForTest;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.StaticPortWiremockFactory;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithHomeOfficeAuthStub;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithHomeOfficeInstructStub;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithHomeOfficeStatusSearchStub;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithIdamStub;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.UserDetailsProvider;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ApplicationStatus;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeCaseStatus;
@@ -61,8 +57,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
-    public void shouldRetirieveHomeOfficeUserDetails(@WiremockResolver
-        .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
+    public void shouldRetirieveHomeOfficeUserDetails() throws Exception {
 
         final String homeOfficeReference = "CustRef123";
 
@@ -98,20 +93,17 @@ public class HomeOfficeStatusSearchIntegrationTest
         final Optional<HomeOfficeCaseStatus> homeOfficeCaseStatus
             = asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class);
         assertTrue(homeOfficeCaseStatus.isPresent());
-        if (homeOfficeCaseStatus.isPresent()) {
-            Person person = homeOfficeCaseStatus.get().getPerson();
-            assertNotNull(person);
-            assertEquals(person.getGivenName(), "Capability");
-            assertEquals(person.getFamilyName(), "Smith");
-            assertEquals(person.getNationality().getDescription(), "Canada");
-            assertEquals(person.getFullName(), "Capability Smith");
-        }
+        Person person = homeOfficeCaseStatus.get().getPerson();
+        assertNotNull(person);
+        assertEquals(person.getGivenName(), "Capability");
+        assertEquals(person.getFamilyName(), "Smith");
+        assertEquals(person.getNationality().getDescription(), "Canada");
+        assertEquals(person.getFullName(), "Capability Smith");
     }
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
-    public void shouldRetirieveHomeOfficeUserDetailsWithNullValue(@WiremockResolver
-        .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
+    public void shouldRetirieveHomeOfficeUserDetailsWithNullValue() throws Exception {
 
         final String homeOfficeReference = "CustRef000";
 
@@ -144,38 +136,13 @@ public class HomeOfficeStatusSearchIntegrationTest
         assertEquals(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class), Optional.of(FAIL));
         final Optional<HomeOfficeCaseStatus> homeOfficeCaseStatus
             = asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class);
-        assertTrue(!homeOfficeCaseStatus.isPresent());
-        if (homeOfficeCaseStatus.isPresent()) {
-            HomeOfficeCaseStatus caseStatus = homeOfficeCaseStatus.get();
-            Person person = caseStatus.getPerson();
-            assertNotNull(person);
-            assertNull(person.getGivenName());
-            assertNull(person.getFamilyName());
-            assertNull(person.getNationality());
-            assertNull(person.getFullName());
-            ApplicationStatus applicationStatus = caseStatus.getApplicationStatus();
-            assertNull(applicationStatus.getHomeOfficeMetadata());
-            assertNull(applicationStatus.getDecisionCommunication());
-            assertNull(applicationStatus.getRoleSubType());
-            assertNull(applicationStatus.getDecisionType());
-            assertNull(applicationStatus.getClaimReasonType());
-            assertNull(applicationStatus.getApplicationType());
-            assertNull(applicationStatus.getRejectionReasons());
-            assertEquals("", caseStatus.getDisplayRejectionReasons());
-            assertNull(caseStatus.getDisplayDecisionDate());
-            assertNull(caseStatus.getDisplayDecisionSentDate());
-            assertNull(caseStatus.getDisplayMetadataValueBoolean());
-            assertNull(caseStatus.getDisplayMetadataValueDateTime());
-            assertEquals("00/00/0", caseStatus.getDisplayDateOfBirth());
-        }
-
+        assertTrue(homeOfficeCaseStatus.isEmpty());
     }
     
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
-    public void shouldHandleWhenNoInvolvementsFound(@WiremockResolver
-        .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
+    public void shouldHandleWhenNoInvolvementsFound() throws Exception {
 
         final String homeOfficeReference = "1212-0099-0036-2016";
 
@@ -200,8 +167,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
-    public void shouldHandleWhenExtraFieldsAreSent(@WiremockResolver
-        .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
+    public void shouldHandleWhenExtraFieldsAreSent() throws Exception {
 
         final String homeOfficeReference = "extra-fields-ref-number";
 
@@ -237,21 +203,18 @@ public class HomeOfficeStatusSearchIntegrationTest
         final Optional<HomeOfficeCaseStatus> homeOfficeCaseStatus =
             asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class);
         assertTrue(homeOfficeCaseStatus.isPresent());
-        if (homeOfficeCaseStatus.isPresent()) {
-            Person person = homeOfficeCaseStatus.get().getPerson();
-            assertNotNull(person);
-            assertEquals(person.getGivenName(), "Capability");
-            assertEquals(person.getFamilyName(), "Smith");
-            assertEquals(person.getNationality().getDescription(), "Canada");
-            assertEquals(person.getFullName(), "Capability Smith");
-        }
+        Person person = homeOfficeCaseStatus.get().getPerson();
+        assertNotNull(person);
+        assertEquals(person.getGivenName(), "Capability");
+        assertEquals(person.getFamilyName(), "Smith");
+        assertEquals(person.getNationality().getDescription(), "Canada");
+        assertEquals(person.getFullName(), "Capability Smith");
     }
 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
-    public void shouldHandle400InternalSystemError(@WiremockResolver
-        .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
+    public void shouldHandle400InternalSystemError() throws Exception {
 
         final String homeOfficeReference = "1212-0099-0036-1000";
 
@@ -276,8 +239,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
-    public void shouldHandle400BadRequestError(@WiremockResolver
-        .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
+    public void shouldHandle400BadRequestError() throws Exception {
 
         final String homeOfficeReference = "1212-0099-0036-XXXX";
 
@@ -302,8 +264,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
-    public void shouldHandle500ServerError(@WiremockResolver
-        .Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
+    public void shouldHandle500ServerError() throws Exception {
 
         final String homeOfficeReference = "1212-0099-0036-0500";
 
