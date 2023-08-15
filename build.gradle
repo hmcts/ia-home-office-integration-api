@@ -3,7 +3,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath("org.yaml:snakeyaml:1.23")
+    classpath("org.yaml:snakeyaml:2.1")
     classpath("net.serenity-bdd:serenity-gradle-plugin:3.2.3")
   }
 }
@@ -297,7 +297,7 @@ dependencies {
   // CVE-2021-27568
   implementation group: 'net.minidev', name: 'json-smart', version: '2.3.1'
 
-  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.2'
+  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.15.2'
   implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
   implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
 
@@ -307,7 +307,7 @@ dependencies {
 
   implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.12.23'
   implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
-  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.2'
+  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.2.1'
 
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.28'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.28'
@@ -349,7 +349,7 @@ dependencies {
 
 
   //PACT testing
-  contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.0-jre'
+  contractTestImplementation group: 'com.google.guava', name: 'guava', version: '32.1.2-jre'
   contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.6.3'
   contractTestImplementation group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
   //pact contract testing
