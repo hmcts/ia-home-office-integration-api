@@ -211,17 +211,31 @@ dependencyCheck {
 }
 
 dependencyManagement {
+
+  dependency group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
+  dependency group: 'com.google.guava', name: 'guava', version: '32.1.2-jre'
+
+
   dependencies {
-    //CVE-2021-42550
-    dependencySet(group: 'ch.qos.logback', version: '1.2.10') {
-      entry 'logback-classic'
-      entry 'logback-core'
+    dependencySet(group: 'com.fasterxml.jackson.core', version: '2.15.0') {
+      entry 'jackson-databind'
+      entry 'jackson-core'
+      entry 'jackson-annotations'
     }
 
-    //CVE-2021-44228, CVE-2021-44832, CVE-2021-45046
-    dependencySet(group: 'org.apache.logging.log4j', version: '2.17.1') {
-      entry 'log4j-api'
-      entry 'log4j-to-slf4j'
+    dependencySet(group: 'com.fasterxml.jackson.dataformat', version: '2.15.0') {
+      entry 'jackson-dataformat-yaml'
+      entry 'jackson-dataformat-cbor'
+    }
+
+    dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.15.0') {
+      entry 'jackson-datatype-jsr310'
+      entry 'jackson-datatype-jdk8'
+    }
+
+    dependencySet(group: 'com.fasterxml.jackson.module', version: '2.15.0') {
+      entry 'jackson-module-parameter-names'
+      entry 'jackson-module-afterburner'
     }
   }
 }
