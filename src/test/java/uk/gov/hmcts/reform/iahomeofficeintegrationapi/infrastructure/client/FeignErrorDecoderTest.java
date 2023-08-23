@@ -11,8 +11,8 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.Request;
 import feign.Request.HttpMethod;
-import feign.RequestTemplate;
 import feign.Response;
 import feign.RetryableException;
 import feign.Util;
@@ -30,9 +30,6 @@ class FeignErrorDecoderTest {
     @Mock
     private Response response;
 
-    @Mock
-    private RequestTemplate requestTemplate;
-
     private FeignErrorDecoder feignErrorDecoder;
 
     @BeforeEach
@@ -49,7 +46,7 @@ class FeignErrorDecoderTest {
             .status(500)
             .reason("Internal server error")
             .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
-                null, Util.UTF_8, requestTemplate))
+                Request.Body.empty(), null))
             .body("Internal server error", Util.UTF_8)
             .build();
 
@@ -64,7 +61,7 @@ class FeignErrorDecoderTest {
             .status(403)
             .reason("Forbidden")
             .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
-                null, Util.UTF_8, requestTemplate))
+                    Request.Body.empty(), null))
             .body("Authorization failed", Util.UTF_8)
             .build();
 
@@ -79,7 +76,7 @@ class FeignErrorDecoderTest {
             .status(404)
             .reason("Not found")
             .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
-                null, Util.UTF_8, requestTemplate))
+                    Request.Body.empty(), null))
             .body("No data found", Util.UTF_8)
             .build();
 
@@ -94,7 +91,7 @@ class FeignErrorDecoderTest {
             .status(400)
             .reason("Bad request")
             .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
-                null, Util.UTF_8, requestTemplate))
+                    Request.Body.empty(), null))
             .body("Bad request data".getBytes())
             .build();
 
@@ -113,7 +110,7 @@ class FeignErrorDecoderTest {
             .status(400)
             .reason("Bad request")
             .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
-                null, Util.UTF_8, requestTemplate))
+                    Request.Body.empty(), null))
             .body(body)
             .build();
 
@@ -128,7 +125,7 @@ class FeignErrorDecoderTest {
             .status(400)
             .reason("Bad request")
             .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
-                null, Util.UTF_8, requestTemplate))
+                    Request.Body.empty(), null))
             .body(getErrorDetail())
             .build();
 
