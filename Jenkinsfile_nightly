@@ -57,22 +57,26 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withNightlyPipeline(type, product, component) {
-  env.TEST_URL = params.URL_TO_TEST
-  env.Rules = params.SecurityRules
+    env.TEST_URL = params.URL_TO_TEST
+    env.Rules = params.SecurityRules
 
-  env.IA_IDAM_REDIRECT_URI = "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
-  env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
-  env.OPEN_ID_IDAM_URL = "https://idam-web-public.aat.platform.hmcts.net"
-  env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-  env.HOME_OFFICE_ENDPOINT = "http://ia-home-office-mock-api-aat.service.core-compute-aat.internal"
+    env.IA_IDAM_REDIRECT_URI = "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+    env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
+    env.OPEN_ID_IDAM_URL = "https://idam-web-public.aat.platform.hmcts.net"
+    env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    env.HOME_OFFICE_ENDPOINT = "http://ia-home-office-mock-api-aat.service.core-compute-aat.internal"
 
-  enableAksStagingDeployment()
-  disableLegacyDeployment()
-  loadVaultSecrets(secrets)
+    enableAksStagingDeployment()
+    disableLegacyDeployment()
+    loadVaultSecrets(secrets)
 
-  enableSecurityScan()
-  enableMutationTest()
-  enableSlackNotifications('#ia-tech')
-  enableFullFunctionalTest()
+    enableFortifyScan()
+    enableSecurityScan()
+    enableMutationTest()
+    enableSlackNotifications('#ia-tech')
+    enableFullFunctionalTest()
 
+    after('fortify-scan') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+    }
 }
