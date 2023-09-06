@@ -22,7 +22,8 @@
     </suppress>
     <!-- The following CVEs are suppressed for the purpose of getting the current PR onto the preview environment
    They should still be addressed -->
-    <suppress until="2023-08-31">
-        <cve>CVE-2023-35116</cve><!-- 2023-08-02 Version 2.15.2 of jackson-databind is still vulnerable. Check again once a new version is available -->
+    <suppress until="2023-09-30">
+        <cve>CVE-2023-35116</cve><!-- 2023-09-04 Version 2.15.2 of jackson-databind is still vulnerable. Check again once a new version is available -->
+        <cve>CVE-2023-41080</cve><!-- 2023-09-05 Apache Tomcat vulnerability -->
     </suppress>
 </suppressions>
