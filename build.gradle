@@ -30,7 +30,7 @@ apply plugin: 'project-report'
 
 def versions = [
         junit              : '5.8.2',
-        junitPlatform      : '1.7.2',
+        junitPlatform      : '1.8.0',
         gradlePitest       : '1.9.0',
         pact_version       : '4.1.38',
         pitest             : '1.9.0',
@@ -323,6 +323,8 @@ dependencies {
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc
 
+  implementation group: 'org.apiguardian', name:'apiguardian-api', version: '1.0.0'
+
   // CVE-2019-17195
   implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.22'
 
@@ -389,8 +391,9 @@ dependencies {
   contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   contractTestImplementation group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
   //pact contract testing
-  contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: '3.5.24'
-  contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: '3.5.24'
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
   contractTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
