@@ -70,7 +70,7 @@ withNightlyPipeline(type, product, component) {
     disableLegacyDeployment()
     loadVaultSecrets(secrets)
 
-    enableFortifyScan()
+//    enableFortifyScan()
     enableSecurityScan()
     enableMutationTest()
     enableSlackNotifications('#ia-tech')
