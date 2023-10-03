@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import au.com.dius.pact.consumer.MockServer;
-import au.com.dius.pact.core.model.annotations.Pact;;
+import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
