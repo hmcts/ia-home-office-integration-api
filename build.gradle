@@ -423,7 +423,7 @@ task runAndPublishConsumerPactTests(type: Test) {
 
 }
 
-runAndPublishConsumerPactTests.finalizedBy pactPublish
+//runAndPublishConsumerPactTests.finalizedBy pactPublish
 
 pact {
   broker {
