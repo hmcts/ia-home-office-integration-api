@@ -416,11 +416,14 @@ project.ext {
   pacticipantVersion = getCheckedOutGitCommitHash()
 }
 
-task runAndPublishConsumerPactTests(type: Test) {
-  logger.lifecycle("Runs pact Tests")
+task runAndPublishConsumerPactTests(type: Test, description: 'Publish pact test to broker.', group: 'Verification') {
+  onlyIf {
+    return System.env.SKIP_CONTRACT_TESTS == null || System.env.SKIP_CONTRACT_TESTS == 'false'
+  }
+  useJUnitPlatform()
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
-
+  systemProperty 'pact.rootDir', "pacts"
 }
 
 runAndPublishConsumerPactTests.finalizedBy pactPublish
