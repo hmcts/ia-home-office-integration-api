@@ -423,15 +423,15 @@ task runAndPublishConsumerPactTests(type: Test) {
 
 }
 
-//runAndPublishConsumerPactTests.finalizedBy pactPublish
+runAndPublishConsumerPactTests.finalizedBy pactPublish
 
 pact {
   broker {
     pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
   }
   publish {
-    pactDirectory = "target/pacts"
-    tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
+    pactDirectory = 'pacts'
+    tags = [System.getenv("PACT_BRANCH_NAME") ?:'Dev']
     version = project.pacticipantVersion
   }
 }
