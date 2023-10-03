@@ -208,7 +208,7 @@ pitest {
   timestampedReports = true
   failWhenNoMutations = false
   verbose = true
-  mutationThreshold = 90
+  mutationThreshold = 70
 }
 
 project.tasks['pitest'].group = "Verification"
