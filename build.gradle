@@ -196,7 +196,6 @@ sonarqube {
 project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
 
 pitest {
-  print('./gradlew --version'.execute().text.trim())
   junit5PluginVersion = '1.1.2'
   targetClasses = ['uk.gov.hmcts.reform.iahomeofficeintegrationapi.*']
   excludedClasses = [
@@ -392,6 +391,8 @@ dependencies {
   contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   contractTestImplementation group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
   //pact contract testing
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-model', version: '3.6.15'
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
