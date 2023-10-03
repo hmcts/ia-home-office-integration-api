@@ -191,9 +191,9 @@ public class CcdScenarioRunnerTest {
                             )
                     );
                     break;
-                } catch(Error | RetryableException e) {
+                } catch (Error | RetryableException e) {
                     System.out.println("Scenario failed with error " + e.getMessage());
-                };
+                }
             }
         }
         System.out.println((char) 27 + "[36m" + "-------------------------------------------------------------------");
