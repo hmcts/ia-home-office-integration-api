@@ -76,8 +76,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                     response.status(),
                     methodKey,
                     response.reason());
-                throw new RetryableException(response.status(), response.reason(), response.request().httpMethod(),
-                    null, response.request());
+                throw new RetryableException(response.status(), response.reason(), response.request().httpMethod(), null, response.request());
 
             default:
                 log.error("StatusCode: {}, methodKey: {}, reason: {}",
