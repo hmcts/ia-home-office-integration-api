@@ -90,6 +90,30 @@ withNightlyPipeline(type, product, component) {
             builder.gradle('integration')
             builder.gradle('smoke')
         } finally {
+            publishHTML target: [
+                    allowMissing         : true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll              : true,
+                    reportDir            : "build/reports/tests/test",
+                    reportFiles          : "index.html",
+                    reportName           : "IAC Home Office Integration Unit Test Report"
+            ]
+            publishHTML target: [
+                    allowMissing         : true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll              : true,
+                    reportDir            : "build/reports/tests/smoke",
+                    reportFiles          : "index.html",
+                    reportName           : "IAC Home Office Integration Smoke Test Report"
+            ]
+            publishHTML target: [
+                    allowMissing         : true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll              : true,
+                    reportDir            : "build/reports/tests/integration",
+                    reportFiles          : "index.html",
+                    reportName           : "IAC Home Office Integration Integration Test Report"
+            ]
             junit '**/test-results/**/*.xml'
         }
     }
@@ -114,30 +138,6 @@ withNightlyPipeline(type, product, component) {
                 reportFiles          : 'index.html',
                 reportName           : 'IAC Home Office Integration Functional Test Report'
         ])
-        publishHTML target: [
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports/tests/test",
-                reportFiles          : "index.html",
-                reportName           : "IAC Home Office Integration Unit Test Report"
-        ]
-        publishHTML target: [
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports/tests/smoke",
-                reportFiles          : "index.html",
-                reportName           : "IAC Home Office Integration Smoke Test Report"
-        ]
-        publishHTML target: [
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports/tests/integration",
-                reportFiles          : "index.html",
-                reportName           : "IAC Home Office Integration Integration Test Report"
-        ]
 
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/build/reports/**/*'
