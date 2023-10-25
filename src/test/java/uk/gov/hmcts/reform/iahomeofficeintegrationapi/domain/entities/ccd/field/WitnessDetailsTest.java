@@ -30,14 +30,14 @@ public class WitnessDetailsTest {
     }
 
     @Test
-    public void should_able_to_initiate_witness_name_only(){
+    public void should_able_to_initiate_witness_name_only() {
         witnessDetails = new WitnessDetails(witnessName);
 
         Assertions.assertEquals(witnessName, witnessDetails.getWitnessName());
     }
 
     @Test
-    public void should_able_to_initiate_witness_full_name(){
+    public void should_able_to_initiate_witness_full_name() {
         witnessDetails = new WitnessDetails(witnessName, witnessFamilyName);
 
         Assertions.assertEquals(witnessName, witnessDetails.getWitnessName());
