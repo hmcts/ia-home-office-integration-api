@@ -22,7 +22,7 @@ public class WitnessDetailsTest {
 
     @Test
     public void should_hold_onto_values() {
-        witnessDetails = new WitnessDetails(witnessPartyId, witnessName, witnessFamilyName);
+        witnessDetails = new WitnessDetails(witnessPartyId, witnessName, witnessFamilyName, null);
 
         Assertions.assertEquals(witnessName, witnessDetails.getWitnessName());
         Assertions.assertEquals(witnessFamilyName, witnessDetails.getWitnessFamilyName());
