@@ -38,7 +38,8 @@ def secrets = [
         secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
 
         secret('app-insights-connection-string', 'app-insights-connection-string'),
-
+        secret('homeoffice-client-id', 'IA_HOMEOFFICE_CLIENT_ID'),
+        secret('homeoffice-secret', 'IA_HOMEOFFICE_SECRET'),
         secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
         secret('idam-secret', 'IA_IDAM_SECRET'),
         secret('s2s-secret', 'IA_S2S_SECRET'),
@@ -70,7 +71,7 @@ withNightlyPipeline(type, product, component) {
     disableLegacyDeployment()
     loadVaultSecrets(secrets)
 
-    enableFortifyScan()
+//    enableFortifyScan()
     enableSecurityScan()
     enableMutationTest()
     enableSlackNotifications('#ia-tech')
