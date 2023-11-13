@@ -127,7 +127,6 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
-  failFast = true
 }
 
 task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
@@ -205,7 +204,7 @@ pitest {
   ]
   threads = 10
   outputFormats = ['XML', 'HTML']
-  timestampedReports = true
+  timestampedReports = false
   failWhenNoMutations = false
   verbose = true
   mutationThreshold = 70
