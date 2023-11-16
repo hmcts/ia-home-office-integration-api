@@ -93,6 +93,7 @@ security:
       - "changeDirectionDueDate"
     caseworker-ia-system:
       - "listCase"
+      - "editCaseListing"
 
 #OpenID
 idam:
