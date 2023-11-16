@@ -91,6 +91,8 @@ security:
       - "residentJudgeFtpaDecision"
       - "endAppeal"
       - "changeDirectionDueDate"
+    caseworker-ia-system:
+      - "listCase"
 
 #OpenID
 idam:
