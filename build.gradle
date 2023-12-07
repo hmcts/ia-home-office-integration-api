@@ -336,6 +336,9 @@ dependencies {
   implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
   implementation group: 'commons-io', name: 'commons-io', version: '2.15.1'
 
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13'
+
   implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.14.10'
   implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.9'
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.3.0'
@@ -348,7 +351,6 @@ dependencies {
   testCompileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
 
-  testImplementation libraries.junit5
   testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.7.18') {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
