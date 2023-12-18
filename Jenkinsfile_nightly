@@ -107,7 +107,7 @@ withNightlyPipeline(type, product, component) {
                     keepAll              : true,
                     reportDir            : "build/reports/tests/test",
                     reportFiles          : "index.html",
-                    reportName           : "IAC Home Office Integration Unit Test Report"
+                    reportName           : "Unit Test Report"
             ]
             publishHTML target: [
                     allowMissing         : true,
@@ -115,7 +115,7 @@ withNightlyPipeline(type, product, component) {
                     keepAll              : true,
                     reportDir            : "build/reports/tests/smoke",
                     reportFiles          : "index.html",
-                    reportName           : "IAC Home Office Integration Smoke Test Report"
+                    reportName           : "Smoke Test Report"
             ]
             publishHTML target: [
                     allowMissing         : true,
@@ -123,7 +123,7 @@ withNightlyPipeline(type, product, component) {
                     keepAll              : true,
                     reportDir            : "build/reports/tests/integration",
                     reportFiles          : "index.html",
-                    reportName           : "IAC Home Office Integration Integration Test Report"
+                    reportName           : "Integration Test Report"
             ]
             junit '**/test-results/**/*.xml'
         }
@@ -136,7 +136,7 @@ withNightlyPipeline(type, product, component) {
                 keepAll              : true,
                 reportDir            : "build/reports/pitest",
                 reportFiles          : 'index.html',
-                reportName           : 'IAC Timed Event Service Mutation Test Report'
+                reportName           : 'Mutation Test Report'
         ])
     }
 
@@ -147,7 +147,7 @@ withNightlyPipeline(type, product, component) {
                 keepAll              : true,
                 reportDir            : "build/reports/tests/functional",
                 reportFiles          : 'index.html',
-                reportName           : 'IAC Home Office Integration Functional Test Report'
+                reportName           : 'Functional Test Report'
         ])
 
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
