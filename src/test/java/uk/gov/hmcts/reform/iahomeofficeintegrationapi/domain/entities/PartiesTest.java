@@ -12,6 +12,8 @@ class PartiesTest {
         assertEquals("respondent", Parties.RESPONDENT.toString());
         assertEquals("both", Parties.BOTH.toString());
         assertEquals("appellant", Parties.APPELLANT.toString());
+        assertEquals("appellantAndRespondent", Parties.APPELLANT_AND_RESPONDENT.toString());
+
     }
 
     @Test
