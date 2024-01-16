@@ -18,6 +18,6 @@ class PartiesTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(4, Parties.values().length);
+        assertEquals(5, Parties.values().length);
     }
 }
