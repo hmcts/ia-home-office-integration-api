@@ -20,19 +20,8 @@
             ]]</notes>
         <cve>CVE-2022-45688</cve>
     </suppress>
-    <!-- The following CVEs are suppressed for the purpose of getting the current PR onto the preview environment
-   They should still be addressed -->
-    <suppress until="2024-02-29">
-        <cve>CVE-2023-35116</cve><!-- 2023-08-02 Version 2.15.2 of jackson-databind is still vulnerable. Check again once a new version is available -->
-        <cve>CVE-2023-41080</cve>
-        <cve>CVE-2023-44487</cve>
-        <cve>CVE-2023-42794</cve>
-        <cve>CVE-2023-42795</cve>
-        <cve>CVE-2023-45648</cve>
+    <suppress until="2024-01-31">
+        <notes>Suppress until org.springframework.cloud and uk.gov.hmcts.reform/service-auth-provider-client upgrade their org.bouncycastle dependents</notes>
         <cve>CVE-2023-33202</cve>
-        <cve>CVE-2023-6378</cve>
-        <cve>CVE-2023-6481</cve>
-        <cve>CVE-2023-34055</cve>
-        <cve>CVE-2023-46589</cve>
     </suppress>
 </suppressions>
