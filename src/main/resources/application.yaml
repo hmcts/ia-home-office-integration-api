@@ -87,8 +87,7 @@ security:
       - "applyForFTPARespondent"
     caseworker-ia-iacjudge:
       - "sendDecisionAndReasons"
-      - "leadershipJudgeFtpaDecision"
-      - "residentJudgeFtpaDecision"
+      - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
 

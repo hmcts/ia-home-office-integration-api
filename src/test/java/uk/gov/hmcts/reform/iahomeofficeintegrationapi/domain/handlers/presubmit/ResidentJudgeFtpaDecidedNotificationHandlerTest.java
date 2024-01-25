@@ -59,13 +59,13 @@ class ResidentJudgeFtpaDecidedNotificationHandlerTest extends AbstractNotificati
     @MockitoSettings(strictness = Strictness.WARN)
     void check_handler_returns_case_data_for_valid_input(String applicantType) {
 
-        setupCase(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        setupCase(Event.DECIDE_FTPA_APPLICATION);
 
         when(asylumCase.read(AsylumCaseDefinition.FTPA_APPLICANT_TYPE, String.class))
             .thenReturn(Optional.of(applicantType));
 
         when(ftpaDecidedNotificationsHelper.handleFtpaDecidedNotification(
-            asylumCase, notificationsHelper, homeOfficeInstructService, Event.RESIDENT_JUDGE_FTPA_DECISION, "RJ_")
+            asylumCase, notificationsHelper, homeOfficeInstructService, Event.DECIDE_FTPA_APPLICATION, "RJ_")
         ).thenReturn("OK");
 
         PreSubmitCallbackResponse<AsylumCase> response =
@@ -83,13 +83,13 @@ class ResidentJudgeFtpaDecidedNotificationHandlerTest extends AbstractNotificati
     @MockitoSettings(strictness = Strictness.WARN)
     void check_handler_returns_error_status(String applicantType) {
 
-        setupCase(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        setupCase(Event.DECIDE_FTPA_APPLICATION);
 
         when(asylumCase.read(AsylumCaseDefinition.FTPA_APPLICANT_TYPE, String.class))
             .thenReturn(Optional.of(applicantType));
 
         when(ftpaDecidedNotificationsHelper.handleFtpaDecidedNotification(
-            asylumCase, notificationsHelper, homeOfficeInstructService, Event.RESIDENT_JUDGE_FTPA_DECISION, "RJ_")
+            asylumCase, notificationsHelper, homeOfficeInstructService, Event.DECIDE_FTPA_APPLICATION, "RJ_")
         ).thenReturn("FAIL");
 
         PreSubmitCallbackResponse<AsylumCase> response =
@@ -131,7 +131,7 @@ class ResidentJudgeFtpaDecidedNotificationHandlerTest extends AbstractNotificati
 
                 boolean canHandle = residentJudgeFtpaDecidedNotificationHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.RESIDENT_JUDGE_FTPA_DECISION
+                if (event == Event.DECIDE_FTPA_APPLICATION
                     && callbackStage == ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
