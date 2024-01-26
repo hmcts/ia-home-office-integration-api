@@ -17,13 +17,13 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.Notificatio
 
 @Slf4j
 @Component
-public class ResidentJudgeFtpaDecidedNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class DecideFtpaApplicationNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private HomeOfficeInstructService homeOfficeInstructService;
     private NotificationsHelper notificationsHelper;
     private FtpaDecidedNotificationsHelper ftpaDecidedNotificationsHelper;
 
-    public ResidentJudgeFtpaDecidedNotificationHandler(
+    public DecideFtpaApplicationNotificationHandler(
         HomeOfficeInstructService homeOfficeInstructService,
         NotificationsHelper notificationsHelper,
         FtpaDecidedNotificationsHelper ftpaDecidedNotificationsHelper

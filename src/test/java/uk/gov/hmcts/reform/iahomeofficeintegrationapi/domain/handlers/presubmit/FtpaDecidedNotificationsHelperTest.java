@@ -76,7 +76,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
 
         final AppealDecidedInstructMessage instructMessage = appealDecidedInstructMessageCaptor.getValue();
 
-        assertNotificationInstructMessageResidentJudge(instructMessage, applicantType, ftpaDecisionOutcome, null);
+        assertNotificationInstructMessageDecideFtpaApplication(instructMessage, applicantType, ftpaDecisionOutcome, null);
 
         verify(asylumCase, times(1)).write(
             valueOf(format("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS", applicantType.toUpperCase())), "OK");
@@ -118,7 +118,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
 
         final AppealDecidedInstructMessage instructMessage = appealDecidedInstructMessageCaptor.getValue();
 
-        assertNotificationInstructMessageResidentJudge(
+        assertNotificationInstructMessageDecideFtpaApplication(
             instructMessage, applicantType, ftpaDecisionOutcome, remadeDecision);
 
         verify(asylumCase, times(1)).write(
@@ -151,7 +151,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
         verify(homeOfficeInstructService).sendNotification(appealDecidedInstructMessageCaptor.capture());
 
         final AppealDecidedInstructMessage instructMessage = appealDecidedInstructMessageCaptor.getValue();
-        assertNotificationInstructMessageResidentJudge(instructMessage, applicantType, ftpaDecisionOutcome, null);
+        assertNotificationInstructMessageDecideFtpaApplication(instructMessage, applicantType, ftpaDecisionOutcome, null);
 
         verify(asylumCase, times(1)).write(
             valueOf(format("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS", applicantType.toUpperCase())), "FAIL");
@@ -186,7 +186,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
         ).thenReturn(Optional.of(ftpaDecisionOutcome));
     }
 
-    private void assertNotificationInstructMessageResidentJudge(
+    private void assertNotificationInstructMessageDecideFtpaApplication(
         AppealDecidedInstructMessage instructMessage, String applicantType,
         String ftpaDecisionOutcome, String remadeDecision
     ) {
