@@ -33,7 +33,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeI
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class DecideFtpaApplicationNotificationHandlerTest extends AbstractNotificationsHandlerTestBase {
+class ResidentJudgeFtpaDecidedNotificationHandlerTest extends AbstractNotificationsHandlerTestBase {
 
     @Mock
     private HomeOfficeInstructService homeOfficeInstructService;
@@ -44,12 +44,12 @@ class DecideFtpaApplicationNotificationHandlerTest extends AbstractNotifications
     @Captor
     private ArgumentCaptor<AppealDecidedInstructMessage> appealDecidedInstructMessageCaptor;
 
-    private DecideFtpaApplicationNotificationHandler decideFtpaApplicationNotificationHandler;
+    private ResidentJudgeFtpaDecidedNotificationHandler residentJudgeFtpaDecidedNotificationHandler;
 
     @BeforeEach
     void setUp() {
-        decideFtpaApplicationNotificationHandler =
-            new DecideFtpaApplicationNotificationHandler(
+        residentJudgeFtpaDecidedNotificationHandler =
+            new ResidentJudgeFtpaDecidedNotificationHandler(
                 homeOfficeInstructService, notificationsHelper, ftpaDecidedNotificationsHelper
             );
     }
@@ -59,17 +59,17 @@ class DecideFtpaApplicationNotificationHandlerTest extends AbstractNotifications
     @MockitoSettings(strictness = Strictness.WARN)
     void check_handler_returns_case_data_for_valid_input(String applicantType) {
 
-        setupCase(Event.DECIDE_FTPA_APPLICATION);
+        setupCase(Event.RESIDENT_JUDGE_FTPA_DECISION);
 
         when(asylumCase.read(AsylumCaseDefinition.FTPA_APPLICANT_TYPE, String.class))
             .thenReturn(Optional.of(applicantType));
 
         when(ftpaDecidedNotificationsHelper.handleFtpaDecidedNotification(
-            asylumCase, notificationsHelper, homeOfficeInstructService, Event.DECIDE_FTPA_APPLICATION, "RJ_")
+            asylumCase, notificationsHelper, homeOfficeInstructService, Event.RESIDENT_JUDGE_FTPA_DECISION, "RJ_")
         ).thenReturn("OK");
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            decideFtpaApplicationNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+            residentJudgeFtpaDecidedNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
@@ -83,17 +83,17 @@ class DecideFtpaApplicationNotificationHandlerTest extends AbstractNotifications
     @MockitoSettings(strictness = Strictness.WARN)
     void check_handler_returns_error_status(String applicantType) {
 
-        setupCase(Event.DECIDE_FTPA_APPLICATION);
+        setupCase(Event.RESIDENT_JUDGE_FTPA_DECISION);
 
         when(asylumCase.read(AsylumCaseDefinition.FTPA_APPLICANT_TYPE, String.class))
             .thenReturn(Optional.of(applicantType));
 
         when(ftpaDecidedNotificationsHelper.handleFtpaDecidedNotification(
-            asylumCase, notificationsHelper, homeOfficeInstructService, Event.DECIDE_FTPA_APPLICATION, "RJ_")
+            asylumCase, notificationsHelper, homeOfficeInstructService, Event.RESIDENT_JUDGE_FTPA_DECISION, "RJ_")
         ).thenReturn("FAIL");
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            decideFtpaApplicationNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+            residentJudgeFtpaDecidedNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
@@ -106,7 +106,7 @@ class DecideFtpaApplicationNotificationHandlerTest extends AbstractNotifications
 
         when(callback.getEvent()).thenReturn(Event.UNKNOWN);
 
-        assertThatThrownBy(() -> decideFtpaApplicationNotificationHandler.handle(ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> residentJudgeFtpaDecidedNotificationHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -114,7 +114,7 @@ class DecideFtpaApplicationNotificationHandlerTest extends AbstractNotifications
     @Test
     void handling_should_throw_if_not_bound_to__about_to_submit__callback_stage() {
 
-        assertThatThrownBy(() -> decideFtpaApplicationNotificationHandler.handle(ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> residentJudgeFtpaDecidedNotificationHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -129,9 +129,9 @@ class DecideFtpaApplicationNotificationHandlerTest extends AbstractNotifications
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = decideFtpaApplicationNotificationHandler.canHandle(callbackStage, callback);
+                boolean canHandle = residentJudgeFtpaDecidedNotificationHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.DECIDE_FTPA_APPLICATION
+                if (event == Event.RESIDENT_JUDGE_FTPA_DECISION
                     && callbackStage == ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
@@ -147,19 +147,19 @@ class DecideFtpaApplicationNotificationHandlerTest extends AbstractNotifications
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> decideFtpaApplicationNotificationHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> residentJudgeFtpaDecidedNotificationHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> decideFtpaApplicationNotificationHandler.canHandle(ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> residentJudgeFtpaDecidedNotificationHandler.canHandle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> decideFtpaApplicationNotificationHandler.handle(null, callback))
+        assertThatThrownBy(() -> residentJudgeFtpaDecidedNotificationHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> decideFtpaApplicationNotificationHandler.handle(ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> residentJudgeFtpaDecidedNotificationHandler.handle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

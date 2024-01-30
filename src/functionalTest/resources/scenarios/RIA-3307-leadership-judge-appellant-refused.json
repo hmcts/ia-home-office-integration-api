@@ -1,19 +1,19 @@
 {
-  "description": "RIA-3307 Home Office notification: Resident judge record FTPA appellant decision - granted",
+  "description": "RIA-3307 Home Office notification: Leadership judge record FTPA appellant decision - refused",
   "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",
     "input": {
       "id": 1234,
-      "eventId": "residentJudgeFtpaDecision",
-      "state": "ftpaDecided",
+      "eventId": "leadershipJudgeFtpaDecision",
+      "state": "ftpaSubmitted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "homeOfficeReferenceNumber": "1212-0099-0062-8083",
           "ftpaApplicantType": "appellant",
-          "ftpaAppellantRjDecisionOutcomeType": "granted"
+          "ftpaAppellantDecisionOutcomeType": "refused"
         }
       }
     }
@@ -26,7 +26,7 @@
       "replacements": {
         "homeOfficeReferenceNumber": "1212-0099-0062-8083",
         "ftpaApplicantType": "appellant",
-        "ftpaAppellantRjDecisionOutcomeType": "granted",
+        "ftpaAppellantDecisionOutcomeType": "refused",
         "homeOfficeFtpaAppellantDecidedInstructStatus": "OK"
       }
     }
