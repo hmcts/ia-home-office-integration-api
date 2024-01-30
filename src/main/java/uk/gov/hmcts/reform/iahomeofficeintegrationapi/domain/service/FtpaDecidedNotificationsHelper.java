@@ -15,9 +15,9 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CourtOutcome;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CourtType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Outcome;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.DecideFtpaApplicationDecisionOutcomeType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.FtpaDecisionOutcomeType;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.FtpaResidentJudgeDecisionOutcomeType;
 
 
 @Slf4j
@@ -82,7 +82,7 @@ public class FtpaDecidedNotificationsHelper {
             if (!notificationStatus.equals("FAIL")) {
                 ftpaOutcome = judgePrefix.isEmpty()
                     ? getLeadershipJudgeFtpaOutcome(ftpaAppealDecision)
-                    : getDecideFtpaApplicationOutcome(ftpaAppealDecision);
+                    : getResidentJudgeFtpaOutcome(ftpaAppealDecision);
             }
 
             if (StringUtils.isEmpty(notificationStatus)) {
@@ -91,7 +91,7 @@ public class FtpaDecidedNotificationsHelper {
                     ? FtpaAppealDecidedNote.valueOf(
                         getLeadershipJudgeNoteId(ftpaApplicantType, ftpaAppealDecision)).getValue()
                     : FtpaAppealDecidedNote.valueOf(
-                        getDecideFtpaApplicationNoteId(asylumCase, ftpaApplicantType, ftpaAppealDecision)).getValue();
+                        getResidentJudgeNoteId(asylumCase, ftpaApplicantType, ftpaAppealDecision)).getValue();
 
                 final AppealDecidedInstructMessage bundleInstructMessage =
                     appealDecidedInstructMessage()
@@ -155,7 +155,7 @@ public class FtpaDecidedNotificationsHelper {
         return ftpaOutcome;
     }
 
-    private String getDecideFtpaApplicationNoteId(AsylumCase asylumCase, String ftpaApplicantType, String ftpaAppealDecision) {
+    private String getResidentJudgeNoteId(AsylumCase asylumCase, String ftpaApplicantType, String ftpaAppealDecision) {
 
         String noteId;
 
@@ -172,7 +172,7 @@ public class FtpaDecidedNotificationsHelper {
             case GRANTED:
             case PARTIALLY_GRANTED:
             case REFUSED:
-                noteId = DecideFtpaApplicationDecisionOutcomeType.from(ftpaAppealDecision).name()
+                noteId = FtpaResidentJudgeDecisionOutcomeType.from(ftpaAppealDecision).name()
                          + "_" + ftpaApplicantType.toUpperCase();
                 break;
             default:
@@ -181,7 +181,7 @@ public class FtpaDecidedNotificationsHelper {
         return noteId;
     }
 
-    private Outcome getDecideFtpaApplicationOutcome(final String ftpaAppealDecision) {
+    private Outcome getResidentJudgeFtpaOutcome(final String ftpaAppealDecision) {
 
         Outcome ftpaOutcome;
 
