@@ -4,7 +4,7 @@ import static java.util.Arrays.stream;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum FtpaResidentJudgeDecisionOutcomeType {
+public enum DecideFtpaApplicationDecisionOutcomeType {
     PARTIALLY_GRANTED("partiallyGranted"),
     GRANTED("granted"),
     REFUSED("refused"),
@@ -15,7 +15,7 @@ public enum FtpaResidentJudgeDecisionOutcomeType {
     @JsonValue
     private final String id;
 
-    FtpaResidentJudgeDecisionOutcomeType(String id) {
+    DecideFtpaApplicationDecisionOutcomeType(String id) {
         this.id = id;
     }
 
@@ -28,11 +28,11 @@ public enum FtpaResidentJudgeDecisionOutcomeType {
         return id;
     }
 
-    public static FtpaResidentJudgeDecisionOutcomeType from(String id) {
+    public static DecideFtpaApplicationDecisionOutcomeType from(String id) {
         return stream(values())
             .filter(v -> v.getId().equals(id))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(id + " not a FtpaResidentJudgeDecisionOutcomeType"));
+            .orElseThrow(() -> new IllegalArgumentException(id + " not a DecideFtpaApplicationDecisionOutcomeType"));
     }
 
 }

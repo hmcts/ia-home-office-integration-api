@@ -51,71 +51,6 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
     @ParameterizedTest
     @CsvSource(
         value = {
-            "appellant:granted", "appellant:partiallyGranted", "appellant:refused", "appellant:notAdmitted",
-            "respondent:granted", "respondent:partiallyGranted", "respondent:refused", "respondent:notAdmitted"
-        },
-        delimiter = ':'
-    )
-    @MockitoSettings(strictness = Strictness.WARN)
-    void check_helper_returns_case_data_for_valid_input_leadership_judge(
-        String applicantType, String ftpaDecisionOutcome
-    ) {
-
-        setupCase(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
-        setupCaseData();
-        setupHelperResponses();
-        setupFtpaDecisionData(applicantType, ftpaDecisionOutcome);
-
-        when(homeOfficeInstructService.sendNotification(any(AppealDecidedInstructMessage.class)))
-            .thenReturn("OK");
-
-        ftpaDecidedNotificationsHelper.handleFtpaDecidedNotification(
-            asylumCase, notificationsHelper, homeOfficeInstructService, null, "");
-
-        verify(homeOfficeInstructService).sendNotification(appealDecidedInstructMessageCaptor.capture());
-
-        final AppealDecidedInstructMessage instructMessage = appealDecidedInstructMessageCaptor.getValue();
-
-        assertNotificationInstructMessage(instructMessage, applicantType, ftpaDecisionOutcome);
-
-        verify(asylumCase, times(1)).write(
-            valueOf(format("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS", applicantType.toUpperCase())), "OK");
-
-    }
-
-    @ParameterizedTest
-    @CsvSource(
-        value = {
-            "appellant:granted", "appellant:partiallyGranted", "appellant:refused", "appellant:notAdmitted",
-            "respondent:granted", "respondent:partiallyGranted", "respondent:refused", "respondent:notAdmitted"
-        },
-        delimiter = ':'
-    )
-    @MockitoSettings(strictness = Strictness.WARN)
-    void check_helper_returns_error_status_leadership_judge(String applicantType, String ftpaDecisionOutcome) {
-
-        setupCase(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
-        setupCaseData();
-        setupHelperResponses();
-        setupFtpaDecisionData(applicantType, ftpaDecisionOutcome);
-        when(homeOfficeInstructService.sendNotification(any(AppealDecidedInstructMessage.class)))
-            .thenReturn("FAIL");
-
-        ftpaDecidedNotificationsHelper.handleFtpaDecidedNotification(
-            asylumCase, notificationsHelper, homeOfficeInstructService, null, "");
-
-        verify(homeOfficeInstructService).sendNotification(appealDecidedInstructMessageCaptor.capture());
-
-        final AppealDecidedInstructMessage instructMessage = appealDecidedInstructMessageCaptor.getValue();
-        assertNotificationInstructMessage(instructMessage, applicantType, ftpaDecisionOutcome);
-        verify(asylumCase, times(1)).write(
-            valueOf(format("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS", applicantType.toUpperCase())), "FAIL");
-
-    }
-
-    @ParameterizedTest
-    @CsvSource(
-        value = {
             "appellant:granted", "appellant:partiallyGranted", "appellant:refused", "appellant:reheardRule35",
             "appellant:reheardRule32", "respondent:granted", "respondent:partiallyGranted",
             "respondent:refused", "respondent:reheardRule35", "appellant:reheardRule32"
@@ -126,7 +61,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
     void check_helper_returns_case_data_for_valid_input_resident_judge(
         String applicantType, String ftpaDecisionOutcome) {
 
-        setupCase(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        setupCase(Event.DECIDE_FTPA_APPLICATION);
         setupCaseData();
         setupHelperResponses();
         setupFtpaRjDecisionData(applicantType, ftpaDecisionOutcome);
@@ -141,7 +76,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
 
         final AppealDecidedInstructMessage instructMessage = appealDecidedInstructMessageCaptor.getValue();
 
-        assertNotificationInstructMessageResidentJudge(instructMessage, applicantType, ftpaDecisionOutcome, null);
+        assertNotificationInstructMessageDecideFtpaApplication(instructMessage, applicantType, ftpaDecisionOutcome, null);
 
         verify(asylumCase, times(1)).write(
             valueOf(format("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS", applicantType.toUpperCase())), "OK");
@@ -161,7 +96,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
         String applicantType, String ftpaDecisionOutcome, String remadeDecision
     ) {
 
-        setupCase(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        setupCase(Event.DECIDE_FTPA_APPLICATION);
         setupCaseData();
         setupHelperResponses();
         setupFtpaRjDecisionData(applicantType, ftpaDecisionOutcome);
@@ -183,7 +118,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
 
         final AppealDecidedInstructMessage instructMessage = appealDecidedInstructMessageCaptor.getValue();
 
-        assertNotificationInstructMessageResidentJudge(
+        assertNotificationInstructMessageDecideFtpaApplication(
             instructMessage, applicantType, ftpaDecisionOutcome, remadeDecision);
 
         verify(asylumCase, times(1)).write(
@@ -203,7 +138,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
     @MockitoSettings(strictness = Strictness.WARN)
     void check_helper_returns_error_status_resident_judge(String applicantType, String ftpaDecisionOutcome) {
 
-        setupCase(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        setupCase(Event.DECIDE_FTPA_APPLICATION);
         setupCaseData();
         setupHelperResponses();
         setupFtpaRjDecisionData(applicantType, ftpaDecisionOutcome);
@@ -216,7 +151,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
         verify(homeOfficeInstructService).sendNotification(appealDecidedInstructMessageCaptor.capture());
 
         final AppealDecidedInstructMessage instructMessage = appealDecidedInstructMessageCaptor.getValue();
-        assertNotificationInstructMessageResidentJudge(instructMessage, applicantType, ftpaDecisionOutcome, null);
+        assertNotificationInstructMessageDecideFtpaApplication(instructMessage, applicantType, ftpaDecisionOutcome, null);
 
         verify(asylumCase, times(1)).write(
             valueOf(format("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS", applicantType.toUpperCase())), "FAIL");
@@ -232,7 +167,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
             .thenReturn(Optional.of(applicantType));
 
         final String notificationStatus = ftpaDecidedNotificationsHelper.handleFtpaDecidedNotification(
-            asylumCase, notificationsHelper, homeOfficeInstructService, Event.LEADERSHIP_JUDGE_FTPA_DECISION, "");
+            asylumCase, notificationsHelper, homeOfficeInstructService, Event.DECIDE_FTPA_APPLICATION, "");
 
         assertThat(notificationStatus).isEqualTo("FAIL");
 
@@ -240,32 +175,6 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
             valueOf(format("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS", applicantType.toUpperCase())), "FAIL");
 
     }
-
-
-    private void setupFtpaDecisionData(String applicantType, String ftpaDecisionOutcome) {
-
-        when(asylumCase.read(AsylumCaseDefinition.FTPA_APPLICANT_TYPE, String.class))
-            .thenReturn(Optional.of(applicantType));
-
-        when(asylumCase.read(
-            valueOf(format("FTPA_%s_DECISION_OUTCOME_TYPE", applicantType.toUpperCase())), String.class)
-        ).thenReturn(Optional.of(ftpaDecisionOutcome));
-    }
-
-    private void assertNotificationInstructMessage(
-        AppealDecidedInstructMessage instructMessage, String applicantType, String ftpaDecisionOutcome) {
-
-        assertThat(instructMessage.getConsumerReference()).isEqualTo(consumerReference);
-        assertThat(instructMessage.getMessageHeader()).isEqualTo(messageHeader);
-        assertThat(instructMessage.getHoReference()).isEqualTo(someDocumentReference);
-        assertThat(instructMessage.getNote())
-            .contains(FtpaAppealDecidedNote.fromId(ftpaDecisionOutcome + "_" + applicantType).getValue());
-
-        assertThat(instructMessage.getMessageType()).isEqualTo(MessageType.COURT_OUTCOME.name());
-        assertThat(instructMessage.getCourtOutcome().getCourtType()).isEqualTo(CourtType.FIRST_TIER);
-        assertThat(instructMessage.getCourtOutcome().getOutcome()).isIn(Arrays.asList(Outcome.values()));
-    }
-
 
     private void setupFtpaRjDecisionData(String applicantType, String ftpaDecisionOutcome) {
 
@@ -277,7 +186,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
         ).thenReturn(Optional.of(ftpaDecisionOutcome));
     }
 
-    private void assertNotificationInstructMessageResidentJudge(
+    private void assertNotificationInstructMessageDecideFtpaApplication(
         AppealDecidedInstructMessage instructMessage, String applicantType,
         String ftpaDecisionOutcome, String remadeDecision
     ) {

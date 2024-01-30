@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.RESIDENT_JUDGE_FTPA_DECISION;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.DECIDE_FTPA_APPLICATION;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,13 +17,13 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.Notificatio
 
 @Slf4j
 @Component
-public class ResidentJudgeFtpaDecidedNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class DecideFtpaApplicationNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private HomeOfficeInstructService homeOfficeInstructService;
     private NotificationsHelper notificationsHelper;
     private FtpaDecidedNotificationsHelper ftpaDecidedNotificationsHelper;
 
-    public ResidentJudgeFtpaDecidedNotificationHandler(
+    public DecideFtpaApplicationNotificationHandler(
         HomeOfficeInstructService homeOfficeInstructService,
         NotificationsHelper notificationsHelper,
         FtpaDecidedNotificationsHelper ftpaDecidedNotificationsHelper
@@ -39,7 +39,7 @@ public class ResidentJudgeFtpaDecidedNotificationHandler implements PreSubmitCal
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == RESIDENT_JUDGE_FTPA_DECISION);
+               && (callback.getEvent() == DECIDE_FTPA_APPLICATION);
     }
 
     @Override
