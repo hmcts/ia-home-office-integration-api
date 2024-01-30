@@ -39,7 +39,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdamUserDetails;
 
 @Slf4j
-public class HomeOfficeStatusSearchIntegrationTest
+class HomeOfficeStatusSearchIntegrationTest
     extends SpringBootIntegrationTest
     implements
         WithIdamStub, WithServiceAuthStub,
@@ -57,7 +57,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
-    public void shouldRetirieveHomeOfficeUserDetails() throws Exception {
+    void shouldRetirieveHomeOfficeUserDetails() throws Exception {
 
         final String homeOfficeReference = "CustRef123";
 
@@ -103,7 +103,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
-    public void shouldRetirieveHomeOfficeUserDetailsWithNullValue() throws Exception {
+    void shouldRetirieveHomeOfficeUserDetailsWithNullValue() throws Exception {
 
         final String homeOfficeReference = "CustRef000";
 
@@ -142,7 +142,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
-    public void shouldHandleWhenNoInvolvementsFound() throws Exception {
+    void shouldHandleWhenNoInvolvementsFound() throws Exception {
 
         final String homeOfficeReference = "1212-0099-0036-2016";
 
@@ -167,7 +167,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
-    public void shouldHandleWhenExtraFieldsAreSent() throws Exception {
+    void shouldHandleWhenExtraFieldsAreSent() throws Exception {
 
         final String homeOfficeReference = "extra-fields-ref-number";
 
@@ -214,7 +214,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
-    public void shouldHandle400InternalSystemError() throws Exception {
+    void shouldHandle400InternalSystemError() throws Exception {
 
         final String homeOfficeReference = "1212-0099-0036-1000";
 
@@ -239,7 +239,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
-    public void shouldHandle400BadRequestError() throws Exception {
+    void shouldHandle400BadRequestError() throws Exception {
 
         final String homeOfficeReference = "1212-0099-0036-XXXX";
 
@@ -264,7 +264,7 @@ public class HomeOfficeStatusSearchIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
-    public void shouldHandle500ServerError() throws Exception {
+    void shouldHandle500ServerError() throws Exception {
 
         final String homeOfficeReference = "1212-0099-0036-0500";
 

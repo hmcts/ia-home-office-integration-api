@@ -162,8 +162,8 @@ pmd {
   ruleSets = []
 //  ruleSetFiles = files("config/pmd/ruleset.xml")
   ruleSets = [
-      'category/java/errorprone.xml',
-      'category/java/bestpractices.xml'
+          'category/java/errorprone.xml',
+          'category/java/bestpractices.xml'
   ]
 }
 
@@ -271,13 +271,13 @@ repositories {
 }
 
 ext.libraries = [
-  junit5: [
-    "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
-    "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
-    "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
-    "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
-    "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
-  ]
+        junit5: [
+                "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
+                "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
+                "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
+                "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
+                "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
+        ]
 ]
 
 configurations {
@@ -341,7 +341,10 @@ dependencies {
 
   implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.14.10'
   implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.9'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.3.0'
+
+  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine'
 
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.83'
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.83'
@@ -478,3 +481,4 @@ testlogger {
   showSkippedStandardStreams true
   showFailedStandardStreams true
 }
+
