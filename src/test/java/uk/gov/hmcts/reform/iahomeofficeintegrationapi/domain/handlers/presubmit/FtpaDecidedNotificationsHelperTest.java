@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CourtType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Outcome;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FtpaAppealDecidedNote;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FtpaDecidedNotificationsHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
@@ -37,7 +38,8 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
 
     @Mock
     private HomeOfficeInstructService homeOfficeInstructService;
-
+    @Mock
+    private FeatureToggler featureToggler;
     @Captor
     private ArgumentCaptor<AppealDecidedInstructMessage> appealDecidedInstructMessageCaptor;
 
@@ -45,7 +47,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
 
     @BeforeEach
     void setUpHelper() {
-        ftpaDecidedNotificationsHelper = new FtpaDecidedNotificationsHelper();
+        ftpaDecidedNotificationsHelper = new FtpaDecidedNotificationsHelper(featureToggler);
     }
 
     @ParameterizedTest

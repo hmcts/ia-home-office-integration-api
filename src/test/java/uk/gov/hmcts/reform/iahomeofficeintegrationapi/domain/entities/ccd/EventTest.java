@@ -27,6 +27,7 @@ class EventTest {
         assertEquals("sendDirection", Event.SEND_DIRECTION.toString());
         assertEquals("requestResponseAmend", Event.REQUEST_RESPONSE_AMEND.toString());
         assertEquals("changeDirectionDueDate", Event.CHANGE_DIRECTION_DUE_DATE.toString());
+        assertEquals("decideFtpaApplication", Event.DECIDE_FTPA_APPLICATION.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 

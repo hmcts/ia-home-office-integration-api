@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CourtOutcome;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CourtType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Outcome;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.DecideFtpaApplicationOutcomeType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.FtpaDecisionOutcomeType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.FtpaResidentJudgeDecisionOutcomeType;
@@ -28,6 +29,11 @@ public class FtpaDecidedNotificationsHelper {
     public static final String GRANTED = "granted";
     public static final String PARTIALLY_GRANTED = "partiallyGranted";
     public static final String REFUSED = "refused";
+    private final FeatureToggler featureToggler;
+
+    public FtpaDecidedNotificationsHelper(FeatureToggler featureToggler) {
+        this.featureToggler = featureToggler;
+    }
 
     public String handleFtpaDecidedNotification(
         AsylumCase asylumCase,
@@ -172,8 +178,13 @@ public class FtpaDecidedNotificationsHelper {
             case GRANTED:
             case PARTIALLY_GRANTED:
             case REFUSED:
-                noteId = FtpaResidentJudgeDecisionOutcomeType.from(ftpaAppealDecision).name()
-                         + "_" + ftpaApplicantType.toUpperCase();
+
+                boolean isDlrmSetAsideEnabled = featureToggler.getValue("dlrm-setaside-feature-flag", true);
+
+                noteId = (isDlrmSetAsideEnabled ?
+                    DecideFtpaApplicationOutcomeType.from(ftpaAppealDecision) :
+                    FtpaResidentJudgeDecisionOutcomeType.from(ftpaAppealDecision))
+                             .name() + "_" + ftpaApplicantType.toUpperCase();
                 break;
             default:
                 throw new IllegalStateException("Unexpected FTPA appeal decision value: " + ftpaAppealDecision);
@@ -209,4 +220,6 @@ public class FtpaDecidedNotificationsHelper {
 
         return ftpaOutcome;
     }
+
+
 }
