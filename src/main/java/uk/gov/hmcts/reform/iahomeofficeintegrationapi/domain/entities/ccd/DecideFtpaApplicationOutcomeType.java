@@ -32,7 +32,7 @@ public enum DecideFtpaApplicationOutcomeType {
         return stream(values())
             .filter(v -> v.getId().equals(id))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(id + " not a FtpaResidentJudgeDecisionOutcomeType"));
+            .orElseThrow(() -> new IllegalArgumentException(id + " not a DecideFtpaApplicationOutcomeType"));
     }
 
 }
