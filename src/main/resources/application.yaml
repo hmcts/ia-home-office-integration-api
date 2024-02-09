@@ -89,6 +89,7 @@ security:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
       - "residentJudgeFtpaDecision"
+      - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
 

@@ -1,0 +1,34 @@
+{
+  "description": "RIA-3307 Home Office notification: FTPA appellant decision - partially granted",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 1234,
+      "eventId": "decideFtpaApplication",
+      "state": "ftpaSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "ftpaApplicantType": "appellant",
+          "ftpaAppellantRjDecisionOutcomeType": "partiallyGranted"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "ftpaApplicantType": "appellant",
+        "ftpaAppellantRjDecisionOutcomeType": "partiallyGranted",
+        "homeOfficeFtpaAppellantDecidedInstructStatus": "OK"
+      }
+    }
+  }
+}
