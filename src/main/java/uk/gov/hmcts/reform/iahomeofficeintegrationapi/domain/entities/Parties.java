@@ -6,9 +6,8 @@ public enum Parties {
 
     LEGAL_REPRESENTATIVE("legalRepresentative"),
     RESPONDENT("respondent"),
-    BOTH("both"), // Legal Rep and Respondent
-    APPELLANT("appellant"),
-    APPELLANT_AND_RESPONDENT("appellantAndRespondent");
+    BOTH("both"),
+    APPELLANT("appellant");
 
     @JsonValue
     private final String id;

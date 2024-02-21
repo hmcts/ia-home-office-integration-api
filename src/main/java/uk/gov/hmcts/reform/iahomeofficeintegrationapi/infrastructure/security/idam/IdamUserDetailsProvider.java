@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.i
 
 import feign.FeignException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.UserDetailsProvider;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.IdamApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AccessTokenProvider;
@@ -11,17 +10,14 @@ public class IdamUserDetailsProvider implements UserDetailsProvider {
 
     private final AccessTokenProvider accessTokenProvider;
     private final IdamApi idamApi;
-    private final IdamService idamService;
 
     public IdamUserDetailsProvider(
         AccessTokenProvider accessTokenProvider,
-        IdamApi idamApi,
-        IdamService idamService
+        IdamApi idamApi
     ) {
 
         this.accessTokenProvider = accessTokenProvider;
         this.idamApi = idamApi;
-        this.idamService = idamService;
     }
 
     public IdamUserDetails getUserDetails() {
@@ -31,7 +27,7 @@ public class IdamUserDetailsProvider implements UserDetailsProvider {
         UserInfo response;
 
         try {
-            response = idamService.getUserInfo(accessToken);
+            response = idamApi.userInfo(accessToken);
         } catch (FeignException ex) {
             throw new IdentityManagerResponseException(
                 "Could not get user details with IDAM",

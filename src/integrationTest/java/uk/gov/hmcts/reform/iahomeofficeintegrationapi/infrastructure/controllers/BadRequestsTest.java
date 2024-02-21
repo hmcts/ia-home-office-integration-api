@@ -13,7 +13,7 @@ class BadRequestsTest extends SpringBootIntegrationTest {
     private static final String ABOUT_TO_SUBMIT_PATH = "/asylum/ccdAboutToSubmit";
 
     @Test
-    void shouldRequestUnsupportedMediaTypeToServerAndReceiveHttp415() throws Exception {
+    public void shouldRequestUnsupportedMediaTypeToServerAndReceiveHttp415() throws Exception {
 
         runClientRequest(
             ABOUT_TO_SUBMIT_PATH,
