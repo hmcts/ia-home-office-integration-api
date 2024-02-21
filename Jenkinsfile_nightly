@@ -154,12 +154,12 @@ withNightlyPipeline(type, product, component) {
 
     afterAlways('DependencyCheckNightly') {
         publishHTML([
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports",
-                reportFiles          : 'dependency-check-report.html',
-                reportName           : 'Dependency Check Report'
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "build/reports",
+        reportFiles          : 'dependency-check-report.html',
+        reportName           : 'Dependency Check Report'
         ])
     }
 
@@ -229,6 +229,10 @@ withNightlyPipeline(type, product, component) {
                 reportFiles          : 'index.html',
                 reportName           : 'Functional Test Report'
         ])
+
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/build/reports/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/**/*'
     }
 
     afterAlways('securityScan') {
@@ -241,8 +245,4 @@ withNightlyPipeline(type, product, component) {
                 reportName           : 'Security Scan Report'
         ])
     }
-
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/build/reports/**/*'
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/**/*'
 }
