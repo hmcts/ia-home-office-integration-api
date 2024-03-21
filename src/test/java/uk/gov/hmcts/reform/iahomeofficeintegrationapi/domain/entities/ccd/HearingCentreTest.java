@@ -21,6 +21,16 @@ class HearingCentreTest {
         assertEquals("taylorHouse", HearingCentre.TAYLOR_HOUSE.getId());
         assertEquals("newcastle", HearingCentre.NEWCASTLE.getId());
         assertEquals("belfast", HearingCentre.BELFAST.getId());
+        assertEquals("harmondsworth", HearingCentre.HARMONDSWORTH.getId());
+        assertEquals("hendon", HearingCentre.HENDON.getId());
+        assertEquals("yarlsWood", HearingCentre.YARLS_WOOD.getId());
+        assertEquals("bradfordKeighley", HearingCentre.BRADFORD_KEIGHLEY.getId());
+        assertEquals("mccMinshull", HearingCentre.MCC_MINSHULL.getId());
+        assertEquals("mccCrownSquare", HearingCentre.MCC_CROWN_SQUARE.getId());
+        assertEquals("manchesterMags", HearingCentre.MANCHESTER_MAGS.getId());
+        assertEquals("nthTyneMags", HearingCentre.NTH_TYNE_MAGS.getId());
+        assertEquals("leedsMags", HearingCentre.LEEDS_MAGS.getId());
+        assertEquals("alloaSherrif", HearingCentre.ALLOA_SHERRIF.getId());
         assertEquals("remoteHearing", HearingCentre.REMOTE_HEARING.getId());
 
     }
@@ -40,6 +50,16 @@ class HearingCentreTest {
         assertEquals(HearingCentre.fromId("taylorHouse"), HearingCentre.TAYLOR_HOUSE);
         assertEquals(HearingCentre.fromId("newcastle"), HearingCentre.NEWCASTLE);
         assertEquals(HearingCentre.fromId("belfast"), HearingCentre.BELFAST);
+        assertEquals(HearingCentre.fromId("harmondsworth"), HearingCentre.HARMONDSWORTH);
+        assertEquals(HearingCentre.fromId("hendon"), HearingCentre.HENDON);
+        assertEquals(HearingCentre.fromId("yarlsWood"), HearingCentre.YARLS_WOOD);
+        assertEquals(HearingCentre.fromId("bradfordKeighley"), HearingCentre.BRADFORD_KEIGHLEY);
+        assertEquals(HearingCentre.fromId("mccMinshull"), HearingCentre.MCC_MINSHULL);
+        assertEquals(HearingCentre.fromId("mccCrownSquare"), HearingCentre.MCC_CROWN_SQUARE);
+        assertEquals(HearingCentre.fromId("manchesterMags"), HearingCentre.MANCHESTER_MAGS);
+        assertEquals(HearingCentre.fromId("nthTyneMags"), HearingCentre.NTH_TYNE_MAGS);
+        assertEquals(HearingCentre.fromId("leedsMags"), HearingCentre.LEEDS_MAGS);
+        assertEquals(HearingCentre.fromId("alloaSherrif"), HearingCentre.ALLOA_SHERRIF);
         assertEquals(HearingCentre.fromId("remoteHearing"), HearingCentre.REMOTE_HEARING);
     }
 
@@ -58,12 +78,22 @@ class HearingCentreTest {
         assertEquals("Taylor House", HearingCentre.TAYLOR_HOUSE.getValue());
         assertEquals("Newcastle Civil & Family Courts and Tribunals Centre", HearingCentre.NEWCASTLE.getValue());
         assertEquals("Belfast", HearingCentre.BELFAST.getValue());
+        assertEquals("Harmondsworth", HearingCentre.HARMONDSWORTH.getValue());
+        assertEquals("Hendon", HearingCentre.HENDON.getValue());
+        assertEquals("Yarl's Wood", HearingCentre.YARLS_WOOD.getValue());
+        assertEquals("Bradford & Keighley", HearingCentre.BRADFORD_KEIGHLEY.getValue());
+        assertEquals("MCC Minshull st", HearingCentre.MCC_MINSHULL.getValue());
+        assertEquals("MCC Crown Square", HearingCentre.MCC_CROWN_SQUARE.getValue());
+        assertEquals("Manchester Mags", HearingCentre.MANCHESTER_MAGS.getValue());
+        assertEquals("NTH Tyne Mags", HearingCentre.NTH_TYNE_MAGS.getValue());
+        assertEquals("Leeds Mags", HearingCentre.LEEDS_MAGS.getValue());
+        assertEquals("Alloa Sherrif Court", HearingCentre.ALLOA_SHERRIF.getValue());
         assertEquals("Remote hearing", HearingCentre.REMOTE_HEARING.getValue());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(14, HearingCentre.values().length);
+        assertEquals(24, HearingCentre.values().length);
     }
 
 }
