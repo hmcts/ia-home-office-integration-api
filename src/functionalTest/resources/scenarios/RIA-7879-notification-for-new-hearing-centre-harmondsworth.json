@@ -15,6 +15,7 @@
           "decisionHearingFeeOption": "decisionWithHearing",
           "hearingDocuments": [],
           "listCaseHearingCentre": "harmondsworth",
+          "ariaListingReference": "LP/12345/2019",
           "listCaseHearingLength": "60",
           "listCaseHearingDate": "2023-12-31T12:34:56",
           "uploadAdditionalEvidenceActionAvailable": "Yes"
@@ -33,6 +34,7 @@
         "hearingDocuments": [],
         "decisionHearingFeeOption": "decisionWithHearing",
         "listCaseHearingCentre": "harmondsworth",
+        "ariaListingReference": "LP/12345/2019",
         "listCaseHearingLength": "60",
         "listCaseHearingDate": "2023-12-31T12:34:56",
         "uploadAdditionalEvidenceActionAvailable": "Yes",
