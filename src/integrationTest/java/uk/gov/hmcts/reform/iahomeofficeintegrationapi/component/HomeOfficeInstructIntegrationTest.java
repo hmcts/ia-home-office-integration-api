@@ -38,7 +38,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.
 
 
 @Slf4j
-public class HomeOfficeInstructIntegrationTest
+class HomeOfficeInstructIntegrationTest
     extends SpringBootIntegrationTest
     implements
         WithIdamStub, WithServiceAuthStub,
@@ -49,7 +49,7 @@ public class HomeOfficeInstructIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-caseofficer"})
-    public void shouldSendRequestEvidenceNotification() throws Exception {
+    void shouldSendRequestEvidenceNotification() throws Exception {
 
         addServiceAuthStub(server);
         addUserInfoStub(server);
@@ -88,7 +88,7 @@ public class HomeOfficeInstructIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-caseofficer"})
-    public void shouldHandle500ErrorResponse() throws Exception {
+    void shouldHandle500ErrorResponse() throws Exception {
 
         addServiceAuthStub(server);
         addUserInfoStub(server);
@@ -112,7 +112,7 @@ public class HomeOfficeInstructIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-caseofficer"})
-    public void shouldHandle503ServiceUnavailableErrorResponse() throws Exception {
+    void shouldHandle503ServiceUnavailableErrorResponse() throws Exception {
 
         addServiceAuthStub(server);
         addUserInfoStub(server);
@@ -136,7 +136,7 @@ public class HomeOfficeInstructIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-caseofficer"})
-    public void shouldHandle500InternalServerErrorResponse() throws Exception {
+    void shouldHandle500InternalServerErrorResponse() throws Exception {
 
         addServiceAuthStub(server);
         addUserInfoStub(server);
@@ -160,7 +160,7 @@ public class HomeOfficeInstructIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-caseofficer"})
-    public void shouldHandle503ServiceUnavailableErrorResponseOnTokenRequest() throws Exception {
+    void shouldHandle503ServiceUnavailableErrorResponseOnTokenRequest() throws Exception {
 
         addServiceAuthStub(server);
         addUserInfoStub(server);
