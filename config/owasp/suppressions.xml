@@ -6,7 +6,7 @@
             using HttpInvokerServiceExport and org.springframework.remoting.
             As we don't use those constructs, we are not affected by it.
             The suppression will be a long-term one. An expiry to the suppression is kept to allow re-evaluating whether
-            we're still unaffected by it.
+            we are still unaffected by it.
         ]]></notes>
         <cve>CVE-2016-1000027</cve>
     </suppress>
@@ -21,7 +21,7 @@
         <cve>CVE-2022-45688</cve>
     </suppress>
     <suppress until="2024-03-31">
-        <notes>Suppress until org.springframework.cloud and uk.gov.hmcts.reform/service-auth-provider-client upgrade their org.bouncycastle dependents</notes>
+        <notes>Suppress until org.springframework.cloud and uk.gov.hmcts.reform/service-auth-provider-client upgrade their org.bouncycastle dependents </notes>
         <cve>CVE-2023-33202</cve>
     </suppress>
 </suppressions>
