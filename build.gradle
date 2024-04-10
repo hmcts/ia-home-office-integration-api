@@ -314,6 +314,19 @@ dependencies {
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Hoxton.SR4'
 
+  implementation(group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0') {
+      exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
+  }
+  implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.8') {
+      exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
+  }
+  implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '3.1.7') {
+      exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
+  }
+  implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE') {
+      exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
+  }
+  implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.74'
   implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.4'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.0.1'
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: '5.1.7'
@@ -341,10 +354,12 @@ dependencies {
 
   implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.14.10'
   implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.9'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.3.0'
 
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.83'
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.83'
+  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine'
 
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
