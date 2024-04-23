@@ -162,8 +162,8 @@ pmd {
   ruleSets = []
 //  ruleSetFiles = files("config/pmd/ruleset.xml")
   ruleSets = [
-      'category/java/errorprone.xml',
-      'category/java/bestpractices.xml'
+          'category/java/errorprone.xml',
+          'category/java/bestpractices.xml'
   ]
 }
 
@@ -271,13 +271,13 @@ repositories {
 }
 
 ext.libraries = [
-  junit5: [
-    "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
-    "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
-    "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
-    "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
-    "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
-  ]
+        junit5: [
+                "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
+                "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
+                "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
+                "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
+                "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
+        ]
 ]
 
 configurations {
@@ -312,16 +312,16 @@ dependencies {
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Hoxton.SR4'
 
   implementation(group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0') {
-      exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
+    exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
   }
   implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.8') {
-      exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
+    exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
   }
   implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '3.1.7') {
-      exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
+    exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
   }
   implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE') {
-      exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
+    exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
   }
   implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.74'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.0.1'
@@ -353,9 +353,10 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.3.0'
 
+  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine'
+
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.83'
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.83'
-  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine'
 
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
@@ -489,3 +490,4 @@ testlogger {
   showSkippedStandardStreams true
   showFailedStandardStreams true
 }
+
