@@ -12,6 +12,7 @@ variable "location" {
   default = "UK South"
 }
 
+
 variable "env" {
 }
 
