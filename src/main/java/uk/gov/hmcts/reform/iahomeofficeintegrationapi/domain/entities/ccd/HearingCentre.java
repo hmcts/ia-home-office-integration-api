@@ -12,6 +12,7 @@ public enum HearingCentre {
     COVENTRY("coventry", "Coventry Magistrates Court"),
     GLASGOW("glasgow", "Glasgow (Eagle Building)"),
     GLASGOW_TRIBUNAL_CENTRE("glasgowTribunalsCentre", "Glasgow Tribunals Centre"),
+    HARMONDSWORTH("harmondsworth", "Harmondsworth"),
     HATTON_CROSS("hattonCross", "Hatton Cross"),
     MANCHESTER("manchester", "Manchester"),
     NEWPORT("newport", "Newport"),
@@ -20,6 +21,7 @@ public enum HearingCentre {
     TAYLOR_HOUSE("taylorHouse", "Taylor House"),
     NEWCASTLE("newcastle", "Newcastle Civil & Family Courts and Tribunals Centre"),
     BELFAST("belfast", "Belfast"),
+    YARLSWOOD("yarlswood", "Yarlswood"),
     REMOTE_HEARING("remoteHearing","Remote hearing");
 
     @JsonValue
