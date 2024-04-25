@@ -7,7 +7,6 @@ class ClarifyingQuestionTest {
 
     @Test
     void getsQuestion() {
-
         final String question = "some-question";
         ClarifyingQuestion clarifyingQuestion = new ClarifyingQuestion(question);
         Assertions.assertThat(clarifyingQuestion.getQuestion()).isEqualTo(question);
