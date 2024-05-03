@@ -20,7 +20,7 @@
             ]]</notes>
         <cve>CVE-2022-45688</cve>
     </suppress>
-    <suppress until="2024-04-28">
+    <suppress until="2024-06-01">
         <notes>Suppress until org.springframework.cloud and uk.gov.hmcts.reform/service-auth-provider-client upgrade their org.bouncycastle dependents</notes>
         <cve>CVE-2023-33202</cve>
     </suppress>
