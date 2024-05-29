@@ -94,6 +94,7 @@ security:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
       - "residentJudgeFtpaDecision"
+      - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
     caseworker-ia-system:
