@@ -27,6 +27,78 @@ public class Direction {
         // noop -- for deserializer
     }
 
+    public static class Builder {
+        private String explanation;
+        private Parties parties;
+        private String dateDue;
+        private String dateSent;
+        private DirectionTag tag;
+        private List<IdValue<PreviousDates>> previousDates;
+        private List<IdValue<ClarifyingQuestion>> clarifyingQuestions;
+        private String uniqueId;
+        private String directionType;
+
+        public Builder withExplanation(String explanation) {
+            this.explanation = explanation;
+            return this;
+        }
+
+        public Builder withParties(Parties parties) {
+            this.parties = parties;
+            return this;
+        }
+
+        public Builder withDateDue(String dateDue) {
+            this.dateDue = dateDue;
+            return this;
+        }
+
+        public Builder withDateSent(String dateSent) {
+            this.dateSent = dateSent;
+            return this;
+        }
+
+        public Builder withTag(DirectionTag tag) {
+            this.tag = tag;
+            return this;
+        }
+
+        public Builder withPreviousDates(List<IdValue<PreviousDates>> previousDates) {
+            this.previousDates = previousDates;
+            return this;
+        }
+
+        public Builder withClarifyingQuestions(List<IdValue<ClarifyingQuestion>> clarifyingQuestions) {
+            this.clarifyingQuestions = clarifyingQuestions;
+            return this;
+        }
+
+        public Builder withUniqueId(String uniqueId) {
+            this.uniqueId = uniqueId;
+            return this;
+        }
+
+        public Builder withDirectionType(String directionType) {
+            this.directionType = directionType;
+            return this;
+        }
+
+        public Direction build() {
+            Direction direction = new Direction();
+            direction.explanation = this.explanation;
+            direction.parties = this.parties;
+            direction.dateDue = this.dateDue;
+            direction.dateSent = this.dateSent;
+            direction.tag = this.tag;
+            direction.previousDates = this.previousDates;
+            direction.clarifyingQuestions = this.clarifyingQuestions;
+            direction.uniqueId = this.uniqueId;
+            direction.directionType = this.directionType;
+            return direction;
+        }
+
+    }
+
     public Direction(
         String explanation,
         Parties parties,

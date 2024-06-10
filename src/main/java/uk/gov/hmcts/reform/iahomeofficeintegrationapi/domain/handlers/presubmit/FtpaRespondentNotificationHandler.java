@@ -52,7 +52,7 @@ public class FtpaRespondentNotificationHandler implements PreSubmitCallbackHandl
             throw new IllegalStateException("Cannot handle callback");
         }
         log.info("Preparing to send {} notification to HomeOffice for event: {}",
-            PERMISSION_TO_APPEAL.toString(), callback.getEvent());
+            PERMISSION_TO_APPEAL, callback.getEvent());
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
@@ -68,21 +68,23 @@ public class FtpaRespondentNotificationHandler implements PreSubmitCallbackHandl
                 .withMessageHeader(notificationsHelper.getMessageHeader())
                 .withMessageType(PERMISSION_TO_APPEAL.name())
                 .withCourtType(CourtType.FIRST_TIER)
-                .withNote(
-                    "You've submitted an application for permission to appeal to the Upper Tribunal.\n"
-                    + "Next steps\n"
-                    + "The First-tier Tribunal will consider your application and make a decision shortly.")
+                .withNote("""
+                    You've submitted an application for permission to appeal to the Upper Tribunal.
+                    Next steps
+                    The First-tier Tribunal will consider your application and make a decision shortly.
+                    """
+                )
                 .build();
 
         log.info("Finished constructing {} notification request for caseId: {}, HomeOffice reference: {}, Event: {}",
-            PERMISSION_TO_APPEAL.toString(), caseId, homeOfficeReferenceNumber, callback.getEvent());
+            PERMISSION_TO_APPEAL, caseId, homeOfficeReferenceNumber, callback.getEvent());
 
         final String notificationStatus = homeOfficeInstructService.sendNotification(bundleInstructMessage);
 
         asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_FTPA_RESPONDENT_INSTRUCT_STATUS, notificationStatus);
 
         log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}, Event: {}",
-            PERMISSION_TO_APPEAL.toString(), caseId, homeOfficeReferenceNumber, notificationStatus,
+            PERMISSION_TO_APPEAL, caseId, homeOfficeReferenceNumber, notificationStatus,
             callback.getEvent());
 
         return new PreSubmitCallbackResponse<>(asylumCase);

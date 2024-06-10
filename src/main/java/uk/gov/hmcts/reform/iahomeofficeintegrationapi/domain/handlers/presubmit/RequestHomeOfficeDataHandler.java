@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataErrorsHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ApplicationStatus;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
@@ -46,12 +45,7 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
 
     private final FeatureToggler featureToggler;
 
-    private HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper;
-
-    public RequestHomeOfficeDataHandler(HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper,
-                                        FeatureToggler featureToggler) {
-
-        this.homeOfficeDataErrorsHelper = homeOfficeDataErrorsHelper;
+    public RequestHomeOfficeDataHandler(FeatureToggler featureToggler) {
         this.featureToggler = featureToggler;
     }
 
@@ -101,9 +95,7 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
 
                 CodeWithDescription noMatchCodeWithDesc = new CodeWithDescription(noMatch, noMatch);
                 ApplicationStatus noMatchApplicationStatus =
-                        new ApplicationStatus(null, null, null,
-                                null, null, null, noMatchCodeWithDesc,
-                                noMatchCodeWithDesc, null, null);
+                        new ApplicationStatus.Builder().build();
 
                 HomeOfficeCaseStatus noMatchApplicant =
                         new HomeOfficeCaseStatus(noMatchingPerson, noMatchApplicationStatus, null,
@@ -206,14 +198,7 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
     }
 
     boolean isApplicantMatched(HomeOfficeCaseStatus status, String selectedApplicantName, String appellantDateOfBirth) {
-
-        if (isApplicantNameMatched(status, selectedApplicantName)
-                && isApplicantDobMatched(status, appellantDateOfBirth)) {
-
-            return true;
-        }
-
-        return false;
+        return isApplicantNameMatched(status, selectedApplicantName) && isApplicantDobMatched(status, appellantDateOfBirth);
     }
 
     boolean isApplicantNameMatched(HomeOfficeCaseStatus status, String selectedApplicantName) {

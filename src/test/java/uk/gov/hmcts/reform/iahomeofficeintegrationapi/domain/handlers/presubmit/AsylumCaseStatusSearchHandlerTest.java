@@ -34,15 +34,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.util.FileCopyUtils;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataErrorsHelper;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataMatchHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeCaseStatus;
@@ -64,31 +69,36 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Home
 @SuppressWarnings("unchecked")
 public class AsylumCaseStatusSearchHandlerTest {
 
-    private static final String HOME_OFFICE_CALL_ERROR_MESSAGE = "### There is a problem\n\n"
-            + "The service has been unable t"
-            + "o retrieve the Home Office information about this appeal.\n\n"
-            + "[Request the Home Office information](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/"
-            + "requestHomeOfficeData) to try again. This may take a few minutes.";
+    private static final String HOME_OFFICE_CALL_ERROR_MESSAGE = """
+        ### There is a problem
+    
+        The service has been unable to retrieve the Home Office information about this appeal.
+    
+        [Request the Home Office information](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/requestHomeOfficeData)\
+         to try again. This may take a few minutes.""";
 
-    private static final String HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE = "### There is a problem\n\n"
-            + "The appellant entered the "
-            + "Home Office reference number incorrectly. You can contact the appellant to check the reference number"
-            + " if you need this information to validate the appeal";
+    private static final String HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE = """
+        ### There is a problem
+    
+        The appellant entered the Home Office reference number incorrectly. You can contact the appellant to check\
+         the reference number if you need this information to validate the appeal""";
 
-    private static final String HOME_OFFICE_REFERENCE_NOT_FOUND_ERROR_MESSAGE = "### There is a problem\n\n"
-            + "The appellant’s Home Office reference"
-            + " number could not be found. You can contact the Home Office to check the reference"
-            + " if you need this information to validate the appeal";
+    private static final String HOME_OFFICE_REFERENCE_NOT_FOUND_ERROR_MESSAGE = """
+        ### There is a problem
+    
+        The appellant’s Home Office reference number could not be found. You can contact the Home Office to check the\
+         reference if you need this information to validate the appeal""";
 
-    private static final String HOME_OFFICE_APPELLANT_NOT_FOUND_ERROR_MESSAGE = "### There is a problem\n\n"
-            + "The service has been unable to retrieve the Home Office information about this appeal "
-            + "because the Home Office reference number does not have any matching appellant data in the system. "
-            + "You can contact the Home Office if you need more information to validate the appeal.";
+    private static final String HOME_OFFICE_APPELLANT_NOT_FOUND_ERROR_MESSAGE = """
+        ### There is a problem
+    
+        The service has been unable to retrieve the Home Office information about this appeal because the Home Office\
+         reference number does not have any matching appellant data in the system. You can contact the Home Office if\
+         you need more information to validate the appeal.""";
 
-    private static final String HOME_OFFICE_MAIN_APPLICANT_NOT_FOUND_ERROR_MESSAGE = "**Note:** "
-            + "The service was unable to retrieve any appellant details from the Home Office because the Home Office "
-            + "data does not include a main applicant. You can contact the Home Office if you need this information "
-            + "to validate the appeal.";
+    private static final String HOME_OFFICE_MAIN_APPLICANT_NOT_FOUND_ERROR_MESSAGE = """
+        **Note:** The service was unable to retrieve any appellant details from the Home Office because the Home Office\
+         data does not include a main applicant. You can contact the Home Office if you need this information to validate the appeal.""";
 
     private static HomeOfficeSearchResponse homeOfficeSearchResponse;
     private static HomeOfficeSearchResponse homeOfficeNullFieldResponse;
@@ -107,6 +117,10 @@ public class AsylumCaseStatusSearchHandlerTest {
     private HomeOfficeCaseStatus caseStatus;
     @Mock
     private HomeOfficeSearchResponse mockResponse;
+    @Spy
+    private HomeOfficeDataMatchHelper homeOfficeDataMatchHelper;
+    @Spy
+    private HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper;
 
     @Value("classpath:home-office-sample-response.json")
     private Resource resource;
@@ -119,7 +133,8 @@ public class AsylumCaseStatusSearchHandlerTest {
 
     @BeforeEach
     void setUp() {
-        asylumCaseStatusSearchHandler = new AsylumCaseStatusSearchHandler(homeOfficeSearchService, featureToggler);
+        asylumCaseStatusSearchHandler = new AsylumCaseStatusSearchHandler(homeOfficeSearchService,
+                homeOfficeDataMatchHelper, homeOfficeDataErrorsHelper, featureToggler);
     }
 
     @Test
@@ -148,7 +163,7 @@ public class AsylumCaseStatusSearchHandlerTest {
         assertThat(response.getData()).isEqualTo(asylumCase);
         verify(asylumCase, times(1))
                 .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
-        assertTrue(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class).isPresent());
+        Assertions.assertTrue(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class).isPresent());
 
     }
 
@@ -644,30 +659,25 @@ public class AsylumCaseStatusSearchHandlerTest {
 
     @Test
     void set_error_for_ho_reference_not_found_sets_values_in_asylum_case() {
-
-        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, "1020", "Not found");
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, "1020", "Not found");
         verify(asylumCase, times(1))
                 .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
                 .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_REFERENCE_NOT_FOUND_ERROR_MESSAGE);
-
     }
 
     @Test
     void set_error_for_ho_appellant_not_found_sets_values_in_asylum_case() {
-
-        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, "1010", "Not found");
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, "1010", "Not found");
         verify(asylumCase, times(1))
                 .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
                 .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_APPELLANT_NOT_FOUND_ERROR_MESSAGE);
-
     }
 
     @Test
     void set_error_for_invalid_format_sets_values_in_asylum_case() {
-
-        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, "1060", "Format error");
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, "1060", "Format error");
         verify(asylumCase, times(1))
                 .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
@@ -677,8 +687,7 @@ public class AsylumCaseStatusSearchHandlerTest {
 
     @Test
     void set_error_for_general_error_sets_values_in_asylum_case() {
-
-        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, null, null);
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, null, null);
         verify(asylumCase, times(1))
                 .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
@@ -688,8 +697,7 @@ public class AsylumCaseStatusSearchHandlerTest {
 
     @Test
     void set_error_when_error_code_is_empty() {
-
-        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, "", null);
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, "", null);
         verify(asylumCase, times(1))
                 .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
@@ -698,8 +706,7 @@ public class AsylumCaseStatusSearchHandlerTest {
 
     @Test
     void set_error_when_error_code_is_not_number() {
-
-        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, "abc", null);
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, "abc", null);
         verify(asylumCase, times(1))
                 .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))

@@ -3,10 +3,6 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,22 +23,19 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.util.FileCopyUtils;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataErrorsHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeCaseStatus;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeSearchResponse;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.DynamicList;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
@@ -74,8 +67,6 @@ public class RequestHomeOfficeDataHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    @Spy
-    private HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper;
 
     @org.springframework.beans.factory.annotation.Value("classpath:home-office-sample-response.json")
     private Resource resource;
@@ -86,9 +77,8 @@ public class RequestHomeOfficeDataHandlerTest {
 
     @BeforeEach
     void setUp() {
-
         requestHomeOfficeDataHandler =
-                new RequestHomeOfficeDataHandler(homeOfficeDataErrorsHelper, featureToggler);
+                new RequestHomeOfficeDataHandler(featureToggler);
     }
 
     @Test
@@ -111,9 +101,8 @@ public class RequestHomeOfficeDataHandlerTest {
         String rejectReason = requestHomeOfficeDataHandler.getRejectionReasonString(
                 getSampleResponse().getStatus().get(1).getApplicationStatus().getRejectionReasons());
 
-        assertNotNull(rejectReason);
-        assertEquals("Application not completed properly" + "<br />" + "Application not entered properly",
-                rejectReason);
+        Assertions.assertNotNull(rejectReason);
+        Assertions.assertEquals("Application not completed properly" + "<br />" + "Application not entered properly", rejectReason);
 
     }
 
@@ -121,13 +110,13 @@ public class RequestHomeOfficeDataHandlerTest {
     void reject_reasons_returned_as_empty_string_for_null_or_empty_value() {
 
         String rejectReason = requestHomeOfficeDataHandler.getRejectionReasonString(null);
-        assertEquals("", rejectReason);
+        Assertions.assertEquals("", rejectReason);
         rejectReason = requestHomeOfficeDataHandler.getRejectionReasonString(new ArrayList<>());
-        assertEquals("", rejectReason);
+        Assertions.assertEquals("", rejectReason);
     }
 
     @Test
-    void handle_should_return_no_match_if_no_appellant_matched() throws Exception {
+    void handle_should_return_no_match_if_no_appellant_matched() {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
@@ -139,8 +128,8 @@ public class RequestHomeOfficeDataHandlerTest {
         PreSubmitCallbackResponse<AsylumCase> response =
                 requestHomeOfficeDataHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        assertNotNull(response);
-        assertTrue(response.getErrors().isEmpty());
+        Assertions.assertNotNull(response);
+        Assertions.assertTrue(response.getErrors().isEmpty());
 
         verify(asylumCase, times(1)).write(HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
         verify(asylumCase, times(1)).write(HOME_OFFICE_SEARCH_NO_MATCH, "NO_MATCH");
@@ -164,8 +153,8 @@ public class RequestHomeOfficeDataHandlerTest {
         PreSubmitCallbackResponse<AsylumCase> response =
                 requestHomeOfficeDataHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        assertNotNull(response);
-        assertTrue(response.getErrors().isEmpty());
+        Assertions.assertNotNull(response);
+        Assertions.assertTrue(response.getErrors().isEmpty());
 
         verify(asylumCase, times(1)).write(HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
         verify(asylumCase, times(1)).clear(HOME_OFFICE_SEARCH_RESPONSE);
@@ -197,7 +186,7 @@ public class RequestHomeOfficeDataHandlerTest {
     }
 
     @Test
-    void handler_should_throw_error_for_empty_ho_search_response_data() throws Exception {
+    void handler_should_throw_error_for_empty_ho_search_response_data() {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
@@ -246,9 +235,9 @@ public class RequestHomeOfficeDataHandlerTest {
                 if (callbackStage == ABOUT_TO_SUBMIT
                         && (callback.getEvent() == REQUEST_HOME_OFFICE_DATA)
                 ) {
-                    assertTrue(canHandle);
+                    Assertions.assertTrue(canHandle);
                 } else {
-                    assertFalse(canHandle);
+                    Assertions.assertFalse(canHandle);
                 }
             }
 
@@ -299,22 +288,5 @@ public class RequestHomeOfficeDataHandlerTest {
         values.add(new Value("NoMatch", "No Match"));
 
         return new DynamicList(values.get(0), values);
-    }
-
-    private HomeOfficeCaseStatus getNoMatchResponse() {
-
-        String noMatch = "No match";
-        Person noMatchingPerson = Person.PersonBuilder.person()
-                .withGivenName(noMatch)
-                .withFamilyName(noMatch)
-                .withNationality(new CodeWithDescription(noMatch, noMatch))
-                .withGender(new CodeWithDescription(noMatch, noMatch))
-                .build();
-
-        return new HomeOfficeCaseStatus(noMatchingPerson, null, null,
-                null, null, null,
-                null, null,
-                null, null);
-
     }
 }

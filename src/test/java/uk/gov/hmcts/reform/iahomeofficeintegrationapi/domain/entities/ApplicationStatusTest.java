@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 public class ApplicationStatusTest {
     @Mock
     CodeWithDescription mockCode;
@@ -23,18 +22,18 @@ public class ApplicationStatusTest {
 
     @BeforeEach
     void setUp() {
-        applicationStatus = new ApplicationStatus(
-            mockCode,
-            mockCode,
-            decisionCommunication,
-            "some-date",
-            mockCode,
-            "some-doc-ref",
-            mockCode,
-            mockCode,
-            new ArrayList<HomeOfficeMetadata>(),
-            new ArrayList<RejectionReason>()
-        );
+        applicationStatus = new ApplicationStatus.Builder()
+                .withApplicationType(mockCode)
+                .withClaimReasonType(mockCode)
+                .withDecisionCommunication(decisionCommunication)
+                .withDecisionDate("some-date")
+                .withDecisionType(mockCode)
+                .withDocumentReference("some-doc-ref")
+                .withRoleSubType(mockCode)
+                .withRoleType(mockCode)
+                .withHomeOfficeMetadata(new ArrayList<>())
+                .withRejectionReasons(new ArrayList<>())
+                .build();
     }
 
     @Test
