@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ConsumerReferenceTest {
+class ConsumerReferenceTest {
 
     @Mock
     CodeWithDescription consumerType;
@@ -28,7 +28,7 @@ public class ConsumerReferenceTest {
     }
 
     @Test
-    public void has_correct_values_after_setting() {
+    void has_correct_values_after_setting() {
         assertNotNull(consumerReference.getConsumer());
         assertEquals("some-code", consumerReference.getCode());
         assertEquals("some-description", consumerReference.getDescription());

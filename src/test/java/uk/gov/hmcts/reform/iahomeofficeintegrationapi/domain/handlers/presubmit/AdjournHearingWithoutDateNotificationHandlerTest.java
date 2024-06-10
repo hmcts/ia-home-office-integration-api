@@ -50,7 +50,7 @@ class AdjournHearingWithoutDateNotificationHandlerTest extends AbstractNotificat
 
     private AdjournHearingWithoutDateNotificationHandler adjournHearingWithoutDateNotificationHandler;
 
-    Hearing hearing = Hearing.HearingBuilder.hearing()
+    Hearing oralHearing = Hearing.HearingBuilder.hearing()
         .withHearingType("ORAL")
         .withHearingDate("2020-10-01")
         .withHearingTime("10:10:10")
@@ -67,7 +67,7 @@ class AdjournHearingWithoutDateNotificationHandlerTest extends AbstractNotificat
             .withHoReference(someDocumentReference)
             .withMessageHeader(messageHeader)
             .withMessageType(HEARING.name())
-            .withHearing(hearing)
+            .withHearing(oralHearing)
             .withNote("listCaseHearingDateAdjourned").build();
 
     HearingInstructMessage hearingInstructMessageReheard =
@@ -77,7 +77,7 @@ class AdjournHearingWithoutDateNotificationHandlerTest extends AbstractNotificat
             .withHoReference(someDocumentReference)
             .withMessageHeader(messageHeader)
             .withMessageType(HEARING.name())
-            .withHearing(hearing)
+            .withHearing(oralHearing)
             .withNote("This is a reheard case.\nlistCaseHearingDateAdjourned").build();
 
     @BeforeEach

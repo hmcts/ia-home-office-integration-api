@@ -1,24 +1,23 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-public class OutcomeTest {
+class OutcomeTest {
 
     @Test
-    public void has_correct_values() {
-        assertEquals("ALLOWED", Outcome.ALLOWED.toString());
-        assertEquals("DISMISSED", Outcome.DISMISSED.toString());
-        assertEquals("GRANTED", Outcome.GRANTED.toString());
-        assertEquals("REFUSED", Outcome.REFUSED.toString());
-        assertEquals("REHEARD", Outcome.REHEARD.toString());
-        assertEquals("REMADE", Outcome.REMADE.toString());
-
+    void has_correct_values() {
+        assertThat(Outcome.ALLOWED.toString()).isEqualTo("ALLOWED");
+        assertThat(Outcome.DISMISSED.toString()).isEqualTo("DISMISSED");
+        assertThat(Outcome.GRANTED.toString()).isEqualTo("GRANTED");
+        assertThat(Outcome.REFUSED.toString()).isEqualTo("REFUSED");
+        assertThat(Outcome.REHEARD.toString()).isEqualTo("REHEARD");
+        assertThat(Outcome.REMADE.toString()).isEqualTo("REMADE");
     }
 
     @Test
-    public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(6, Outcome.values().length);
+    void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
+        assertThat(Outcome.values().length).isEqualTo(6);
     }
 }

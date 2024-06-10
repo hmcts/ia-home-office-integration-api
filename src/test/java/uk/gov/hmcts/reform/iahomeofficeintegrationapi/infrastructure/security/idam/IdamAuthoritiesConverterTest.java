@@ -12,6 +12,7 @@ import feign.FeignException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -57,9 +58,7 @@ class IdamAuthoritiesConverterTest {
     @Test
     void should_return_correct_granted_authority_collection() {
 
-        when(jwt.containsClaim(TOKEN_NAME)).thenReturn(true);
-        when(jwt.getClaim(TOKEN_NAME)).thenReturn(ACCESS_TOKEN);
-        when(jwt.getTokenValue()).thenReturn(tokenValue);
+        setUpCommonMocks();
 
         when(userInfo.getRoles()).thenReturn(Lists.newArrayList("caseworker-ia", "caseworker-ia-caseofficer"));
         when(idamService.getUserInfo("Bearer " + tokenValue)).thenReturn(userInfo);
@@ -78,6 +77,12 @@ class IdamAuthoritiesConverterTest {
         assertEquals(expectedGrantedAuthorities, grantedAuthorities);
     }
 
+    private void setUpCommonMocks() {
+        when(jwt.hasClaim(TOKEN_NAME)).thenReturn(true);
+        when(jwt.getClaim(TOKEN_NAME)).thenReturn(ACCESS_TOKEN);
+        when(jwt.getTokenValue()).thenReturn(tokenValue);
+    }
+
     @Test
     void should_return_empty_list_when_token_is_missing() {
 
@@ -94,9 +99,7 @@ class IdamAuthoritiesConverterTest {
 
         idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamApi,idamService);
 
-        when(jwt.containsClaim(TOKEN_NAME)).thenReturn(true);
-        when(jwt.getClaim(TOKEN_NAME)).thenReturn(ACCESS_TOKEN);
-        when(jwt.getTokenValue()).thenReturn(tokenValue);
+        setUpCommonMocks();
 
         assertEquals(Collections.emptyList(), idamAuthoritiesConverter.convert(jwt));
     }
@@ -106,9 +109,7 @@ class IdamAuthoritiesConverterTest {
 
         when(idamService.getUserInfo("Bearer " + tokenValue)).thenThrow(FeignException.class);
 
-        when(jwt.containsClaim(TOKEN_NAME)).thenReturn(true);
-        when(jwt.getClaim(TOKEN_NAME)).thenReturn(ACCESS_TOKEN);
-        when(jwt.getTokenValue()).thenReturn(tokenValue);
+        setUpCommonMocks();
 
         idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamApi,idamService);
 

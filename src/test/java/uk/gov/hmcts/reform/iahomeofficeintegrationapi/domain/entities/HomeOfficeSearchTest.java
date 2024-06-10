@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class HomeOfficeSearchTest {
+class HomeOfficeSearchTest {
     @Mock
     MessageHeader messageHeader;
     @Mock
@@ -29,7 +29,7 @@ public class HomeOfficeSearchTest {
     }
 
     @Test
-    public void has_correct_values_after_setting() {
+    void has_correct_values_after_setting() {
         assertNotNull(homeOfficeSearch);
         assertNotNull(homeOfficeSearch.getMessageHeader());
         assertNotNull(homeOfficeSearch.getSearchParams());

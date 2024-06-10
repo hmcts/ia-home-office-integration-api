@@ -1,30 +1,30 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class DecideFtpaApplicationOutcomeTypeTest {
+class DecideFtpaApplicationOutcomeTypeTest {
 
     @Test
-    public void testGetId() {
-        assertEquals("partiallyGranted", DecideFtpaApplicationOutcomeType.PARTIALLY_GRANTED.getId());
+    void testGetId() {
+        assertThat(DecideFtpaApplicationOutcomeType.PARTIALLY_GRANTED.getId()).isEqualTo("partiallyGranted");
     }
 
     @Test
-    public void testToString() {
-        assertEquals("partiallyGranted", DecideFtpaApplicationOutcomeType.PARTIALLY_GRANTED.toString());
+    void testToString() {
+        assertThat(DecideFtpaApplicationOutcomeType.PARTIALLY_GRANTED.toString()).isEqualTo("partiallyGranted");
     }
 
     @Test
-    public void testFrom_ValidId() {
-        assertEquals(DecideFtpaApplicationOutcomeType.PARTIALLY_GRANTED, DecideFtpaApplicationOutcomeType.from("partiallyGranted"));
+    void testFrom_ValidId() {
+        assertThat(DecideFtpaApplicationOutcomeType.from("partiallyGranted")).isEqualTo(DecideFtpaApplicationOutcomeType.PARTIALLY_GRANTED);
     }
 
     @Test
-    public void testFrom_InvalidId() {
-        assertThrows(IllegalArgumentException.class, () -> DecideFtpaApplicationOutcomeType.from("invalidId"));
+    void testFrom_InvalidId() {
+        assertThatThrownBy(() -> DecideFtpaApplicationOutcomeType.from("invalidId"))
+                .isExactlyInstanceOf(IllegalArgumentException.class);
     }
-
 }
-

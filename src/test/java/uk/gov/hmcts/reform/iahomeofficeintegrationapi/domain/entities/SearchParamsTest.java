@@ -10,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class SearchParamsTest {
+class SearchParamsTest {
 
     private SearchParams searchParams;
 
@@ -20,7 +20,7 @@ public class SearchParamsTest {
     }
 
     @Test
-    public void has_correct_values() {
+    void has_correct_values() {
         assertNotNull(searchParams);
         assertEquals("some-type", searchParams.getSpType());
         assertEquals("some-value", searchParams.getSpValue());

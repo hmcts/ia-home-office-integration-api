@@ -4,8 +4,7 @@ import static feign.Request.create;
 import static feign.Response.Body;
 import static feign.Response.builder;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -17,9 +16,10 @@ import feign.Response;
 import feign.RetryableException;
 import feign.Util;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import org.assertj.core.api.Assertions;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -50,8 +50,12 @@ class FeignErrorDecoderTest {
             .body("Internal server error", Util.UTF_8)
             .build();
 
-        Assertions.assertThatThrownBy(() -> feignErrorDecoder.decode("someMethod", response))
-            .isInstanceOf(RetryableException.class);
+        try {
+            feignErrorDecoder.decode("someMethod", response);
+            fail("Expected a RetryableException to be thrown");
+        } catch (RetryableException e) {
+            Assertions.assertThat(e).isInstanceOf(RetryableException.class);
+        }
     }
 
     @Test
@@ -65,8 +69,7 @@ class FeignErrorDecoderTest {
             .body("Authorization failed", Util.UTF_8)
             .build();
 
-        assertThat(feignErrorDecoder.decode("someMethod", response),
-            instanceOf(HomeOfficeResponseException.class));
+        MatcherAssert.assertThat(feignErrorDecoder.decode("someMethod", response), instanceOf(HomeOfficeResponseException.class));
     }
 
     @Test
@@ -80,8 +83,8 @@ class FeignErrorDecoderTest {
             .body("No data found", Util.UTF_8)
             .build();
 
-        assertThat(feignErrorDecoder.decode("someMethod", response),
-            instanceOf(ResponseStatusException.class));
+        MatcherAssert.assertThat(feignErrorDecoder.decode("someMethod", response),
+                instanceOf(ResponseStatusException.class));
     }
 
     @Test
@@ -95,15 +98,15 @@ class FeignErrorDecoderTest {
             .body("Bad request data".getBytes())
             .build();
 
-        assertThat(feignErrorDecoder.decode("someMethod", response),
-            instanceOf(HomeOfficeResponseException.class));
+        MatcherAssert.assertThat(feignErrorDecoder.decode("someMethod", response),
+                instanceOf(HomeOfficeResponseException.class));
     }
 
     @Test
     void handle_sneaky_exception() throws IOException {
 
         Body body = mock(Body.class);
-        when(body.asReader(Charset.forName("UTF-8")))
+        when(body.asReader(StandardCharsets.UTF_8))
             .thenThrow(new IOException("Error in reading response body"));
 
         response = builder()
@@ -114,8 +117,8 @@ class FeignErrorDecoderTest {
             .body(body)
             .build();
 
-        assertThat(feignErrorDecoder.decode("someMethod", response),
-            instanceOf(HomeOfficeResponseException.class));
+        MatcherAssert.assertThat(feignErrorDecoder.decode("someMethod", response),
+                instanceOf(HomeOfficeResponseException.class));
     }
 
     @Test
@@ -130,11 +133,11 @@ class FeignErrorDecoderTest {
             .build();
 
         Exception exception = feignErrorDecoder.decode("someMethod", response);
-        assertThat(exception, instanceOf(HomeOfficeResponseException.class));
-        assertTrue(exception.getMessage().contains(
+        MatcherAssert.assertThat(exception, instanceOf(HomeOfficeResponseException.class));
+        Assertions.assertThat(exception.getMessage().contains(
             "Invalid reference format. "
                 + "Format should be either nnnn-nnnn-nnnn-nnnn or 0(0) followed by digits (total length 9 or 10)"
-        ));
+        )).isTrue();
 
     }
 

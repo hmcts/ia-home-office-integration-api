@@ -17,7 +17,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @ExtendWith(MockitoExtension.class)
-public class RequestUserAccessTokenProviderTest {
+class RequestUserAccessTokenProviderTest {
 
     @Mock
     private HttpServletRequest httpServletRequest;
@@ -34,7 +34,7 @@ public class RequestUserAccessTokenProviderTest {
     }
 
     @Test
-    public void get_access_token_from_http_request() {
+    void get_access_token_from_http_request() {
 
         String expectedAccessToken = "access-token";
 
@@ -46,7 +46,7 @@ public class RequestUserAccessTokenProviderTest {
     }
 
     @Test
-    public void get_missing_access_token_from_http_request_throws_if_not_a_try_attempt() {
+    void get_missing_access_token_from_http_request_throws_if_not_a_try_attempt() {
 
         when(httpServletRequest.getHeader("Authorization")).thenReturn(null);
 
@@ -56,7 +56,7 @@ public class RequestUserAccessTokenProviderTest {
     }
 
     @Test
-    public void try_get_access_token_from_http_request() {
+    void try_get_access_token_from_http_request() {
 
         String expectedAccessToken = "access-token";
 
@@ -69,7 +69,7 @@ public class RequestUserAccessTokenProviderTest {
     }
 
     @Test
-    public void try_get_missing_access_token_from_http_request_returns_empty() {
+    void try_get_missing_access_token_from_http_request_returns_empty() {
 
         when(httpServletRequest.getHeader("Authorization")).thenReturn(null);
 
@@ -79,7 +79,7 @@ public class RequestUserAccessTokenProviderTest {
     }
 
     @Test
-    public void when_no_current_http_request_exists_it_throws() {
+    void when_no_current_http_request_exists_it_throws() {
 
         RequestContextHolder.resetRequestAttributes();
 
