@@ -278,7 +278,7 @@ public class RequestHomeOfficeDataHandlerTest {
     private DynamicList selectAppellant() {
 
         List<Value> values = new ArrayList<>();
-        values.add(new Value("Capability Smith", "Capability Smith-210170"));
+        values.add(new Value("Capability Brown", "Capability Brown-210170"));
         return new DynamicList(values.get(0), values);
     }
 
