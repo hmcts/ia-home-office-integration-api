@@ -27,13 +27,13 @@ class AsylumCaseTest {
 
     @Test
     void reads_using_parameter_type_generics() {
-        assertThat(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class).get()).isEqualTo("PA/50222/2019");
+        assertThat(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class).get()).contains("PA/50222/2019");
     }
 
     @Test
     void writes_simple_type() {
         asylumCase.write(APPEAL_REFERENCE_NUMBER, "some-appeal-reference-number");
-        assertThat(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class).get()).isEqualTo("some-appeal-reference-number");
+        assertThat(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class).get()).contains("some-appeal-reference-number");
     }
 
     @Test

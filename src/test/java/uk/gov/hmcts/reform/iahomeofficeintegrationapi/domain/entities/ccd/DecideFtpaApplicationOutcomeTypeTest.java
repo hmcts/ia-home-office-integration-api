@@ -14,7 +14,7 @@ class DecideFtpaApplicationOutcomeTypeTest {
 
     @Test
     void testToString() {
-        assertThat(DecideFtpaApplicationOutcomeType.PARTIALLY_GRANTED.toString()).isEqualTo("partiallyGranted");
+        assertThat(DecideFtpaApplicationOutcomeType.PARTIALLY_GRANTED.toString()).hasToString("partiallyGranted");
     }
 
     @Test

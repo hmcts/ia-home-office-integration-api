@@ -134,10 +134,10 @@ class FeignErrorDecoderTest {
 
         Exception exception = feignErrorDecoder.decode("someMethod", response);
         MatcherAssert.assertThat(exception, instanceOf(HomeOfficeResponseException.class));
-        Assertions.assertThat(exception.getMessage().contains(
+        Assertions.assertThat(exception.getMessage()).contains(
             "Invalid reference format. "
                 + "Format should be either nnnn-nnnn-nnnn-nnnn or 0(0) followed by digits (total length 9 or 10)"
-        )).isTrue();
+        );
 
     }
 
