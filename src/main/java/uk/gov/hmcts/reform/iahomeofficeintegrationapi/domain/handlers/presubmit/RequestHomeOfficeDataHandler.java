@@ -93,7 +93,6 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
                         .withGender(new CodeWithDescription(noMatch, noMatch))
                         .build();
 
-                CodeWithDescription noMatchCodeWithDesc = new CodeWithDescription(noMatch, noMatch);
                 ApplicationStatus noMatchApplicationStatus =
                         new ApplicationStatus.Builder().build();
 
