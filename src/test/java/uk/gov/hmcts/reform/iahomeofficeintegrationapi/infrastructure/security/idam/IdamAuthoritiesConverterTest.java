@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -37,7 +38,7 @@ class IdamAuthoritiesConverterTest {
     @Mock
     private UserInfo userInfo;
 
-    private String tokenValue = "eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9PNk92VnYxK3krV2dySDVVaTlXVGlv"
+    private final String tokenValue = "eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9PNk92VnYxK3krV2dySDVVaTlXVGlv"
                                 + "THQwPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJjY2QtaW1wb3J0QGZha2UuaG1jdHMubmV0Ii"
                                 + "wiYXV0aF9sZXZlbCI6MCwiYXVkaXRUcmFja2luZ0lkIjoiZDg3ODI3ODQtMWU0NC00NjkyLTg0"
                                 + "NzgtNTI5MzE0NTVhNGI5IiwiaXNzIjoiaHR0cDovL2ZyLWFtOjgwODAvb3BlbmFtL29hdXRoMi9"
@@ -55,15 +56,17 @@ class IdamAuthoritiesConverterTest {
 
     private IdamAuthoritiesConverter idamAuthoritiesConverter;
 
+    @BeforeEach()
+    void setUp() {
+        idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamApi, idamService);
+    }
+
     @Test
     void should_return_correct_granted_authority_collection() {
 
         setUpCommonMocks();
-
         when(userInfo.getRoles()).thenReturn(Lists.newArrayList("caseworker-ia", "caseworker-ia-caseofficer"));
         when(idamService.getUserInfo("Bearer " + tokenValue)).thenReturn(userInfo);
-
-        idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamApi,idamService);
 
         List<GrantedAuthority> expectedGrantedAuthorities = Lists.newArrayList(
             new SimpleGrantedAuthority("caseworker-ia"),
@@ -84,20 +87,15 @@ class IdamAuthoritiesConverterTest {
     }
 
     @Test
-    void should_return_empty_list_when_token_is_missing() {
-
-        idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamApi,idamService);
+    void should_return_empty_list_when_token_is_missing_and_no_claim() {
 
         assertEquals(Collections.emptyList(), idamAuthoritiesConverter.convert(jwt));
     }
 
     @Test
     void should_return_empty_list_when_user_info_does_not_contain_roles() {
-
         when(userInfo.getRoles()).thenReturn(Lists.newArrayList());
         when(idamService.getUserInfo("Bearer " + tokenValue)).thenReturn(userInfo);
-
-        idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamApi,idamService);
 
         setUpCommonMocks();
 
@@ -105,13 +103,18 @@ class IdamAuthoritiesConverterTest {
     }
 
     @Test
-    void should_throw_exception_when_auth_service_unavailable() {
+    void should_return_empty_list_when_token_name_present_and_value_not_equal_to_access_token() {
+        when(jwt.hasClaim(TOKEN_NAME)).thenReturn(true);
+        when(jwt.getClaim(TOKEN_NAME)).thenReturn("DIFFERENT_VALUE");
 
+        assertEquals(Collections.emptyList(), idamAuthoritiesConverter.convert(jwt));
+    }
+
+    @Test
+    void should_throw_exception_when_auth_service_unavailable() {
         when(idamService.getUserInfo("Bearer " + tokenValue)).thenThrow(FeignException.class);
 
         setUpCommonMocks();
-
-        idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamApi,idamService);
 
         IdentityManagerResponseException thrown = assertThrows(
             IdentityManagerResponseException.class,
