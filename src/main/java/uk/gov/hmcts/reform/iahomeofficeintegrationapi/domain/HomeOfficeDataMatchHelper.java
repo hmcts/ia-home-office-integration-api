@@ -12,14 +12,7 @@ public class HomeOfficeDataMatchHelper {
     private static final DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
 
     public boolean isApplicantMatched(HomeOfficeCaseStatus status, Person appellant, String appellantDateOfBirth) {
-
-        if (isApplicantNameMatched(status, appellant)
-                || isApplicantDobMatched(status, appellantDateOfBirth)) {
-
-            return true;
-        }
-
-        return false;
+        return isApplicantNameMatched(status, appellant) || isApplicantDobMatched(status, appellantDateOfBirth);
     }
 
     private boolean isApplicantDobMatched(HomeOfficeCaseStatus status, String appellantDateOfBirth) {
