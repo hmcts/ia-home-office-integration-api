@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class HomeOfficeErrorTest {
+class HomeOfficeErrorTest {
 
     private HomeOfficeError error;
 
@@ -17,7 +17,7 @@ public class HomeOfficeErrorTest {
     }
 
     @Test
-    public void has_correct_values_after_setting() {
+    void has_correct_values_after_setting() {
         assertNotNull(error);
         assertEquals("1100", error.getErrorCode());
         assertEquals("some-error", error.getMessageText());

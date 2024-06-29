@@ -13,8 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
-public class ApplicationStatusTest {
+class ApplicationStatusTest {
     @Mock
     CodeWithDescription mockCode;
     @Mock
@@ -38,7 +37,7 @@ public class ApplicationStatusTest {
     }
 
     @Test
-    public void has_correct_values_after_setting() {
+    void has_correct_values_after_setting() {
         assertNotNull(applicationStatus.getDecisionType());
         assertEquals(mockCode, applicationStatus.getApplicationType());
         assertEquals(mockCode, applicationStatus.getClaimReasonType());
