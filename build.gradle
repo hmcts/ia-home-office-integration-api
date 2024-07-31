@@ -35,7 +35,7 @@ def versions = [
         gradlePitest       : '1.15.0',
         pact_version       : '4.1.38',
         pitest             : '1.15.3',
-        reformLogging      : '5.1.7',
+        reformLogging      : '6.0.1',
         reformHealthStarter: '0.0.5',
         restAssured        : '5.3.2',
         serenity           : '3.6.22',
