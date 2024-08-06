@@ -35,7 +35,7 @@ def versions = [
         gradlePitest       : '1.15.0',
         pact_version       : '4.1.38',
         pitest             : '1.15.3',
-        reformLogging      : '5.1.7',
+        reformLogging      : '6.0.1',
         reformHealthStarter: '0.0.5',
         restAssured        : '5.3.2',
         serenity           : '3.6.22',
@@ -327,8 +327,8 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.0.1'
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: '5.1.7'
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: '5.1.7'
-  implementation group: 'uk.gov.hmcts.reform', name: 'properties-vo' +
-          'lume-spring-boot-starter', version: '0.1.0'
+  implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
+
   implementation group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc

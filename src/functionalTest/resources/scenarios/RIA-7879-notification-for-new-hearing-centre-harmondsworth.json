@@ -1,0 +1,45 @@
+{
+  "description": "RIA-7879 notification for new hearing centre harmondsworth",
+  "launchDarklyKey": "home-office-notification-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "listCase",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "appealReferenceNumber": "RP/50001/2023",
+          "decisionHearingFeeOption": "decisionWithHearing",
+          "hearingDocuments": [],
+          "listCaseHearingCentre": "harmondsworth",
+          "ariaListingReference": "LP/12345/2019",
+          "listCaseHearingLength": "60",
+          "listCaseHearingDate": "2023-12-31T12:34:56",
+          "uploadAdditionalEvidenceActionAvailable": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "appealReferenceNumber": "RP/50001/2023",
+        "hearingDocuments": [],
+        "decisionHearingFeeOption": "decisionWithHearing",
+        "listCaseHearingCentre": "harmondsworth",
+        "ariaListingReference": "LP/12345/2019",
+        "listCaseHearingLength": "60",
+        "listCaseHearingDate": "2023-12-31T12:34:56",
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "homeOfficeHearingInstructStatus": "OK"
+      }
+    }
+  }
+}
