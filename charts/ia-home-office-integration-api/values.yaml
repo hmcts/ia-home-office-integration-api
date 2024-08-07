@@ -12,12 +12,22 @@ java:
     ia:
       resourceGroup: ia
       secrets:
-        - idam-client-id
-        - idam-secret
-        - s2s-secret
-        - s2s-microservice
-        - homeoffice-client-id
-        - homeoffice-secret
-        - AppInsightsInstrumentationKey
-        - launch-darkly-sdk-key
-        - app-insights-connection-string
+        - name: idam-client-id
+          alias: IA_IDAM_CLIENT_ID
+        - name: idam-secret
+          alias: IA_IDAM_SECRET
+        - name: s2s-secret
+          alias: IA_S2S_SECRET
+        - name: s2s-microservice
+          alias: IA_S2S_MICROSERVICE
+        - name: homeoffice-client-id
+          alias: IA_HOMEOFFICE_CLIENT_ID
+        - name: homeoffice-secret
+          alias: IA_HOMEOFFICE_SECRET
+        - name: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
+        - name: launch-darkly-sdk-key
+          alias: LAUNCH_DARKLY_SDK_KEY
+        - name: app-insights-connection-string
+          alias: app-insights-connection-string
+
