@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 @Setter
 public class ConfigValidatorAppListener implements ApplicationListener<ContextRefreshedEvent> {
 
-    @Autowired
     Environment env;
 
     @Value("${auth.homeoffice.client.baseUrl}")
@@ -27,6 +26,10 @@ public class ConfigValidatorAppListener implements ApplicationListener<ContextRe
     @Value("${auth.homeoffice.client.secret}")
     private String clientSecret;
 
+    @Autowired
+    public ConfigValidatorAppListener(Environment env) {
+        this.env = env;
+    }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {

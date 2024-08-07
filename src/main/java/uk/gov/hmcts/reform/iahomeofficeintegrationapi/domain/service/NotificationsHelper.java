@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
-import static org.springframework.util.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_SUBMISSION_DATE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_TYPE;
@@ -159,7 +158,7 @@ public class NotificationsHelper {
 
         if (homeOfficeCaseStatus.isPresent()) {
             String documentReference = homeOfficeCaseStatus.get().getApplicationStatus().getDocumentReference();
-            if (!isEmpty(documentReference)) {
+            if (documentReference != null && !documentReference.isEmpty()) {
                 log.info("Using document reference {} from application status instead of home{}",
                     documentReference, homeOfficeReferenceNumber);
                 homeOfficeReferenceNumber = documentReference;

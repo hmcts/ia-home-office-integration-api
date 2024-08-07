@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.Notificatio
 @Component
 public class ChangeDirectionDueDateNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private HomeOfficeInstructService homeOfficeInstructService;
+    private final HomeOfficeInstructService homeOfficeInstructService;
     private NotificationsHelper notificationsHelper;
 
     public ChangeDirectionDueDateNotificationHandler(
@@ -60,60 +60,58 @@ public class ChangeDirectionDueDateNotificationHandler implements PreSubmitCallb
             throw new IllegalStateException("Cannot handle callback");
         }
         log.info("Preparing to send {} notification to HomeOffice for event {}",
-            DEFAULT.toString(), callback.getEvent());
+            DEFAULT, callback.getEvent());
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         final String homeOfficeReferenceNumber = notificationsHelper.getHomeOfficeReference(asylumCase);
-
         final String caseId = notificationsHelper.getCaseId(asylumCase);
 
-        final HomeOfficeInstruct homeOfficeInstruct =
-            new HomeOfficeInstruct(
+        final HomeOfficeInstruct homeOfficeInstruction =
+                createHomeOfficeInstruction(caseId, homeOfficeReferenceNumber, asylumCase);
+
+        log.info("Finished constructing {} notification request for caseId: {}, HomeOffice reference: {}",
+            DEFAULT, caseId, homeOfficeReferenceNumber);
+
+        final String notificationStatus = homeOfficeInstructService.sendNotification(homeOfficeInstruction);
+
+        updateAsylumCaseWithNotificationStatus(callback, asylumCase, notificationStatus);
+
+        log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
+                DEFAULT, caseId, homeOfficeReferenceNumber, notificationStatus, callback.getEvent());
+
+        return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private static void updateAsylumCaseWithNotificationStatus(Callback<AsylumCase> callback, AsylumCase asylumCase, String notificationStatus) {
+        if (State.RESPONDENT_REVIEW.equals(callback.getCaseDetails().getState())) {
+            asylumCase.write(HOME_OFFICE_REVIEW_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS, notificationStatus);
+        } else if (State.AWAITING_RESPONDENT_EVIDENCE.equals(callback.getCaseDetails().getState())) {
+            asylumCase.write(HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS, notificationStatus);
+        }
+    }
+
+    private HomeOfficeInstruct createHomeOfficeInstruction(String caseId, String homeOfficeReferenceNumber, AsylumCase asylumCase) {
+        return new HomeOfficeInstruct(
                 notificationsHelper.getConsumerReference(caseId),
                 homeOfficeReferenceNumber,
                 notificationsHelper.getMessageHeader(),
                 DEFAULT.name(),
                 getNote(asylumCase)
-            );
-
-        log.info("Finished constructing {} notification request for caseId: {}, HomeOffice reference: {}",
-            DEFAULT.toString(), caseId, homeOfficeReferenceNumber);
-
-        final String notificationStatus = homeOfficeInstructService.sendNotification(homeOfficeInstruct);
-
-        if (State.RESPONDENT_REVIEW.equals(callback.getCaseDetails().getState())) {
-
-            asylumCase.write(HOME_OFFICE_REVIEW_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS, notificationStatus);
-
-        } else if (State.AWAITING_RESPONDENT_EVIDENCE.equals(callback.getCaseDetails().getState())) {
-
-            asylumCase.write(HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS, notificationStatus);
-
-        }
-
-        log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
-            DEFAULT.toString(), caseId, homeOfficeReferenceNumber, notificationStatus, callback.getEvent());
-
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        );
     }
 
     private String getNote(AsylumCase asylumCase) {
-
         String dueDateChanged = asylumCase.read(DIRECTION_EDIT_DATE_DUE, String.class)
             .orElseThrow(() -> new IllegalStateException("Direction Edit Date Due for the appeal is not present"));
-
         String explanation = asylumCase.read(DIRECTION_EDIT_EXPLANATION, String.class)
             .orElseThrow(() -> new IllegalStateException("Direction Edit Explanation for the appeal is not present"));
-
         return "The due date for this direction has changed to " + dueDateChanged + "\n" + explanation + "\n";
     }
 
     protected boolean isDirectionForRespondentParties(AsylumCase asylumCase) {
-
-        Parties parties = asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)
-            .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present"));
-
-        return parties.equals(parties.RESPONDENT);
+        return asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)
+                .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present"))
+                .equals(Parties.RESPONDENT);
     }
 }
