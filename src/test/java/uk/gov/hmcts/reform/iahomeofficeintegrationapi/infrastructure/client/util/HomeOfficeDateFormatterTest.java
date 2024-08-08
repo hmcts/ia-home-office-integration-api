@@ -7,46 +7,40 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.stream.Stream;
+
 @ExtendWith(MockitoExtension.class)
-public class HomeOfficeDateFormatterTest {
+class HomeOfficeDateFormatterTest {
 
     @Test
     void date_returned_in_the_home_office_request_format() {
         String nowDateTime = HomeOfficeDateFormatter.getCurrentDateTime();
 
         assertNotNull(nowDateTime);
-        assertThat(nowDateTime.length()).isEqualTo(20);
+        assertThat(nowDateTime).hasSize(20);
         assertThat(nowDateTime.charAt(19)).isEqualTo('Z');
     }
 
-    @Test
-    void date_returned_in_iac_format_for_valid_ho_date_time() {
-        String iacDate = HomeOfficeDateFormatter.getIacDateTime("2017-07-21T17:32:28Z");
+    @ParameterizedTest
+    @MethodSource("provideDateTimeInputs")
+    void date_returned_in_expected_format_for_valid_date_time(String date, String expectedOutput) {
+        String iacDate = HomeOfficeDateFormatter.getIacDateTime(date);
         assertNotNull(iacDate);
-        assertEquals("21 Jul 2017", iacDate);
+        assertEquals(expectedOutput, iacDate);
     }
 
-    @Test
-    void date_returned_asis_for_invalid_ho_date_time() {
-        String iacDate = HomeOfficeDateFormatter.getIacDateTime("2017-07-2117:32:28");
-        assertNotNull(iacDate);
-        assertEquals("2017-07-2117:32:28", iacDate);
-    }
-
-    @Test
-    void date_returned_in_iac_format_for_valid_ho_date() {
-        String iacDate = HomeOfficeDateFormatter.getIacDateTime("2017-07-21");
-        assertNotNull(iacDate);
-        assertEquals("21 Jul 2017", iacDate);
-    }
-
-    @Test
-    void date_returned_asis_for_invalid_ho_date() {
-        String iacDate = HomeOfficeDateFormatter.getIacDateTime("21-7-2017");
-        assertNotNull(iacDate);
-        assertEquals("21-7-2017", iacDate);
+    static Stream<Arguments> provideDateTimeInputs() {
+        return Stream.of(
+                Arguments.of("2017-07-21T17:32:28Z", "21 Jul 2017"),
+                Arguments.of("2017-07-2117:32:28", "2017-07-2117:32:28"),
+                Arguments.of("2017-07-21", "21 Jul 2017"),
+                Arguments.of("21-7-2017", "21-7-2017")
+        );
     }
 
     @Test
@@ -55,38 +49,34 @@ public class HomeOfficeDateFormatterTest {
         assertNull(iacDate);
     }
 
-    @Test
-    void date_of_birth_returned_in_iac_format_for_valid_date() {
-        String iacDate = HomeOfficeDateFormatter.getPersonDateOfBirth(29, 2, 2000);
+    @ParameterizedTest
+    @MethodSource("provideDateOfBirthInputs")
+    void date_of_birth_returned_in_expected_format(int day, int month, int year, String expectedOutput) {
+        String iacDate = HomeOfficeDateFormatter.getPersonDateOfBirth(day, month, year);
         assertNotNull(iacDate);
-        assertEquals("29 Feb 2000", iacDate);
+        assertEquals(expectedOutput, iacDate);
     }
 
-    @Test
-    void date_of_birth_returned_asis_for_invalid_date() {
-        String iacDate = HomeOfficeDateFormatter.getPersonDateOfBirth(21, 0, 1970);
-        assertNotNull(iacDate);
-        assertEquals("21/00/1970", iacDate);
+    static Stream<Arguments> provideDateOfBirthInputs() {
+        return Stream.of(
+                Arguments.of(29, 2, 2000, "29 Feb 2000"),
+                Arguments.of(21, 0, 1970, "21/00/1970"),
+                Arguments.of(0, 0, 0, "00/00/0")
+        );
     }
 
-    @Test
-    void date_of_birth_returned_asis_for_zero_date() {
-        String iacDate = HomeOfficeDateFormatter.getPersonDateOfBirth(0, 0, 0);
+    @ParameterizedTest
+    @MethodSource("provideDateAndTimeInputs")
+    void date_returned_in_iac_format_for_valid_ho_date_and_time(String date, String expectedOutput) {
+        String iacDate = HomeOfficeDateFormatter.getIacDateAndTime(date);
         assertNotNull(iacDate);
-        assertEquals("00/00/0", iacDate);
+        assertEquals(expectedOutput, iacDate);
     }
 
-    @Test
-    void date_returned_in_iac_format_for_valid_ho_date_no_time() {
-        String iacDate = HomeOfficeDateFormatter.getIacDateAndTime("2017-07-21");
-        assertNotNull(iacDate);
-        assertEquals("2017-07-21T00:00:00Z", iacDate);
-    }
-
-    @Test
-    void date_returned_in_iac_format_for_valid_ho_date_and_time() {
-        String iacDate = HomeOfficeDateFormatter.getIacDateAndTime("2017-07-21T02:10:00Z");
-        assertNotNull(iacDate);
-        assertEquals("2017-07-21T02:10:00Z", iacDate);
+    static Stream<Arguments> provideDateAndTimeInputs() {
+        return Stream.of(
+                Arguments.of("2017-07-21", "2017-07-21T00:00:00Z"),
+                Arguments.of("2017-07-21T02:10:00Z", "2017-07-21T02:10:00Z")
+        );
     }
 }

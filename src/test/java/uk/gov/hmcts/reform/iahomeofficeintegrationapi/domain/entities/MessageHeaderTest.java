@@ -10,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class MessageHeaderTest {
+class MessageHeaderTest {
     @Mock
     private CodeWithDescription consumerType;
     private MessageHeader messageHeader;
@@ -24,7 +24,7 @@ public class MessageHeaderTest {
     }
 
     @Test
-    public void has_correct_values() {
+    void has_correct_values() {
         assertEquals(consumerType, messageHeader.getConsumer());
         assertEquals("1234-tttt-wwwwwww", messageHeader.getCorrelationId());
         assertEquals("2020-06-15T17:35:38Z", messageHeader.getEventDateTime());
