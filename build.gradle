@@ -327,7 +327,7 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '5.1.7'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '5.1.7'
 
-  implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '2.1.4'
+  implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '2.1.6'
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc
 
