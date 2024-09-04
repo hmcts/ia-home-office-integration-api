@@ -324,8 +324,8 @@ dependencies {
     exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
   }
   implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.74'
-  implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '5.1.7'
-  implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '5.1.7'
+  implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.0.1'
+  implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '6.0.1'
 
   implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '2.1.6'
 
