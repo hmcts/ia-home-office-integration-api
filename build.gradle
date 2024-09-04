@@ -1,6 +1,7 @@
 buildscript {
   repositories {
-    jcenter()
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
   }
   dependencies {
     classpath("org.yaml:snakeyaml:2.2")
@@ -264,7 +265,6 @@ dependencyManagement {
 
 repositories {
   mavenLocal()
-  jcenter()
   mavenCentral()
   maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
   maven { url 'https://www.jitpack.io' }
@@ -311,7 +311,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Hoxton.SR4'
 
-  implementation(group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0') {
+  implementation(group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.3') {
     exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
   }
   implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.8') {
@@ -325,10 +325,9 @@ dependencies {
   }
   implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.74'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.0.1'
-  implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: '5.1.7'
-  implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: '5.1.7'
+  implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '6.0.1'
 
-  implementation group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
+  implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '2.1.6'
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc
 
