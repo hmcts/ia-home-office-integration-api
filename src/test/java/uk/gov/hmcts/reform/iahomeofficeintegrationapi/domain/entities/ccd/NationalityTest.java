@@ -180,6 +180,7 @@ class NationalityTest {
         assertEquals("Kiribati", Nationality.KI.toString());
         assertEquals("Korea, Democratic People's Republic of", Nationality.KP.toString());
         assertEquals("Korea, Republic of", Nationality.KR.toString());
+        assertEquals("Kosovo", Nationality.KO.toString());
         assertEquals("Kuwait", Nationality.KW.toString());
         assertEquals("Kyrgyzstan", Nationality.KG.toString());
         assertEquals("Lao PDR", Nationality.LA.toString());
@@ -253,6 +254,7 @@ class NationalityTest {
         assertEquals("Botswana", Nationality.BW.toString());
         assertEquals("Bouvet Island", Nationality.BV.toString());
         assertEquals("Brazil", Nationality.BR.toString());
+        assertEquals("British Overseas Citizen", Nationality.BC.toString());
         assertEquals("British Virgin Islands", Nationality.VG.toString());
         assertEquals("British Indian Ocean Territory", Nationality.IO.toString());
         assertEquals("Brunei Darussalam", Nationality.BN.toString());
@@ -304,6 +306,6 @@ class NationalityTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(252, Nationality.values().length);
+        assertEquals(254, Nationality.values().length);
     }
 }
