@@ -7,7 +7,6 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_FAMILY_NAME;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_NATIONALITIES;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTIONS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
 import java.util.ArrayList;
@@ -21,12 +20,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ApplicationStatus;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerReference;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeCaseStatus;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHeader;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
@@ -87,7 +84,6 @@ abstract class AbstractNotificationsHandlerTestBase {
         when(notificationsHelper.getHomeOfficeReference(asylumCase)).thenReturn(someDocumentReference);
         when(notificationsHelper.getConsumerReference(someCaseReference)).thenReturn(consumerReference);
         when(notificationsHelper.getMessageHeader()).thenReturn(messageHeader);
-        //setupHelperDirection(directionTag);
     }
 
     protected void setupHelperDirection(DirectionTag directionTag) {
@@ -102,22 +98,7 @@ abstract class AbstractNotificationsHandlerTestBase {
             .thenReturn(Optional.of(someHomeOfficeReference));
     }
 
-    protected void setupDirection(DirectionTag directionTag) {
-        when(requestEvidenceDirection.getTag()).thenReturn(directionTag);
-        when(requestEvidenceDirection.getDateDue()).thenReturn(dueDate);
-        when(requestEvidenceDirection.getExplanation()).thenReturn(directionExplanation);
-
-        when(asylumCase.read(DIRECTIONS)).thenReturn(
-            Optional.of(
-                Collections.singletonList(
-                    new IdValue<>("1", requestEvidenceDirection)
-                )
-            )
-        );
-    }
-
     protected void setupApplicantDetails() {
-
         when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of(firstName));
         when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of(surname));
         when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("2000-01-01"));
@@ -184,15 +165,5 @@ abstract class AbstractNotificationsHandlerTestBase {
         consumerMap.put("consumer", lookupReferenceData);
 
         return consumerMap;
-    }
-
-    protected HomeOfficeInstructResponse getResponse() {
-
-        return new HomeOfficeInstructResponse(
-            new MessageHeader(
-                new CodeWithDescription("HMCTS", "HM Courts and Tribunal Service"),
-                someCaseReference,
-                eventDateTime),
-            null);
     }
 }

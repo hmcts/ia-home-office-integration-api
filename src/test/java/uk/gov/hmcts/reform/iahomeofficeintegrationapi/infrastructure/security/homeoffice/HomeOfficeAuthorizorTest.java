@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.homeoffice;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doReturn;
@@ -8,6 +7,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Map;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -24,10 +26,6 @@ class HomeOfficeAuthorizorTest {
     private static final String TOKEN_PATH = "/ichallenge/token";
     private static final String CLIENT_ID = "1234";
     private static final String CLIENT_SECRET = "badgers";
-
-    //private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdG9rZW4iOiJzb21lX2FjY2V"
-    //                                        + "zc190b2tlbiIsInNjb3BlIjoicmVhZCIsInRva2VuX3R5cGUiOiJiZWFyZXIiLCJleHBpc"
-    //                                        + "mVzX2luIjoyOTl9.rsrnW2pMzmSJiY_80IxvgOTgglgLGBiYtAFRRuNVVqc";
     private static final String JWT_TOKEN = "{"
                                             + "\"access_token\": \"some_access_token\","
                                             + "\"expires_in\": 300,"
@@ -36,14 +34,17 @@ class HomeOfficeAuthorizorTest {
                                             + "\"scope\": \"email profile\""
                                             + "}";
 
-
     @Mock HomeOfficeTokenApi homeOfficeTokenApi;
+    HomeOfficeAuthorizor homeOfficeAuthorizor;
+
+    @BeforeEach
+    void setUp() {
+        homeOfficeAuthorizor =
+            new HomeOfficeAuthorizor(homeOfficeTokenApi, BASE_URL, TOKEN_PATH, CLIENT_ID, CLIENT_SECRET);
+    }
 
     @Test
     void should_call_homeoffice_api_to_authorize() {
-        HomeOfficeAuthorizor homeOfficeAuthorizor = new HomeOfficeAuthorizor(homeOfficeTokenApi, BASE_URL,
-            TOKEN_PATH, CLIENT_ID, CLIENT_SECRET);
-
         doReturn(JWT_TOKEN)
             .when(homeOfficeTokenApi)
             .getAuthorizationToken(
@@ -52,7 +53,7 @@ class HomeOfficeAuthorizorTest {
 
         String actualAccessToken = homeOfficeAuthorizor.fetchCodeAuthorization();
 
-        assertEquals("Bearer some_access_token", actualAccessToken);
+        Assertions.assertEquals("Bearer some_access_token", actualAccessToken);
 
         ArgumentCaptor<Map<String, ?>> requestCaptor = ArgumentCaptor.forClass(Map.class);
 
@@ -62,24 +63,16 @@ class HomeOfficeAuthorizorTest {
 
         final Map<String, ?> actualTokenParameters = requestCaptor.getValue();
 
-        assertEquals("client_credentials", actualTokenParameters.get("grant_type"));
-        assertEquals(CLIENT_ID, actualTokenParameters.get("client_id"));
-        assertEquals(CLIENT_SECRET, actualTokenParameters.get("client_secret"));
+        Assertions.assertEquals("client_credentials", actualTokenParameters.get("grant_type"));
+        Assertions.assertEquals(CLIENT_ID, actualTokenParameters.get("client_id"));
+        Assertions.assertEquals(CLIENT_SECRET, actualTokenParameters.get("client_secret"));
     }
 
     @Test
     void should_call_homeoffice_api_to_authorize_and_get_empty_token() {
-        // Given
-        HomeOfficeAuthorizor homeOfficeAuthorizor = new HomeOfficeAuthorizor(homeOfficeTokenApi, BASE_URL,
-            TOKEN_PATH, CLIENT_ID, CLIENT_SECRET);
-
         doReturn(null).when(homeOfficeTokenApi).getAuthorizationToken(anyMap());
 
-        // When
-        // Then an exception will be thrown
-        assertThrows(Exception.class, () -> {
-            homeOfficeAuthorizor.fetchCodeAuthorization();
-        });
+        assertThrows(Exception.class, homeOfficeAuthorizor::fetchCodeAuthorization);
     }
 
 }

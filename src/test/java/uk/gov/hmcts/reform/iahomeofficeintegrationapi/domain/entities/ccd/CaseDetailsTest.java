@@ -1,14 +1,15 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 import java.time.LocalDateTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.RequiredFieldMissingException;
 
-public class CaseDetailsTest {
+class CaseDetailsTest {
 
     private final long id = 123L;
     private final String jurisdiction = "IA";
@@ -16,49 +17,53 @@ public class CaseDetailsTest {
     private final CaseData caseData = mock(CaseData.class);
     private final LocalDateTime createdDate = LocalDateTime.parse("2019-01-31T11:22:33");
 
-    private CaseDetails<CaseData> caseDetails = new CaseDetails<>(
-        id,
-        jurisdiction,
-        state,
-        caseData,
-        createdDate
-    );
+    private CaseDetails<CaseData> caseDetails;
 
-    @Test
-    public void should_hold_onto_values() {
-
-        assertEquals(id, caseDetails.getId());
-        assertEquals(jurisdiction, caseDetails.getJurisdiction());
-        assertEquals(state, caseDetails.getState());
-        assertEquals(caseData, caseDetails.getCaseData());
-        assertEquals(createdDate, caseDetails.getCreatedDate());
+    @BeforeEach
+    void setUp() {
+        caseDetails = new CaseDetails<>(
+                id,
+                jurisdiction,
+                state,
+                caseData,
+                createdDate
+        );
     }
 
     @Test
-    public void should_throw_required_field_missing_exception() {
+    void should_hold_onto_values() {
+        assertThat(caseDetails.getId()).isEqualTo(id);
+        assertThat(caseDetails.getJurisdiction()).isEqualTo(jurisdiction);
+        assertThat(caseDetails.getState()).isEqualTo(state);
+        assertThat(caseDetails.getCaseData()).isEqualTo(caseData);
+        assertThat(caseDetails.getCreatedDate()).isEqualTo(createdDate);
+    }
 
-        CaseDetails<CaseData> caseDetails = new CaseDetails<>(
-            id,
-            null,
-            null,
-            null,
-            null
+    @Test
+    void should_throw_required_field_missing_exception() {
+
+        CaseDetails<CaseData> unpopulatedCaseDetails = new CaseDetails<>(
+                id,
+                null,
+                null,
+                null,
+                null
         );
 
-        assertThatThrownBy(caseDetails::getJurisdiction)
-            .isExactlyInstanceOf(RequiredFieldMissingException.class)
-            .hasMessageContaining("jurisdiction");
+        assertThatThrownBy(unpopulatedCaseDetails::getJurisdiction)
+                .isExactlyInstanceOf(RequiredFieldMissingException.class)
+                .hasMessageContaining("jurisdiction");
 
-        assertThatThrownBy(caseDetails::getState)
-            .isExactlyInstanceOf(RequiredFieldMissingException.class)
-            .hasMessageContaining("state");
+        assertThatThrownBy(unpopulatedCaseDetails::getState)
+                .isExactlyInstanceOf(RequiredFieldMissingException.class)
+                .hasMessageContaining("state");
 
-        assertThatThrownBy(caseDetails::getCaseData)
-            .isExactlyInstanceOf(RequiredFieldMissingException.class)
-            .hasMessageContaining("caseData");
+        assertThatThrownBy(unpopulatedCaseDetails::getCaseData)
+                .isExactlyInstanceOf(RequiredFieldMissingException.class)
+                .hasMessageContaining("caseData");
 
-        assertThatThrownBy(caseDetails::getCreatedDate)
-            .isExactlyInstanceOf(RequiredFieldMissingException.class)
-            .hasMessageContaining("createdDate");
+        assertThatThrownBy(unpopulatedCaseDetails::getCreatedDate)
+                .isExactlyInstanceOf(RequiredFieldMissingException.class)
+                .hasMessageContaining("createdDate");
     }
 }
