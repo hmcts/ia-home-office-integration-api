@@ -3,10 +3,6 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
@@ -34,15 +30,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.util.FileCopyUtils;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataErrorsHelper;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataMatchHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeCaseStatus;
@@ -62,36 +67,46 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Home
 @SpringJUnitConfig
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AsylumCaseStatusSearchHandlerTest {
+class AsylumCaseStatusSearchHandlerTest {
 
-    private static final String HOME_OFFICE_CALL_ERROR_MESSAGE = "### There is a problem\n\n"
-            + "The service has been unable t"
-            + "o retrieve the Home Office information about this appeal.\n\n"
-            + "[Request the Home Office information](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/"
-            + "requestHomeOfficeData) to try again. This may take a few minutes.";
+    private static final String HOME_OFFICE_CALL_ERROR_MESSAGE = """
+        ### There is a problem
+    
+        The service has been unable to retrieve the Home Office information about this appeal.
+    
+        [Request the Home Office information](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/requestHomeOfficeData)\
+         to try again. This may take a few minutes.""";
 
-    private static final String HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE = "### There is a problem\n\n"
-            + "The appellant entered the "
-            + "Home Office reference number incorrectly. You can contact the appellant to check the reference number"
-            + " if you need this information to validate the appeal";
+    private static final String HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE = """
+        ### There is a problem
+    
+        The appellant entered the Home Office reference number incorrectly. You can contact the appellant to check\
+         the reference number if you need this information to validate the appeal""";
 
-    private static final String HOME_OFFICE_REFERENCE_NOT_FOUND_ERROR_MESSAGE = "### There is a problem\n\n"
-            + "The appellant’s Home Office reference"
-            + " number could not be found. You can contact the Home Office to check the reference"
-            + " if you need this information to validate the appeal";
+    private static final String HOME_OFFICE_REFERENCE_NOT_FOUND_ERROR_MESSAGE = """
+        ### There is a problem
+    
+        The appellant’s Home Office reference number could not be found. You can contact the Home Office to check the\
+         reference if you need this information to validate the appeal""";
 
-    private static final String HOME_OFFICE_APPELLANT_NOT_FOUND_ERROR_MESSAGE = "### There is a problem\n\n"
-            + "The service has been unable to retrieve the Home Office information about this appeal "
-            + "because the Home Office reference number does not have any matching appellant data in the system. "
-            + "You can contact the Home Office if you need more information to validate the appeal.";
+    private static final String HOME_OFFICE_APPELLANT_NOT_FOUND_ERROR_MESSAGE = """
+        ### There is a problem
+    
+        The service has been unable to retrieve the Home Office information about this appeal because the Home Office\
+         reference number does not have any matching appellant data in the system. You can contact the Home Office if\
+         you need more information to validate the appeal.""";
 
-    private static final String HOME_OFFICE_MAIN_APPLICANT_NOT_FOUND_ERROR_MESSAGE = "**Note:** "
-            + "The service was unable to retrieve any appellant details from the Home Office because the Home Office "
-            + "data does not include a main applicant. You can contact the Home Office if you need this information "
-            + "to validate the appeal.";
+    private static final String HOME_OFFICE_MAIN_APPLICANT_NOT_FOUND_ERROR_MESSAGE = """
+        **Note:** The service was unable to retrieve any appellant details from the Home Office because the Home Office\
+         data does not include a main applicant. You can contact the Home Office if you need this information to validate the appeal.""";
 
     private static HomeOfficeSearchResponse homeOfficeSearchResponse;
     private static HomeOfficeSearchResponse homeOfficeNullFieldResponse;
+    private static final String SAMPLE_FIRST_NAME = "Capability";
+    private static final String SAMPLE_LAST_NAME = "Brown";
+    private static final String NOT_FOUND_ERROR = "Not found";
+    private static final String FAIL = "FAIL";
+    private static final String SUCCESS = "SUCCESS";
     private final String someHomeOfficeReference = "some-reference";
     @Mock
     private FeatureToggler featureToggler;
@@ -107,6 +122,10 @@ public class AsylumCaseStatusSearchHandlerTest {
     private HomeOfficeCaseStatus caseStatus;
     @Mock
     private HomeOfficeSearchResponse mockResponse;
+    @Spy
+    private HomeOfficeDataMatchHelper homeOfficeDataMatchHelper;
+    @Spy
+    private HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper;
 
     @Value("classpath:home-office-sample-response.json")
     private Resource resource;
@@ -119,20 +138,16 @@ public class AsylumCaseStatusSearchHandlerTest {
 
     @BeforeEach
     void setUp() {
-        asylumCaseStatusSearchHandler = new AsylumCaseStatusSearchHandler(homeOfficeSearchService, featureToggler);
+        asylumCaseStatusSearchHandler = new AsylumCaseStatusSearchHandler(homeOfficeSearchService,
+                homeOfficeDataMatchHelper, homeOfficeDataErrorsHelper, featureToggler);
     }
 
     @Test
     void check_handler_returns_case_data_with_home_office_fields() throws Exception {
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Stephen"));
-        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Fenn"));
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
+        setUpCaseDetailsStubbings();
+        setUpAppellantDetailStubbings();
 
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(someHomeOfficeReference));
@@ -143,12 +158,10 @@ public class AsylumCaseStatusSearchHandlerTest {
         PreSubmitCallbackResponse<AsylumCase> response =
                 asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        assertThat(response).isNotNull();
-        assertThat(response.getData()).isNotEmpty();
-        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertResponsePopulated(response);
         verify(asylumCase, times(1))
-                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
-        assertTrue(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class).isPresent());
+                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, SUCCESS);
+        Assertions.assertTrue(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class).isPresent());
 
     }
 
@@ -156,29 +169,27 @@ public class AsylumCaseStatusSearchHandlerTest {
     void check_handler_returns_case_data_with_errors_data() throws Exception {
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        setUpCaseDetailsStubbings();
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(someHomeOfficeReference));
         when(homeOfficeSearchService.getCaseStatus(eq(caseId), anyString()))
                 .thenThrow(new HomeOfficeResponseException("some-error"));
 
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Stephen"));
-        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Fenn"));
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
+        setUpAppellantDetailStubbings();
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        assertThat(response).isNotNull();
-        assertThat(response.getData()).isNotEmpty();
-        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertResponsePopulated(response);
+        verifyFailedSearchStatus();
+
+    }
+
+    private void verifyFailedSearchStatus() {
         verify(asylumCase, times(1))
-                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, FAIL);
         verify(asylumCase, times(1))
                 .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
-
     }
 
     @Test
@@ -187,7 +198,7 @@ public class AsylumCaseStatusSearchHandlerTest {
         LocalDate formattedDecisionDate = asylumCaseStatusSearchHandler.getFormattedDecisionDate("1998-01-30");
 
         assertThat(formattedDecisionDate).isNotNull();
-        assertEquals(formattedDecisionDate,LocalDate.parse("1998-01-30"));
+        Assertions.assertEquals(formattedDecisionDate, LocalDate.parse("1998-01-30"));
 
     }
 
@@ -198,7 +209,7 @@ public class AsylumCaseStatusSearchHandlerTest {
                 asylumCaseStatusSearchHandler.getFormattedDecisionDate("2003-03-28T18:04:52Z");
 
         assertThat(formattedDecisionDate).isNotNull();
-        assertEquals(formattedDecisionDate,LocalDate.parse("2003-03-28"));
+        Assertions.assertEquals(formattedDecisionDate, LocalDate.parse("2003-03-28"));
 
     }
 
@@ -206,27 +217,18 @@ public class AsylumCaseStatusSearchHandlerTest {
     void check_handler_returns_case_data_with_error_status_for_null_fields() throws Exception {
 
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        setUpCaseDetailsStubbings();
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(someHomeOfficeReference));
         when(homeOfficeSearchService.getCaseStatus(eq(caseId), anyString())).thenReturn(null);
 
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Stephen"));
-        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Fenn"));
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
+        setUpAppellantDetailStubbings();
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        assertThat(response).isNotNull();
-        assertThat(response.getData()).isNotEmpty();
-        assertThat(response.getData()).isEqualTo(asylumCase);
-        verify(asylumCase, times(1))
-                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
-        verify(asylumCase, times(1))
-                .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+        assertResponsePopulated(response);
+        verifyFailedSearchStatus();
 
     }
 
@@ -234,12 +236,8 @@ public class AsylumCaseStatusSearchHandlerTest {
     void handle_should_return_error_for_invalid_home_office_reference() {
 
         when(callback.getEvent()).thenReturn(PAY_AND_SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
-        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Smith"));
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
+        setUpCaseDetailsStubbings();
+        setUpAppellantDetailStubbings();
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of("1234-1234-1234-1234-1234-1234-1234-1234-1234-1234"));
 
@@ -247,12 +245,10 @@ public class AsylumCaseStatusSearchHandlerTest {
         PreSubmitCallbackResponse<AsylumCase> response =
                 asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        assertThat(response).isNotNull();
-        assertThat(response.getData()).isNotEmpty();
-        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertResponsePopulated(response);
 
         verify(asylumCase, times(1))
-                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, FAIL);
         verify(asylumCase, times(1))
                 .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE,
                         HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE);
@@ -262,32 +258,24 @@ public class AsylumCaseStatusSearchHandlerTest {
     void check_handler_validates_person_null_value_from_home_office_data() throws Exception {
 
         when(callback.getEvent()).thenReturn(PAY_AND_SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        setUpCaseDetailsStubbings();
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(someHomeOfficeReference));
         when(homeOfficeSearchService.getCaseStatus(eq(caseId), anyString())).thenReturn(getNullFieldResponse());
 
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
-        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Smith"));
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
+        setUpAppellantDetailStubbings();
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        assertThat(response).isNotNull();
-        assertThat(response.getData()).isNotEmpty();
-        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertResponsePopulated(response);
     }
 
     @Test
     void check_handler_validates_error_detail_from_home_office_data_returns_fail() throws Exception {
 
         when(callback.getEvent()).thenReturn(MARK_APPEAL_PAID);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        setUpCaseDetailsStubbings();
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(someHomeOfficeReference));
         when(homeOfficeSearchService.getCaseStatus(eq(caseId), anyString())).thenReturn(mockResponse);
@@ -297,18 +285,14 @@ public class AsylumCaseStatusSearchHandlerTest {
                 true
         ));
 
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Stephen"));
-        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Fenn"));
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
+        setUpAppellantDetailStubbings();
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        assertThat(response).isNotNull();
-        assertThat(response.getData()).isNotEmpty();
-        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertResponsePopulated(response);
         verify(asylumCase, times(1))
-                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, FAIL);
         verify(asylumCase, times(1))
                 .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_REFERENCE_NOT_FOUND_ERROR_MESSAGE);
 
@@ -318,9 +302,7 @@ public class AsylumCaseStatusSearchHandlerTest {
     void check_handler_validates_no_appellant_error_from_home_office_data_returns_fail() throws Exception {
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        setUpCaseDetailsStubbings();
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(someHomeOfficeReference));
         when(homeOfficeSearchService.getCaseStatus(eq(caseId), anyString())).thenReturn(mockResponse);
@@ -330,18 +312,14 @@ public class AsylumCaseStatusSearchHandlerTest {
                 true
         ));
 
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Stephen"));
-        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Fenn"));
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
+        setUpAppellantDetailStubbings();
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        assertThat(response).isNotNull();
-        assertThat(response.getData()).isNotEmpty();
-        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertResponsePopulated(response);
         verify(asylumCase, times(1))
-                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, FAIL);
         verify(asylumCase, times(1))
                 .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_APPELLANT_NOT_FOUND_ERROR_MESSAGE);
 
@@ -351,9 +329,7 @@ public class AsylumCaseStatusSearchHandlerTest {
     void check_handler_validates_ho_not_found_from_home_office_data_returns_fail() throws Exception {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        setUpCaseDetailsStubbings();
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(someHomeOfficeReference));
         when(homeOfficeSearchService.getCaseStatus(eq(caseId), anyString())).thenReturn(mockResponse);
@@ -363,18 +339,14 @@ public class AsylumCaseStatusSearchHandlerTest {
                 true
         ));
 
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Stephen"));
-        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Fenn"));
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
+        setUpAppellantDetailStubbings();
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        assertThat(response).isNotNull();
-        assertThat(response.getData()).isNotEmpty();
-        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertResponsePopulated(response);
         verify(asylumCase, times(1))
-                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, FAIL);
         verify(asylumCase, times(1))
                 .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE);
 
@@ -384,25 +356,19 @@ public class AsylumCaseStatusSearchHandlerTest {
     void check_handler_validates_main_applicant_not_found_from_home_office_data_returns_fail() throws Exception {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        setUpCaseDetailsStubbings();
         when(asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(someHomeOfficeReference));
         when(homeOfficeSearchService.getCaseStatus(eq(caseId), anyString())).thenReturn(mockResponse);
 
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Stephen"));
-        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Fenn"));
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
+        setUpAppellantDetailStubbings();
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        assertThat(response).isNotNull();
-        assertThat(response.getData()).isNotEmpty();
-        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertResponsePopulated(response);
         verify(asylumCase, times(1))
-                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, FAIL);
         verify(asylumCase, times(1))
                 .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_MAIN_APPLICANT_NOT_FOUND_ERROR_MESSAGE);
 
@@ -444,9 +410,9 @@ public class AsylumCaseStatusSearchHandlerTest {
                         || callback.getEvent() == MARK_APPEAL_PAID
                         || callback.getEvent() == REQUEST_HOME_OFFICE_DATA)
                 ) {
-                    assertTrue(canHandle);
+                    Assertions.assertTrue(canHandle);
                 } else {
-                    assertFalse(canHandle);
+                    Assertions.assertFalse(canHandle);
                 }
             }
 
@@ -479,9 +445,7 @@ public class AsylumCaseStatusSearchHandlerTest {
     void should_not_allow_empty_home_office_reference() {
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        setUpCaseDetailsStubbings();
 
         assertThatThrownBy(() -> asylumCaseStatusSearchHandler.handle(ABOUT_TO_SUBMIT, callback))
                 .hasMessage("Home office reference for the appeal is not present, caseId: " + caseId)
@@ -494,9 +458,8 @@ public class AsylumCaseStatusSearchHandlerTest {
         String rejectReason = asylumCaseStatusSearchHandler.getRejectionReasonString(
                 getSampleResponse().getStatus().get(1).getApplicationStatus().getRejectionReasons());
 
-        assertNotNull(rejectReason);
-        assertEquals("Application not completed properly" + "<br />" + "Application not entered properly",
-                rejectReason);
+        Assertions.assertNotNull(rejectReason);
+        Assertions.assertEquals("Application not completed properly" + "<br />" + "Application not entered properly", rejectReason);
 
     }
 
@@ -504,9 +467,9 @@ public class AsylumCaseStatusSearchHandlerTest {
     void reject_reasons_returned_as_empty_string_for_null_or_empty_value() {
 
         String rejectReason = asylumCaseStatusSearchHandler.getRejectionReasonString(null);
-        assertEquals("", rejectReason);
+        Assertions.assertEquals("", rejectReason);
         rejectReason = asylumCaseStatusSearchHandler.getRejectionReasonString(new ArrayList<>());
-        assertEquals("", rejectReason);
+        Assertions.assertEquals("", rejectReason);
     }
 
     @Test
@@ -523,16 +486,15 @@ public class AsylumCaseStatusSearchHandlerTest {
 
         Person person = searchStatus.get().getPerson();
 
-        assertNotNull(searchStatus);
-        assertTrue(searchStatus.isPresent());
-        assertThat(person.getFamilyName()).isEqualTo("Smith");
-        assertThat(person.getGivenName()).isEqualTo("Capability");
+        Assertions.assertNotNull(searchStatus);
+        assertThat(person.getFamilyName()).isEqualTo(SAMPLE_LAST_NAME);
+        assertThat(person.getGivenName()).isEqualTo(SAMPLE_FIRST_NAME);
     }
 
     @Test
     void should_match_applicant_details_by_given_and_family_names() throws Exception {
 
-        Person appellant = Person.PersonBuilder.person().withFamilyName("Smith").withGivenName("Capability").build();
+        Person appellant = Person.PersonBuilder.person().withFamilyName(SAMPLE_LAST_NAME).withGivenName(SAMPLE_FIRST_NAME).build();
 
         Optional<HomeOfficeCaseStatus> searchStatus = asylumCaseStatusSearchHandler.selectMainApplicant(
                 caseId,
@@ -543,10 +505,9 @@ public class AsylumCaseStatusSearchHandlerTest {
 
         Person person = searchStatus.get().getPerson();
 
-        assertNotNull(searchStatus);
-        assertTrue(searchStatus.isPresent());
-        assertThat(person.getFamilyName()).isEqualTo("Smith");
-        assertThat(person.getGivenName()).isEqualTo("Capability");
+        Assertions.assertNotNull(searchStatus);
+        assertThat(person.getFamilyName()).isEqualTo(SAMPLE_LAST_NAME);
+        assertThat(person.getGivenName()).isEqualTo(SAMPLE_FIRST_NAME);
 
     }
 
@@ -565,28 +526,8 @@ public class AsylumCaseStatusSearchHandlerTest {
                         "1980-11-11"
                 );
 
-        assertNotNull(searchStatus);
-        assertFalse(searchStatus.isPresent());
-    }
-
-    @Test
-    void should_log_warning_for_no_metadata_of_applicant() throws Exception {
-
-        Person appellant = Person.PersonBuilder.person().withFamilyName("Smith").withGivenName("Capability").build();
-
-        Optional<HomeOfficeCaseStatus> searchStatus = asylumCaseStatusSearchHandler.selectMainApplicant(
-                caseId,
-                getSampleResponse().getStatus(),
-                appellant,
-                "1976-11-21"
-        );
-
-        Person person = searchStatus.get().getPerson();
-
-        assertNotNull(searchStatus);
-        assertTrue(searchStatus.isPresent());
-        assertThat(person.getFamilyName()).isEqualTo("Smith");
-        assertThat(person.getGivenName()).isEqualTo("Capability");
+        Assertions.assertNotNull(searchStatus);
+        Assertions.assertFalse(searchStatus.isPresent());
     }
 
     @Test
@@ -601,14 +542,14 @@ public class AsylumCaseStatusSearchHandlerTest {
                         appellant,
                         "1980-11-11"
                 );
-        assertFalse(searchStatus.isPresent());
+        Assertions.assertFalse(searchStatus.isPresent());
         searchStatus = asylumCaseStatusSearchHandler.selectMainApplicant(
                 caseId,
                 Collections.EMPTY_LIST,
                 appellant,
                 "1980-11-11"
         );
-        assertFalse(searchStatus.isPresent());
+        Assertions.assertFalse(searchStatus.isPresent());
     }
 
     @Test
@@ -619,8 +560,8 @@ public class AsylumCaseStatusSearchHandlerTest {
                 getSampleResponse().getStatus().get(1).getApplicationStatus().getHomeOfficeMetadata()
         );
 
-        assertNotNull(metadata);
-        assertTrue(metadata.isPresent());
+        Assertions.assertNotNull(metadata);
+        Assertions.assertTrue(metadata.isPresent());
     }
 
     @Test
@@ -630,46 +571,41 @@ public class AsylumCaseStatusSearchHandlerTest {
                 getSampleResponse().getStatus().get(0).getApplicationStatus().getHomeOfficeMetadata()
         );
 
-        assertNotNull(metadata);
-        assertFalse(metadata.isPresent());
+        Assertions.assertNotNull(metadata);
+        Assertions.assertFalse(metadata.isPresent());
     }
 
     @Test
     void metadata_returned_empty_from_null_or_empty_list() {
         Optional<HomeOfficeMetadata> metadata = asylumCaseStatusSearchHandler.selectMetadata(caseId,null);
-        assertFalse(metadata.isPresent());
+        Assertions.assertFalse(metadata.isPresent());
         metadata = asylumCaseStatusSearchHandler.selectMetadata(caseId, Collections.EMPTY_LIST);
-        assertFalse(metadata.isPresent());
+        Assertions.assertFalse(metadata.isPresent());
     }
 
     @Test
     void set_error_for_ho_reference_not_found_sets_values_in_asylum_case() {
-
-        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, "1020", "Not found");
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, "1020", NOT_FOUND_ERROR);
         verify(asylumCase, times(1))
-                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, FAIL);
         verify(asylumCase, times(1))
                 .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_REFERENCE_NOT_FOUND_ERROR_MESSAGE);
-
     }
 
     @Test
     void set_error_for_ho_appellant_not_found_sets_values_in_asylum_case() {
-
-        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, "1010", "Not found");
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, "1010", NOT_FOUND_ERROR);
         verify(asylumCase, times(1))
-                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, FAIL);
         verify(asylumCase, times(1))
                 .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_APPELLANT_NOT_FOUND_ERROR_MESSAGE);
-
     }
 
     @Test
     void set_error_for_invalid_format_sets_values_in_asylum_case() {
-
-        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, "1060", "Format error");
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, "1060", "Format error");
         verify(asylumCase, times(1))
-                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, FAIL);
         verify(asylumCase, times(1))
                 .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE);
 
@@ -677,33 +613,36 @@ public class AsylumCaseStatusSearchHandlerTest {
 
     @Test
     void set_error_for_general_error_sets_values_in_asylum_case() {
-
-        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, null, null);
-        verify(asylumCase, times(1))
-                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
-        verify(asylumCase, times(1))
-                .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, null, null);
+        verifyFailedSearchStatus();
 
     }
 
     @Test
     void set_error_when_error_code_is_empty() {
-
-        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, "", null);
-        verify(asylumCase, times(1))
-                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
-        verify(asylumCase, times(1))
-                .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, "", null);
+        verifyFailedSearchStatus();
     }
 
     @Test
     void set_error_when_error_code_is_not_number() {
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, "abc", null);
+        verifyFailedSearchStatus();
+    }
 
-        asylumCaseStatusSearchHandler.setErrorMessageForErrorCode(caseId, asylumCase, "abc", null);
-        verify(asylumCase, times(1))
-                .write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS, "FAIL");
-        verify(asylumCase, times(1))
-                .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+    private static Stream<Arguments> provideForErrorCodes() {
+        return Stream.of(
+                null,
+                Arguments.of(""),
+                Arguments.of("abc")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideForErrorCodes")
+    void set_error_when_error_code_null_empty_or_not_number(String errorCode) {
+        homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, errorCode, null);
+        verifyFailedSearchStatus();
     }
 
     private HomeOfficeSearchResponse getSampleResponse() throws Exception {
@@ -725,6 +664,24 @@ public class AsylumCaseStatusSearchHandlerTest {
                     FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
         }
         return homeOfficeNullFieldResponse;
+    }
+
+    private void assertResponsePopulated(PreSubmitCallbackResponse<AsylumCase> response) {
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+    }
+
+    private void setUpCaseDetailsStubbings() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+    }
+
+    private void setUpAppellantDetailStubbings() {
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Stephen"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Fenn"));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
     }
 
 }

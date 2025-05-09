@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.IdamApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AccessTokenProvider;
 
@@ -26,7 +25,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.Ac
 class IdamUserDetailsProviderTest {
 
     @Mock private AccessTokenProvider accessTokenProvider;
-    @Mock private IdamApi idamApi;
     @Mock
     private IdamService idamService;
     private IdamUserDetailsProvider idamUserDetailsProvider;
@@ -37,7 +35,6 @@ class IdamUserDetailsProviderTest {
         idamUserDetailsProvider =
             new IdamUserDetailsProvider(
                 accessTokenProvider,
-                idamApi,
                 idamService
             );
     }

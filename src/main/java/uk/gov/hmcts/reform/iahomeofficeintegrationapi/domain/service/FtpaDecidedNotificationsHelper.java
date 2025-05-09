@@ -25,10 +25,10 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.FtpaRe
 @Component
 public class FtpaDecidedNotificationsHelper {
 
-
     public static final String GRANTED = "granted";
     public static final String PARTIALLY_GRANTED = "partiallyGranted";
     public static final String REFUSED = "refused";
+    private static final String FAIL_STATUS = "FAIL";
     private final FeatureToggler featureToggler;
 
     public FtpaDecidedNotificationsHelper(FeatureToggler featureToggler) {
@@ -64,40 +64,30 @@ public class FtpaDecidedNotificationsHelper {
             Outcome ftpaOutcome = null;
             String ftpaAppealDecision = null;
 
-
             if (ftpaApplicantType.equals("appellant")) {
                 ftpaAppealDecision = asylumCase.read(valueOf(format("FTPA_APPELLANT_%sDECISION_OUTCOME_TYPE",
                     judgePrefix.toUpperCase())), String.class)
                     .orElse("");
 
             } else if (ftpaApplicantType.equals("respondent")) {
-
                 ftpaAppealDecision = asylumCase.read(valueOf(format("FTPA_RESPONDENT_%sDECISION_OUTCOME_TYPE",
                     judgePrefix.toUpperCase())), String.class)
                     .orElse("");
 
             } else {
-
                 log.error("Invalid applicant type: {} while sending : "
                           + "{} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
                     ftpaApplicantType, COURT_OUTCOME.name(), caseId, homeOfficeReferenceNumber, notificationStatus,
                     event);
-                notificationStatus = "FAIL";
+                notificationStatus = FAIL_STATUS;
             }
 
-            if (!notificationStatus.equals("FAIL")) {
-                ftpaOutcome = judgePrefix.isEmpty()
-                    ? getLeadershipJudgeFtpaOutcome(ftpaAppealDecision)
-                    : getResidentJudgeFtpaOutcome(ftpaAppealDecision);
+            if (!notificationStatus.equals(FAIL_STATUS)) {
+                ftpaOutcome = getFtpaOutcome(ftpaAppealDecision, judgePrefix);
             }
 
-            if (StringUtils.isEmpty(notificationStatus)) {
-
-                String note = judgePrefix.isEmpty()
-                    ? FtpaAppealDecidedNote.valueOf(
-                        getLeadershipJudgeNoteId(ftpaApplicantType, ftpaAppealDecision)).getValue()
-                    : FtpaAppealDecidedNote.valueOf(
-                        getResidentJudgeNoteId(asylumCase, ftpaApplicantType, ftpaAppealDecision)).getValue();
+            if (!StringUtils.hasText(notificationStatus)) {
+                String note = getNote(asylumCase, ftpaApplicantType, ftpaAppealDecision, judgePrefix);
 
                 final AppealDecidedInstructMessage bundleInstructMessage =
                     appealDecidedInstructMessage()
@@ -117,15 +107,11 @@ public class FtpaDecidedNotificationsHelper {
                 log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
                     COURT_OUTCOME.name(), caseId, homeOfficeReferenceNumber, notificationStatus, event);
             } else {
-                log.error(
-                    "Failed to send {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
-                    COURT_OUTCOME.name(), caseId, homeOfficeReferenceNumber, notificationStatus, event
-                );
+                logError(COURT_OUTCOME.name(), caseId, homeOfficeReferenceNumber, notificationStatus, event);
             }
         } catch (Exception e) {
-            log.error("Failed to send {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
-                COURT_OUTCOME.name(), caseId, homeOfficeReferenceNumber, notificationStatus, event);
-            notificationStatus = "FAIL";
+            logError(COURT_OUTCOME.name(), caseId, homeOfficeReferenceNumber, notificationStatus, event);
+            notificationStatus = FAIL_STATUS;
         }
 
         asylumCase.write(valueOf(format("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS",
@@ -141,85 +127,56 @@ public class FtpaDecidedNotificationsHelper {
 
     private Outcome getLeadershipJudgeFtpaOutcome(final String ftpaAppealDecision) {
 
-        Outcome ftpaOutcome;
-
-        switch (ftpaAppealDecision) {
-            case GRANTED:
-            case PARTIALLY_GRANTED:
-                ftpaOutcome = Outcome.GRANTED;
-                break;
-            case REFUSED:
-                ftpaOutcome = Outcome.REFUSED;
-                break;
-            case "notAdmitted":
-                ftpaOutcome = Outcome.REFUSED;
-                break;
-            default:
-                throw new IllegalStateException("Invalid FTPA appeal decision: " + ftpaAppealDecision);
-        }
-
-        return ftpaOutcome;
+        return switch (ftpaAppealDecision) {
+            case GRANTED, PARTIALLY_GRANTED -> Outcome.GRANTED;
+            case REFUSED, "notAdmitted" -> Outcome.REFUSED;
+            default -> throw new IllegalStateException("Invalid FTPA appeal decision: " + ftpaAppealDecision);
+        };
     }
 
     private String getResidentJudgeNoteId(AsylumCase asylumCase, String ftpaApplicantType, String ftpaAppealDecision) {
 
-        String noteId;
-
-        switch (ftpaAppealDecision) {
-            case "reheardRule32":
-            case "reheardRule35":
-                noteId = "REHEARD_" + ftpaApplicantType.toUpperCase();
-                break;
-            case "remadeRule32":
+        return switch (ftpaAppealDecision) {
+            case "reheardRule32", "reheardRule35" -> "REHEARD_" + ftpaApplicantType.toUpperCase();
+            case "remadeRule32" -> {
                 String remadeDecision = asylumCase.read(valueOf(format("FTPA_%s_DECISION_REMADE_RULE_32",
-                    ftpaApplicantType.toUpperCase())), String.class).orElse("");
-                noteId = "REMADE_" + remadeDecision.toUpperCase();
-                break;
-            case GRANTED:
-            case PARTIALLY_GRANTED:
-            case REFUSED:
-
+                        ftpaApplicantType.toUpperCase())), String.class).orElse("");
+                yield "REMADE_" + remadeDecision.toUpperCase();
+            }
+            case GRANTED, PARTIALLY_GRANTED, REFUSED -> {
                 boolean isDlrmSetAsideEnabled = featureToggler.getValue("dlrm-setaside-feature-flag", true);
-
-                noteId = (isDlrmSetAsideEnabled ?
-                    DecideFtpaApplicationOutcomeType.from(ftpaAppealDecision) :
-                    FtpaResidentJudgeDecisionOutcomeType.from(ftpaAppealDecision))
-                             .name() + "_" + ftpaApplicantType.toUpperCase();
-                break;
-            default:
-                throw new IllegalStateException("Unexpected FTPA appeal decision value: " + ftpaAppealDecision);
-        }
-        return noteId;
+                yield (isDlrmSetAsideEnabled ?
+                        DecideFtpaApplicationOutcomeType.from(ftpaAppealDecision) :
+                        FtpaResidentJudgeDecisionOutcomeType.from(ftpaAppealDecision))
+                        .name() + "_" + ftpaApplicantType.toUpperCase();
+            }
+            default -> throw new IllegalStateException("Unexpected FTPA appeal decision value: " + ftpaAppealDecision);
+        };
     }
 
     private Outcome getResidentJudgeFtpaOutcome(final String ftpaAppealDecision) {
 
-        Outcome ftpaOutcome;
-
-        switch (ftpaAppealDecision) {
-            case GRANTED:
-            case PARTIALLY_GRANTED:
-                ftpaOutcome = Outcome.GRANTED;
-                break;
-            case REFUSED:
-                ftpaOutcome = Outcome.REFUSED;
-                break;
-            case "notAdmitted":
-                ftpaOutcome = Outcome.REFUSED;
-                break;
-            case "reheardRule35":
-            case "reheardRule32":
-                ftpaOutcome = Outcome.REHEARD;
-                break;
-            case "remadeRule32":
-                ftpaOutcome = Outcome.REMADE;
-                break;
-            default:
-                throw new IllegalStateException("Invalid FTPA appeal decision: " + ftpaAppealDecision);
-        }
-
-        return ftpaOutcome;
+        return switch (ftpaAppealDecision) {
+            case GRANTED, PARTIALLY_GRANTED -> Outcome.GRANTED;
+            case REFUSED, "notAdmitted" -> Outcome.REFUSED;
+            case "reheardRule35", "reheardRule32" -> Outcome.REHEARD;
+            case "remadeRule32" -> Outcome.REMADE;
+            default -> throw new IllegalStateException("Invalid FTPA appeal decision: " + ftpaAppealDecision);
+        };
     }
 
+    private Outcome getFtpaOutcome(String ftpaAppealDecision, String judgePrefix) {
+        return judgePrefix.isEmpty() ? getLeadershipJudgeFtpaOutcome(ftpaAppealDecision) : getResidentJudgeFtpaOutcome(ftpaAppealDecision);
+    }
 
+    private String getNote(AsylumCase asylumCase, String ftpaApplicantType, String ftpaAppealDecision, String judgePrefix) {
+        return judgePrefix.isEmpty()
+                ? FtpaAppealDecidedNote.valueOf(getLeadershipJudgeNoteId(ftpaApplicantType, ftpaAppealDecision)).getValue()
+                : FtpaAppealDecidedNote.valueOf(getResidentJudgeNoteId(asylumCase, ftpaApplicantType, ftpaAppealDecision)).getValue();
+    }
+
+    private void logError(String messageType, String caseId, String homeOfficeReferenceNumber, String status, Event event) {
+        log.error("Failed to send {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
+                messageType, caseId, homeOfficeReferenceNumber, status, event);
+    }
 }
