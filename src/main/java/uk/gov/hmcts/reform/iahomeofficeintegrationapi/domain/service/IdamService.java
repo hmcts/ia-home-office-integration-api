@@ -10,9 +10,7 @@ public class IdamService {
 
     private final IdamApi idamApi;
 
-    public IdamService(
-            IdamApi idamApi
-    ) {
+    public IdamService(IdamApi idamApi) {
         this.idamApi = idamApi;
     }
 

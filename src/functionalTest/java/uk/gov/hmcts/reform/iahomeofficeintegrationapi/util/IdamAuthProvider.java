@@ -71,22 +71,6 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "homeOfficeApcTokenCache")
-    public String getHomeOfficeApcToken() {
-        return getUserToken(
-            System.getenv("TEST_HOMEOFFICE_APC_USERNAME"),
-            System.getenv("TEST_HOMEOFFICE_APC_PASSWORD")
-        );
-    }
-
-    @Cacheable(value = "homeOfficeLartTokenCache")
-    public String getHomeOfficeLartToken() {
-        return getUserToken(
-            System.getenv("TEST_HOMEOFFICE_LART_USERNAME"),
-            System.getenv("TEST_HOMEOFFICE_LART_PASSWORD")
-        );
-    }
-
     @Cacheable(value = "homeOfficePouTokenCache")
     public String getHomeOfficePouToken() {
         return getUserToken(
@@ -103,51 +87,12 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "legalRepShareCaseATokenCache")
-    public String getLegalRepShareCaseAToken() {
-        return getUserToken(
-            System.getenv("TEST_LAW_FIRM_SHARE_CASE_A_USERNAME"),
-            System.getenv("TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD")
-        );
-    }
-
-    @Cacheable(value = "legalRepOrgSuccessTokenCache")
-    public String getLegalRepOrgSuccessToken() {
-        return getUserToken(
-            System.getenv("TEST_LAW_FIRM_ORG_SUCCESS_USERNAME"),
-            System.getenv("TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD")
-        );
-    }
-
-    @Cacheable(value = "legalRepOrgDeletedTokenCache")
-    public String getLegalRepOrgDeletedToken() {
-        return getUserToken(
-            System.getenv("TEST_LAW_FIRM_ORG_DELETED_USERNAME"),
-            System.getenv("TEST_LAW_FIRM_ORG_DELETED_PASSWORD")
-        );
-    }
 
     @Cacheable(value = "judgeTokenCache")
     public String getJudgeToken() {
         return getUserToken(
             System.getenv("TEST_JUDGE_X_USERNAME"),
             System.getenv("TEST_JUDGE_X_PASSWORD")
-        );
-    }
-
-    @Cacheable(value = "citizenTokenCache")
-    public String getCitizenToken() {
-        return getUserToken(
-            System.getenv("TEST_CITIZEN_USERNAME"),
-            System.getenv("TEST_CITIZEN_PASSWORD")
-        );
-    }
-
-    @Cacheable(value = "systemTokenCache")
-    public String getSystemToken() {
-        return getUserToken(
-            System.getenv("IA_SYSTEM_USERNAME"),
-            System.getenv("IA_SYSTEM_PASSWORD")
         );
     }
 

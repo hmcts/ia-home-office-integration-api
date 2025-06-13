@@ -8,3 +8,9 @@ launchDarkly:
   sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
   connectionTimeout: 5000
   socketTimeout: 5000
+
+spring:
+  cache:
+    cache-names: userInfoCache, legalRepATokenCache, caseOfficerTokenCache, adminOfficerTokenCache, homeOfficePouTokenCache, homeOfficeGenericTokenCache, judgeTokenCache
+    caffeine:
+      spec: expireAfterAccess=3600s
