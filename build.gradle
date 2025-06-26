@@ -5,7 +5,7 @@ buildscript {
   }
   dependencies {
     classpath("org.yaml:snakeyaml:2.4")
-    classpath("net.serenity-bdd:serenity-gradle-plugin:3.2.3")
+    classpath("net.serenity-bdd:serenity-gradle-plugin:3.6.22")
   }
 }
 
@@ -18,7 +18,7 @@ plugins {
   id 'org.springframework.boot' version '2.7.18'
   id 'uk.gov.hmcts.java' version '0.12.66'
   id 'org.owasp.dependencycheck' version '10.0.4'
-  id 'com.github.ben-manes.versions' version '0.52.0'
+  id 'com.github.ben-manes.versions' version '0.50.0'
   id 'org.sonarqube' version '4.4.1.3373'
   id 'au.com.dius.pact' version '4.6.17'
   id 'info.solidsoft.pitest' version '1.15.0'
@@ -39,7 +39,7 @@ def versions = [
         reformLogging      : '6.0.1',
         reformHealthStarter: '0.0.5',
         restAssured        : '5.5.5',
-        serenity           : '3.9.8',
+        serenity           : '3.6.22',
         sonarPitest        : '0.5',
         springHystrix      : '2.2.10.RELEASE',
         springDoc          : '1.8.0',
