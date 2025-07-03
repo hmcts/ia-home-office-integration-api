@@ -62,6 +62,8 @@ withPipeline(type, product, component) {
     env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.HOME_OFFICE_ENDPOINT = "http://ia-home-office-mock-api-aat.service.core-compute-aat.internal"
     env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
+    env.ROLE_ASSIGNMENT_URL = "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
+
     enableAksStagingDeployment()
     disableLegacyDeployment()
     loadVaultSecrets(secrets)

@@ -23,12 +23,9 @@ public class IdamAuthoritiesConverter implements Converter<Jwt, Collection<Grant
 
     static final String TOKEN_NAME = "tokenName";
 
-    private final IdamApi idamApi;
     private final IdamService idamService;
 
-    public IdamAuthoritiesConverter(IdamApi idamApi,
-        IdamService idamService) {
-        this.idamApi = idamApi;
+    public IdamAuthoritiesConverter(IdamService idamService) {
         this.idamService = idamService;
     }
 
@@ -36,7 +33,7 @@ public class IdamAuthoritiesConverter implements Converter<Jwt, Collection<Grant
     public Collection<GrantedAuthority> convert(Jwt jwt) {
 
         List<GrantedAuthority> authorities = new ArrayList<>();
-        if (jwt.containsClaim(TOKEN_NAME) && jwt.getClaim(TOKEN_NAME).equals(ACCESS_TOKEN)) {
+        if (jwt.hasClaim(TOKEN_NAME) && jwt.getClaim(TOKEN_NAME).equals(ACCESS_TOKEN)) {
             authorities.addAll(getUserRoles(jwt.getTokenValue()));
         }
         return authorities;
@@ -55,7 +52,7 @@ public class IdamAuthoritiesConverter implements Converter<Jwt, Collection<Grant
                 .collect(Collectors.toList());
 
         } catch (FeignException e) {
-            throw new IdentityManagerResponseException("Could not get user details from IDAM", e);
+            throw new IdentityManagerResponseException("Could not get user details from IDAM or Role Assignment Service", e);
         }
 
     }

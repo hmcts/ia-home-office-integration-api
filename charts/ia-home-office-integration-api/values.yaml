@@ -8,6 +8,7 @@ java:
     OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
     S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     HOME_OFFICE_ENDPOINT: "http://ia-home-office-mock-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
   keyVaults:
     ia:
       resourceGroup: ia
