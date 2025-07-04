@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
