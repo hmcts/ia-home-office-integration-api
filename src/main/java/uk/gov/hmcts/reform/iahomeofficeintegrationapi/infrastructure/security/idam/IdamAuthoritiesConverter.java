@@ -13,7 +13,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.IdamApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.UserInfo;
 
 @Component

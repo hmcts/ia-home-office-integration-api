@@ -19,7 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.IdamApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.UserInfo;
 
 
