@@ -1,7 +1,6 @@
 buildscript {
   repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
   }
   dependencies {
     classpath("org.yaml:snakeyaml:2.2")
