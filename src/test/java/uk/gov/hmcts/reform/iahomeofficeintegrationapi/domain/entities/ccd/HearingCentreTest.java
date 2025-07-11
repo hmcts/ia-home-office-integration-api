@@ -31,6 +31,7 @@ class HearingCentreTest {
         assertEquals("nthTyneMags", HearingCentre.NTH_TYNE_MAGS.getId());
         assertEquals("leedsMags", HearingCentre.LEEDS_MAGS.getId());
         assertEquals("alloaSherrif", HearingCentre.ALLOA_SHERRIF.getId());
+        assertEquals("iacNationalVirtual", HearingCentre.IAC_NATIONAL_VIRTUAL.getId());
         assertEquals("remoteHearing", HearingCentre.REMOTE_HEARING.getId());
 
     }
@@ -60,6 +61,7 @@ class HearingCentreTest {
         assertEquals(HearingCentre.fromId("nthTyneMags"), HearingCentre.NTH_TYNE_MAGS);
         assertEquals(HearingCentre.fromId("leedsMags"), HearingCentre.LEEDS_MAGS);
         assertEquals(HearingCentre.fromId("alloaSherrif"), HearingCentre.ALLOA_SHERRIF);
+        assertEquals(HearingCentre.fromId("iacNationalVirtual"), HearingCentre.IAC_NATIONAL_VIRTUAL);
         assertEquals(HearingCentre.fromId("remoteHearing"), HearingCentre.REMOTE_HEARING);
     }
 
@@ -88,12 +90,13 @@ class HearingCentreTest {
         assertEquals("NTH Tyne Mags", HearingCentre.NTH_TYNE_MAGS.getValue());
         assertEquals("Leeds Mags", HearingCentre.LEEDS_MAGS.getValue());
         assertEquals("Alloa Sherrif Court", HearingCentre.ALLOA_SHERRIF.getValue());
+        assertEquals("IAC National (Virtual)", HearingCentre.IAC_NATIONAL_VIRTUAL.getValue());
         assertEquals("Remote hearing", HearingCentre.REMOTE_HEARING.getValue());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(24, HearingCentre.values().length);
+        assertEquals(25, HearingCentre.values().length);
     }
 
 }
