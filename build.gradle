@@ -1,7 +1,9 @@
 buildscript {
   repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
+    maven {
+      url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1'
+    }
   }
   dependencies {
     classpath("org.yaml:snakeyaml:2.2")
@@ -329,7 +331,7 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.0.1'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '6.0.1'
 
-  implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '2.1.6'
+  implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '2.1.5'
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc
 
