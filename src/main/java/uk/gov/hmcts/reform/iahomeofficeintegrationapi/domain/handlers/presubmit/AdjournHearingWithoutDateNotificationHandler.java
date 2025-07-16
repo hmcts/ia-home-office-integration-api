@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.HEARING;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HearingInstructMessage;
@@ -16,6 +18,8 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitC
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.ListingNotificationHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.NotificationsHelper;
+
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -57,6 +61,11 @@ public class AdjournHearingWithoutDateNotificationHandler implements PreSubmitCa
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         final String homeOfficeReferenceNumber = notificationsHelper.getHomeOfficeReference(asylumCase);
 
+        log.info("----------asylumCase111");
+        Optional<AppealType> appealTypeOpt = asylumCase.read(APPEAL_TYPE, AppealType.class);
+        log.info("{}", appealTypeOpt);
+        log.info("----------asylumCase222");
+
         final String caseId = notificationsHelper.getCaseId(asylumCase);
 
         final HearingInstructMessage hearingInstructMessage
@@ -74,6 +83,10 @@ public class AdjournHearingWithoutDateNotificationHandler implements PreSubmitCa
 
         asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_ADJOURN_WITHOUT_DATE_INSTRUCT_STATUS, notificationStatus);
 
+        log.info("----------asylumCase333");
+        Optional<AppealType> appealTypeOpt1 = asylumCase.read(APPEAL_TYPE, AppealType.class);
+        log.info("{}", appealTypeOpt1);
+        log.info("----------asylumCase444");
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
