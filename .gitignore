@@ -21,3 +21,8 @@ target/
 *.ipr
 
 .DS_Store
+
+#vs
+.vscode
+/bin/*
+!/bin/*.sh

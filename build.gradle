@@ -1,6 +1,9 @@
 buildscript {
   repositories {
     mavenCentral()
+    maven {
+      url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1'
+    }
   }
   dependencies {
     classpath("org.yaml:snakeyaml:2.2")
@@ -40,7 +43,6 @@ def versions = [
         restAssured        : '5.3.2',
         serenity           : '3.6.22',
         sonarPitest        : '0.5',
-        springHystrix      : '2.2.10.RELEASE',
         springDoc          : '1.7.0',
         springCloud        : '3.1.6'
 ]
@@ -321,10 +323,7 @@ dependencies {
   implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '3.1.7') {
     exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
   }
-  implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE') {
-    exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
-  }
-  implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.74'
+  implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.78'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.0.1'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '6.0.1'
 
@@ -338,7 +337,7 @@ dependencies {
   implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37.2'
 
   // CVE-2021-27568
-  implementation group: 'net.minidev', name: 'json-smart', version: '2.5.0'
+  implementation group: 'net.minidev', name: 'json-smart', version: '2.5.2'
 
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.16.0'
   implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
@@ -368,6 +367,7 @@ dependencies {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
 
+  testImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.35.1'
   testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.12.4'
   testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
   testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
