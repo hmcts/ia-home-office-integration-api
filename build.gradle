@@ -354,8 +354,8 @@ dependencies {
 
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine'
 
-  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.106'
-  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.106'
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.107'
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.107'
 
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
