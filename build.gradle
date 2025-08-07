@@ -341,6 +341,7 @@ dependencies {
 
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.16.0'
   implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.18.0'
   implementation group: 'commons-io', name: 'commons-io', version: '2.15.1'
 
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
@@ -354,8 +355,8 @@ dependencies {
 
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine'
 
-  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.106'
-  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.106'
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.107'
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.107'
 
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
