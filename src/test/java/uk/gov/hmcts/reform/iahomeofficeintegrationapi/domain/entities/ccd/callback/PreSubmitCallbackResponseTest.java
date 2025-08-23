@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
@@ -27,41 +26,27 @@ public class PreSubmitCallbackResponseTest {
 
     @Test
     public void should_hold_onto_values() {
-
-        assertEquals(caseData, preSubmitCallbackResponse.getData());
+        assertThat(preSubmitCallbackResponse.getData()).isEqualTo(caseData);
     }
 
     @Test
     public void data_is_mutable() {
-
         CaseData newCaseData = mock(CaseData.class);
-
         preSubmitCallbackResponse.setData(newCaseData);
-
-        assertEquals(newCaseData, preSubmitCallbackResponse.getData());
+        assertThat(preSubmitCallbackResponse.getData()).isEqualTo(newCaseData);
     }
 
     @Test
     public void should_store_distinct_errors() {
-
         List<String> someErrors = Arrays.asList("error3", "error4");
         List<String> someMoreErrors = Arrays.asList("error4", "error1");
 
-        assertTrue(preSubmitCallbackResponse.getErrors().isEmpty());
+        assertThat(preSubmitCallbackResponse.getErrors()).isEmpty();
 
         preSubmitCallbackResponse.addErrors(someErrors);
         preSubmitCallbackResponse.addErrors(someMoreErrors);
         preSubmitCallbackResponse.addError("error5");
 
-        String[] storedErrors =
-            preSubmitCallbackResponse
-                .getErrors()
-                .toArray(new String[0]);
-
-        assertEquals(4, storedErrors.length);
-        assertEquals("error3", storedErrors[0]);
-        assertEquals("error4", storedErrors[1]);
-        assertEquals("error1", storedErrors[2]);
-        assertEquals("error5", storedErrors[3]);
+        assertThat(preSubmitCallbackResponse.getErrors()).containsExactly("error3", "error4", "error1", "error5");
     }
 }

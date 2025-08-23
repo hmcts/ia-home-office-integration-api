@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
@@ -35,6 +33,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,7 +66,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Home
 @SpringJUnitConfig
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestHomeOfficeDataPreparerTest {
+class RequestHomeOfficeDataPreparerTest {
 
     private static final String PROBLEM_MESSAGE = "### There is a problem\n\n";
 
@@ -121,10 +121,7 @@ public class RequestHomeOfficeDataPreparerTest {
     void set_error_for_general_error_sets_values_in_asylum_case() {
 
         homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(caseId, asylumCase, null, null);
-        verify(asylumCase, times(1))
-                .write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
-        verify(asylumCase, times(1))
-                .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+        verifyAsylumCaseFailureStatusUpdated();
     }
 
     @Test
@@ -140,11 +137,7 @@ public class RequestHomeOfficeDataPreparerTest {
     @Test
     void handler_should_return_error_for_out_of_country_appeals() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        setUpCallbackStubbings();
 
         when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
@@ -162,18 +155,10 @@ public class RequestHomeOfficeDataPreparerTest {
 
         final List<Value> values = new ArrayList<>();
         values.add(new Value("NoMatch", "No Match"));
-        DynamicList appellantsList = new DynamicList(values.get(0), values);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        setUpCallbackStubbings();
 
-        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
-        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Stephen"));
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Fenn"));
+        setUpAsylumCaseStubbings();
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(someHomeOfficeReference));
@@ -183,30 +168,30 @@ public class RequestHomeOfficeDataPreparerTest {
         PreSubmitCallbackResponse<AsylumCase> response =
                 requestHomeOfficeDataPreparer.handle(ABOUT_TO_START, callback);
 
+        DynamicList appellantsList = new DynamicList(values.get(0), values);
+
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
+
+        verify(asylumCase, times(1)).write(HOME_OFFICE_APPELLANTS_LIST, appellantsList);
+        verifyAsylumCaseFailureStatusUpdated();
+        verify(asylumCase, times(1)).write(HOME_OFFICE_API_ERROR, INVALID_HOME_OFFICE_REFERENCE);
+    }
+
+    private void verifyAsylumCaseFailureStatusUpdated() {
         verify(asylumCase, times(1))
                 .write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
         verify(asylumCase, times(1))
                 .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
-        verify(asylumCase, times(1)).write(HOME_OFFICE_APPELLANTS_LIST, appellantsList);
-        verify(asylumCase, times(1)).write(HOME_OFFICE_API_ERROR, INVALID_HOME_OFFICE_REFERENCE);
     }
 
     @Test
     void check_handler_returns_case_data_with_error_status_for_null_fields() throws Exception {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        setUpCallbackStubbings();
 
-        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
-        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Stephen"));
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Fenn"));
+        setUpAsylumCaseStubbings();
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(someHomeOfficeReference));
@@ -218,10 +203,7 @@ public class RequestHomeOfficeDataPreparerTest {
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
-        verify(asylumCase, times(1))
-                .write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
-        verify(asylumCase, times(1))
-                .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+        verifyAsylumCaseFailureStatusUpdated();
     }
 
     @Test
@@ -229,18 +211,10 @@ public class RequestHomeOfficeDataPreparerTest {
 
         final List<Value> values = new ArrayList<>();
         values.add(new Value("NoMatch", "No Match"));
-        DynamicList appellantsList = new DynamicList(values.get(0), values);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        setUpCallbackStubbings();
 
-        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1980-01-21"));
-        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Stephen"));
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Fenn"));
+        setUpAsylumCaseStubbings();
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(someHomeOfficeReference));
@@ -248,6 +222,8 @@ public class RequestHomeOfficeDataPreparerTest {
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 requestHomeOfficeDataPreparer.handle(ABOUT_TO_START, callback);
+
+        DynamicList appellantsList = new DynamicList(values.get(0), values);
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
@@ -263,22 +239,11 @@ public class RequestHomeOfficeDataPreparerTest {
     void handler_should_return_all_appellants_from_existing_response() throws Exception {
 
         final List<Value> values = new ArrayList<>();
-        Collections.addAll(values,
-                new Value("John Smith", "John Smith-290268"),
-                new Value("Capability Smith", "Capability Smith-210170"),
-                new Value("NoMatch", "No Match"));
-        DynamicList appellantsList = new DynamicList(values.get(0), values);
+        populateListWithUserData(values);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        setUpCallbackStubbings();
+        setUpAsylumCaseStubbings();
 
-        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
-        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Stephen"));
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Fenn"));
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of("1234-1234-5678-5678"));
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT, String.class))
@@ -288,6 +253,8 @@ public class RequestHomeOfficeDataPreparerTest {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 requestHomeOfficeDataPreparer.handle(ABOUT_TO_START, callback);
+
+        DynamicList appellantsList = new DynamicList(values.get(0), values);
 
         assertThat(callbackResponse).isNotNull();
         assertThat(callbackResponse.getData()).isNotEmpty();
@@ -304,22 +271,10 @@ public class RequestHomeOfficeDataPreparerTest {
     void handler_should_return_all_appellants_found_in_the_home_office_response() throws Exception {
 
         final List<Value> values = new ArrayList<>();
-        Collections.addAll(values,
-                new Value("John Smith", "John Smith-290268"),
-                new Value("Capability Smith", "Capability Smith-210170"),
-                new Value("NoMatch", "No Match"));
-        DynamicList appellantsList = new DynamicList(values.get(0), values);
+        populateListWithUserData(values);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
-        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Stephen"));
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Fenn"));
+        setUpCallbackStubbings();
+        setUpAsylumCaseStubbings();
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of("1234-1234-5678-5678"));
@@ -327,6 +282,8 @@ public class RequestHomeOfficeDataPreparerTest {
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 requestHomeOfficeDataPreparer.handle(ABOUT_TO_START, callback);
+
+        DynamicList appellantsList = new DynamicList(values.get(0), values);
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
@@ -338,24 +295,31 @@ public class RequestHomeOfficeDataPreparerTest {
                 .write(HOME_OFFICE_SEARCH_RESPONSE, new ObjectMapper().writeValueAsString(getSampleResponse()));
     }
 
+    private static void populateListWithUserData(List<Value> values) {
+        Collections.addAll(values,
+                new Value("John Smith", "John Smith-290268"),
+                new Value("Capability Smith", "Capability Smith-210170"),
+                new Value("NoMatch", "No Match"));
+    }
+
+    private void setUpAsylumCaseStubbings() {
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Stephen"));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Fenn"));
+    }
+
     @Test
     void handler_should_error_if_ho_search_response_has_errors() throws Exception {
 
         String errorCode = "2021";
         HomeOfficeError hoError = new HomeOfficeError(errorCode, "SomeApiFailure", false);
+
+        setUpCallbackStubbings();
+        setUpAsylumCaseStubbings();
+
         HomeOfficeSearchResponse hoSearchResponse = new HomeOfficeSearchResponse(
                 messageHeader, "someMsgType", Arrays.asList(caseStatus), hoError);
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1970-01-21"));
-        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Stephen"));
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Fenn"));
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(someHomeOfficeReference));
@@ -370,10 +334,15 @@ public class RequestHomeOfficeDataPreparerTest {
         verify(homeOfficeDataErrorsHelper, times(1))
                 .setErrorMessageForErrorCode(
                         caseId, asylumCase, errorCode, "Error code: 2021, message: SomeApiFailure");
-        verify(asylumCase, times(1))
-                .write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
-        verify(asylumCase, times(1))
-                .write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
+        verifyAsylumCaseFailureStatusUpdated();
+    }
+
+    private void setUpCallbackStubbings() {
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
     @Test
@@ -400,9 +369,9 @@ public class RequestHomeOfficeDataPreparerTest {
                 if (callbackStage == ABOUT_TO_START
                         && (callback.getEvent() == REQUEST_HOME_OFFICE_DATA)
                 ) {
-                    assertTrue(canHandle);
+                    Assertions.assertTrue(canHandle);
                 } else {
-                    assertFalse(canHandle);
+                    Assertions.assertFalse(canHandle);
                 }
             }
 

@@ -45,7 +45,7 @@ class HearingBundleReadyNotificationHandlerTest extends AbstractNotificationsHan
 
     private HearingBundleReadyNotificationHandler hearingBundleReadyNotificationHandler;
 
-    Hearing hearing = Hearing.HearingBuilder.hearing()
+    Hearing oralHearing = Hearing.HearingBuilder.hearing()
         .withHearingType("ORAL")
         .withHmctsHearingRef("ariaListingReference")
         .build();
@@ -57,7 +57,7 @@ class HearingBundleReadyNotificationHandlerTest extends AbstractNotificationsHan
             .withHoReference(someDocumentReference)
             .withMessageHeader(messageHeader)
             .withMessageType(HEARING_BUNDLE_READY.name())
-            .withHearing(hearing).build();
+            .withHearing(oralHearing).build();
 
     HearingInstructMessage hearingInstructMessageReheard =
         HearingInstructMessage.HearingInstructMessageBuilder
@@ -66,7 +66,7 @@ class HearingBundleReadyNotificationHandlerTest extends AbstractNotificationsHan
             .withHoReference(someDocumentReference)
             .withMessageHeader(messageHeader)
             .withMessageType(HEARING_BUNDLE_READY.name())
-            .withHearing(hearing)
+            .withHearing(oralHearing)
             .withNote("This is a reheard case.\n")
             .build();
 

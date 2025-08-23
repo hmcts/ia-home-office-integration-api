@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class PersonTest {
+class PersonTest {
     @Mock
     CodeWithDescription mockCode;
 

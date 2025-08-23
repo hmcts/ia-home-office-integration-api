@@ -50,7 +50,7 @@ class EditCaseListingNotificationHandlerTest extends AbstractNotificationsHandle
 
     private EditCaseListingNotificationHandler editCaseListingNotificationHandler;
 
-    Hearing hearing = Hearing.HearingBuilder.hearing()
+    Hearing oralHearing = Hearing.HearingBuilder.hearing()
         .withHearingType("ORAL")
         .withHearingDate("2020-10-01")
         .withHearingTime("10:10:10")
@@ -67,7 +67,7 @@ class EditCaseListingNotificationHandlerTest extends AbstractNotificationsHandle
             .withHoReference(someDocumentReference)
             .withMessageHeader(messageHeader)
             .withMessageType(HEARING.name())
-            .withHearing(hearing)
+            .withHearing(oralHearing)
             .withNote("Hearing requirements:").build();
 
     HearingInstructMessage hearingInstructMessageReheard =
@@ -77,7 +77,7 @@ class EditCaseListingNotificationHandlerTest extends AbstractNotificationsHandle
             .withHoReference(someDocumentReference)
             .withMessageHeader(messageHeader)
             .withMessageType(HEARING.name())
-            .withHearing(hearing)
+            .withHearing(oralHearing)
             .withNote("This is a reheard case.\nHearing requirements:").build();
 
     @BeforeEach

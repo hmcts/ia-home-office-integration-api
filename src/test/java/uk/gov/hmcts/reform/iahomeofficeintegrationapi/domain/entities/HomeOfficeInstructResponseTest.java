@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class HomeOfficeInstructResponseTest {
+class HomeOfficeInstructResponseTest {
     @Mock
     MessageHeader messageHeader;
     @Mock
@@ -26,7 +26,7 @@ public class HomeOfficeInstructResponseTest {
     }
 
     @Test
-    public void has_correct_values_after_setting() {
+    void has_correct_values_after_setting() {
         assertNotNull(instructResponse);
         assertNotNull(instructResponse.getMessageHeader());
         assertEquals(messageHeader, instructResponse.getMessageHeader());

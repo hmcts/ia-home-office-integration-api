@@ -1,12 +1,13 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-public class IdamUserDetailsTest {
+class IdamUserDetailsTest {
 
     private final String accessToken = "access-token";
     private final String id = "1234";
@@ -14,8 +15,7 @@ public class IdamUserDetailsTest {
     private final String emailAddress = "email@example.com";
     private final String forename = "forename";
     private final String surname = "surname";
-
-    private IdamUserDetails userDetails =
+    private final IdamUserDetails userDetails =
         new IdamUserDetails(
             accessToken,
             id,
@@ -26,13 +26,14 @@ public class IdamUserDetailsTest {
         );
 
     @Test
-    public void should_hold_onto_values() {
-
-        assertEquals(accessToken, userDetails.getAccessToken());
-        assertEquals(id, userDetails.getId());
-        assertEquals(roles, userDetails.getRoles());
-        assertEquals(emailAddress, userDetails.getEmailAddress());
-        assertEquals(forename, userDetails.getForename());
-        assertEquals(surname, userDetails.getSurname());
+    void should_hold_onto_values() {
+        assertAll(
+            () -> assertEquals(accessToken, userDetails.getAccessToken()),
+            () -> assertEquals(id, userDetails.getId()),
+            () -> assertEquals(roles, userDetails.getRoles()),
+            () -> assertEquals(emailAddress, userDetails.getEmailAddress()),
+            () -> assertEquals(forename, userDetails.getForename()),
+            () -> assertEquals(surname, userDetails.getSurname())
+        );
     }
 }

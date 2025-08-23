@@ -39,10 +39,7 @@ import org.springframework.util.FileCopyUtils;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataErrorsHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeCaseStatus;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeSearchResponse;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.DynamicList;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
@@ -55,7 +52,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureTogg
 @SpringJUnitConfig
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestHomeOfficeDataHandlerTest {
+class RequestHomeOfficeDataHandlerTest {
 
     private static final String PROBLEM_MESSAGE = "### There is a problem\n\n";
 
@@ -127,7 +124,7 @@ public class RequestHomeOfficeDataHandlerTest {
     }
 
     @Test
-    void handle_should_return_no_match_if_no_appellant_matched() throws Exception {
+    void handle_should_return_no_match_if_no_appellant_matched() {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
@@ -197,7 +194,7 @@ public class RequestHomeOfficeDataHandlerTest {
     }
 
     @Test
-    void handler_should_throw_error_for_empty_ho_search_response_data() throws Exception {
+    void handler_should_throw_error_for_empty_ho_search_response_data() {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
@@ -299,22 +296,5 @@ public class RequestHomeOfficeDataHandlerTest {
         values.add(new Value("NoMatch", "No Match"));
 
         return new DynamicList(values.get(0), values);
-    }
-
-    private HomeOfficeCaseStatus getNoMatchResponse() {
-
-        String noMatch = "No match";
-        Person noMatchingPerson = Person.PersonBuilder.person()
-                .withGivenName(noMatch)
-                .withFamilyName(noMatch)
-                .withNationality(new CodeWithDescription(noMatch, noMatch))
-                .withGender(new CodeWithDescription(noMatch, noMatch))
-                .build();
-
-        return new HomeOfficeCaseStatus(noMatchingPerson, null, null,
-                null, null, null,
-                null, null,
-                null, null);
-
     }
 }
