@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,8 +24,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.Ac
 @ExtendWith(MockitoExtension.class)
 class HomeOfficeInstructServiceTest {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     @Mock
     private HomeOfficeInstructApi homeOfficeInstructApi;
     @Mock
@@ -37,9 +34,8 @@ class HomeOfficeInstructServiceTest {
 
     @BeforeEach
     public void setUp() {
-
         homeOfficeInstructService = new HomeOfficeInstructService(
-            homeOfficeInstructApi, accessTokenProvider, objectMapper);
+            homeOfficeInstructApi, accessTokenProvider);
     }
 
     @Test

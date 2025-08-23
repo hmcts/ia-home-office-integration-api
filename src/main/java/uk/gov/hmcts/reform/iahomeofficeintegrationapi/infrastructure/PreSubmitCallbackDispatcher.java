@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
@@ -30,7 +29,7 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
         this.sortedCallbackHandlers = callbackHandlers.stream()
             // sorting handlers by handler class name
             .sorted(Comparator.comparing(h -> h.getClass().getSimpleName()))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public PreSubmitCallbackResponse<T> handle(

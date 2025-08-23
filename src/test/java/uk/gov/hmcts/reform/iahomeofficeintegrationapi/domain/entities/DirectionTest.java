@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
-import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Collections;
@@ -16,42 +15,42 @@ class DirectionTest {
     private final Parties parties = Parties.RESPONDENT;
     private final String dateDue = "2018-12-31T12:34:56";
     private final String dateSent = "2018-12-25";
-    private DirectionTag tag = DirectionTag.LEGAL_REPRESENTATIVE_REVIEW;
-    private List<IdValue<PreviousDates>> previousDates = Collections.emptyList();
-    private List<IdValue<ClarifyingQuestion>> clarifyingQuestions = Collections.emptyList();
+    private final DirectionTag tag = DirectionTag.LEGAL_REPRESENTATIVE_REVIEW;
+    private final List<IdValue<PreviousDates>> previousDates = Collections.emptyList();
+    private final List<IdValue<ClarifyingQuestion>> clarifyingQuestions = Collections.emptyList();
     private final String uniqueId = UUID.randomUUID().toString();
     private final String directionType = "someEventDirectionType";
 
-    private Direction direction = new Direction(
-        explanation,
-        parties,
-        dateDue,
-        dateSent,
-        tag,
-        previousDates
-    );
+    private final Direction directionWithQuestions = new Direction.Builder()
+            .withExplanation(explanation)
+            .withParties(parties)
+            .withDateDue(dateDue)
+            .withDateSent(dateSent)
+            .withTag(tag)
+            .withPreviousDates(previousDates)
+            .withClarifyingQuestions(clarifyingQuestions)
+            .withUniqueId(uniqueId)
+            .withDirectionType(directionType)
+            .build();
 
-    private Direction directionWithQuestions = new Direction(
-            explanation,
-            parties,
-            dateDue,
-            dateSent,
-            tag,
-            previousDates,
-            clarifyingQuestions,
-            uniqueId,
-            directionType
-    );
+    private final Direction direction = new Direction.Builder()
+            .withExplanation(explanation)
+            .withParties(parties)
+            .withDateDue(dateDue)
+            .withDateSent(dateSent)
+            .withTag(tag)
+            .withPreviousDates(previousDates)
+            .build();
 
     @Test
     void should_hold_onto_values() {
 
-        assertEquals(explanation, direction.getExplanation());
-        assertEquals(parties, direction.getParties());
-        assertEquals(dateDue, direction.getDateDue());
-        assertEquals(dateSent, direction.getDateSent());
-        assertEquals(tag, direction.getTag());
-        assertEquals(previousDates, direction.getPreviousDates());
+        Assertions.assertEquals(explanation, direction.getExplanation());
+        Assertions.assertEquals(parties, direction.getParties());
+        Assertions.assertEquals(dateDue, direction.getDateDue());
+        Assertions.assertEquals(dateSent, direction.getDateSent());
+        Assertions.assertEquals(tag, direction.getTag());
+        Assertions.assertEquals(previousDates, direction.getPreviousDates());
     }
 
     @Test

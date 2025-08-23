@@ -19,8 +19,8 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataErrorsHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataMatchHelper;
@@ -82,11 +82,14 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-                && callback.getEvent() == REQUEST_HOME_OFFICE_DATA
+        return isCorrectCallbackStageAndEvent(callbackStage, callback)
                 && featureToggler.getValue("home-office-uan-feature", false);
     }
 
+    private boolean isCorrectCallbackStageAndEvent(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
+                && callback.getEvent() == REQUEST_HOME_OFFICE_DATA;
+    }
 
     @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -99,37 +102,24 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         final long caseId = callback.getCaseDetails().getId();
-
-
         final YesOrNo isAppealOutOfCountry = asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).orElse(YesOrNo.NO);
 
         if (isAppealOutOfCountry == YesOrNo.YES) {
-
             PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
             response.addError("You cannot request Home Office data for an out of country appeal");
             return response;
         }
 
+        final String homeOfficeReferenceNumber = getHomeOfficeReferenceNumber(asylumCase, caseId);
 
-        final String homeOfficeReferenceNumber = asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
-                .orElseThrow(() -> new IllegalStateException(
-                        "Home office reference for the appeal is not present, caseId: " + caseId));
-
-        final String appellantDateOfBirth = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)
-                .orElseThrow(() -> new IllegalStateException("Appellant date of birth is not present."));
-
-        final String appellantGiveName = asylumCase.read(APPELLANT_GIVEN_NAMES, String.class).orElse("");
+        final String appellantDateOfBirth = getAppellantDateOfBirth(asylumCase);
+        final String appellantGivenName = asylumCase.read(APPELLANT_GIVEN_NAMES, String.class).orElse("");
         final String appellantFamilyName = asylumCase.read(APPELLANT_FAMILY_NAME, String.class).orElse("");
+        final PersonBuilder appellant = getAppellant(appellantGivenName, appellantFamilyName);
 
-        final PersonBuilder appellant =
-                PersonBuilder.person()
-                        .withGivenName(appellantGiveName)
-                        .withFamilyName(appellantFamilyName);
-
-        asylumCase.write(APPELLANT_FULL_NAME, appellantGiveName + " " + appellantFamilyName);
+        asylumCase.write(APPELLANT_FULL_NAME, appellantGivenName + " " + appellantFamilyName);
 
         HomeOfficeSearchResponse searchResponse;
-        DynamicList dynamicList = null;
         final List<Value> values = new ArrayList<>();
 
         try {
@@ -139,32 +129,15 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
                     asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT, String.class).orElse("");
 
             if (!homeOfficeSearchResponseJsonStr.isEmpty()
-                    && (homeOfficeReferenceNumberBeforeEdit.isEmpty()
-                    || homeOfficeReferenceNumberBeforeEdit.equals(homeOfficeReferenceNumber))) {
+                    && isHomeOfficeReferenceNumberUnchanged(homeOfficeReferenceNumberBeforeEdit, homeOfficeReferenceNumber)) {
 
                 searchResponse = new ObjectMapper()
                         .readValue(homeOfficeSearchResponseJsonStr, HomeOfficeSearchResponse.class);
             } else {
-
                 searchResponse = homeOfficeSearchService.getCaseStatus(caseId, homeOfficeReferenceNumber);
             }
 
-            if (searchResponse.getErrorDetail() != null) {
-                final String errMessage = String.format("Error code: %s, message: %s",
-                        searchResponse.getErrorDetail().getErrorCode(),
-                        searchResponse.getErrorDetail().getMessageText());
-                homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(
-                        caseId,
-                        asylumCase,
-                        searchResponse.getErrorDetail().getErrorCode(),
-                        errMessage
-                );
-                log.warn(
-                        "Error message from Home office service, caseId: {}, error message: {}",
-                        caseId,
-                        errMessage
-                );
-
+            if (shouldReturnCallbackResponseWithErrors(asylumCase, caseId, searchResponse, homeOfficeDataErrorsHelper, log)) {
                 return new PreSubmitCallbackResponse<>(asylumCase);
             }
 
@@ -173,20 +146,17 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
                             searchResponse.getStatus(), homeOfficeReferenceNumber,
                             appellant.build(), appellantDateOfBirth);
 
-            matchedApplicants = matchedApplicants.size() > 0
+            matchedApplicants = !matchedApplicants.isEmpty()
                     ? findAllApplicants(searchResponse.getStatus(), homeOfficeReferenceNumber)
                     : matchedApplicants;
 
             if (!matchedApplicants.isEmpty()) {
-
                 homeOfficeSearchResponseJsonStr = new ObjectMapper().writeValueAsString(searchResponse);
                 asylumCase.write(HOME_OFFICE_SEARCH_RESPONSE, homeOfficeSearchResponseJsonStr);
 
                 matchedApplicants.stream().forEach(a -> {
                     Person person = a.getPerson();
-                    String applicantDob = String.format("%02d", person.getDayOfBirth())
-                            + String.format("%02d", person.getMonthOfBirth())
-                            + String.valueOf(person.getYearOfBirth()).substring(2);
+                    String applicantDob = getFormattedDateOfBirth(person);
 
                     values.add(new Value(a.getPerson().getFullName(),
                             a.getPerson().getFullName() + "-" + applicantDob));
@@ -195,11 +165,8 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
                 asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
                 asylumCase.write(MATCHING_APPELLANT_DETAILS_FOUND, YesOrNo.YES);
             } else {
-
                 asylumCase.write(MATCHING_APPELLANT_DETAILS_FOUND, YesOrNo.NO);
             }
-
-
         } catch (HomeOfficeResponseException hoe) {
             homeOfficeDataErrorsHelper
                     .setErrorMessageForErrorCode(caseId, asylumCase, hoe.getErrorCode(), hoe.getMessage());
@@ -208,20 +175,72 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
                     "Error while calling Home office case status search: caseId: {}, error message: {}",
                     caseId,
                     e.getMessage(),
-                    e)
-            ;
+                    e
+            );
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
             asylumCase.write(HOME_OFFICE_API_ERROR, INVALID_HOME_OFFICE_REFERENCE);
         } finally {
-
             values.add(new Value("NoMatch", "No Match"));
-            dynamicList = new DynamicList(values.get(0), values);
+            DynamicList dynamicList = new DynamicList(values.get(0), values);
             asylumCase.write(HOME_OFFICE_APPELLANTS_LIST, dynamicList);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
 
+    }
+
+    private static String getFormattedDateOfBirth(Person person) {
+        return String.format("%02d", person.getDayOfBirth())
+                + String.format("%02d", person.getMonthOfBirth())
+                + String.valueOf(person.getYearOfBirth()).substring(2);
+    }
+
+    private static boolean isHomeOfficeReferenceNumberUnchanged(String homeOfficeReferenceNumberBeforeEdit, String homeOfficeReferenceNumber) {
+        return homeOfficeReferenceNumberBeforeEdit.isEmpty()
+                || homeOfficeReferenceNumberBeforeEdit.equals(homeOfficeReferenceNumber);
+    }
+
+    private static String getAppellantDateOfBirth(AsylumCase asylumCase) {
+        return asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)
+                .orElseThrow(() -> new IllegalStateException("Appellant date of birth is not present."));
+    }
+
+    private static String getHomeOfficeReferenceNumber(AsylumCase asylumCase, long caseId) {
+        return asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
+                .orElseThrow(() -> new IllegalStateException(
+                        "Home office reference for the appeal is not present, caseId: " + caseId));
+    }
+
+    private static PersonBuilder getAppellant(String appellantGiveName, String appellantFamilyName) {
+        return PersonBuilder.person()
+                .withGivenName(appellantGiveName)
+                .withFamilyName(appellantFamilyName);
+    }
+
+    static boolean shouldReturnCallbackResponseWithErrors(AsylumCase asylumCase, long caseId,
+                                                          HomeOfficeSearchResponse searchResponse,
+                                                          HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper,
+                                                          Logger log) {
+        if (searchResponse.getErrorDetail() != null) {
+            final String errMessage = String.format("Error code: %s, message: %s",
+                    searchResponse.getErrorDetail().getErrorCode(),
+                    searchResponse.getErrorDetail().getMessageText());
+            homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(
+                    caseId,
+                    asylumCase,
+                    searchResponse.getErrorDetail().getErrorCode(),
+                    errMessage
+            );
+            log.warn(
+                    "Error message from Home office service, caseId: {}, error message: {}",
+                    caseId,
+                    errMessage
+            );
+
+            return true;
+        }
+        return false;
     }
 
     List<HomeOfficeCaseStatus> findMatchingApplicants(
@@ -232,7 +251,7 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
                 .filter(a ->
                         a.getApplicationStatus().getDocumentReference().contains(homeOfficeReferenceNumber)
                         && homeOfficeDataMatchHelper.isApplicantMatched(a, appellant, appellantDob))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     List<HomeOfficeCaseStatus> findAllApplicants(
@@ -240,6 +259,6 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
 
         return statuses.stream()
                 .filter(a -> a.getApplicationStatus().getDocumentReference().contains(homeOfficeReferenceNumber))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

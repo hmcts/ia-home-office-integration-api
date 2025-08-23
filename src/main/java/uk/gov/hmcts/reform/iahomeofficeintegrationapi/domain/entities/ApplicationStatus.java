@@ -21,30 +21,84 @@ public class ApplicationStatus {
     private List<IdValue<RejectionReason>> ccdRejectionReasons;
 
     private ApplicationStatus() {
-
     }
 
-    public ApplicationStatus(
-        CodeWithDescription applicationType,
-        CodeWithDescription claimReasonType,
-        DecisionCommunication decisionCommunication,
-        String decisionDate,
-        CodeWithDescription decisionType,
-        String documentReference,
-        CodeWithDescription roleSubType,
-        CodeWithDescription roleType,
-        List<HomeOfficeMetadata> homeOfficeMetadata,
-        List<RejectionReason> rejectionReasons) {
-        this.applicationType = applicationType;
-        this.claimReasonType = claimReasonType;
-        this.decisionCommunication = decisionCommunication;
-        this.decisionDate = decisionDate;
-        this.decisionType = decisionType;
-        this.documentReference = documentReference;
-        this.roleSubType = roleSubType;
-        this.roleType = roleType;
-        this.homeOfficeMetadata = homeOfficeMetadata;
-        this.rejectionReasons = rejectionReasons;
+    public static class Builder {
+        private CodeWithDescription applicationType;
+        private CodeWithDescription claimReasonType;
+        private DecisionCommunication decisionCommunication;
+        private String decisionDate;
+        private CodeWithDescription decisionType;
+        private String documentReference;
+        private CodeWithDescription roleSubType;
+        private CodeWithDescription roleType;
+        private List<HomeOfficeMetadata> homeOfficeMetadata;
+        private List<RejectionReason> rejectionReasons;
+
+        public Builder withApplicationType(CodeWithDescription applicationType) {
+            this.applicationType = applicationType;
+            return this;
+        }
+
+        public Builder withClaimReasonType(CodeWithDescription claimReasonType) {
+            this.claimReasonType = claimReasonType;
+            return this;
+        }
+
+        public Builder withDecisionCommunication(DecisionCommunication decisionCommunication) {
+            this.decisionCommunication = decisionCommunication;
+            return this;
+        }
+
+        public Builder withDecisionDate(String decisionDate) {
+            this.decisionDate = decisionDate;
+            return this;
+        }
+
+        public Builder withDecisionType(CodeWithDescription decisionType) {
+            this.decisionType = decisionType;
+            return this;
+        }
+
+        public Builder withDocumentReference(String documentReference) {
+            this.documentReference = documentReference;
+            return this;
+        }
+
+        public Builder withRoleSubType(CodeWithDescription roleSubType) {
+            this.roleSubType = roleSubType;
+            return this;
+        }
+
+        public Builder withRoleType(CodeWithDescription roleType) {
+            this.roleType = roleType;
+            return this;
+        }
+
+        public Builder withHomeOfficeMetadata(List<HomeOfficeMetadata> homeOfficeMetadata) {
+            this.homeOfficeMetadata = homeOfficeMetadata;
+            return this;
+        }
+
+        public Builder withRejectionReasons(List<RejectionReason> rejectionReasons) {
+            this.rejectionReasons = rejectionReasons;
+            return this;
+        }
+
+        public ApplicationStatus build() {
+            ApplicationStatus applicationStatus = new ApplicationStatus();
+            applicationStatus.applicationType = this.applicationType;
+            applicationStatus.claimReasonType = this.claimReasonType;
+            applicationStatus.decisionCommunication = this.decisionCommunication;
+            applicationStatus.decisionDate = this.decisionDate;
+            applicationStatus.decisionType = this.decisionType;
+            applicationStatus.documentReference = this.documentReference;
+            applicationStatus.roleSubType = this.roleSubType;
+            applicationStatus.roleType = this.roleType;
+            applicationStatus.homeOfficeMetadata = this.homeOfficeMetadata;
+            applicationStatus.rejectionReasons = this.rejectionReasons;
+            return applicationStatus;
+        }
     }
 
     public CodeWithDescription getDecisionType() {

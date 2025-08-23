@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
@@ -31,10 +29,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -265,7 +264,7 @@ public class RequestHomeOfficeDataPreparerTest {
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
                 new Value("John Smith", "John Smith-290268"),
-                new Value("Capability Smith", "Capability Smith-210170"),
+                new Value("Capability Brown", "Capability Brown-210170"),
                 new Value("NoMatch", "No Match"));
         DynamicList appellantsList = new DynamicList(values.get(0), values);
 
@@ -306,7 +305,7 @@ public class RequestHomeOfficeDataPreparerTest {
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
                 new Value("John Smith", "John Smith-290268"),
-                new Value("Capability Smith", "Capability Smith-210170"),
+                new Value("Capability Brown", "Capability Brown-210170"),
                 new Value("NoMatch", "No Match"));
         DynamicList appellantsList = new DynamicList(values.get(0), values);
 
@@ -344,7 +343,7 @@ public class RequestHomeOfficeDataPreparerTest {
         String errorCode = "2021";
         HomeOfficeError hoError = new HomeOfficeError(errorCode, "SomeApiFailure", false);
         HomeOfficeSearchResponse hoSearchResponse = new HomeOfficeSearchResponse(
-                messageHeader, "someMsgType", Arrays.asList(caseStatus), hoError);
+                messageHeader, "someMsgType", List.of(caseStatus), hoError);
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
@@ -400,9 +399,9 @@ public class RequestHomeOfficeDataPreparerTest {
                 if (callbackStage == ABOUT_TO_START
                         && (callback.getEvent() == REQUEST_HOME_OFFICE_DATA)
                 ) {
-                    assertTrue(canHandle);
+                    Assertions.assertTrue(canHandle);
                 } else {
-                    assertFalse(canHandle);
+                    Assertions.assertFalse(canHandle);
                 }
             }
 

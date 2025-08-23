@@ -19,7 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.IdamApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.UserInfo;
 
 
@@ -28,15 +27,12 @@ class IdamAuthoritiesConverterTest {
 
     @Mock
     private org.springframework.security.oauth2.jwt.Jwt jwt;
-
-    @Mock
-    private IdamApi idamApi;
     @Mock
     private IdamService idamService;
     @Mock
     private UserInfo userInfo;
 
-    private String tokenValue = "eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9PNk92VnYxK3krV2dySDVVaTlXVGlv"
+    private final String tokenValue = "eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9PNk92VnYxK3krV2dySDVVaTlXVGlv"
                                 + "THQwPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJjY2QtaW1wb3J0QGZha2UuaG1jdHMubmV0Ii"
                                 + "wiYXV0aF9sZXZlbCI6MCwiYXVkaXRUcmFja2luZ0lkIjoiZDg3ODI3ODQtMWU0NC00NjkyLTg0"
                                 + "NzgtNTI5MzE0NTVhNGI5IiwiaXNzIjoiaHR0cDovL2ZyLWFtOjgwODAvb3BlbmFtL29hdXRoMi9"
@@ -57,14 +53,14 @@ class IdamAuthoritiesConverterTest {
     @Test
     void should_return_correct_granted_authority_collection() {
 
-        when(jwt.containsClaim(TOKEN_NAME)).thenReturn(true);
+        when(jwt.hasClaim(TOKEN_NAME)).thenReturn(true);
         when(jwt.getClaim(TOKEN_NAME)).thenReturn(ACCESS_TOKEN);
         when(jwt.getTokenValue()).thenReturn(tokenValue);
 
         when(userInfo.getRoles()).thenReturn(Lists.newArrayList("caseworker-ia", "caseworker-ia-caseofficer"));
         when(idamService.getUserInfo("Bearer " + tokenValue)).thenReturn(userInfo);
 
-        idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamApi,idamService);
+        idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamService);
 
         List<GrantedAuthority> expectedGrantedAuthorities = Lists.newArrayList(
             new SimpleGrantedAuthority("caseworker-ia"),
@@ -81,7 +77,7 @@ class IdamAuthoritiesConverterTest {
     @Test
     void should_return_empty_list_when_token_is_missing() {
 
-        idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamApi,idamService);
+        idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamService);
 
         assertEquals(Collections.emptyList(), idamAuthoritiesConverter.convert(jwt));
     }
@@ -92,9 +88,9 @@ class IdamAuthoritiesConverterTest {
         when(userInfo.getRoles()).thenReturn(Lists.newArrayList());
         when(idamService.getUserInfo("Bearer " + tokenValue)).thenReturn(userInfo);
 
-        idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamApi,idamService);
+        idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamService);
 
-        when(jwt.containsClaim(TOKEN_NAME)).thenReturn(true);
+        when(jwt.hasClaim(TOKEN_NAME)).thenReturn(true);
         when(jwt.getClaim(TOKEN_NAME)).thenReturn(ACCESS_TOKEN);
         when(jwt.getTokenValue()).thenReturn(tokenValue);
 
@@ -106,11 +102,11 @@ class IdamAuthoritiesConverterTest {
 
         when(idamService.getUserInfo("Bearer " + tokenValue)).thenThrow(FeignException.class);
 
-        when(jwt.containsClaim(TOKEN_NAME)).thenReturn(true);
+        when(jwt.hasClaim(TOKEN_NAME)).thenReturn(true);
         when(jwt.getClaim(TOKEN_NAME)).thenReturn(ACCESS_TOKEN);
         when(jwt.getTokenValue()).thenReturn(tokenValue);
 
-        idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamApi,idamService);
+        idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamService);
 
         IdentityManagerResponseException thrown = assertThrows(
             IdentityManagerResponseException.class,
