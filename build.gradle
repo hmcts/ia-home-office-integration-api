@@ -43,7 +43,6 @@ def versions = [
         restAssured        : '5.3.2',
         serenity           : '3.6.22',
         sonarPitest        : '0.5',
-        springHystrix      : '2.2.10.RELEASE',
         springDoc          : '1.7.0',
         springCloud        : '3.1.6'
 ]
@@ -324,9 +323,6 @@ dependencies {
   implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '3.1.7') {
     exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
   }
-  implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE') {
-    exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
-  }
   implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.78'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.0.1'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '6.0.1'
@@ -345,6 +341,7 @@ dependencies {
 
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.16.0'
   implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.18.0'
   implementation group: 'commons-io', name: 'commons-io', version: '2.15.1'
 
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
@@ -358,8 +355,8 @@ dependencies {
 
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine'
 
-  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.106'
-  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.106'
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.107'
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.107'
 
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
@@ -371,6 +368,7 @@ dependencies {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
 
+  testImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.35.1'
   testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.12.4'
   testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
   testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {

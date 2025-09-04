@@ -30,6 +30,7 @@ public enum HearingCentre {
     NTH_TYNE_MAGS("nthTyneMags", "NTH Tyne Mags"),
     LEEDS_MAGS("leedsMags", "Leeds Mags"),
     ALLOA_SHERRIF("alloaSherrif", "Alloa Sherrif Court"),
+    IAC_NATIONAL_VIRTUAL("iacNationalVirtual", "IAC National (Virtual)"),
     REMOTE_HEARING("remoteHearing","Remote hearing");
 
     @JsonValue
