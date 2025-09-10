@@ -64,7 +64,7 @@ security:
       - "submitAppeal"
       - "payAndSubmitAppeal"
       - "applyForFTPAAppellant"
-    caseworker-ia-caseofficer:
+    tribunal-caseworker:
       - "requestHomeOfficeData"
       - "requestRespondentEvidence"
       - "requestRespondentReview"
@@ -77,7 +77,78 @@ security:
       - "requestResponseAmend"
       - "changeDirectionDueDate"
       - "markAppealPaid"
-    caseworker-ia-admofficer:
+    challenged-access-legal-operations:
+      - "requestHomeOfficeData"
+      - "requestRespondentEvidence"
+      - "requestRespondentReview"
+      - "editCaseListing"
+      - "asyncStitchingComplete"
+      - "adjournHearingWithoutDate"
+      - "sendDecisionAndReasons"
+      - "endAppeal"
+      - "sendDirection"
+      - "requestResponseAmend"
+      - "changeDirectionDueDate"
+      - "markAppealPaid"
+    senior-tribunal-caseworker:
+      - "requestHomeOfficeData"
+      - "requestRespondentEvidence"
+      - "requestRespondentReview"
+      - "editCaseListing"
+      - "asyncStitchingComplete"
+      - "adjournHearingWithoutDate"
+      - "sendDecisionAndReasons"
+      - "endAppeal"
+      - "sendDirection"
+      - "requestResponseAmend"
+      - "changeDirectionDueDate"
+      - "markAppealPaid"
+    hearing-centre-admin:
+      - "markAppealPaid"
+      - "submitAppeal"
+      - "applyForFTPAAppellant"
+      - "listCase"
+      - "editCaseListing"
+      - "adjournHearingWithoutDate"
+      - "sendDecisionAndReasons"
+      - "endAppeal"
+    ctsc:
+      - "markAppealPaid"
+      - "submitAppeal"
+      - "applyForFTPAAppellant"
+      - "listCase"
+      - "editCaseListing"
+      - "adjournHearingWithoutDate"
+      - "sendDecisionAndReasons"
+      - "endAppeal"
+    ctsc-team-leader:
+      - "markAppealPaid"
+      - "submitAppeal"
+      - "applyForFTPAAppellant"
+      - "listCase"
+      - "editCaseListing"
+      - "adjournHearingWithoutDate"
+      - "sendDecisionAndReasons"
+      - "endAppeal"
+    national-business-centre:
+      - "markAppealPaid"
+      - "submitAppeal"
+      - "applyForFTPAAppellant"
+      - "listCase"
+      - "editCaseListing"
+      - "adjournHearingWithoutDate"
+      - "sendDecisionAndReasons"
+      - "endAppeal"
+    challenged-access-ctsc:
+      - "markAppealPaid"
+      - "submitAppeal"
+      - "applyForFTPAAppellant"
+      - "listCase"
+      - "editCaseListing"
+      - "adjournHearingWithoutDate"
+      - "sendDecisionAndReasons"
+      - "endAppeal"
+    challenged-access-admin:
       - "markAppealPaid"
       - "submitAppeal"
       - "applyForFTPAAppellant"
@@ -92,7 +163,63 @@ security:
       - "applyForFTPARespondent"
     caseworker-ia-respondentofficer:
       - "applyForFTPARespondent"
-    caseworker-ia-iacjudge:
+    judge:
+      - "sendDecisionAndReasons"
+      - "leadershipJudgeFtpaDecision"
+      - "residentJudgeFtpaDecision"
+      - "decideFtpaApplication"
+      - "endAppeal"
+      - "changeDirectionDueDate"
+    senior-judge:
+      - "sendDecisionAndReasons"
+      - "leadershipJudgeFtpaDecision"
+      - "residentJudgeFtpaDecision"
+      - "decideFtpaApplication"
+      - "endAppeal"
+      - "changeDirectionDueDate"
+    leadership-judge:
+      - "sendDecisionAndReasons"
+      - "leadershipJudgeFtpaDecision"
+      - "residentJudgeFtpaDecision"
+      - "decideFtpaApplication"
+      - "endAppeal"
+      - "changeDirectionDueDate"
+    fee-paid-judge:
+      - "sendDecisionAndReasons"
+      - "leadershipJudgeFtpaDecision"
+      - "residentJudgeFtpaDecision"
+      - "decideFtpaApplication"
+      - "endAppeal"
+      - "changeDirectionDueDate"
+    lead-judge:
+      - "sendDecisionAndReasons"
+      - "leadershipJudgeFtpaDecision"
+      - "residentJudgeFtpaDecision"
+      - "decideFtpaApplication"
+      - "endAppeal"
+      - "changeDirectionDueDate"
+    hearing-judge:
+      - "sendDecisionAndReasons"
+      - "leadershipJudgeFtpaDecision"
+      - "residentJudgeFtpaDecision"
+      - "decideFtpaApplication"
+      - "endAppeal"
+      - "changeDirectionDueDate"
+    ftpa-judge:
+      - "sendDecisionAndReasons"
+      - "leadershipJudgeFtpaDecision"
+      - "residentJudgeFtpaDecision"
+      - "decideFtpaApplication"
+      - "endAppeal"
+      - "changeDirectionDueDate"
+    hearing-panel-judge:
+      - "sendDecisionAndReasons"
+      - "leadershipJudgeFtpaDecision"
+      - "residentJudgeFtpaDecision"
+      - "decideFtpaApplication"
+      - "endAppeal"
+      - "changeDirectionDueDate"
+    challenged-access-judiciary:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
       - "residentJudgeFtpaDecision"
@@ -141,6 +268,9 @@ launchDarkly:
   sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
   connectionTimeout: 5000
   socketTimeout: 5000
+
+role-assignment-service:
+  url: ${ROLE_ASSIGNMENT_URL:http://localhost:8991}
 
 auth.homeoffice.client.baseUrl: ${HOME_OFFICE_ENDPOINT:http://127.0.0.1:8098}
 auth.homeoffice.token.path: /ichallenge/token
