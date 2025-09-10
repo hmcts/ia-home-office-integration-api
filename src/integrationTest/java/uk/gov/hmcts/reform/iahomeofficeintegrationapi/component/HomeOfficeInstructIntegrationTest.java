@@ -48,7 +48,7 @@ class HomeOfficeInstructIntegrationTest
     public static final String HOME_OFFICE_REFERENCE = "CustRef123";
 
     @Test
-    @WithMockUser(authorities = {"tribunal-caseworker"})
+    @WithMockUser(authorities = {"caseworker-ia-caseofficer"})
     void shouldSendRequestEvidenceNotification() throws Exception {
 
         addServiceAuthStub(server);
@@ -87,7 +87,7 @@ class HomeOfficeInstructIntegrationTest
     }
 
     @Test
-    @WithMockUser(authorities = {"tribunal-caseworker"})
+    @WithMockUser(authorities = {"caseworker-ia-caseofficer"})
     void shouldHandle500ErrorResponse() throws Exception {
 
         addServiceAuthStub(server);
@@ -111,7 +111,7 @@ class HomeOfficeInstructIntegrationTest
     }
 
     @Test
-    @WithMockUser(authorities = {"tribunal-caseworker"})
+    @WithMockUser(authorities = {"caseworker-ia-caseofficer"})
     void shouldHandle503ServiceUnavailableErrorResponse() throws Exception {
 
         addServiceAuthStub(server);
@@ -135,7 +135,7 @@ class HomeOfficeInstructIntegrationTest
     }
 
     @Test
-    @WithMockUser(authorities = {"tribunal-caseworker"})
+    @WithMockUser(authorities = {"caseworker-ia-caseofficer"})
     void shouldHandle500InternalServerErrorResponse() throws Exception {
 
         addServiceAuthStub(server);
@@ -159,7 +159,7 @@ class HomeOfficeInstructIntegrationTest
     }
 
     @Test
-    @WithMockUser(authorities = {"tribunal-caseworker"})
+    @WithMockUser(authorities = {"caseworker-ia-caseofficer"})
     void shouldHandle503ServiceUnavailableErrorResponseOnTokenRequest() throws Exception {
 
         addServiceAuthStub(server);
