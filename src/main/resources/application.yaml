@@ -44,7 +44,6 @@ spring:
 security:
   anonymousPaths:
     - "/"
-    - "/acceleratedAppeal"
     - "/health"
     - "/health/liveness"
     - "/health/readiness"
