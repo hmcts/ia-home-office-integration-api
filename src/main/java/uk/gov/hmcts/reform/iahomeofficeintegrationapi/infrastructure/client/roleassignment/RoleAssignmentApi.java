@@ -2,16 +2,18 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.rol
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
+import java.util.Map;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.roleassignment.QueryRequest;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.roleassignment.RoleAssignmentResource;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.DisableHystrixFeignConfiguration;
 
 @FeignClient(
     name = "role-assignment-service-api",
-    url = "${role-assignment-service.url}"
+    url = "${role-assignment-service.url}",
+    configuration = DisableHystrixFeignConfiguration.class
 )
 public interface RoleAssignmentApi {
     String SERVICE_AUTHORIZATION = "ServiceAuthorization";
@@ -20,6 +22,6 @@ public interface RoleAssignmentApi {
     RoleAssignmentResource queryRoleAssignments(
         @RequestHeader(AUTHORIZATION) String userToken,
         @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
-        @RequestBody QueryRequest queryRequest
+        @RequestBody Map<String, Object> body
     );
 }

@@ -6,9 +6,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,7 +21,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.UserDetail
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.roleassignment.Assignment;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.roleassignment.QueryRequest;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.roleassignment.RoleAssignmentResource;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.roleassignment.RoleType;
@@ -69,22 +70,24 @@ class RoleAssignmentServiceTest {
             .roleType(RoleType.CASE)
             .actorId(userId)
             .build();
-        QueryRequest queryRequest = QueryRequest.builder()
-            .actorId(Collections.singletonList(userId))
-            .roleType(Collections.singletonList(RoleType.ORGANISATION))
-            .build();
+
+        Map<String, Object> requestBody = Map.of(
+            "actorId", Collections.singletonList(userId),
+            "roleType", Collections.singletonList("ORGANISATION"),
+            "attributes", Collections.singletonMap("jurisdiction", "IA")
+        );
         when(roleAssignmentApi.queryRoleAssignments(
-            accessToken,
-            serviceToken,
-            queryRequest
+            ArgumentMatchers.eq(accessToken),
+            ArgumentMatchers.eq(serviceToken),
+            ArgumentMatchers.anyMap()
         )).thenReturn(new RoleAssignmentResource(List.of(assignment1, assignment2, assignment3)));
 
         List<String> roles = roleAssignmentService.getAmRolesFromUser(userId, accessToken);
 
         verify(roleAssignmentApi).queryRoleAssignments(
-            accessToken,
-            serviceToken,
-            queryRequest
+            ArgumentMatchers.eq(accessToken),
+            ArgumentMatchers.eq(serviceToken),
+            ArgumentMatchers.eq(requestBody)
         );
         assertTrue(roles.contains(RoleName.CTSC_TEAM_LEADER.getValue()));
         assertTrue(roles.contains(RoleName.CTSC.getValue()));
