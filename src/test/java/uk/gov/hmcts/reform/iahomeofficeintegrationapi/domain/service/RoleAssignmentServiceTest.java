@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -77,17 +79,17 @@ class RoleAssignmentServiceTest {
             "attributes", Collections.singletonMap("jurisdiction", Collections.singletonList("IA"))
         );
         when(roleAssignmentApi.queryRoleAssignments(
-            ArgumentMatchers.eq(accessToken),
-            ArgumentMatchers.eq(serviceToken),
-            ArgumentMatchers.anyMap()
+            eq(accessToken),
+            eq(serviceToken),
+            anyMap()
         )).thenReturn(new RoleAssignmentResource(List.of(assignment1, assignment2, assignment3)));
 
         List<String> roles = roleAssignmentService.getAmRolesFromUser(userId, accessToken);
 
         verify(roleAssignmentApi).queryRoleAssignments(
-            ArgumentMatchers.eq(accessToken),
-            ArgumentMatchers.eq(serviceToken),
-            ArgumentMatchers.eq(requestBody)
+            eq(accessToken),
+            eq(serviceToken),
+            eq(requestBody)
         );
         assertTrue(roles.contains(RoleName.CTSC_TEAM_LEADER.getValue()));
         assertTrue(roles.contains(RoleName.CTSC.getValue()));
