@@ -32,7 +32,7 @@ public class RoleAssignmentService {
         Map<String, Object> requestBody = Map.of(
             "actorId", Collections.singletonList(actorId),
             "roleType", Collections.singletonList("ORGANISATION"),
-            "attributes", Collections.singletonMap("jurisdiction", "IA")
+            "attributes", Collections.singletonMap("jurisdiction", Collections.singletonList("IA"))
         );
         RoleAssignmentResource roleAssignmentResource = roleAssignmentApi.queryRoleAssignments(
             authorization,

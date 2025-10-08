@@ -74,7 +74,7 @@ class RoleAssignmentServiceTest {
         Map<String, Object> requestBody = Map.of(
             "actorId", Collections.singletonList(userId),
             "roleType", Collections.singletonList("ORGANISATION"),
-            "attributes", Collections.singletonMap("jurisdiction", "IA")
+            "attributes", Collections.singletonMap("jurisdiction", Collections.singletonList("IA"))
         );
         when(roleAssignmentApi.queryRoleAssignments(
             ArgumentMatchers.eq(accessToken),
