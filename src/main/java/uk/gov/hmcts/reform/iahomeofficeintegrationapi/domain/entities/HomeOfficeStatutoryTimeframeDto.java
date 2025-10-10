@@ -23,9 +23,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Data
-public class HomeOfficeFasterCaseStatusDto {
+public class HomeOfficeStatutoryTimeframeDto {
 
     private String id;
+
+    @JsonProperty("ccdCaseNumber")
+    private String ccdCaseNumber;
 
     @JsonProperty("uan")
     private String uan;
@@ -40,8 +43,8 @@ public class HomeOfficeFasterCaseStatusDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT")
     private Date dateOfBirth;
 
-    @JsonProperty("hoFasterCaseStatus")
-    private String hoFasterCaseStatus;
+    @JsonProperty("hoStatutoryTimeframeStatus")
+    private String hoStatutoryTimeframeStatus;
 
     @JsonProperty("timeStamp")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "GMT")

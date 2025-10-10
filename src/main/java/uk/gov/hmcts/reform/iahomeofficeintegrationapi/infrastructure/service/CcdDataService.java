@@ -5,10 +5,8 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeFasterCaseStatusDto;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDataContent;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StartEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
@@ -16,6 +14,8 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdD
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SystemTokenGenerator;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SystemUserProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
+
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STATUTORY_TIMEFRAME_24WEEKS_STATUSES;
 
 @Service
 @Slf4j
@@ -40,11 +40,10 @@ public class CcdDataService {
         this.serviceAuthorization = serviceAuthorization;
     }
 
-    public SubmitEventDetails updateHomeOfficeFasterCaseStatus(HomeOfficeFasterCaseStatusDto hoFasterCaseDto) {
+    public SubmitEventDetails setHomeOfficeStatutoryTimeframeStatus(HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
 
-        CaseDetails<AsylumCase> caseDetails = /*callback.getCaseDetails()*/ null; // TO BE IMPLEMENTED LATER
-        String event = Event.UPDATE_HOME_OFFICE_FASTER_CASE_STATUS.toString();
-        String caseId = String.valueOf(caseDetails.getId());
+        String event = Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString();
+        String caseId = hoStatutoryTimeframeDto.getCcdCaseNumber();
 
         String userToken;
         String s2sToken;
@@ -71,15 +70,16 @@ public class CcdDataService {
 
         // Assign value from API request body
         Map<String, Object> caseData = new HashMap<>();
-        // GOT TO HERE ... need to talk to David about the data structure for the faster-case status
+        // >>>>>>>>>NEEDS AMENDING WHEN DAVID HAS DONE HIS BIT<<<<<<<<
+        caseData.put(STATUTORY_TIMEFRAME_24WEEKS_STATUSES.value(), hoStatutoryTimeframeDto.getHoStatutoryTimeframeStatus());
 
         Map<String, Object> eventData = new HashMap<>();
-        eventData.put("id", Event.UPDATE_HOME_OFFICE_FASTER_CASE_STATUS.toString());
+        eventData.put("id", Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString());
 
         SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, caseData, eventData,
                                                             startEventDetails.getToken(), true);
 
-        log.info("Home Office faster-case status updated for the caseId: {}, Status: {}, Message: {}", caseId,
+        log.info("Home Office statutory timeframe status updated for the caseId: {}, Status: {}, Message: {}", caseId,
                  submitEventDetails.getCallbackResponseStatusCode(), submitEventDetails.getCallbackResponseStatus());
 
         return submitEventDetails;
@@ -89,7 +89,7 @@ public class CcdDataService {
         String userToken, String s2sToken, String uid, String jurisdiction, String caseType, String caseId) {
 
         return ccdDataApi.startEvent(userToken, s2sToken, uid, jurisdiction, caseType,
-                                     caseId, Event.UPDATE_HOME_OFFICE_FASTER_CASE_STATUS.toString());
+                                     caseId, Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString());
     }
 
     private SubmitEventDetails submitEvent(

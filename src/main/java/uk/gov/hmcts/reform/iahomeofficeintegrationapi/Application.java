@@ -10,7 +10,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
     "uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client"
 })
 
-@SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
+@SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor: it's not a utility class
 public class Application {
 
     public static void main(final String[] args) {
