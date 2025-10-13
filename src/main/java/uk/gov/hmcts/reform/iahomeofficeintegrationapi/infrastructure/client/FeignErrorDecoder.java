@@ -26,7 +26,10 @@ public class FeignErrorDecoder implements ErrorDecoder {
 
     @Override
     public Exception decode(String methodKey, Response response) {
-
+        if (methodKey.contains("RoleAssignmentApi")) {
+            // Let the default error decoder handle it
+            return new ErrorDecoder.Default().decode(methodKey, response);
+        }
         switch (response.status()) {
             case 400:
                 String errMessage = "";
