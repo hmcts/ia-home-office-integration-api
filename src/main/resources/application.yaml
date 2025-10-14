@@ -163,6 +163,13 @@ security:
       - "applyForFTPARespondent"
     caseworker-ia-respondentofficer:
       - "applyForFTPARespondent"
+    caseworker-ia-iacjudge:
+      - "sendDecisionAndReasons"
+      - "leadershipJudgeFtpaDecision"
+      - "residentJudgeFtpaDecision"
+      - "decideFtpaApplication"
+      - "endAppeal"
+      - "changeDirectionDueDate"
     judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"

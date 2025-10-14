@@ -3,14 +3,15 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client;
 import static feign.Request.create;
 import static feign.Response.Body;
 import static feign.Response.builder;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import feign.Request;
 import feign.Request.HttpMethod;
 import feign.Response;
@@ -19,9 +20,12 @@ import feign.Util;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collections;
-import org.assertj.core.api.Assertions;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -50,8 +54,8 @@ class FeignErrorDecoderTest {
             .body("Internal server error", Util.UTF_8)
             .build();
 
-        Assertions.assertThatThrownBy(() -> feignErrorDecoder.decode("someMethod", response))
-            .isInstanceOf(RetryableException.class);
+        assertThrows(RetryableException.class,
+            () -> feignErrorDecoder.decode("someMethod", response));
     }
 
     @Test
@@ -64,9 +68,9 @@ class FeignErrorDecoderTest {
                     Request.Body.empty(), null))
             .body("Authorization failed", Util.UTF_8)
             .build();
-
-        assertThat(feignErrorDecoder.decode("someMethod", response),
-            instanceOf(HomeOfficeResponseException.class));
+        Exception exception = feignErrorDecoder.decode("someMethod", response);
+        assertEquals("Forbidden", exception.getMessage());
+        assertEquals(HomeOfficeResponseException.class, exception.getClass());
     }
 
     @Test
@@ -80,8 +84,10 @@ class FeignErrorDecoderTest {
             .body("No data found", Util.UTF_8)
             .build();
 
-        assertThat(feignErrorDecoder.decode("someMethod", response),
-            instanceOf(ResponseStatusException.class));
+        Exception exception = feignErrorDecoder.decode("someMethod", response);
+        assertTrue(exception.getMessage().contains("404"));
+        assertTrue(exception.getMessage().contains("Not found"));
+        assertEquals(ResponseStatusException.class, exception.getClass());
     }
 
     @Test
@@ -95,8 +101,10 @@ class FeignErrorDecoderTest {
             .body("Bad request data".getBytes())
             .build();
 
-        assertThat(feignErrorDecoder.decode("someMethod", response),
-            instanceOf(HomeOfficeResponseException.class));
+        Exception exception = feignErrorDecoder.decode("someMethod", response);
+        assertTrue(exception.getMessage().contains("400"));
+        assertTrue(exception.getMessage().contains("Bad request"));
+        assertEquals(HomeOfficeResponseException.class, exception.getClass());
     }
 
     @Test
@@ -114,8 +122,10 @@ class FeignErrorDecoderTest {
             .body(body)
             .build();
 
-        assertThat(feignErrorDecoder.decode("someMethod", response),
-            instanceOf(HomeOfficeResponseException.class));
+        Exception exception = feignErrorDecoder.decode("someMethod", response);
+        assertTrue(exception.getMessage().contains("400"));
+        assertTrue(exception.getMessage().contains("Bad request"));
+        assertEquals(HomeOfficeResponseException.class, exception.getClass());
     }
 
     @Test
@@ -130,7 +140,7 @@ class FeignErrorDecoderTest {
             .build();
 
         Exception exception = feignErrorDecoder.decode("someMethod", response);
-        assertThat(exception, instanceOf(HomeOfficeResponseException.class));
+        assertEquals(HomeOfficeResponseException.class, exception.getClass());
         assertTrue(exception.getMessage().contains(
             "Invalid reference format. "
                 + "Format should be either nnnn-nnnn-nnnn-nnnn or 0(0) followed by digits (total length 9 or 10)"
@@ -149,5 +159,46 @@ class FeignErrorDecoderTest {
             + "}";
 
         return errorResponse.getBytes();
+    }
+
+    @ParameterizedTest
+    @MethodSource("feignExceptionSource")
+    void should_default_decode_for_role_assignment_api(int status, Class exceptionClass) {
+
+        response = builder()
+            .status(status)
+            .reason("some error message")
+            .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
+                Request.Body.empty(), null))
+            .body("Bad request data".getBytes())
+            .build();
+
+        Exception exception = feignErrorDecoder.decode("RoleAssignmentApi#somemethod", response);
+        assertTrue(exception.getMessage().contains(String.valueOf(status)));
+        assertTrue(exception.getMessage().contains("some error message"));
+        assertEquals(exceptionClass, exception.getClass());
+    }
+
+    private static Stream<Arguments> feignExceptionSource() {
+        return Stream.of(
+            Arguments.of(400, FeignException.BadRequest.class),
+            Arguments.of(401, FeignException.Unauthorized.class),
+            Arguments.of(403, FeignException.Forbidden.class),
+            Arguments.of(404, FeignException.NotFound.class),
+            Arguments.of(405, FeignException.MethodNotAllowed.class),
+            Arguments.of(406, FeignException.NotAcceptable.class),
+            Arguments.of(409, FeignException.Conflict.class),
+            Arguments.of(410, FeignException.Gone.class),
+            Arguments.of(415, FeignException.UnsupportedMediaType.class),
+            Arguments.of(422, FeignException.UnprocessableEntity.class),
+            Arguments.of(429, FeignException.TooManyRequests.class),
+            Arguments.of(402, FeignException.FeignClientException.class),
+            Arguments.of(500, FeignException.InternalServerError.class),
+            Arguments.of(501, FeignException.NotImplemented.class),
+            Arguments.of(502, FeignException.BadGateway.class),
+            Arguments.of(503, FeignException.ServiceUnavailable.class),
+            Arguments.of(504, FeignException.GatewayTimeout.class),
+            Arguments.of(599, FeignException.FeignServerException.class)
+        );
     }
 }
