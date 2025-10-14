@@ -383,6 +383,8 @@ dependencies {
   testImplementation "info.solidsoft.gradle.pitest:gradle-pitest-plugin:${versions.gradlePitest}"
   testImplementation "org.codehaus.sonar-plugins:sonar-pitest-plugin:${versions.sonarPitest}"
 
+  testImplementation group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '3.19.4'
+
   testImplementation group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.14.10'
   testImplementation group: 'com.vladsch.flexmark', name: 'flexmark-all', version: '0.64.8'
 
