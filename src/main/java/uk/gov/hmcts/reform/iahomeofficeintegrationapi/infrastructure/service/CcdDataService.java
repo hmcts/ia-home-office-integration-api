@@ -71,7 +71,7 @@ public class CcdDataService {
         // Assign value from API request body
         Map<String, Object> caseData = new HashMap<>();
         // >>>>>>>>>NEEDS AMENDING WHEN DAVID HAS DONE HIS BIT<<<<<<<<
-        caseData.put(STATUTORY_TIMEFRAME_24WEEKS_STATUSES.value(), hoStatutoryTimeframeDto.getHoStatutoryTimeframeStatus());
+        caseData.put(STATUTORY_TIMEFRAME_24WEEKS_STATUSES.value(), hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus());
 
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("id", Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString());

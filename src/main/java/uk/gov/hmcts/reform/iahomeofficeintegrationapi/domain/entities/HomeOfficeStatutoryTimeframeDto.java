@@ -8,7 +8,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import java.util.Date;
+
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,13 +42,13 @@ public class HomeOfficeStatutoryTimeframeDto {
 
     @JsonProperty("dateOfBirth")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT")
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @JsonProperty("hoStatutoryTimeframeStatus")
-    private String hoStatutoryTimeframeStatus;
+    private boolean hoStatutoryTimeframeStatus;
 
     @JsonProperty("timeStamp")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "GMT")
-    private Date timeStamp;
+    private LocalDate timeStamp;
 
 }
