@@ -34,10 +34,13 @@ class IdamServiceTest {
     private RoleAssignmentService roleAssignmentService;
 
     private IdamService idamService;
+    private Token serviceUserToken;
+
 
     @BeforeEach
     void setUp() {
         idamService = new IdamService(idamApi, roleAssignmentService);
+        serviceUserToken = new Token("ABCDEFG", "systemUserScope");
     }
 
     @Test
@@ -63,21 +66,19 @@ class IdamServiceTest {
         when(idamApi.userInfo(anyString())).thenReturn(expectedUserInfo);
         when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
             .thenReturn(expectedAmRoles);
-        // NEED TO PUT THIS BACK (I DON'T UNDERSTAND WHY IT HAS STARTED FAILING) 
-        // verify(idamApi).userInfo(expectedAccessToken);
-
-        /*Token actualUserToken = idamService.getServiceUserToken();
-        String expectedScope = "systemUserScope";
-        assertEquals(expectedAccessToken, actualUserToken.getAccessToken());
-        assertEquals(expectedScope, actualUserToken.getScope());*/
 
         UserInfo actualUserInfo = idamService.getUserInfo(expectedAccessToken);
+        verify(idamApi).userInfo(expectedAccessToken);
         List<String> expectedRoles = Stream.concat(expectedAmRoles.stream(), expectedIdamRoles.stream()).toList();
         assertEquals(expectedId, actualUserInfo.getUid());
         assertEquals(expectedRoles, actualUserInfo.getRoles());
         assertEquals(expectedEmailAddress, actualUserInfo.getEmail());
         assertEquals(expectedForename, actualUserInfo.getGivenName());
         assertEquals(expectedSurname, actualUserInfo.getFamilyName());
+
+        String expectedScope = "systemUserScope";
+        assertEquals(expectedAccessToken, serviceUserToken.getAccessToken());
+        assertEquals(expectedScope, serviceUserToken.getScope());
     }
 
     @Test
@@ -102,20 +103,18 @@ class IdamServiceTest {
         when(idamApi.userInfo(anyString())).thenReturn(expectedUserInfo);
         when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
             .thenReturn(Collections.emptyList());
-        // NEED TO PUT THIS BACK (I DON'T UNDERSTAND WHY IT HAS STARTED FAILING) 
-        // verify(idamApi).userInfo(expectedAccessToken);
-
-        /*Token actualUserToken = idamService.getServiceUserToken();
-        String expectedScope = "systemUserScope";
-        assertEquals(expectedAccessToken, actualUserToken.getAccessToken());
-        assertEquals(expectedScope, actualUserToken.getScope());*/
 
         UserInfo actualUserInfo = idamService.getUserInfo(expectedAccessToken);
+        verify(idamApi).userInfo(expectedAccessToken);
         assertEquals(expectedId, actualUserInfo.getUid());
         assertEquals(expectedIdamRoles, actualUserInfo.getRoles());
         assertEquals(expectedEmailAddress, actualUserInfo.getEmail());
         assertEquals(expectedForename, actualUserInfo.getGivenName());
         assertEquals(expectedSurname, actualUserInfo.getFamilyName());
+
+        String expectedScope = "systemUserScope";
+        assertEquals(expectedAccessToken, serviceUserToken.getAccessToken());
+        assertEquals(expectedScope, serviceUserToken.getScope());
     }
 
     @ParameterizedTest
@@ -141,20 +140,18 @@ class IdamServiceTest {
         when(idamApi.userInfo(anyString())).thenReturn(expectedUserInfo);
         when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
             .thenReturn(expectedAmRoles);
-        // NEED TO PUT THIS BACK (I DON'T UNDERSTAND WHY IT HAS STARTED FAILING) 
-        // verify(idamApi).userInfo(expectedAccessToken);
-
-        /*Token actualUserToken = idamService.getServiceUserToken();
-        String expectedScope = "systemUserScope";
-        assertEquals(expectedAccessToken, actualUserToken.getAccessToken());
-        assertEquals(expectedScope, actualUserToken.getScope());*/
 
         UserInfo actualUserInfo = idamService.getUserInfo(expectedAccessToken);
+        verify(idamApi).userInfo(expectedAccessToken);
         assertEquals(expectedId, actualUserInfo.getUid());
         assertEquals(expectedAmRoles, actualUserInfo.getRoles());
         assertEquals(expectedEmailAddress, actualUserInfo.getEmail());
         assertEquals(expectedForename, actualUserInfo.getGivenName());
         assertEquals(expectedSurname, actualUserInfo.getFamilyName());
+
+        String expectedScope = "systemUserScope";
+        assertEquals(expectedAccessToken, serviceUserToken.getAccessToken());
+        assertEquals(expectedScope, serviceUserToken.getScope());
     }
 
     private static Stream<String> amOnboardedRolesProvider() {
