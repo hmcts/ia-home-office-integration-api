@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
@@ -41,5 +43,38 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         assertEquals(reason, fieldValue.getReason());
         assertEquals(user, fieldValue.getUser());
         assertEquals(dateAdded, fieldValue.getDateAdded());
+    }
+
+    @Test
+    void equals_should_return_true_for_same_values() {
+        StatutoryTimeFrame24WeeksFieldValue fieldValue1 = new StatutoryTimeFrame24WeeksFieldValue(
+            YesOrNo.YES,
+            "Test reason",
+            "Test user",
+            "2024-01-01"
+        );
+
+        StatutoryTimeFrame24WeeksFieldValue fieldValue2 = new StatutoryTimeFrame24WeeksFieldValue(
+            YesOrNo.YES,
+            "Test reason",
+            "Test user",
+            "2024-01-01"
+        );
+
+        assertTrue(fieldValue1.equals(fieldValue2));
+    }
+
+    @Test
+    void toString_should_return_string_representation() {
+        statutoryTimeFrame24WeeksFieldValue = new StatutoryTimeFrame24WeeksFieldValue(
+            YesOrNo.YES,
+            "Test reason",
+            "Test user",
+            "2024-01-01"
+        );
+
+        String result = statutoryTimeFrame24WeeksFieldValue.toString();
+
+        assertNotNull(result);
     }
 }
