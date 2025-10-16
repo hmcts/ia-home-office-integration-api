@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.id
 
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STATUTORY_TIMEFRAME_24WEEKS_STATUSES;
 
+
 @Service
 @Slf4j
 public class CcdDataService {
