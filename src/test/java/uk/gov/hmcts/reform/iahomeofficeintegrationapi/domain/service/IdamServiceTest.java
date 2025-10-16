@@ -36,10 +36,24 @@ class IdamServiceTest {
     private IdamService idamService;
     private Token serviceUserToken;
 
+    private final String systemUserName = "systemUserName";
+    private final String systemUserPass = "systemUserPass";
+    private final String idamRedirectUrl = "http://idamRedirectUrl";
+    private final String systemUserScope = "systemUserScope";
+    private final String idamClientId = "idamClientId";
+    private final String idamClientSecret = "idamClientSecret";
+
 
     @BeforeEach
     void setUp() {
-        idamService = new IdamService(idamApi, roleAssignmentService);
+        idamService = new IdamService(systemUserName,
+                                      systemUserPass,
+                                      idamRedirectUrl,
+                                      systemUserScope,
+                                      idamClientId,
+                                      idamClientSecret,
+                                      idamApi,
+                                      roleAssignmentService);
         serviceUserToken = new Token("ABCDEFG", "systemUserScope");
     }
 
