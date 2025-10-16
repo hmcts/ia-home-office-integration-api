@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.oauth2;
+package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam;
 
 import feign.FeignException;
 import org.springframework.stereotype.Component;

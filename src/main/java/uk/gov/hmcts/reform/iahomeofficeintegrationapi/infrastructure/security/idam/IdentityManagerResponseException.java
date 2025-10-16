@@ -2,12 +2,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.i
 
 public class IdentityManagerResponseException extends RuntimeException {
 
-    public IdentityManagerResponseException(
-        String message,
-        Throwable cause) {
-
+    public IdentityManagerResponseException(String message, Throwable cause) {
         super(message, cause);
-
     }
-
 }
