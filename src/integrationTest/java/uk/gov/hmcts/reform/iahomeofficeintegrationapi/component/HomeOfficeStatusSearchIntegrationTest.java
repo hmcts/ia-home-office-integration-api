@@ -57,7 +57,7 @@ class HomeOfficeStatusSearchIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
-    void shouldRetirieveHomeOfficeUserDetails() throws Exception {
+    void shouldRetrieveHomeOfficeUserDetails() throws Exception {
 
         final String homeOfficeReference = "CustRef123";
 
@@ -103,7 +103,7 @@ class HomeOfficeStatusSearchIntegrationTest
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
-    void shouldRetirieveHomeOfficeUserDetailsWithNullValue() throws Exception {
+    void shouldRetrieveHomeOfficeUserDetailsWithNullValue() throws Exception {
 
         final String homeOfficeReference = "CustRef000";
 

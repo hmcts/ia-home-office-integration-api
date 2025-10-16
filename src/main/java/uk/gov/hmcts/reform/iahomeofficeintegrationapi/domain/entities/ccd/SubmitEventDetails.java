@@ -1,20 +1,26 @@
-package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam;
+package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import java.util.Map;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
+@EqualsAndHashCode
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class Token {
+public class SubmitEventDetails {
 
-    private String accessToken;
-    private String scope;
-
+    private long id;
+    private String jurisdiction;
+    private State state;
+    private Map<String, Object> data;
+    private int callbackResponseStatusCode;
+    private String callbackResponseStatus;
 }

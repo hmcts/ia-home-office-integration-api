@@ -26,3 +26,5 @@ target/
 .vscode
 /bin/*
 !/bin/*.sh
+
+.mirrord

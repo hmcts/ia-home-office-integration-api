@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.IdamApi;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.Token;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.UserInfo;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,10 +34,13 @@ class IdamServiceTest {
     private RoleAssignmentService roleAssignmentService;
 
     private IdamService idamService;
+    private Token serviceUserToken;
+
 
     @BeforeEach
     void setUp() {
         idamService = new IdamService(idamApi, roleAssignmentService);
+        serviceUserToken = new Token("ABCDEFG", "systemUserScope");
     }
 
     @Test
@@ -51,7 +55,7 @@ class IdamServiceTest {
         String expectedSurname = "Doe";
         String expectedName = expectedForename + " " + expectedSurname;
 
-        UserInfo expecteduUerInfo = new UserInfo(
+        UserInfo expectedUserInfo = new UserInfo(
             expectedEmailAddress,
             expectedId,
             expectedIdamRoles,
@@ -59,18 +63,22 @@ class IdamServiceTest {
             expectedForename,
             expectedSurname
         );
-        when(idamApi.userInfo(anyString())).thenReturn(expecteduUerInfo);
+        when(idamApi.userInfo(anyString())).thenReturn(expectedUserInfo);
         when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
             .thenReturn(expectedAmRoles);
+
         UserInfo actualUserInfo = idamService.getUserInfo(expectedAccessToken);
         verify(idamApi).userInfo(expectedAccessToken);
         List<String> expectedRoles = Stream.concat(expectedAmRoles.stream(), expectedIdamRoles.stream()).toList();
-
         assertEquals(expectedId, actualUserInfo.getUid());
         assertEquals(expectedRoles, actualUserInfo.getRoles());
         assertEquals(expectedEmailAddress, actualUserInfo.getEmail());
         assertEquals(expectedForename, actualUserInfo.getGivenName());
         assertEquals(expectedSurname, actualUserInfo.getFamilyName());
+
+        String expectedScope = "systemUserScope";
+        assertEquals(expectedAccessToken, serviceUserToken.getAccessToken());
+        assertEquals(expectedScope, serviceUserToken.getScope());
     }
 
     @Test
@@ -84,7 +92,7 @@ class IdamServiceTest {
         String expectedSurname = "Doe";
         String expectedName = expectedForename + " " + expectedSurname;
 
-        UserInfo expecteduUerInfo = new UserInfo(
+        UserInfo expectedUserInfo = new UserInfo(
             expectedEmailAddress,
             expectedId,
             expectedIdamRoles,
@@ -92,17 +100,21 @@ class IdamServiceTest {
             expectedForename,
             expectedSurname
         );
-        when(idamApi.userInfo(anyString())).thenReturn(expecteduUerInfo);
+        when(idamApi.userInfo(anyString())).thenReturn(expectedUserInfo);
         when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
             .thenReturn(Collections.emptyList());
+
         UserInfo actualUserInfo = idamService.getUserInfo(expectedAccessToken);
         verify(idamApi).userInfo(expectedAccessToken);
-
         assertEquals(expectedId, actualUserInfo.getUid());
         assertEquals(expectedIdamRoles, actualUserInfo.getRoles());
         assertEquals(expectedEmailAddress, actualUserInfo.getEmail());
         assertEquals(expectedForename, actualUserInfo.getGivenName());
         assertEquals(expectedSurname, actualUserInfo.getFamilyName());
+
+        String expectedScope = "systemUserScope";
+        assertEquals(expectedAccessToken, serviceUserToken.getAccessToken());
+        assertEquals(expectedScope, serviceUserToken.getScope());
     }
 
     @ParameterizedTest
@@ -117,7 +129,7 @@ class IdamServiceTest {
         String expectedSurname = "Doe";
         String expectedName = expectedForename + " " + expectedSurname;
 
-        UserInfo expecteduUerInfo = new UserInfo(
+        UserInfo expectedUserInfo = new UserInfo(
             expectedEmailAddress,
             expectedId,
             expectedIdamRoles.equals("null") ? null : Collections.emptyList(),
@@ -125,17 +137,21 @@ class IdamServiceTest {
             expectedForename,
             expectedSurname
         );
-        when(idamApi.userInfo(anyString())).thenReturn(expecteduUerInfo);
+        when(idamApi.userInfo(anyString())).thenReturn(expectedUserInfo);
         when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
             .thenReturn(expectedAmRoles);
+
         UserInfo actualUserInfo = idamService.getUserInfo(expectedAccessToken);
         verify(idamApi).userInfo(expectedAccessToken);
-
         assertEquals(expectedId, actualUserInfo.getUid());
         assertEquals(expectedAmRoles, actualUserInfo.getRoles());
         assertEquals(expectedEmailAddress, actualUserInfo.getEmail());
         assertEquals(expectedForename, actualUserInfo.getGivenName());
         assertEquals(expectedSurname, actualUserInfo.getFamilyName());
+
+        String expectedScope = "systemUserScope";
+        assertEquals(expectedAccessToken, serviceUserToken.getAccessToken());
+        assertEquals(expectedScope, serviceUserToken.getScope());
     }
 
     private static Stream<String> amOnboardedRolesProvider() {
@@ -193,7 +209,7 @@ class IdamServiceTest {
         String expectedSurname = "Doe";
         String expectedName = expectedForename + " " + expectedSurname;
 
-        UserInfo expecteduUerInfo = new UserInfo(
+        UserInfo expectedUserInfo = new UserInfo(
             expectedEmailAddress,
             expectedId,
             expectedIdamRoles,
@@ -201,7 +217,7 @@ class IdamServiceTest {
             expectedForename,
             expectedSurname
         );
-        when(idamApi.userInfo(anyString())).thenReturn(expecteduUerInfo);
+        when(idamApi.userInfo(anyString())).thenReturn(expectedUserInfo);
         when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
             .thenThrow(new NullPointerException("Role assignment service failed"));
         idamService.getUserInfo(expectedAccessToken);
