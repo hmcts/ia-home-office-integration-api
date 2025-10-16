@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -239,5 +240,17 @@ class IdamServiceTest {
         assertTrue(logEvents.isEmpty());
 
         verify(idamApi).userInfo(expectedAccessToken);
+    }
+
+    @Test
+    void getServiceUserToken_should_call_idam_api_and_return_token() {
+        Token expectedToken = new Token("service-token-123", "systemUserScope");
+        when(idamApi.token(anyMap())).thenReturn(expectedToken);
+
+        Token actualToken = idamService.getServiceUserToken();
+
+        verify(idamApi).token(anyMap());
+        assertEquals(expectedToken.getAccessToken(), actualToken.getAccessToken());
+        assertEquals(expectedToken.getScope(), actualToken.getScope());
     }
 }
