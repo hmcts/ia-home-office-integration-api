@@ -13,6 +13,7 @@ import ch.qos.logback.core.read.ListAppender;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
@@ -245,12 +247,27 @@ class IdamServiceTest {
     @Test
     void getServiceUserToken_should_call_idam_api_and_return_token() {
         Token expectedToken = new Token("service-token-123", "systemUserScope");
+        
         when(idamApi.token(anyMap())).thenReturn(expectedToken);
-
         Token actualToken = idamService.getServiceUserToken();
-
-        verify(idamApi).token(anyMap());
         assertEquals(expectedToken.getAccessToken(), actualToken.getAccessToken());
         assertEquals(expectedToken.getScope(), actualToken.getScope());
+        
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, String>> mapCaptor = ArgumentCaptor.forClass(Map.class);
+
+        verify(idamApi).token(mapCaptor.capture());
+        Map<String, String> capturedMap = mapCaptor.getValue();
+        assertEquals("password", capturedMap.get("grant_type"));
+        assertEquals(idamRedirectUrl, capturedMap.get("redirect_uri"));
+        assertEquals(idamClientId, capturedMap.get("client_id"));
+        assertEquals(idamClientSecret, capturedMap.get("client_secret"));
+        assertEquals(systemUserName, capturedMap.get("username"));
+        assertEquals(systemUserPass, capturedMap.get("password"));
+        assertEquals(systemUserScope, capturedMap.get("scope"));
+        
+        assertEquals(expectedToken.getAccessToken(), actualToken.getAccessToken());
+        assertEquals(expectedToken.getScope(), actualToken.getScope());
+
     }
 }

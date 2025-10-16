@@ -25,4 +25,21 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         assertEquals("Test user", statutoryTimeFrame24WeeksFieldValue.getUser());
         assertEquals("2024-01-01", statutoryTimeFrame24WeeksFieldValue.getDateAdded());
     }
+
+    @Test
+    void should_create_object_with_all_fields() {
+        YesOrNo status = YesOrNo.YES;
+        String reason = "Test reason";
+        String user = "Test user";
+        String dateAdded = "2023-01-01";
+
+        StatutoryTimeFrame24WeeksFieldValue fieldValue = new StatutoryTimeFrame24WeeksFieldValue(
+            status, reason, user, dateAdded
+        );
+
+        assertEquals(status, fieldValue.getStatus());
+        assertEquals(reason, fieldValue.getReason());
+        assertEquals(user, fieldValue.getUser());
+        assertEquals(dateAdded, fieldValue.getDateAdded());
+    }
 }
