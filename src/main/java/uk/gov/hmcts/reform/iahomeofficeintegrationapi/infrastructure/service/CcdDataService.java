@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.Sy
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SystemUserProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
 
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STATUTORY_TIMEFRAME_24WEEKS_STATUSES;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STATUTORY_TIMEFRAME_24WEEKS;
 
 
 @Service
@@ -72,7 +72,7 @@ public class CcdDataService {
         // Assign value from API request body
         Map<String, Object> caseData = new HashMap<>();
         // >>>>>>>>>NEEDS AMENDING WHEN DAVID HAS DONE HIS BIT<<<<<<<<
-        caseData.put(STATUTORY_TIMEFRAME_24WEEKS_STATUSES.value(), hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus());
+        caseData.put(STATUTORY_TIMEFRAME_24WEEKS.value(), hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus());
 
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("id", Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString());

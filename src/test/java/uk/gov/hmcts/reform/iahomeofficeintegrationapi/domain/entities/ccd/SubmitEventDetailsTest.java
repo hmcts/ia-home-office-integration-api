@@ -7,7 +7,7 @@ import java.util.Map;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STATUTORY_TIMEFRAME_24WEEKS_STATUSES;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STATUTORY_TIMEFRAME_24WEEKS;
 
 class SubmitEventDetailsTest {
 
@@ -33,7 +33,7 @@ class SubmitEventDetailsTest {
 
         state = State.APPEAL_SUBMITTED;
         data = new HashMap<>();
-        data.put(STATUTORY_TIMEFRAME_24WEEKS_STATUSES.value(), "True");
+        data.put(STATUTORY_TIMEFRAME_24WEEKS.value(), "True");
 
         submitEventDetails =
             new SubmitEventDetails(id, jurisdiction, state, data, callbackResponseStatusCode, callbackResponseStatus);

@@ -20,8 +20,8 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
             "2024-01-01"
         );
         
-        assertEquals(YesOrNo.YES, statutoryTimeFrame24WeeksFieldValue.getStf24wStatus());
-        assertEquals("Test reason", statutoryTimeFrame24WeeksFieldValue.getStf24wStatusReason());
+        assertEquals(YesOrNo.YES, statutoryTimeFrame24WeeksFieldValue.getStatus());
+        assertEquals("Test reason", statutoryTimeFrame24WeeksFieldValue.getReason());
         assertEquals("Test user", statutoryTimeFrame24WeeksFieldValue.getUser());
         assertEquals("2024-01-01", statutoryTimeFrame24WeeksFieldValue.getDateAdded());
     }

@@ -10,29 +10,29 @@ import static java.util.Objects.requireNonNull;
 @ToString
 public class StatutoryTimeFrame24WeeksFieldValue {
 
-    private YesOrNo stf24wStatus;
-    private String stf24wStatusReason;
+    private YesOrNo status;
+    private String reason;
     private String user;
     private String dateAdded;
 
     public StatutoryTimeFrame24WeeksFieldValue(
-        YesOrNo stf24wStatus,
-        String stf24wStatusReason,
+        YesOrNo status,
+        String reason,
         String user,
         String dateAdded
     ) {
-        this.stf24wStatus = requireNonNull(stf24wStatus);
-        this.stf24wStatusReason = requireNonNull(stf24wStatusReason);
+        this.status = requireNonNull(status);
+        this.reason = requireNonNull(reason);
         this.user = requireNonNull(user);
         this.dateAdded = requireNonNull(dateAdded);
     }
 
-    public YesOrNo getStf24wStatus() {
-        return requireNonNull(stf24wStatus);
+    public YesOrNo getStatus() {
+        return requireNonNull(status);
     }
 
-    public String getStf24wStatusReason() {
-        return requireNonNull(stf24wStatusReason);
+    public String getReason() {
+        return requireNonNull(reason);
     }
 
     public String getUser() {
@@ -41,5 +41,5 @@ public class StatutoryTimeFrame24WeeksFieldValue {
 
     public String getDateAdded() {
         return requireNonNull(dateAdded);
-     }
+    }
 }
