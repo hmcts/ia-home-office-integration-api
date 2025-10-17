@@ -41,11 +41,15 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
                     content = @Content(schema = @Schema(implementation = String.class))),
                 @ApiResponse(
                     responseCode = "400",
-                    description = "Bad Request",
+                    description = "Home Office statutory timeframe status request body failed validation",
+                    content = @Content(schema = @Schema(implementation = String.class))),
+                @ApiResponse(
+                    responseCode = "401",
+                    description = "This endpoint requires authentication",
                     content = @Content(schema = @Schema(implementation = String.class))),
                 @ApiResponse(
                     responseCode = "403",
-                    description = "Calling service is not authorised to use the endpoint",
+                    description = "Calling service is not authorised to use this endpoint",
                     content = @Content(schema = @Schema(implementation = String.class))),
                 @ApiResponse(
                     responseCode = "500",
