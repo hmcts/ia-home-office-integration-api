@@ -19,13 +19,13 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
             YesOrNo.YES,
             "Test reason",
             "Test user",
-            "2024-01-01"
+            "2024-01-01T10:00:00Z"
         );
         
         assertEquals(YesOrNo.YES, statutoryTimeFrame24WeeksFieldValue.getStatus());
         assertEquals("Test reason", statutoryTimeFrame24WeeksFieldValue.getReason());
         assertEquals("Test user", statutoryTimeFrame24WeeksFieldValue.getUser());
-        assertEquals("2024-01-01", statutoryTimeFrame24WeeksFieldValue.getDateAdded());
+        assertEquals("2024-01-01T10:00:00Z", statutoryTimeFrame24WeeksFieldValue.getDateTimeAdded());
     }
 
     @Test
@@ -33,7 +33,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         YesOrNo status = YesOrNo.YES;
         String reason = "Test reason";
         String user = "Test user";
-        String dateAdded = "2023-01-01";
+        String dateAdded = "2023-01-01T10:00:00Z";
 
         StatutoryTimeFrame24WeeksFieldValue fieldValue = new StatutoryTimeFrame24WeeksFieldValue(
             status, reason, user, dateAdded
@@ -42,7 +42,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         assertEquals(status, fieldValue.getStatus());
         assertEquals(reason, fieldValue.getReason());
         assertEquals(user, fieldValue.getUser());
-        assertEquals(dateAdded, fieldValue.getDateAdded());
+        assertEquals(dateAdded, fieldValue.getDateTimeAdded());
     }
 
     @Test
@@ -51,14 +51,14 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
             YesOrNo.YES,
             "Test reason",
             "Test user",
-            "2024-01-01"
+            "2024-01-01T10:00:00Z"
         );
 
         StatutoryTimeFrame24WeeksFieldValue fieldValue2 = new StatutoryTimeFrame24WeeksFieldValue(
             YesOrNo.YES,
             "Test reason",
             "Test user",
-            "2024-01-01"
+            "2024-01-01T10:00:00Z"
         );
 
         assertTrue(fieldValue1.equals(fieldValue2));
@@ -70,7 +70,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
             YesOrNo.YES,
             "Test reason",
             "Test user",
-            "2024-01-01"
+            "2024-01-01T10:00:00Z"
         );
 
         String result = statutoryTimeFrame24WeeksFieldValue.toString();

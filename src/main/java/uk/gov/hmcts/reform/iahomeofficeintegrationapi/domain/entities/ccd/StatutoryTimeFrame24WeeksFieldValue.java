@@ -13,18 +13,26 @@ public class StatutoryTimeFrame24WeeksFieldValue {
     private YesOrNo status;
     private String reason;
     private String user;
-    private String dateAdded;
+    private String dateTimeAdded;
 
+    /**
+     * Creates a new StatutoryTimeFrame24WeeksFieldValue.
+     *
+     * @param status the status
+     * @param reason the reason
+     * @param user the user
+     * @param dateTimeAdded the date and time added in ISO 8601 format (e.g., "2020-06-15T17:35:38Z")
+     */
     public StatutoryTimeFrame24WeeksFieldValue(
         YesOrNo status,
         String reason,
         String user,
-        String dateAdded
+        String dateTimeAdded
     ) {
         this.status = requireNonNull(status);
         this.reason = requireNonNull(reason);
         this.user = requireNonNull(user);
-        this.dateAdded = requireNonNull(dateAdded);
+        this.dateTimeAdded = requireNonNull(dateTimeAdded);
     }
 
     public YesOrNo getStatus() {
@@ -39,7 +47,7 @@ public class StatutoryTimeFrame24WeeksFieldValue {
         return requireNonNull(user);
     }
 
-    public String getDateAdded() {
-        return requireNonNull(dateAdded);
+    public String getDateTimeAdded() {
+        return requireNonNull(dateTimeAdded);
     }
 }
