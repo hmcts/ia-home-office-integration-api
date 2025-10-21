@@ -41,11 +41,15 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
                     content = @Content(schema = @Schema(implementation = String.class))),
                 @ApiResponse(
                     responseCode = "400",
-                    description = "Bad Request",
+                    description = "Home Office statutory timeframe status request body failed validation",
+                    content = @Content(schema = @Schema(implementation = String.class))),
+                @ApiResponse(
+                    responseCode = "401",
+                    description = "This endpoint requires authentication",
                     content = @Content(schema = @Schema(implementation = String.class))),
                 @ApiResponse(
                     responseCode = "403",
-                    description = "Calling service is not authorised to use the endpoint",
+                    description = "Calling service is not authorised to use this endpoint",
                     content = @Content(schema = @Schema(implementation = String.class))),
                 @ApiResponse(
                     responseCode = "500",
@@ -61,6 +65,7 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
         @RequestBody HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto
     ) {
+        log.info("HTTP POST /home-office-statutory-timeframe-status endpoint called with payload:\r\n\r\n{}", hoStatutoryTimeframeDto);
         SubmitEventDetails response = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
         return ResponseEntity.status(response.getCallbackResponseStatusCode()).body(response);
     }
