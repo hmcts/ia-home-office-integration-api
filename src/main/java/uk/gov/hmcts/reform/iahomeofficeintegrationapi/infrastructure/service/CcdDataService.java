@@ -1,19 +1,25 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDataContent;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StartEventDetails;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeFrame24WeeksFieldValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SystemTokenGenerator;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SystemUserProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STATUTORY_TIMEFRAME_24WEEKS;
 
@@ -71,8 +77,9 @@ public class CcdDataService {
 
         // Assign value from API request body
         Map<String, Object> caseData = new HashMap<>();
+        
         // >>>>>>>>>NEEDS AMENDING WHEN DAVID HAS DONE HIS BIT<<<<<<<<
-        caseData.put(STATUTORY_TIMEFRAME_24WEEKS.value(), hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus());
+        caseData.put(STATUTORY_TIMEFRAME_24WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
 
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("id", Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString());
@@ -101,5 +108,24 @@ public class CcdDataService {
             new CaseDataContent(caseId, caseData, eventData, eventToken, ignoreWarning);
 
         return ccdDataApi.submitEvent(userToken, s2sToken, caseId, request);
+    }
+
+    public List<IdValue<StatutoryTimeFrame24WeeksFieldValue>> toStf4w(String id, HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
+        
+        YesOrNo status = hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus() ? YesOrNo.YES : YesOrNo.NO;
+        String reason = "Home Office statutory timeframe update";
+        String user = "Home Office Integration API";
+        String dateTimeAdded = hoStatutoryTimeframeDto.getTimeStamp().format(DateTimeFormatter.ISO_LOCAL_DATE) + "T00:00:00Z";
+        
+        StatutoryTimeFrame24WeeksFieldValue statutoryTimeframeValue = new StatutoryTimeFrame24WeeksFieldValue(
+            status,
+            reason,
+            user,
+            dateTimeAdded
+        );
+        
+        IdValue<StatutoryTimeFrame24WeeksFieldValue> idValue = new IdValue<>(id, statutoryTimeframeValue);
+        
+        return List.of(idValue);
     }
 }
