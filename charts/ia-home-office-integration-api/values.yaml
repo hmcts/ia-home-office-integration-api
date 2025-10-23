@@ -10,6 +10,7 @@ java:
     HOME_OFFICE_ENDPOINT: "http://ia-home-office-mock-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     IA_IDAM_REDIRECT_URI: "https://ia-home-office-integration-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback"
+    CCD_URL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
   keyVaults:
     ia:
       resourceGroup: ia
