@@ -30,10 +30,10 @@ public class IdamService {
         List.of("caseworker-ia-caseofficer", "caseworker-ia-iacjudge", "caseworker-ia-admofficer");
 
     public IdamService(
-        @Value("${idam.system.username}") String systemUserName,
-        @Value("${idam.system.password}") String systemUserPass,
+        @Value("${idam.ia_system_user.username}") String systemUserName,
+        @Value("${idam.ia_system_user.password}") String systemUserPass,
         @Value("${idam.redirectUrl}") String idamRedirectUrl,
-        @Value("${idam.scope}") String systemUserScope,
+        @Value("${idam.ia_system_user.scope}") String scope,
         @Value("${spring.security.oauth2.client.registration.oidc.client-id}") String idamClientId,
         @Value("${spring.security.oauth2.client.registration.oidc.client-secret}") String idamClientSecret,
         IdamApi idamApi,
@@ -42,7 +42,7 @@ public class IdamService {
         this.systemUserName = systemUserName;
         this.systemUserPass = systemUserPass;
         this.idamRedirectUrl = idamRedirectUrl;
-        this.systemUserScope = systemUserScope;
+        this.systemUserScope = scope;
         this.idamClientId = idamClientId;
         this.idamClientSecret = idamClientSecret;
         this.idamApi = idamApi;
@@ -68,9 +68,10 @@ public class IdamService {
         return userInfo;
     }
 
-    // I don't know what I am doing here
-    @Cacheable(value = "systemTokenCache")
+    @Cacheable(value = "accessTokenCache")
     public Token getServiceUserToken() {
+        log.info("Getting system user token from IDAM");
+        System.out.println("idamClientId: " + idamClientId);
         Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
 
         idamAuthDetails.put("grant_type", "password");
