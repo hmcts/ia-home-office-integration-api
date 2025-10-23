@@ -84,6 +84,7 @@ public class IdamService {
 
         for (Map.Entry<String, String> entry : idamAuthDetails.entrySet()) {
             log.info("idamAuthDetails - {}: {}", entry.getKey(), entry.getValue());
+            System.out.println("idamAuthDetails - " + entry.getKey() + ": " + entry.getValue());
         }
 
         logIdamEnvironmentVariables();
