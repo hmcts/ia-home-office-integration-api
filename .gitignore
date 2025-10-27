@@ -27,4 +27,5 @@ target/
 /bin/*
 !/bin/*.sh
 
+#mirrord
 .mirrord
