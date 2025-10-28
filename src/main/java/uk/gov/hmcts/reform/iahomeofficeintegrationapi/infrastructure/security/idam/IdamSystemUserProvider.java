@@ -18,11 +18,8 @@ public class IdamSystemUserProvider implements SystemUserProvider {
     public String getSystemUserId(String userToken) {
 
         try {
-
             return idamService.getUserInfo(userToken).getUid();
-
         } catch (FeignException ex) {
-
             throw new IdentityManagerResponseException("Could not get system user id from IDAM", ex);
         }
 
