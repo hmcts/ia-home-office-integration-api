@@ -36,8 +36,8 @@ public class IdamService {
         @Value("${idam.ia_system_user.scope}") String scope,
         @Value("${spring.security.oauth2.client.registration.oidc.client-id}") String idamClientId,
         @Value("${spring.security.oauth2.client.registration.oidc.client-secret}") String idamClientSecret,
-            IdamApi idamApi,
-            RoleAssignmentService roleAssignmentService
+        IdamApi idamApi,
+        RoleAssignmentService roleAssignmentService
     ) {
         this.systemUserName = systemUserName;
         this.systemUserPass = systemUserPass;
