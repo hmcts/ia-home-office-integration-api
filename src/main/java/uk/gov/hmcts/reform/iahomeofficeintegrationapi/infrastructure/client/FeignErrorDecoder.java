@@ -37,11 +37,9 @@ public class FeignErrorDecoder implements ErrorDecoder {
                 try {
                     if (response.body() != null && response.body().asInputStream() != null) {
 
-                        // First, let's log the raw response for debugging
                         String rawResponse = IOUtils.toString(response.body().asReader(Charset.defaultCharset()));
                         log.error("Raw 400 response from {}: {}", methodKey, rawResponse);
                         
-                        // Reset the stream and parse
                         HomeOfficeInstructResponse homeOfficeError = objectMapper.readValue(
                             rawResponse,HomeOfficeInstructResponse.class);
 
@@ -50,10 +48,8 @@ public class FeignErrorDecoder implements ErrorDecoder {
                                 errorCode = homeOfficeError.getErrorDetail().getErrorCode();
                                 errMessage = String.format("Home office error code: %s, message: %s",
                                     errorCode, homeOfficeError.getErrorDetail().getMessageText());
-                                log.error("Parsed Home Office error from {}: {}", methodKey, errMessage);
                             } else {
                                 errMessage = "Home office error detail is null";
-                                log.error("Home office error detail is null in response from {}", methodKey);
                             }
                         }
                     }

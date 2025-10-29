@@ -65,7 +65,7 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
         @RequestBody HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto
     ) {
-        log.info("HTTP POST /home-office-statutory-timeframe-status endpoint called with payload:\r\n\r\n{}", hoStatutoryTimeframeDto);
+        log.info("HTTP POST /home-office-statutory-timeframe-status endpoint called with payload: {}", hoStatutoryTimeframeDto);
         SubmitEventDetails response = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
         return ResponseEntity.status(response.getCallbackResponseStatusCode()).body(response);
     }

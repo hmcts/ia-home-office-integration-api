@@ -71,14 +71,10 @@ public class CcdDataService {
             throw new IdentityManagerResponseException(ex.getMessage(), ex);
         }
 
-        // Get case details by Id
         final StartEventDetails startEventDetails = getCase(userToken, s2sToken, uid, JURISDICTION, CASE_TYPE, caseId);
         log.info("Case details found for the caseId: {}", caseId);
 
-        // Assign value from API request body
         Map<String, Object> caseData = new HashMap<>();
-        
-        // >>>>>>>>>NEEDS AMENDING WHEN DAVID HAS DONE HIS BIT<<<<<<<<
         caseData.put(STATUTORY_TIMEFRAME_24WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
 
         Map<String, Object> eventData = new HashMap<>();
