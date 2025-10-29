@@ -63,7 +63,6 @@ public class CcdDataService {
             log.info("System user id has been fetched for event: {}, caseId: {}.", event, caseId);
 
         } catch (IdentityManagerResponseException ex) {
-
             log.error("Unauthorised access to getCaseById", ex.getMessage());
             throw new IdentityManagerResponseException(ex.getMessage(), ex);
         }
