@@ -15,7 +15,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class S2STokenValidator {
 
-    public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
     private static final String BEARER = "Bearer ";
 
     @Value("${idam.s2s-authorised.services}")

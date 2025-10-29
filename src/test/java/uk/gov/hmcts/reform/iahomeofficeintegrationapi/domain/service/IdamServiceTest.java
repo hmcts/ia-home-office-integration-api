@@ -95,7 +95,7 @@ class IdamServiceTest {
 
         String expectedScope = "systemUserScope";
         assertEquals(expectedAccessToken, serviceUserToken.getAccessToken());
-
+        assertEquals(expectedScope, serviceUserToken.getScope());
     }
 
     @Test
@@ -131,7 +131,7 @@ class IdamServiceTest {
 
         String expectedScope = "systemUserScope";
         assertEquals(expectedAccessToken, serviceUserToken.getAccessToken());
-
+        assertEquals(expectedScope, serviceUserToken.getScope());
     }
 
     @ParameterizedTest
@@ -168,6 +168,7 @@ class IdamServiceTest {
 
         String expectedScope = "systemUserScope";
         assertEquals(expectedAccessToken, serviceUserToken.getAccessToken());
+        assertEquals(expectedScope, serviceUserToken.getScope());
     }
 
     private static Stream<String> amOnboardedRolesProvider() {
@@ -265,7 +266,6 @@ class IdamServiceTest {
         assertEquals(systemUserScope, capturedMap.get("scope"));
         
         assertEquals(expectedToken.getAccessToken(), actualToken);
-    
 
     }
 }
