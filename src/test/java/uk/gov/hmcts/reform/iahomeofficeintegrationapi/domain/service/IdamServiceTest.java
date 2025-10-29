@@ -249,9 +249,8 @@ class IdamServiceTest {
         Token expectedToken = new Token("service-token-123", "systemUserScope");
         
         when(idamApi.token(anyMap())).thenReturn(expectedToken);
-        Token actualToken = idamService.getServiceUserToken();
-        assertEquals(expectedToken.getAccessToken(), actualToken.getAccessToken());
-        assertEquals(expectedToken.getScope(), actualToken.getScope());
+        String actualToken = idamService.getServiceUserToken();
+        assertEquals(expectedToken.getAccessToken(), actualToken);
         
         @SuppressWarnings("unchecked")
         ArgumentCaptor<Map<String, String>> mapCaptor = ArgumentCaptor.forClass(Map.class);
@@ -266,8 +265,7 @@ class IdamServiceTest {
         assertEquals(systemUserPass, capturedMap.get("password"));
         assertEquals(systemUserScope, capturedMap.get("scope"));
         
-        assertEquals(expectedToken.getAccessToken(), actualToken.getAccessToken());
-        assertEquals(expectedToken.getScope(), actualToken.getScope());
+        assertEquals(expectedToken.getAccessToken(), actualToken);
 
     }
 }

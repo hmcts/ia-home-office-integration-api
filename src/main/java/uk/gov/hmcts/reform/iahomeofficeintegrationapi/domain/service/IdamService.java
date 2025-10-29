@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.IdamApi;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.Token;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.UserInfo;
 
 @Slf4j
@@ -68,9 +67,8 @@ public class IdamService {
         return userInfo;
     }
 
-
     @Cacheable(value = "accessTokenCache")
-    public Token getServiceUserToken() {
+    public String getServiceUserToken() {
         log.info("Getting system user token from IDAM");
         System.out.println("idamClientId: " + idamClientId);
         Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
@@ -83,7 +81,7 @@ public class IdamService {
         idamAuthDetails.put("password", systemUserPass);
         idamAuthDetails.put("scope", systemUserScope);
 
-        return idamApi.token(idamAuthDetails);
+        return idamApi.token(idamAuthDetails).getAccessToken();
     }
-}
 
+}
