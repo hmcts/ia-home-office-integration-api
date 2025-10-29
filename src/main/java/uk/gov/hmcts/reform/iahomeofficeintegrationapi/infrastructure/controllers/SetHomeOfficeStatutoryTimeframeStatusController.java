@@ -17,13 +17,13 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Submit
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service.CcdDataService;
 
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.S2STokenValidator.SERVICE_AUTHORIZATION_HEADER;
-
 @Tag(name = "Set Home Office statutory timeframe status controller")
 @OpenAPIDefinition(tags = {@Tag(name = "SetHomeOfficeStatutoryTimeframeStatusController", description = "Set Home Office statutory timeframe status")})
 @RestController
 @Slf4j
 public class SetHomeOfficeStatutoryTimeframeStatusController {
+
+    public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
 
     private final CcdDataService ccdDataService;
 
