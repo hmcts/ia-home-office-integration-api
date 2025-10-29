@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.ServiceTokenGeneratorConfiguration.SERVICE_AUTHORIZATION;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +23,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.Feig
 public interface CcdDataApi {
     String EXPERIMENTAL = "experimental=true";
     String CONTENT_TYPE = "content-type=application/json";
+    String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
     @GetMapping(
         value = "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/{cid}/event-triggers/{etid}"
