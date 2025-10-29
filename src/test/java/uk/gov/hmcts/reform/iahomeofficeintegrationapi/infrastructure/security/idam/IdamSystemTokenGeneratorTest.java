@@ -29,8 +29,7 @@ public class IdamSystemTokenGeneratorTest {
 
     @Test
     void should_return_access_token_when_service_call_succeeds() {
-        Token token = mock(Token.class);
-        when(token.getAccessToken()).thenReturn("test-access-token");
+        String token = "test-access-token";
         when(idamService.getServiceUserToken()).thenReturn(token);
 
         String result = idamSystemTokenGenerator.generate();

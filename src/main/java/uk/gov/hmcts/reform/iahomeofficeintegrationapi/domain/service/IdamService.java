@@ -69,7 +69,7 @@ public class IdamService {
     }
 
     @Cacheable(value = "accessTokenCache")
-    public Token getServiceUserToken() {
+    public String getServiceUserToken() {
         log.info("Getting system user token from IDAM");
         System.out.println("idamClientId: " + idamClientId);
         Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
@@ -82,7 +82,7 @@ public class IdamService {
         idamAuthDetails.put("password", systemUserPass);
         idamAuthDetails.put("scope", systemUserScope);
 
-        return idamApi.token(idamAuthDetails);
+        return idamApi.token(idamAuthDetails).getAccessToken();
     }
 
 }
