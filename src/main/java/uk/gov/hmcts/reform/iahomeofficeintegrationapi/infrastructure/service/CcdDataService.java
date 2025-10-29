@@ -16,10 +16,10 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Statut
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SystemTokenGenerator;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SystemUserProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.IdamService;
 
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STATUTORY_TIMEFRAME_24WEEKS;
 
@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 public class CcdDataService {
 
     private final CcdDataApi ccdDataApi;
-    private final SystemTokenGenerator systemTokenGenerator;
+    private final IdamService systemTokenGenerator;
     private final SystemUserProvider systemUserProvider;
     private final AuthTokenGenerator serviceAuthorization;
 
@@ -37,7 +37,7 @@ public class CcdDataService {
     private static final String CASE_TYPE = "Asylum";
 
     public CcdDataService(CcdDataApi ccdDataApi,
-                          SystemTokenGenerator systemTokenGenerator,
+                          IdamService systemTokenGenerator,
                           SystemUserProvider systemUserProvider,
                           AuthTokenGenerator serviceAuthorization) {
 
@@ -56,7 +56,7 @@ public class CcdDataService {
         String s2sToken;
         String uid;
         try {
-            userToken = "Bearer " + systemTokenGenerator.generate();
+            userToken = "Bearer " + systemTokenGenerator.getServiceUserToken();
             log.info("System user token has been generated for event: {}, caseId: {}.", event, caseId);
 
             s2sToken = serviceAuthorization.generate();

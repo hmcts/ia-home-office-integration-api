@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.IdamApi;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.Token;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.UserInfo;
 
 @Slf4j

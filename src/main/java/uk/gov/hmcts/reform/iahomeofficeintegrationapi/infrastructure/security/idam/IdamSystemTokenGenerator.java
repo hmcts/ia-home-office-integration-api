@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.i
 import feign.FeignException;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.Token;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SystemTokenGenerator;
 
 @Component

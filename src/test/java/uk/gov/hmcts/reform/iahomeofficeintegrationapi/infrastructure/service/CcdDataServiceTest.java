@@ -10,8 +10,8 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOffice
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeFrame24WeeksFieldValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SystemTokenGenerator;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SystemUserProvider;
 
 import java.time.LocalDate;
@@ -25,7 +25,7 @@ public class CcdDataServiceTest {
     @Mock
     private CcdDataApi ccdDataApi;
     @Mock
-    private SystemTokenGenerator systemTokenGenerator;
+    private IdamService systemTokenGenerator;
     @Mock
     private SystemUserProvider systemUserProvider;
     @Mock
