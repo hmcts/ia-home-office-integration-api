@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Statut
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SystemUserProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.IdamService;
@@ -29,8 +28,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 public class CcdDataService {
 
     private final CcdDataApi ccdDataApi;
-    private final IdamService systemTokenGenerator;
-    private final SystemUserProvider systemUserProvider;
+    private final IdamService idamService;
     private final AuthTokenGenerator serviceAuthorization;
 
     private static final String JURISDICTION = "IA";
@@ -38,12 +36,11 @@ public class CcdDataService {
 
     public CcdDataService(CcdDataApi ccdDataApi,
                           IdamService systemTokenGenerator,
-                          SystemUserProvider systemUserProvider,
                           AuthTokenGenerator serviceAuthorization) {
 
         this.ccdDataApi = ccdDataApi;
-        this.systemTokenGenerator = systemTokenGenerator;
-        this.systemUserProvider = systemUserProvider;
+        this.idamService = systemTokenGenerator;
+
         this.serviceAuthorization = serviceAuthorization;
     }
 
@@ -56,13 +53,13 @@ public class CcdDataService {
         String s2sToken;
         String uid;
         try {
-            userToken = "Bearer " + systemTokenGenerator.getServiceUserToken();
+            userToken = "Bearer " + idamService.getServiceUserToken();
             log.info("System user token has been generated for event: {}, caseId: {}.", event, caseId);
 
             s2sToken = serviceAuthorization.generate();
             log.info("S2S token has been generated for event: {}, caseId: {}.", event, caseId);
 
-            uid = systemUserProvider.getSystemUserId(userToken);
+            uid = idamService.getUserInfo(userToken).getUid();
             log.info("System user id has been fetched for event: {}, caseId: {}.", event, caseId);
 
         } catch (IdentityManagerResponseException ex) {
