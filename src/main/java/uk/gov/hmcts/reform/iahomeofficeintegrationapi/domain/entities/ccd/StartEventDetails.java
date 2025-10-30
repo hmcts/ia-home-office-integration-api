@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 
+//TO REMOVE
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

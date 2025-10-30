@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+//TO REMOVE ?
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
