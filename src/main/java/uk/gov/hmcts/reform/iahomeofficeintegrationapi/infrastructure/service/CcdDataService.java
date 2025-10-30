@@ -6,10 +6,6 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -17,13 +13,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
-//import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDataContent;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StartEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeFrame24WeeksFieldValue;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
-//import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.IdamService;
@@ -35,18 +27,18 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 @Slf4j
 public class CcdDataService {
 
-    private final CoreCaseDataApi ccdDataApi;
+    private final CoreCaseDataApi coreCaseDataApi;
     private final IdamService idamService;
     private final AuthTokenGenerator serviceAuthorization;
 
     private static final String JURISDICTION = "IA";
     private static final String CASE_TYPE = "Asylum";
 
-    public CcdDataService(CoreCaseDataApi ccdDataApi,
+    public CcdDataService(CoreCaseDataApi coreCaseDataApi,
                           IdamService systemTokenGenerator,
                           AuthTokenGenerator serviceAuthorization) {
 
-        this.ccdDataApi = ccdDataApi;
+        this.coreCaseDataApi = coreCaseDataApi;
         this.idamService = systemTokenGenerator;
 
         this.serviceAuthorization = serviceAuthorization;
@@ -75,17 +67,17 @@ public class CcdDataService {
             throw new IdentityManagerResponseException(ex.getMessage(), ex);
         }
 
-        final StartEventResponse startEventDetails = ccdDataApi.startEvent(userToken, s2sToken, caseId, uid);
+        final StartEventResponse startEventResponse = coreCaseDataApi.startEvent(userToken, s2sToken, caseId, uid);
         log.info("Case details found for the caseId: {}", caseId);
 
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(STATUTORY_TIMEFRAME_24WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
 
-        CaseDetails submitEventDetails = submitEvent(userToken, s2sToken, uid, caseId, caseData, startEventDetails.getToken(), true);
+        CaseDetails caseDetails = submitEvent(userToken, s2sToken, uid, caseId, caseData, startEventResponse.getToken(), true);
 
-        log.info("Home Office statutory timeframe status updated for the caseId: {}, Status: {}", caseId, submitEventDetails.getCallbackResponseStatus());
+        log.info("Home Office statutory timeframe status updated for the caseId: {}, Status: {}", caseId, caseDetails.getCallbackResponseStatus());
 
-        return submitEventDetails;
+        return caseDetails;
     }
 
     private CaseDetails submitEvent(
@@ -97,7 +89,7 @@ public class CcdDataService {
             .ignoreWarning(ignoreWarning)
             .build();
 
-        return ccdDataApi.submitEventForCaseWorker(userToken, s2sToken, userId, JURISDICTION, CASE_TYPE, caseId, ignoreWarning, caseDataContent);
+        return coreCaseDataApi.submitEventForCaseWorker(userToken, s2sToken, userId, JURISDICTION, CASE_TYPE, caseId, ignoreWarning, caseDataContent);
     }
 
     public List<IdValue<StatutoryTimeFrame24WeeksFieldValue>> toStf4w(String id, HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {

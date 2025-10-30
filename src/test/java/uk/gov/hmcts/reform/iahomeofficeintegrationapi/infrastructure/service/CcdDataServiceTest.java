@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CcdDataServiceTest {
 
     @Mock
-    private CoreCaseDataApi ccdDataApi;
+    private CoreCaseDataApi coreCaseDataApi;
     @Mock
     private IdamService systemTokenGenerator;
     @Mock
@@ -33,7 +33,7 @@ public class CcdDataServiceTest {
     @BeforeEach
     void setUp() {
         ccdDataService = new CcdDataService(
-            ccdDataApi,
+            coreCaseDataApi,
             systemTokenGenerator,
             serviceAuthorization
         );
