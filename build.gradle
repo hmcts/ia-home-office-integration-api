@@ -331,6 +331,7 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '6.0.1'
 
   implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '2.1.5'
+  implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.2.0'
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc
 
@@ -387,6 +388,8 @@ dependencies {
   testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
   testImplementation "info.solidsoft.gradle.pitest:gradle-pitest-plugin:${versions.gradlePitest}"
   testImplementation "org.codehaus.sonar-plugins:sonar-pitest-plugin:${versions.sonarPitest}"
+
+  testImplementation group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '3.19.4'
 
   testImplementation group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.14.10'
   testImplementation group: 'com.vladsch.flexmark', name: 'flexmark-all', version: '0.64.8'

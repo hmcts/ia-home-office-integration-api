@@ -7,6 +7,7 @@
         <cve>CVE-2024-38808</cve>
         <cve>CVE-2025-46392</cve>
         <cve>CVE-2025-48989</cve>
+        <cve>CVE-2023-33202</cve>
     </suppress>
     <suppress>
         <cve>CVE-2025-46392</cve>
