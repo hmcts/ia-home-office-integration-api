@@ -21,11 +21,11 @@ public interface WithHomeOfficeStatusSearchStub {
 
 
 
-    default void addHomeOfficeApiSearchValidResponseStub(WireMockServer server, String homeOfficeRefefence)
+    default void addHomeOfficeApiSearchValidResponseStub(WireMockServer server, String homeOfficeReference)
         throws IOException {
 
-        String hoGetBySearchParamsResponseJson = getResponseJson(homeOfficeRefefence);
-        addStubMappingWithStatus(server, hoGetBySearchParamsResponseJson, homeOfficeRefefence, 200);
+        String hoGetBySearchParamsResponseJson = getResponseJson(homeOfficeReference);
+        addStubMappingWithStatus(server, hoGetBySearchParamsResponseJson, homeOfficeReference, 200);
     }
 
     default void addHomeOfficeApiSearchNoInvolvementsStub(WireMockServer server, String homeOfficeReference)
