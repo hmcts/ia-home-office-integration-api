@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -76,5 +77,40 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         String result = statutoryTimeFrame24WeeksFieldValue.toString();
 
         assertNotNull(result);
+    }
+
+    @Test
+    void should_be_equal_when_all_fields_are_same() {
+        StatutoryTimeFrame24WeeksFieldValue value1 = new StatutoryTimeFrame24WeeksFieldValue(
+            YesOrNo.YES, "reason1", "user1", "2020-06-15T17:35:38Z"
+        );
+        StatutoryTimeFrame24WeeksFieldValue value2 = new StatutoryTimeFrame24WeeksFieldValue(
+            YesOrNo.YES, "reason1", "user1", "2020-06-15T17:35:38Z"
+        );
+
+        assertEquals(value1, value2);
+        assertEquals(value1.hashCode(), value2.hashCode());
+    }
+
+    @Test
+    void should_not_be_equal_when_fields_differ() {
+        StatutoryTimeFrame24WeeksFieldValue value1 = new StatutoryTimeFrame24WeeksFieldValue(
+            YesOrNo.YES, "reason1", "user1", "2020-06-15T17:35:38Z"
+        );
+        StatutoryTimeFrame24WeeksFieldValue value2 = new StatutoryTimeFrame24WeeksFieldValue(
+            YesOrNo.NO, "reason1", "user1", "2020-06-15T17:35:38Z"
+        );
+
+        assertNotEquals(value1, value2);
+    }
+
+    @Test
+    void should_not_be_equal_to_null_or_different_class() {
+        StatutoryTimeFrame24WeeksFieldValue value = new StatutoryTimeFrame24WeeksFieldValue(
+            YesOrNo.YES, "reason1", "user1", "2020-06-15T17:35:38Z"
+        );
+
+        assertNotEquals(value, null);
+        assertNotEquals(value, "string");
     }
 }
