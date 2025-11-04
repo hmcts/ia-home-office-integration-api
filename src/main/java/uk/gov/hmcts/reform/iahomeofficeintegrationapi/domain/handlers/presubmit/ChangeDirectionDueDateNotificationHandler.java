@@ -112,7 +112,7 @@ public class ChangeDirectionDueDateNotificationHandler implements PreSubmitCallb
     protected boolean isDirectionForRespondentParties(AsylumCase asylumCase) {
 
         Parties parties = asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)
-            .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present"));
+            .orElseThrow(() -> new IllegalStateException("directionEditParties is not present"));
 
         return parties.equals(parties.RESPONDENT);
     }
