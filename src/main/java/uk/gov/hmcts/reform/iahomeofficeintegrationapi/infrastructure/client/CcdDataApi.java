@@ -36,7 +36,7 @@ public interface CcdDataApi {
         @PathVariable("uid") String userId,
         @PathVariable("jid") String jurisdiction,
         @PathVariable("ctid") String caseType,
-        @PathVariable("cid") String id,
+        @PathVariable("cid") String cid,
         @PathVariable("etid") String eventId
     );
 

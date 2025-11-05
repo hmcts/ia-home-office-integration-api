@@ -51,7 +51,7 @@ public class CcdDataService {
 
         String userToken;
         String s2sToken;
-        String uid;
+        String userId;
         try {
             userToken = "Bearer " + idamService.getServiceUserToken();
             log.info("System user token has been generated for event: {}, caseId: {}.", event, caseId);
@@ -59,7 +59,7 @@ public class CcdDataService {
             s2sToken = serviceAuthorization.generate();
             log.info("S2S token has been generated for event: {}, caseId: {}.", event, caseId);
 
-            uid = idamService.getUserInfo(userToken).getUid();
+            userId = idamService.getUserInfo(userToken).getUid();
             log.info("System user id has been fetched for event: {}, caseId: {}.", event, caseId);
 
         } catch (IdentityManagerResponseException ex) {
@@ -67,7 +67,9 @@ public class CcdDataService {
             throw new IdentityManagerResponseException(ex.getMessage(), ex);
         }
 
-        final StartEventDetails startEventDetails = getCase(userToken, s2sToken, uid, JURISDICTION, CASE_TYPE, caseId);
+        String eventId = "addCaseNote"; //Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
+                                     
+        final StartEventDetails startEventDetails = getCase(userToken, s2sToken, userId, JURISDICTION, CASE_TYPE, caseId, eventId);
         log.info("Case details found for the caseId: {}", caseId);
 
         Map<String, Object> caseData = new HashMap<>();
@@ -86,10 +88,14 @@ public class CcdDataService {
     }
 
     private StartEventDetails getCase(
-        String userToken, String s2sToken, String uid, String jurisdiction, String caseType, String caseId) {
-
+        String userToken, String s2sToken, String uid, String jurisdiction, String caseType, String caseId, String eventId) {
+        //log all the arguments
+        log.info("Getting case with userToken: {}, s2sToken: {}, uid: {}, jurisdiction: {}, caseType: {}, caseId: {}, EventId: {}",
+                 userToken, s2sToken, uid, jurisdiction, caseType, caseId, eventId);
         return ccdDataApi.startEvent(userToken, s2sToken, uid, jurisdiction, caseType,
-                                     caseId, Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString());
+                                     caseId, eventId);
+
+                                     
     }
 
     private SubmitEventDetails submitEvent(
