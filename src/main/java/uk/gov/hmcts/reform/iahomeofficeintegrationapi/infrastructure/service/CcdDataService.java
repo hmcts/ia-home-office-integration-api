@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -33,6 +35,10 @@ public class CcdDataService {
 
     private static final String JURISDICTION = "IA";
     private static final String CASE_TYPE = "Asylum";
+
+    @Value("${core_case_data_api_url}")
+    private String coreCaseDataApiUrl;
+
 
     public CcdDataService(CcdDataApi ccdDataApi,
                           IdamService systemTokenGenerator,
@@ -68,7 +74,8 @@ public class CcdDataService {
         }
 
         String eventId = "addCaseNote"; //Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
-                                     
+                
+        log.info("ccd url: {}", coreCaseDataApiUrl);
         final StartEventDetails startEventDetails = getCase(userToken, s2sToken, userId, JURISDICTION, CASE_TYPE, caseId, eventId);
         log.info("Case details found for the caseId: {}", caseId);
 
