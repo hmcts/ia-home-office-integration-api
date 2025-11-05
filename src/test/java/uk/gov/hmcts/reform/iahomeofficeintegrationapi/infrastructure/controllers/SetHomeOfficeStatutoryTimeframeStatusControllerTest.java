@@ -29,7 +29,7 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
     @Test
     void should_return_success_response_when_update_home_office_statutory_timeframe_status() {
         // Given
-        // String s2sAuthToken = "test-token";
+        String s2sAuthToken = "test-token";
         HomeOfficeStatutoryTimeframeDto dto = new HomeOfficeStatutoryTimeframeDto();
         SubmitEventDetails expectedResponse = new SubmitEventDetails(
             1L,
@@ -45,7 +45,7 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
 
         // When
         ResponseEntity<SubmitEventDetails> response = controller
-            .updateHomeOfficeStatutoryTimeframeStatus(dto);
+            .updateHomeOfficeStatutoryTimeframeStatus(s2sAuthToken, dto);
 
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
