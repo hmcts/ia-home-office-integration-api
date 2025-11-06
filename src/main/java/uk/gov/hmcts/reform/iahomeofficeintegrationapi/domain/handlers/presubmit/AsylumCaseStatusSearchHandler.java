@@ -108,7 +108,7 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && Arrays.asList(
-                SUBMIT_APPEAL, PAY_AND_SUBMIT_APPEAL, MARK_APPEAL_PAID, REQUEST_HOME_OFFICE_DATA)
+                        SUBMIT_APPEAL, PAY_AND_SUBMIT_APPEAL, MARK_APPEAL_PAID, REQUEST_HOME_OFFICE_DATA)
                 .contains(callback.getEvent())
                 && !featureToggler.getValue("home-office-uan-feature", false);
     }
@@ -167,22 +167,33 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
                 return new PreSubmitCallbackResponse<>(asylumCase);
             }
 
-            Optional<HomeOfficeCaseStatus> anyApplicant = selectAnyApplicant(caseId, searchResponse.getStatus());
-            Optional<HomeOfficeCaseStatus> mainApplicant = selectMainApplicant(
-                                                                    caseId,
-                                                                    searchResponse.getStatus(),
-                                                                    appellant.build(),
-                                                                    appellantDateOfBirth
-                                                                );
-
-            Optional<HomeOfficeCaseStatus> selectedApplicant = anyApplicant.isEmpty() ? mainApplicant :  anyApplicant;
+            Optional<HomeOfficeCaseStatus> selectedApplicant =
+                    selectAnyApplicant(caseId, searchResponse.getStatus());
 
             if (!selectedApplicant.isPresent()) {
                 log.warn("Unable to find Any APPLICANT in Home office response, caseId: {}", caseId);
                 asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
                 asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_MAIN_APPLICANT_NOT_FOUND_ERROR_MESSAGE);
 
-            } else {
+                selectedApplicant =
+                        selectMainApplicant(
+                                caseId,
+                                searchResponse.getStatus(),
+                                appellant.build(),
+                                appellantDateOfBirth
+                        );
+
+            }
+
+            if (selectedApplicant.isEmpty()) {
+                log.warn("Unable to find MAIN APPLICANT in Home office response, caseId: {}", caseId);
+                asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
+                asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE,
+                        HOME_OFFICE_WRONG_APPLICANT_NOT_FOUND_ERROR_MESSAGE);
+
+            }
+
+            if (selectedApplicant.isPresent()) {
                 asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
                 HomeOfficeCaseStatus selectedMainApplicant = selectedApplicant.get();
                 Person person = selectedMainApplicant.getPerson();
@@ -225,8 +236,8 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
                 selectedMainApplicant.setDisplayRejectionReasons(
                         getRejectionReasonString(applicationStatus.getRejectionReasons()));
                 asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_CASE_STATUS_DATA, selectedMainApplicant);
-            }
 
+            }
         } catch (HomeOfficeResponseException hoe) {
             setErrorMessageForErrorCode(caseId, asylumCase, hoe.getErrorCode(), hoe.getMessage());
         } catch (Exception e) {
