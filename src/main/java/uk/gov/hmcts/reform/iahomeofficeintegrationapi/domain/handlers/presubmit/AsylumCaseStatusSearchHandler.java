@@ -175,7 +175,7 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
                                                                     appellantDateOfBirth
                                                                 );
 
-            Optional<HomeOfficeCaseStatus> selectedApplicant = anyApplicant.isPresent() ? anyApplicant :  mainApplicant;
+            Optional<HomeOfficeCaseStatus> selectedApplicant = anyApplicant.isEmpty() ? mainApplicant :  anyApplicant;
 
             if (!selectedApplicant.isPresent()) {
                 log.warn("Unable to find Any APPLICANT in Home office response, caseId: {}", caseId);
