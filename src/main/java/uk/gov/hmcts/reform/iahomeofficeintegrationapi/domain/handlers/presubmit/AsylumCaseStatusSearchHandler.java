@@ -195,7 +195,7 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
 
             if (selectedApplicant == null) {
                 // Fix this warning to be adjusted based on what is/isn't found!
-                log.warn("Unable to find APPLICANT in Home office response, caseId: {}", caseId);
+                log.warn("Unable to find MAIN APPLICANT in Home office response, caseId: {}", caseId);
                 asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
                 asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE,
                         HOME_OFFICE_WRONG_APPLICANT_NOT_FOUND_ERROR_MESSAGE);
