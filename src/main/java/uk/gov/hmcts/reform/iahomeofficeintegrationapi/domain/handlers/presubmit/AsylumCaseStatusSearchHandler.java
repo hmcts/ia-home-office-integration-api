@@ -122,7 +122,7 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
                 selectAnyApplicant(caseId, searchResponse.getStatus());
 
         if (selectedApplicant.isPresent()) {
-            return selectedApplicant;
+            return selectedApplicant.get();
         }
 
         selectedApplicant =
@@ -202,7 +202,7 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
 
             } else {
                 asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
-                HomeOfficeCaseStatus selectedMainApplicant = selectedApplicant.get();
+                HomeOfficeCaseStatus selectedMainApplicant = selectedApplicant;
                 Person person = selectedMainApplicant.getPerson();
                 ApplicationStatus applicationStatus = selectedMainApplicant.getApplicationStatus();
                 if (isNull(person)) {
