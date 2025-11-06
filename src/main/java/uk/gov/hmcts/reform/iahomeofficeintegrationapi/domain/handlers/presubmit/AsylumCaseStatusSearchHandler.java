@@ -167,16 +167,15 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
                 return new PreSubmitCallbackResponse<>(asylumCase);
             }
 
-            Optional<HomeOfficeCaseStatus> selectedApplicant1 = selectAnyApplicant(caseId, searchResponse.getStatus());
-            Optional<HomeOfficeCaseStatus> selectedApplicant2 = selectMainApplicant(
+            Optional<HomeOfficeCaseStatus> anyApplicant = selectAnyApplicant(caseId, searchResponse.getStatus());
+            Optional<HomeOfficeCaseStatus> mainApplicant = selectMainApplicant(
                                                                     caseId,
                                                                     searchResponse.getStatus(),
                                                                     appellant.build(),
                                                                     appellantDateOfBirth
                                                                 );
 
-            Optional<HomeOfficeCaseStatus> selectedApplicant = Optional.ofNullable(selectedApplicant1.isPresent()
-                    ? selectedApplicant1 :  selectedApplicant2);
+            Optional<HomeOfficeCaseStatus> selectedApplicant = anyApplicant.isPresent() ? anyApplicant :  mainApplicant;
 
             if (!selectedApplicant.isPresent()) {
                 log.warn("Unable to find Any APPLICANT in Home office response, caseId: {}", caseId);
