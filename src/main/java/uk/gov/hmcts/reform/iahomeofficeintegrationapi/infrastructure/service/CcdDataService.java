@@ -78,6 +78,12 @@ public class CcdDataService {
         log.info("ccd url: {}", coreCaseDataApiUrl);
         final StartEventDetails startEventDetails = getCase(userToken, s2sToken, userId, JURISDICTION, CASE_TYPE, caseId, eventId);
         log.info("Case details found for the caseId: {}", caseId);
+        log.info("Start event details token: {}", startEventDetails.getToken());
+        log.info("Start event details id: {}", startEventDetails.getEventId());
+        log.info("Start case details id: {}", startEventDetails.getCaseDetails().getId());
+        log.info("Start case details state: {}", startEventDetails.getCaseDetails().getState());
+        log.info("Start case details created date: {}", startEventDetails.getCaseDetails().getCreatedDate());
+        log.info("Start case details data: {}", startEventDetails.getCaseDetails().getCaseData());
 
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(STATUTORY_TIMEFRAME_24WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
