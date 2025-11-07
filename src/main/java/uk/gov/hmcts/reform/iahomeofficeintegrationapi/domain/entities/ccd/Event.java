@@ -24,7 +24,7 @@ public enum Event {
     REQUEST_RESPONSE_AMEND("requestResponseAmend"),
     CHANGE_DIRECTION_DUE_DATE("changeDirectionDueDate"),
     DECIDE_FTPA_APPLICATION("decideFtpaApplication"),
-    SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS("setHomeOfficeStatutoryTimeframeStatus"),
+    SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS("addStatutoryTimeframe24Weeks"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 

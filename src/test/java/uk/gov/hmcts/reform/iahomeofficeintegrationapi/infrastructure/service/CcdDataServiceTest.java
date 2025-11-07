@@ -108,7 +108,7 @@ class CcdDataServiceTest {
             "IA",
             "Asylum",
             "12345",
-            "addCaseNote" 
+            "addStatutoryTimeframe24Weeks" 
         );
         verify(ccdDataApi).submitEvent(
             eq("Bearer " + userToken),

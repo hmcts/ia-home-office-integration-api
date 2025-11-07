@@ -73,7 +73,7 @@ public class CcdDataService {
             throw new IdentityManagerResponseException(ex.getMessage(), ex);
         }
 
-        String eventId = "addCaseNote";//Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString();
+        String eventId = Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString();
                 
         log.info("ccd url: {}", coreCaseDataApiUrl);
         final StartEventDetails startEventDetails = getCase(userToken, s2sToken, userId, JURISDICTION, CASE_TYPE, caseId, eventId);
