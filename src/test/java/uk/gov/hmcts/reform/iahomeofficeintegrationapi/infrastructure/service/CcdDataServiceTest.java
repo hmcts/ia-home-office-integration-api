@@ -108,7 +108,7 @@ class CcdDataServiceTest {
             "IA",
             "Asylum",
             "12345",
-            "addCaseNote"  // Changed from "setHomeOfficeStatutoryTimeframeStatus"
+            "setHomeOfficeStatutoryTimeframeStatus" 
         );
         verify(ccdDataApi).submitEvent(
             eq("Bearer " + userToken),
