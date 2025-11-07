@@ -60,7 +60,7 @@ public class CcdDataService {
         String userId;
         try {
             userToken = "Bearer " + idamService.getServiceUserToken();
-            log.info("System user token has been generated for event: {}, caseId: {}.", event, caseId);
+            log.info("A System user token has been generated for event: {}, caseId: {}.", event, caseId);
 
             s2sToken = serviceAuthorization.generate();
             log.info("S2S token has been generated for event: {}, caseId: {}.", event, caseId);
@@ -73,7 +73,7 @@ public class CcdDataService {
             throw new IdentityManagerResponseException(ex.getMessage(), ex);
         }
 
-        String eventId = Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString();
+        String eventId = "addCaseNote";//Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString();
                 
         log.info("ccd url: {}", coreCaseDataApiUrl);
         final StartEventDetails startEventDetails = getCase(userToken, s2sToken, userId, JURISDICTION, CASE_TYPE, caseId, eventId);
