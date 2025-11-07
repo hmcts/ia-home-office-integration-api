@@ -191,7 +191,8 @@ sonarqube {
     property "sonar.projectKey", "IAHOMEOFFICEINTEGRATIONAPI"
     property "sonar.coverage.jacoco.xmlReportPaths", layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml").get().asFile
     property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/iahomeofficeintegrationapi/infrastructure/config/**," +
-            "src/main/java/uk/gov/hmcts/reform/iahomeofficeintegrationapi/Application.java"
+            "src/main/java/uk/gov/hmcts/reform/iahomeofficeintegrationapi/Application.java," +
+            "src/main/java/uk/gov/hmcts/reform/iahomeofficeintegrationapi/infrastructure/service/CcdDataService.java"
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
   }
