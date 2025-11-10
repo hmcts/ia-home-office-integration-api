@@ -52,7 +52,7 @@ public class CcdDataService {
 
     public SubmitEventDetails setHomeOfficeStatutoryTimeframeStatus(HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
 
-        String event = Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString();
+        String eventId = Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString();
         String caseId = hoStatutoryTimeframeDto.getCcdCaseNumber();
 
         String userToken;
@@ -60,20 +60,19 @@ public class CcdDataService {
         String userId;
         try {
             userToken = "Bearer " + idamService.getServiceUserToken();
-            log.info("A System user token has been generated for event: {}, caseId: {}.", event, caseId);
+            log.info("A System user token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
             s2sToken = serviceAuthorization.generate();
-            log.info("S2S token has been generated for event: {}, caseId: {}.", event, caseId);
+            log.info("S2S token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
             userId = idamService.getUserInfo(userToken).getUid();
-            log.info("System user id has been fetched for event: {}, caseId: {}.", event, caseId);
+            log.info("System user id has been fetched for event: {}, caseId: {}.", eventId, caseId);
 
         } catch (IdentityManagerResponseException ex) {
             log.error("Unauthorised access to getCaseById", ex.getMessage());
             throw new IdentityManagerResponseException(ex.getMessage(), ex);
         }
 
-        String eventId = Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString();
                 
         log.info("ccd url: {}", coreCaseDataApiUrl);
         final StartEventDetails startEventDetails = getCase(userToken, s2sToken, userId, JURISDICTION, CASE_TYPE, caseId, eventId);
@@ -93,7 +92,7 @@ public class CcdDataService {
         caseData.put(STATUTORY_TIMEFRAME_24WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
 
         Map<String, Object> eventData = new HashMap<>();
-        eventData.put("id", Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString());
+        eventData.put("id", eventId);
 
         SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, caseData, eventData,
                                                             startEventDetails.getToken(), true);

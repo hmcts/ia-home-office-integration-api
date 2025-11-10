@@ -30,13 +30,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.argThat;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STATUTORY_TIMEFRAME_24WEEKS;
 
 @ExtendWith(MockitoExtension.class)
@@ -108,7 +108,7 @@ class CcdDataServiceTest {
             "IA",
             "Asylum",
             "12345",
-            "addStatutoryTimeframe24Weeks" 
+            Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
         );
         verify(ccdDataApi).submitEvent(
             eq("Bearer " + userToken),
