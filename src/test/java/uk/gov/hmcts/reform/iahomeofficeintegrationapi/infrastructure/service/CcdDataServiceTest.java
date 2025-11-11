@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STATUTORY_TIMEFRAME_24WEEKS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
 
 @ExtendWith(MockitoExtension.class)
 class CcdDataServiceTest {
@@ -208,7 +208,7 @@ class CcdDataServiceTest {
             argThat(caseDataContent -> {
                 @SuppressWarnings("unchecked")
                 List<IdValue<StatutoryTimeframe24Weeks>> stf24weeks = 
-                    (List<IdValue<StatutoryTimeframe24Weeks>>) caseDataContent.getData().get(STATUTORY_TIMEFRAME_24WEEKS.value());
+                    (List<IdValue<StatutoryTimeframe24Weeks>>) caseDataContent.getData().get(STATUTORY_TIMEFRAME_24_WEEKS.value());
                 return stf24weeks.get(0).getValue().getStatus() == YesOrNo.NO;
             })
         );
@@ -289,7 +289,7 @@ class CcdDataServiceTest {
                 assertEquals(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString(), eventData.get("id"));
                 
                 Map<String, Object> caseData = caseDataContent.getData();
-                assertTrue(caseData.containsKey(STATUTORY_TIMEFRAME_24WEEKS.value()));
+                assertTrue(caseData.containsKey(STATUTORY_TIMEFRAME_24_WEEKS.value()));
                 
                 return true;
             })

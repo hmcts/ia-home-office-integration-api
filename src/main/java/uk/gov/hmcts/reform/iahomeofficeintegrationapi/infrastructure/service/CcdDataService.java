@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.id
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.IdamService;
 
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STATUTORY_TIMEFRAME_24WEEKS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
 
 
 @Service
@@ -89,7 +89,7 @@ public class CcdDataService {
         }
 
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(STATUTORY_TIMEFRAME_24WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
+        caseData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
 
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("id", eventId);

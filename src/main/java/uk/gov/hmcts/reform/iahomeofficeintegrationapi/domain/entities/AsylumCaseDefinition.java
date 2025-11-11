@@ -213,7 +213,7 @@ public enum AsylumCaseDefinition {
     APPEAL_OUT_OF_COUNTRY(
             "appealOutOfCountry", new TypeReference<YesOrNo>() {}),
 
-    STATUTORY_TIMEFRAME_24WEEKS(
+    STATUTORY_TIMEFRAME_24_WEEKS(
         "statutoryTimeframe24Weeks", new TypeReference<List<IdValue<StatutoryTimeframe24Weeks>>>(){}),
         
     ;
