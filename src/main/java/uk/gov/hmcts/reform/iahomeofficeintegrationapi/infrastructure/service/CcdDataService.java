@@ -94,6 +94,8 @@ public class CcdDataService {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("id", eventId);
 
+        log.info("Submitting event: {} for caseId: {} with Home Office statutory timeframe status: {}", eventId, caseId,
+                 hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus());
         SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, caseData, eventData,
                                                             startEventDetails.getToken(), true);
 
@@ -121,6 +123,8 @@ public class CcdDataService {
         CaseDataContent request =
             new CaseDataContent(caseId, caseData, eventData, eventToken, ignoreWarning);
 
+        log.info("Submitting case with caseId: {}, eventData: {}, eventToken: {}, ignoreWarning: {}",
+                 caseId, eventData, eventToken, ignoreWarning);    
         return ccdDataApi.submitEvent(userToken, s2sToken, caseId, request);
     }
 
