@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOffice
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDataContent;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StartEventDetails;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeFrame24WeeksFieldValue;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeframe24Weeks;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
@@ -75,7 +75,7 @@ public class CcdDataService {
 
                 
         log.info("ccd url: {}", coreCaseDataApiUrl);
-        final StartEventDetails startEventDetails = getCase(userToken, s2sToken, userId, JURISDICTION, CASE_TYPE, caseId, eventId);
+        final StartEventDetails startEventDetails = getStartEvent(userToken, s2sToken, userId, JURISDICTION, CASE_TYPE, caseId, eventId);
         log.info("Case details found for the caseId: {}", caseId);
         log.info("Start event details token: {}", startEventDetails.getToken());
         log.info("Start event details id: {}", startEventDetails.getEventId());
@@ -103,7 +103,7 @@ public class CcdDataService {
         return submitEventDetails;
     }
 
-    private StartEventDetails getCase(
+    private StartEventDetails getStartEvent(
         String userToken, String s2sToken, String uid, String jurisdiction, String caseType, String caseId, String eventId) {
         //log all the arguments
         log.info("Getting case with userToken: {}, s2sToken: {}, uid: {}, jurisdiction: {}, caseType: {}, caseId: {}, EventId: {}",
@@ -124,21 +124,21 @@ public class CcdDataService {
         return ccdDataApi.submitEvent(userToken, s2sToken, caseId, request);
     }
 
-    public List<IdValue<StatutoryTimeFrame24WeeksFieldValue>> toStf4w(String id, HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
+    public List<IdValue<StatutoryTimeframe24Weeks>> toStf4w(String id, HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
         
         YesOrNo status = hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus() ? YesOrNo.YES : YesOrNo.NO;
         String reason = "Home Office statutory timeframe update";
         String user = "Home Office Integration API";
         String dateTimeAdded = hoStatutoryTimeframeDto.getTimeStamp().format(DateTimeFormatter.ISO_LOCAL_DATE) + "T00:00:00Z";
         
-        StatutoryTimeFrame24WeeksFieldValue statutoryTimeframeValue = new StatutoryTimeFrame24WeeksFieldValue(
+        StatutoryTimeframe24Weeks statutoryTimeframeValue = new StatutoryTimeframe24Weeks(
             status,
             reason,
             user,
             dateTimeAdded
         );
         
-        IdValue<StatutoryTimeFrame24WeeksFieldValue> idValue = new IdValue<>(id, statutoryTimeframeValue);
+        IdValue<StatutoryTimeframe24Weeks> idValue = new IdValue<>(id, statutoryTimeframeValue);
         
         return List.of(idValue);
     }

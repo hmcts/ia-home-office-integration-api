@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.mode
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDataContent;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StartEventDetails;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeFrame24WeeksFieldValue;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeframe24Weeks;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
@@ -207,8 +207,8 @@ class CcdDataServiceTest {
             eq("12345"),
             argThat(caseDataContent -> {
                 @SuppressWarnings("unchecked")
-                List<IdValue<StatutoryTimeFrame24WeeksFieldValue>> stf24weeks = 
-                    (List<IdValue<StatutoryTimeFrame24WeeksFieldValue>>) caseDataContent.getData().get(STATUTORY_TIMEFRAME_24WEEKS.value());
+                List<IdValue<StatutoryTimeframe24Weeks>> stf24weeks = 
+                    (List<IdValue<StatutoryTimeframe24Weeks>>) caseDataContent.getData().get(STATUTORY_TIMEFRAME_24WEEKS.value());
                 return stf24weeks.get(0).getValue().getStatus() == YesOrNo.NO;
             })
         );
@@ -220,20 +220,20 @@ class CcdDataServiceTest {
         testDto.setHoStatutoryTimeframeStatus(true);
 
         // When
-        List<IdValue<StatutoryTimeFrame24WeeksFieldValue>> result = ccdDataService.toStf4w("1", testDto);
+        List<IdValue<StatutoryTimeframe24Weeks>> result = ccdDataService.toStf4w("1", testDto);
 
         // Then
         assertNotNull(result);
         assertEquals(1, result.size());
         
-        IdValue<StatutoryTimeFrame24WeeksFieldValue> idValue = result.get(0);
+        IdValue<StatutoryTimeframe24Weeks> idValue = result.get(0);
         assertEquals("1", idValue.getId());
         
-        StatutoryTimeFrame24WeeksFieldValue value = idValue.getValue();
+        StatutoryTimeframe24Weeks value = idValue.getValue();
         assertEquals(YesOrNo.YES, value.getStatus());
         assertEquals("Home Office statutory timeframe update", value.getReason());
         assertEquals("Home Office Integration API", value.getUser());
-        assertEquals("2023-12-01T00:00:00Z", value.getDateTimeAdded());
+        assertEquals("2023-12-01T00:00:00Z", value.getDateAdded());
     }
 
     @Test
@@ -242,20 +242,20 @@ class CcdDataServiceTest {
         testDto.setHoStatutoryTimeframeStatus(false);
 
         // When
-        List<IdValue<StatutoryTimeFrame24WeeksFieldValue>> result = ccdDataService.toStf4w("2", testDto);
+        List<IdValue<StatutoryTimeframe24Weeks>> result = ccdDataService.toStf4w("2", testDto);
 
         // Then
         assertNotNull(result);
         assertEquals(1, result.size());
         
-        IdValue<StatutoryTimeFrame24WeeksFieldValue> idValue = result.get(0);
+        IdValue<StatutoryTimeframe24Weeks> idValue = result.get(0);
         assertEquals("2", idValue.getId());
         
-        StatutoryTimeFrame24WeeksFieldValue value = idValue.getValue();
+        StatutoryTimeframe24Weeks value = idValue.getValue();
         assertEquals(YesOrNo.NO, value.getStatus());
         assertEquals("Home Office statutory timeframe update", value.getReason());
         assertEquals("Home Office Integration API", value.getUser());
-        assertEquals("2023-12-01T00:00:00Z", value.getDateTimeAdded());
+        assertEquals("2023-12-01T00:00:00Z", value.getDateAdded());
     }
 
     @Test
