@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDataContent;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StartEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeframe24Weeks;
@@ -79,20 +81,21 @@ public class CcdDataService {
         log.info("Case details found for the caseId: {}", caseId);
         log.info("Start event details token: {}", startEventDetails.getToken());
         log.info("Start event details id: {}", startEventDetails.getEventId());
-        if (startEventDetails.getCaseDetails() == null) {
+        CaseDetails<AsylumCase> caseDetails = startEventDetails.getCaseDetails();
+        if (caseDetails == null) {
             log.error("Case details is null for caseId: {}", caseId);
+            throw new IllegalStateException("Case details is null for caseId: " + caseId);
         } else {
-            log.info("Start case details id: {}", startEventDetails.getCaseDetails().getId());
-            log.info("Start case details state: {}", startEventDetails.getCaseDetails().getState());
-            log.info("Start case details created date: {}", startEventDetails.getCaseDetails().getCreatedDate());
-            log.info("Start case details data: {}", startEventDetails.getCaseDetails().getCaseData());
+            log.info("Start case details id: {}", caseDetails.getId());
+            log.info("Start case details state: {}", caseDetails.getState());
+            log.info("Start case details created date: {}", caseDetails.getCreatedDate());
+            log.info("Start case details data: {}", caseDetails.getCaseData());
         }
 
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
+        AsylumCase caseData = caseDetails.getCaseData();
 
         Map<String, Object> eventData = new HashMap<>();
-        eventData.put("id", eventId);
+        caseData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
 
         log.info("Submitting event: {} for caseId: {} with Home Office statutory timeframe status: {}", eventId, caseId,
                  hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus());

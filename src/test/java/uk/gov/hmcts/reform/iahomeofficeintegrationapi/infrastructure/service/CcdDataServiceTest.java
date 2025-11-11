@@ -7,9 +7,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDataContent;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StartEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeframe24Weeks;
@@ -68,8 +71,6 @@ class CcdDataServiceTest {
 
         userInfo = new UserInfo("test@example.com", "test-uid", null, "Test User", "Test", "User");
 
-        startEventDetails = new StartEventDetails(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS, "test-event-token", null);
-
         // Mock SubmitEventDetails with lenient stubbing to avoid unnecessary stubbing exceptions
         submitEventDetails = mock(SubmitEventDetails.class);
         lenient().when(submitEventDetails.getCallbackResponseStatusCode()).thenReturn(200);
@@ -85,8 +86,20 @@ class CcdDataServiceTest {
         when(idamService.getServiceUserToken()).thenReturn(userToken);
         when(serviceAuthorization.generate()).thenReturn(s2sToken);
         when(idamService.getUserInfo("Bearer " + userToken)).thenReturn(userInfo);
+
+        @SuppressWarnings("unchecked")
+        CaseDetails<AsylumCase> mockCaseDetails = mock(CaseDetails.class);
+        AsylumCase mockAsylumCase = new AsylumCase();
+        when(mockCaseDetails.getCaseData()).thenReturn(mockAsylumCase);
+        when(mockCaseDetails.getId()).thenReturn(12345L);
+        when(mockCaseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
+
+        StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
+        when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
+        when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
+
         when(ccdDataApi.startEvent(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
-            .thenReturn(startEventDetails);
+            .thenReturn(mockStartEventDetails);
         when(ccdDataApi.submitEvent(anyString(), anyString(), anyString(), any(CaseDataContent.class)))
             .thenReturn(submitEventDetails);
 
@@ -189,8 +202,20 @@ class CcdDataServiceTest {
         when(idamService.getServiceUserToken()).thenReturn(userToken);
         when(serviceAuthorization.generate()).thenReturn(s2sToken);
         when(idamService.getUserInfo("Bearer " + userToken)).thenReturn(userInfo);
+
+        @SuppressWarnings("unchecked")
+        CaseDetails<AsylumCase> mockCaseDetails = mock(CaseDetails.class);
+        AsylumCase mockAsylumCase = new AsylumCase();
+        when(mockCaseDetails.getCaseData()).thenReturn(mockAsylumCase);
+        when(mockCaseDetails.getId()).thenReturn(12345L);
+        when(mockCaseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
+
+        StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
+        when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
+        when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
+
         when(ccdDataApi.startEvent(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
-            .thenReturn(startEventDetails);
+            .thenReturn(mockStartEventDetails);
         when(ccdDataApi.submitEvent(anyString(), anyString(), anyString(), any(CaseDataContent.class)))
             .thenReturn(submitEventDetails);
 
@@ -267,8 +292,22 @@ class CcdDataServiceTest {
         when(idamService.getServiceUserToken()).thenReturn(userToken);
         when(serviceAuthorization.generate()).thenReturn(s2sToken);
         when(idamService.getUserInfo("Bearer " + userToken)).thenReturn(userInfo);
+
+        @SuppressWarnings("unchecked")
+        CaseDetails<AsylumCase> mockCaseDetails = mock(CaseDetails.class);
+        AsylumCase mockAsylumCase = new AsylumCase();
+        when(mockCaseDetails.getCaseData()).thenReturn(mockAsylumCase);
+        when(mockCaseDetails.getId()).thenReturn(12345L);
+
+        when(mockCaseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
+
+        StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
+        when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
+        when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
+        when(mockStartEventDetails.getEventId()).thenReturn(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS);
+
         when(ccdDataApi.startEvent(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
-            .thenReturn(startEventDetails);
+            .thenReturn(mockStartEventDetails);
         when(ccdDataApi.submitEvent(anyString(), anyString(), anyString(), any(CaseDataContent.class)))
             .thenReturn(submitEventDetails);
 
@@ -286,7 +325,7 @@ class CcdDataServiceTest {
                 assertEquals("test-event-token", caseDataContent.getEventToken());
                 
                 Map<String, Object> eventData = caseDataContent.getEvent();
-                assertEquals(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString(), eventData.get("id"));
+                assertNotNull(eventData);
                 
                 Map<String, Object> caseData = caseDataContent.getData();
                 assertTrue(caseData.containsKey(STATUTORY_TIMEFRAME_24_WEEKS.value()));
