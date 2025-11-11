@@ -130,7 +130,12 @@ public class CcdDataService {
         CaseDataContent request =
             new CaseDataContent(caseId, caseData, eventData, eventToken, ignoreWarning);
 
-        log.info("CaseDataContent Request to be submitted: {}", request);
+        log.info("CaseDataContent Request - caseReference: {}", request.getCaseReference());
+        log.info("CaseDataContent Request - data: {}", request.getData());
+        log.info("CaseDataContent Request - event: {}", request.getEvent());
+        log.info("CaseDataContent Request - eventToken: {}", request.getEventToken());
+        log.info("CaseDataContent Request - ignoreWarning: {}", request.isIgnoreWarning());
+        
         log.info("Submitting case with caseId: {}, eventData: {}, eventToken: {}, ignoreWarning: {}",
                  caseId, eventData, eventToken, ignoreWarning);    
         return ccdDataApi.submitEvent(userToken, s2sToken, caseId, request);
