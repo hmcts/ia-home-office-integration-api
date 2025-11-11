@@ -92,13 +92,15 @@ public class CcdDataService {
             log.info("Start case details data: {}", caseDetails.getCaseData());
         }
 
-        AsylumCase caseData = caseDetails.getCaseData();
 
         Map<String, Object> eventData = new HashMap<>();
-        caseData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
+        eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
 
+        log.info("Event data to be submitted: {}", eventData);    
         log.info("Submitting event: {} for caseId: {} with Home Office statutory timeframe status: {}", eventId, caseId,
                  hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus());
+
+        AsylumCase caseData = caseDetails.getCaseData();         
         SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, caseData, eventData,
                                                             startEventDetails.getToken(), true);
 
