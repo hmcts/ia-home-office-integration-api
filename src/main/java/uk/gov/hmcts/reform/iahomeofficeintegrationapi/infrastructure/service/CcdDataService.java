@@ -97,7 +97,6 @@ public class CcdDataService {
         eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
 
         AsylumCase caseData = caseDetails.getCaseData();
-        log.info("CaseData before update: {}", caseData);
         log.info("Event data to be submitted: {}", eventData);    
         log.info("Submitting event: {} for caseId: {} with Home Office statutory timeframe status: {}", eventId, caseId,
                  hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus());
@@ -126,9 +125,12 @@ public class CcdDataService {
         String userToken, String s2sToken, String caseId, Map<String, Object> caseData,
         Map<String, Object> eventData, String eventToken, boolean ignoreWarning) {
 
+        log.info("CaseData before update: {}", caseData);
+        
         CaseDataContent request =
             new CaseDataContent(caseId, caseData, eventData, eventToken, ignoreWarning);
 
+        log.info("CaseDataContent Request to be submitted: {}", request);
         log.info("Submitting case with caseId: {}, eventData: {}, eventToken: {}, ignoreWarning: {}",
                  caseId, eventData, eventToken, ignoreWarning);    
         return ccdDataApi.submitEvent(userToken, s2sToken, caseId, request);
