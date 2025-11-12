@@ -34,8 +34,11 @@ public class IdamAuthoritiesConverter implements Converter<Jwt, Collection<Grant
         List<GrantedAuthority> authorities = new ArrayList<>();
         if (jwt.hasClaim(TOKEN_NAME) && jwt.getClaim(TOKEN_NAME).equals(ACCESS_TOKEN)) {
             authorities.addAll(getUserRoles(jwt.getTokenValue()));
+
+            return authorities;
         }
-        return authorities;
+
+        throw new IllegalStateException("Could not authorities.");
     }
 
     private List<GrantedAuthority> getUserRoles(String authorization) {
