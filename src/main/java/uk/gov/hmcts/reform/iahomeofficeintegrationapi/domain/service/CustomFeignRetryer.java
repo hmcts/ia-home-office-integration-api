@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Retr
 
 @Slf4j
 @Service
-public class CustomFeignRetryer {
+public class CustomFeignRetryer  implements Retryer {
 
     private final int retryMaxAttempt;
 
@@ -25,8 +25,30 @@ public class CustomFeignRetryer {
         this.retryInterval = timeToWait;
     }
 
-    public static CustomFeignRetryer newInstance(CustomFeignRetryer customFeignRetryer) {
-        return new CustomFeignRetryer(customFeignRetryer.retryMaxAttempt,
-                customFeignRetryer.retryInterval);
+    public CustomFeignRetryer(CustomFeignRetryer other) {
+        this.retryMaxAttempt = other.retryMaxAttempt;
+        this.retryInterval = other.retryInterval;
+        this.attempt = 1;
+    }
+
+    @Override
+    public void continueOrPropagate(RetryableException e) {
+        log.info("Feign retry attempt {} due to {} ", attempt, e.getMessage());
+
+        if (attempt++ == retryMaxAttempt) {
+            throw new RetriesExceededException("Retry Failed: Total " + (attempt - 1)
+                                               + " attempts made at interval " + retryInterval
+                                               + "ms", e);
+        }
+        try {
+            Thread.sleep(retryInterval);
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    @Override
+    public Retryer clone() {
+        return new CustomFeignRetryer(this);
     }
 }
