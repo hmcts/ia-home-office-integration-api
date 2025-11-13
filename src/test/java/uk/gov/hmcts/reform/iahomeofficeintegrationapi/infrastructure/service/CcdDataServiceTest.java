@@ -24,7 +24,9 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdD
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -94,18 +96,21 @@ class CcdDataServiceTest {
         when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
         when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
 
-        // Mock the returned CaseDetails from submitEventForCaseWorker
-        CaseDetails mockReturnedCaseDetails = mock(CaseDetails.class);
-        when(mockReturnedCaseDetails.getId()).thenReturn(12345L);
-        when(mockReturnedCaseDetails.getJurisdiction()).thenReturn("IA");
-        when(mockReturnedCaseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
-        when(mockReturnedCaseDetails.getCaseData()).thenReturn(mockAsylumCase);
-        when(mockReturnedCaseDetails.getCallbackResponseStatus()).thenReturn("Success");
-
         when(ccdDataApi.startEvent(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
             .thenReturn(mockStartEventDetails);
-        when(ccdDataApi.submitEventForCaseWorker(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), any(Boolean.class), any(CaseDataContent.class)))
-            .thenReturn(mockReturnedCaseDetails);
+
+        // Mock the submitEvent to return a valid SubmitEventDetails
+        SubmitEventDetails mockSubmitEventDetails = new SubmitEventDetails(
+            12345L,
+            "IA", 
+            State.APPEAL_SUBMITTED,
+            new HashMap<>(Map.of("data", "value")),
+            200,
+            "Success"
+        );
+        
+        when(ccdDataApi.submitEvent(anyString(), anyString(), anyString(), any(CaseDataContent.class)))
+            .thenReturn(mockSubmitEventDetails);
 
         // When
         SubmitEventDetails result = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto);
@@ -130,14 +135,10 @@ class CcdDataServiceTest {
             "12345",
             Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
         );
-        verify(ccdDataApi).submitEventForCaseWorker(
+        verify(ccdDataApi).submitEvent(
             eq("Bearer " + userToken),
             eq(s2sToken),
-            eq("test-uid"),
-            eq("IA"),
-            eq("Asylum"),
             eq("12345"),
-            eq(true),
             any(CaseDataContent.class)
         );
     }
