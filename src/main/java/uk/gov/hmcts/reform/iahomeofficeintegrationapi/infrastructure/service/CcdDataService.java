@@ -99,7 +99,7 @@ public class CcdDataService {
 
         AsylumCase caseData = caseDetails.getCaseData();
         log.info("Event data to be submitted: {}", eventData);    
-        log.info("Submitting event: {} for caseId: {} with Home Office statutory timeframe status: {}", eventId, caseId,
+        log.info("Submitting event with new method: {} for caseId: {} with Home Office statutory timeframe status: {}", eventId, caseId,
                  hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus());
         
         SubmitEventDetails submitEventDetails = submitEventForCaseWorker(userToken, s2sToken, userId, caseId, caseData, eventData,
