@@ -37,6 +37,7 @@ public class CcdDataService {
 
     private static final String JURISDICTION = "IA";
     private static final String CASE_TYPE = "Asylum";
+    private static final int DEFAULT_SUCCESS_STATUS_CODE = 200;
 
     @Value("${core_case_data_api_url}")
     private String coreCaseDataApiUrl;
@@ -139,6 +140,45 @@ public class CcdDataService {
         log.info("Submitting case with caseId: {}, eventData: {}, eventToken: {}, ignoreWarning: {}",
                  caseId, eventData, eventToken, ignoreWarning);    
         return ccdDataApi.submitEvent(userToken, s2sToken, caseId, request);
+    }
+
+    private SubmitEventDetails submitEventForCaseWorker(
+        String userToken, String s2sToken, String userId, String caseId, Map<String, Object> caseData,
+        Map<String, Object> eventData, String eventToken, boolean ignoreWarning) {
+
+        log.info("CaseData before update: {}", caseData);
+        
+        CaseDataContent request =
+            new CaseDataContent(caseId, caseData, eventData, eventToken, ignoreWarning);
+
+        log.info("CaseDataContent Request - caseReference: {}", request.getCaseReference());
+        log.info("CaseDataContent Request - data: {}", request.getData());
+        log.info("CaseDataContent Request - event: {}", request.getEvent());
+        log.info("CaseDataContent Request - eventToken: {}", request.getEventToken());
+        log.info("CaseDataContent Request - ignoreWarning: {}", request.isIgnoreWarning());
+        
+        log.info("Submitting case for caseworker with userId: {}, caseId: {}, eventData: {}, eventToken: {}, ignoreWarning: {}",
+                 userId, caseId, eventData, eventToken, ignoreWarning);
+        
+        CaseDetails caseDetails = ccdDataApi.submitEventForCaseWorker(userToken, s2sToken, userId, JURISDICTION, CASE_TYPE, caseId, ignoreWarning, request);
+        
+        log.info("Case details returned from submitEventForCaseWorker - id: {}", caseDetails.getId());
+        log.info("Case details returned from submitEventForCaseWorker - jurisdiction: {}", caseDetails.getJurisdiction());
+        log.info("Case details returned from submitEventForCaseWorker - state: {}", caseDetails.getState());
+        log.info("Case details returned from submitEventForCaseWorker - callbackResponseStatus: {}", caseDetails.getCallbackResponseStatus());
+        log.info("Case details returned from submitEventForCaseWorker - caseData: {}", caseDetails.getCaseData());
+        
+        @SuppressWarnings("unchecked")
+        Map<String, Object> updatedCaseData = (Map<String, Object>) caseDetails.getCaseData();
+        
+        return new SubmitEventDetails(
+            caseDetails.getId(),
+            caseDetails.getJurisdiction(),
+            caseDetails.getState(),
+            updatedCaseData,
+            DEFAULT_SUCCESS_STATUS_CODE,
+            caseDetails.getCallbackResponseStatus()
+        );
     }
 
     public List<IdValue<StatutoryTimeframe24Weeks>> toStf4w(String id, HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {

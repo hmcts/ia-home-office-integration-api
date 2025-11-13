@@ -70,25 +70,4 @@ public interface CcdDataApi {
             @RequestBody CaseDataContent caseDataContent
     );
 
-    @GetMapping(value = "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/event-triggers/{etid}"
-        + "/token?ignore-warning=true", produces = "application/json", consumes = "application/json")
-    StartEventDetails startCaseCreation(
-        @RequestHeader(AUTHORIZATION) String userToken,
-        @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
-        @PathVariable("uid") String userId,
-        @PathVariable("jid") String jurisdiction,
-        @PathVariable("ctid") String caseType,
-        @PathVariable("etid") String eventId
-    );
-
-    @PostMapping(value = "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases",
-        produces = {"application/json; charset=UTF-8"}, consumes = "application/json")
-    CaseDetails<AsylumCase> submitCaseCreation(
-        @RequestHeader(AUTHORIZATION) String userToken,
-        @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
-        @PathVariable("uid") String userId,
-        @PathVariable("jid") String jurisdiction,
-        @PathVariable("ctid") String caseType,
-        @RequestBody CaseDataContent content
-    );
 }
