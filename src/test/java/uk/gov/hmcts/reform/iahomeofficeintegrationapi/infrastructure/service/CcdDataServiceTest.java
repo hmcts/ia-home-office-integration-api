@@ -94,16 +94,27 @@ class CcdDataServiceTest {
         when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
         when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
 
+        // Mock the returned CaseDetails from submitEventForCaseWorker
+        CaseDetails mockReturnedCaseDetails = mock(CaseDetails.class);
+        when(mockReturnedCaseDetails.getId()).thenReturn(12345L);
+        when(mockReturnedCaseDetails.getJurisdiction()).thenReturn("IA");
+        when(mockReturnedCaseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
+        when(mockReturnedCaseDetails.getCaseData()).thenReturn(mockAsylumCase);
+        when(mockReturnedCaseDetails.getCallbackResponseStatus()).thenReturn("Success");
+
         when(ccdDataApi.startEvent(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
             .thenReturn(mockStartEventDetails);
-        when(ccdDataApi.submitEvent(anyString(), anyString(), anyString(), any(CaseDataContent.class)))
-            .thenReturn(submitEventDetails);
+        when(ccdDataApi.submitEventForCaseWorker(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), any(Boolean.class), any(CaseDataContent.class)))
+            .thenReturn(mockReturnedCaseDetails);
 
         // When
         SubmitEventDetails result = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto);
 
         // Then
         assertNotNull(result);
+        assertEquals(12345L, result.getId());
+        assertEquals("IA", result.getJurisdiction());
+        assertEquals(State.APPEAL_SUBMITTED, result.getState());
         assertEquals(200, result.getCallbackResponseStatusCode());
         assertEquals("Success", result.getCallbackResponseStatus());
 
@@ -119,10 +130,14 @@ class CcdDataServiceTest {
             "12345",
             Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
         );
-        verify(ccdDataApi).submitEvent(
+        verify(ccdDataApi).submitEventForCaseWorker(
             eq("Bearer " + userToken),
             eq(s2sToken),
+            eq("test-uid"),
+            eq("IA"),
+            eq("Asylum"),
             eq("12345"),
+            eq(true),
             any(CaseDataContent.class)
         );
     }

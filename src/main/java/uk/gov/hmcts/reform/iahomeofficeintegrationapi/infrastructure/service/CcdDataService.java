@@ -102,7 +102,7 @@ public class CcdDataService {
         log.info("Submitting event: {} for caseId: {} with Home Office statutory timeframe status: {}", eventId, caseId,
                  hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus());
         
-        SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, caseData, eventData,
+        SubmitEventDetails submitEventDetails = submitEventForCaseWorker(userToken, s2sToken, userId, caseId, caseData, eventData,
                                                             startEventDetails.getToken(), true);
 
         log.info("Home Office statutory timeframe status updated for the caseId: {}, Status: {}, Message: {}", caseId,
