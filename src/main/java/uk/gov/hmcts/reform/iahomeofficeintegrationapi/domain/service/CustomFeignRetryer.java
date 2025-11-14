@@ -19,9 +19,7 @@ public class CustomFeignRetryer  implements Retryer {
     private int attempt = 1;
 
     public CustomFeignRetryer() {
-
-        this.retryMaxAttempt = retryMaxAttempt;
-        this.retryInterval = retryInterval;
+        // nothing needed
     }
 
     private CustomFeignRetryer(CustomFeignRetryer other) {
