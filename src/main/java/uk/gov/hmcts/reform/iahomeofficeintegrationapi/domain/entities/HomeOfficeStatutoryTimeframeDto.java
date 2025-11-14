@@ -26,28 +26,29 @@ import lombok.NoArgsConstructor;
 @Data
 public class HomeOfficeStatutoryTimeframeDto {
 
+    @JsonProperty(value = "id", required = true)
     private String id;
 
-    @JsonProperty("ccdCaseNumber")
+    @JsonProperty(value = "ccdCaseNumber", required = true)
     private String ccdCaseNumber;
 
-    @JsonProperty("uan")
+    @JsonProperty(value = "uan", required = true)
     private String uan;
 
-    @JsonProperty("familyName")
+    @JsonProperty(value = "familyName", required = true)
     private String familyName;
 
-    @JsonProperty("givenNames")
+    @JsonProperty(value = "givenNames", required = true)
     private String givenNames;
 
-    @JsonProperty("dateOfBirth")
+    @JsonProperty(value = "dateOfBirth", required = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT")
     private LocalDate dateOfBirth;
 
-    @JsonProperty("hoStatutoryTimeframeStatus")
+    @JsonProperty(value = "hoStatutoryTimeframeStatus", required = true)
     private boolean hoStatutoryTimeframeStatus;
 
-    @JsonProperty("timeStamp")
+    @JsonProperty(value = "timeStamp", required = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "GMT")
     private LocalDate timeStamp;
 
