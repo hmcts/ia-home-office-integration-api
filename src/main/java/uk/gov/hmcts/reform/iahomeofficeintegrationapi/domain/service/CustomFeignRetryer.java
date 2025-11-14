@@ -10,19 +10,18 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Retr
 @Slf4j
 @Service
 public class CustomFeignRetryer  implements Retryer {
+    @Value("${home-office.feign.retry.count}")
+    private int retryMaxAttempt;
 
-    private final int retryMaxAttempt;
-
-    private final long retryInterval;
+    @Value("${home-office.feign.retry.wait-in-millis}")
+    private long retryInterval;
 
     private int attempt = 1;
 
-    public CustomFeignRetryer(
-            @Value("${home-office.feign.retry.count}")  int numberOfRetries,
-            @Value("${home-office.feign.retry.wait-in-millis}") long timeToWait) {
+    public CustomFeignRetryer() {
 
-        this.retryMaxAttempt = numberOfRetries;
-        this.retryInterval = timeToWait;
+        this.retryMaxAttempt = retryMaxAttempt;
+        this.retryInterval = retryInterval;
     }
 
     private CustomFeignRetryer(CustomFeignRetryer other) {
@@ -30,10 +29,6 @@ public class CustomFeignRetryer  implements Retryer {
         this.retryMaxAttempt = other.retryMaxAttempt;
         this.retryInterval = other.retryInterval;
         this.attempt = 1;
-    }
-
-    public CustomFeignRetryer() {
-        // nothing
     }
 
     @Override
