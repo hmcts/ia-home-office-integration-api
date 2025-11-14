@@ -8,7 +8,6 @@ import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.form.spring.SpringFormEncoder;
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.openfeign.support.ResponseEntityDecoder;
 import org.springframework.cloud.openfeign.support.SpringDecoder;
@@ -18,21 +17,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.CustomFeignRetryer;
 
 @Configuration
 public class FeignConfiguration {
-
-    @Value("${home-office.feign.retry.count}")
-    int numberOfRetries;
-
-    @Value("${home-office.feign.retry.wait-in-millis}")
-    long timeToWait;
-
-    @Bean
-    public CustomFeignRetryer customFeignRetryer() {
-        return new CustomFeignRetryer(numberOfRetries, timeToWait);
-    }
 
     @Bean
     @Primary

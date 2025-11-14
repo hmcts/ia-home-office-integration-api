@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.RetriesExceededException;
 
 @Slf4j
+@Service
 public class CustomFeignRetryer  implements Retryer {
 
     private final int retryMaxAttempt;
@@ -17,8 +18,8 @@ public class CustomFeignRetryer  implements Retryer {
     private int attempt = 1;
 
     public CustomFeignRetryer(
-            int numberOfRetries,
-            long timeToWait) {
+            @Value("${home-office.feign.retry.count}")  int numberOfRetries,
+            @Value("${home-office.feign.retry.wait-in-millis}") long timeToWait) {
 
         this.retryMaxAttempt = numberOfRetries;
         this.retryInterval = timeToWait;
