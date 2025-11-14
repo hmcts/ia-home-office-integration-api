@@ -76,7 +76,7 @@ class CcdDataServiceTest {
     }
 
     @Test
-    void shouldSuccessfullySetHomeOfficeStatutoryTimeframeStatus() throws Exception {
+    void shouldSuccessfullySetHomeOfficeStatutoryTimeframeStatus() {
         // Given
         String userToken = "test-user-token";
         String s2sToken = "test-s2s-token";
@@ -95,9 +95,14 @@ class CcdDataServiceTest {
         StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
         when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
         when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
+        when(mockStartEventDetails.getEventId()).thenReturn(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS);
 
-        when(ccdDataApi.startEvent(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
-            .thenReturn(mockStartEventDetails);
+        when(ccdDataApi.startEventByCase(
+            eq("Bearer " + userToken), 
+            eq(s2sToken), 
+            eq("Asylum"), 
+            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
+        )).thenReturn(mockStartEventDetails);
 
         // Mock the submitEvent to return a valid SubmitEventDetails
         SubmitEventDetails mockSubmitEventDetails = new SubmitEventDetails(
@@ -126,13 +131,10 @@ class CcdDataServiceTest {
         verify(idamService).getServiceUserToken();
         verify(serviceAuthorization).generate();
         verify(idamService).getUserInfo("Bearer " + userToken);
-        verify(ccdDataApi).startEvent(
+        verify(ccdDataApi).startEventByCase(
             "Bearer " + userToken,
             s2sToken,
-            "test-uid",
-            "IA",
             "Asylum",
-            "12345",
             Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
         );
         verify(ccdDataApi).submitEvent(
