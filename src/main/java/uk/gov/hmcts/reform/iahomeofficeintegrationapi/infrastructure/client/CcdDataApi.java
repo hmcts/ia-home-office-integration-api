@@ -28,6 +28,29 @@ public interface CcdDataApi {
     String CONTENT_TYPE = "content-type=application/json";
     String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
+
+    @GetMapping(
+        path = "/case-types/{caseTypeId}/event-triggers/{triggerId}",
+        headers = EXPERIMENTAL
+    )
+    StartEventDetails startEventByCase(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
+        @PathVariable("caseTypeId") String caseType,
+        @PathVariable("triggerId") String eventId
+    );
+
+    @PostMapping(
+        value = "/cases/{cid}/events",
+        headers = { CONTENT_TYPE, EXPERIMENTAL })
+    SubmitEventDetails submitEvent(
+        @RequestHeader(AUTHORIZATION) String userToken,
+        @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
+        @PathVariable("cid") String id,
+        @RequestBody CaseDataContent requestBody
+    );
+
+
     @GetMapping(
         value = "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/{cid}/event-triggers/{etid}"
             + "/token?ignore-warning=true",
@@ -42,17 +65,6 @@ public interface CcdDataApi {
         @PathVariable("cid") String cid,
         @PathVariable("etid") String eventId
     );
-
-    @PostMapping(
-        value = "/cases/{cid}/events",
-        headers = { CONTENT_TYPE, EXPERIMENTAL })
-    SubmitEventDetails submitEvent(
-        @RequestHeader(AUTHORIZATION) String userToken,
-        @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
-        @PathVariable("cid") String id,
-        @RequestBody CaseDataContent requestBody
-    );
-
 
     @RequestMapping(
             method = RequestMethod.POST,

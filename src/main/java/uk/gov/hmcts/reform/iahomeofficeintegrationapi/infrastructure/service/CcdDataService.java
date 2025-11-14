@@ -78,7 +78,7 @@ public class CcdDataService {
 
                 
         log.info("ccd url: {}", coreCaseDataApiUrl);
-        final StartEventDetails startEventDetails = getStartEvent(userToken, s2sToken, userId, JURISDICTION, CASE_TYPE, caseId, eventId);
+        final StartEventDetails startEventDetails = getStartEventByCase(userToken, s2sToken, CASE_TYPE, eventId);
         log.info("Case details found for the caseId: {}", caseId);
         log.info("Start event details token: {}", startEventDetails.getToken());
         log.info("Start event details id: {}", startEventDetails.getEventId());
@@ -117,6 +117,13 @@ public class CcdDataService {
                  userToken, s2sToken, uid, jurisdiction, caseType, caseId, eventId);
         return ccdDataApi.startEvent(userToken, s2sToken, uid, jurisdiction, caseType,
                                      caseId, eventId);
+    }
+
+    private StartEventDetails getStartEventByCase(
+        String userToken, String s2sToken, String caseType, String eventId) {
+        log.info("Getting start event by case with userToken: {}, s2sToken: {}, caseType: {}, EventId: {}",
+                 userToken, s2sToken, caseType, eventId);
+        return ccdDataApi.startEventByCase(userToken, s2sToken, caseType, eventId);
     }
 
     private SubmitEventDetails submitEvent(
