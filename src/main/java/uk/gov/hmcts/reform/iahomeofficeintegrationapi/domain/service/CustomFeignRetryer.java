@@ -32,6 +32,10 @@ public class CustomFeignRetryer  implements Retryer {
         this.attempt = 1;
     }
 
+    public CustomFeignRetryer() {
+        // nothing
+    }
+
     @Override
     public void continueOrPropagate(RetryableException e) {
         log.info("Feign retry attempt {} due to {} ", attempt, e.getMessage());
