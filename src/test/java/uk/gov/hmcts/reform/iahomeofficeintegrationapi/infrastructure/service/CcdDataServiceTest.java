@@ -98,10 +98,10 @@ class CcdDataServiceTest {
         when(mockStartEventDetails.getEventId()).thenReturn(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS);
 
         when(ccdDataApi.startEventByCase(
-            eq("Bearer " + userToken), 
-            eq(s2sToken), 
-            eq("Asylum"), 
-            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
+            eq("Bearer test-user-token"),
+            eq("test-s2s-token"),
+            eq("12345"),
+            eq("addStatutoryTimeframe24Weeks")
         )).thenReturn(mockStartEventDetails);
 
         // Mock the submitEvent to return a valid SubmitEventDetails
@@ -134,7 +134,7 @@ class CcdDataServiceTest {
         verify(ccdDataApi).startEventByCase(
             "Bearer " + userToken,
             s2sToken,
-            "Asylum",
+            "12345",
             Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
         );
         verify(ccdDataApi).submitEvent(
