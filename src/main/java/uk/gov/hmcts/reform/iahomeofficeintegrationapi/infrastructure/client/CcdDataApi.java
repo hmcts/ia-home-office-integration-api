@@ -28,15 +28,14 @@ public interface CcdDataApi {
     String CONTENT_TYPE = "content-type=application/json";
     String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
-
     @GetMapping(
-        path = "/case-types/{caseTypeId}/event-triggers/{triggerId}",
+        path = "/cases/{caseId}/event-triggers/{triggerId}",
         headers = EXPERIMENTAL
     )
     StartEventDetails startEventByCase(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
-        @PathVariable("caseTypeId") String caseType,
+        @PathVariable("caseId") String caseId,
         @PathVariable("triggerId") String eventId
     );
 
