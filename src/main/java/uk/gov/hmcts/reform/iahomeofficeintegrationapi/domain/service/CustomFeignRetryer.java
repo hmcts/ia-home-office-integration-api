@@ -18,14 +18,15 @@ public class CustomFeignRetryer  implements Retryer {
     private int attempt = 1;
 
     public CustomFeignRetryer(
-        @Value("${home-office.feign.retry.count}")  int numberOfRetries,
-        @Value("${home-office.feign.retry.wait-in-millis}") long timeToWait) {
+            @Value("${home-office.feign.retry.count}")  int numberOfRetries,
+            @Value("${home-office.feign.retry.wait-in-millis}") long timeToWait) {
 
         this.retryMaxAttempt = numberOfRetries;
         this.retryInterval = timeToWait;
     }
 
-    public CustomFeignRetryer(CustomFeignRetryer other) {
+    private CustomFeignRetryer(CustomFeignRetryer other) {
+
         this.retryMaxAttempt = other.retryMaxAttempt;
         this.retryInterval = other.retryInterval;
         this.attempt = 1;
@@ -37,8 +38,8 @@ public class CustomFeignRetryer  implements Retryer {
 
         if (attempt++ == retryMaxAttempt) {
             throw new RetriesExceededException("Retry Failed: Total " + (attempt - 1)
-                                               + " attempts made at interval " + retryInterval
-                                               + "ms", e);
+                    + " attempts made at interval " + retryInterval
+                    + "ms", e);
         }
         try {
             Thread.sleep(retryInterval);
