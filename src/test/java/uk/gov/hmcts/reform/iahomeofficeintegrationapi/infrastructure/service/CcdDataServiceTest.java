@@ -249,4 +249,103 @@ class CcdDataServiceTest {
         assertEquals("2023-12-01T00:00:00Z", value.getDateAdded());
     }
 
+    @Test
+    void shouldThrowIllegalStateExceptionWhenCaseDetailsIsNull() {
+        // Given
+        String userToken = "test-user-token";
+        String s2sToken = "test-s2s-token";
+
+        when(idamService.getServiceUserToken()).thenReturn(userToken);
+        when(serviceAuthorization.generate()).thenReturn(s2sToken);
+        when(idamService.getUserInfo("Bearer " + userToken)).thenReturn(userInfo);
+
+        StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
+        when(mockStartEventDetails.getCaseDetails()).thenReturn(null);
+        when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
+
+        when(ccdDataApi.startEventByCase(
+            eq("Bearer test-user-token"),
+            eq("test-s2s-token"),
+            eq("12345"),
+            eq("addStatutoryTimeframe24Weeks")
+        )).thenReturn(mockStartEventDetails);
+
+        // When & Then
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+
+        assertEquals("Case details is null for caseId: 12345", exception.getMessage());
+        
+        verify(idamService).getServiceUserToken();
+        verify(serviceAuthorization).generate();
+        verify(idamService).getUserInfo("Bearer " + userToken);
+        verify(ccdDataApi).startEventByCase(
+            "Bearer " + userToken,
+            s2sToken,
+            "12345",
+            Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
+        );
+    }
+
+    @Test
+    void shouldHandleSubmitEventFailureGracefully() {
+        // Given
+        String userToken = "test-user-token";
+        String s2sToken = "test-s2s-token";
+
+        when(idamService.getServiceUserToken()).thenReturn(userToken);
+        when(serviceAuthorization.generate()).thenReturn(s2sToken);
+        when(idamService.getUserInfo("Bearer " + userToken)).thenReturn(userInfo);
+
+        @SuppressWarnings("unchecked")
+        CaseDetails<AsylumCase> mockCaseDetails = mock(CaseDetails.class);
+        AsylumCase mockAsylumCase = new AsylumCase();
+        when(mockCaseDetails.getCaseData()).thenReturn(mockAsylumCase);
+        when(mockCaseDetails.getId()).thenReturn(12345L);
+        when(mockCaseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
+
+        StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
+        when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
+        when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
+        when(mockStartEventDetails.getEventId()).thenReturn(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS);
+
+        when(ccdDataApi.startEventByCase(
+            eq("Bearer test-user-token"),
+            eq("test-s2s-token"),
+            eq("12345"),
+            eq("addStatutoryTimeframe24Weeks")
+        )).thenReturn(mockStartEventDetails);
+
+        // Mock submitEvent to throw an exception
+        RuntimeException submitException = new RuntimeException("CCD API submission failed");
+        when(ccdDataApi.submitEvent(anyString(), anyString(), anyString(), any(CaseDataContent.class)))
+            .thenThrow(submitException);
+
+        // When & Then
+        RuntimeException exception = assertThrows(
+            RuntimeException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+
+        assertEquals("CCD API submission failed", exception.getMessage());
+        
+        verify(idamService).getServiceUserToken();
+        verify(serviceAuthorization).generate();
+        verify(idamService).getUserInfo("Bearer " + userToken);
+        verify(ccdDataApi).startEventByCase(
+            "Bearer " + userToken,
+            s2sToken,
+            "12345",
+            Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
+        );
+        verify(ccdDataApi).submitEvent(
+            eq("Bearer " + userToken),
+            eq(s2sToken),
+            eq("12345"),
+            any(CaseDataContent.class)
+        );
+    }
+
 }
