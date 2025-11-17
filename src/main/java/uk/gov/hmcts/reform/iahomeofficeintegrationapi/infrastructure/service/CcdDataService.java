@@ -96,6 +96,7 @@ public class CcdDataService {
 
         Map<String, Object> eventData = new HashMap<>();
         eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
+        eventData.put("statutoryTimeframe24WeeksReason", "Home Office statutory timeframe update");
    
         log.info("Event data to be submitted: {}", eventData);    
         log.info("Submitting event with method: {} for caseId: {} with Home Office statutory timeframe status: {}", eventId, caseId,
