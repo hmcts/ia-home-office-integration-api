@@ -324,10 +324,10 @@ class CcdDataServiceTest {
     void shouldLogCaseDetailsWhenPresent() {
         // Given
         String userToken = "test-user-token";
-        String s2sToken = "test-s2s-token";
         testDto.setHoStatutoryTimeframeStatus(true);
         testDto.setTimeStamp(LocalDate.of(2024, 1, 15));
 
+        String s2sToken = "test-s2s-token";
         when(idamService.getServiceUserToken()).thenReturn(userToken);
         when(serviceAuthorization.generate()).thenReturn(s2sToken);
 
