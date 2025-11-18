@@ -30,6 +30,9 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 @Slf4j
 public class CcdDataService {
 
+    private static final String STATUTORY_TIMEFRAME_REASON = "Home Office statutory timeframe update";
+    private static final String STATUTORY_TIMEFRAME_USER = "Home Office Integration API";
+
     private final CcdDataApi ccdDataApi;
     private final IdamService idamService;
     private final AuthTokenGenerator serviceAuthorization;
@@ -43,7 +46,6 @@ public class CcdDataService {
 
         this.ccdDataApi = ccdDataApi;
         this.idamService = systemTokenGenerator;
-
         this.serviceAuthorization = serviceAuthorization;
     }
 
@@ -66,7 +68,7 @@ public class CcdDataService {
             throw new IdentityManagerResponseException(ex.getMessage(), ex);
         }
         
-        log.info("ccd url: {}", coreCaseDataApiUrl);
+        log.debug("ccd url: {}", coreCaseDataApiUrl);
         final StartEventDetails startEventDetails = getStartEventByCase(userToken, s2sToken, caseId, eventId);
         log.info("Case details found for the caseId: {}", caseId);
         log.info("Start event details token: {}", startEventDetails.getToken());
@@ -79,14 +81,14 @@ public class CcdDataService {
             log.info("Start case details id: {}", caseDetails.getId());
             log.info("Start case details state: {}", caseDetails.getState());
             log.info("Start case details created date: {}", caseDetails.getCreatedDate());
-            log.info("Start case details data: {}", caseDetails.getCaseData());
+            log.debug("Start case details data: {}", caseDetails.getCaseData());
         }
 
         Map<String, Object> eventData = new HashMap<>();
         eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
-        eventData.put("statutoryTimeframe24WeeksReason", "Home Office statutory timeframe update");
+        eventData.put("statutoryTimeframe24WeeksReason", STATUTORY_TIMEFRAME_REASON);
    
-        log.info("Event data to be submitted: {}", eventData);    
+        log.debug("Event data to be submitted: {}", eventData);    
         log.info("Submitting event with method: {} for caseId: {} with Home Office statutory timeframe status: {}", eventId, caseId,
                  hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus());
         
@@ -119,11 +121,11 @@ public class CcdDataService {
         CaseDataContent requestBody =
             new CaseDataContent(caseId, eventData, eventMetadata, eventToken, ignoreWarning);
 
-        log.info("CaseDataContent Request - caseReference: {}", requestBody.getCaseReference());
-        log.info("CaseDataContent Request - data: {}", requestBody.getData());
-        log.info("CaseDataContent Request - event: {}", requestBody.getEvent());
-        log.info("CaseDataContent Request - eventToken: {}", requestBody.getEventToken());
-        log.info("CaseDataContent Request - ignoreWarning: {}", requestBody.isIgnoreWarning());
+        log.debug("CaseDataContent Request - caseReference: {}", requestBody.getCaseReference());
+        log.debug("CaseDataContent Request - data: {}", requestBody.getData());
+        log.debug("CaseDataContent Request - event: {}", requestBody.getEvent());
+        log.debug("CaseDataContent Request - eventToken: {}", requestBody.getEventToken());
+        log.debug("CaseDataContent Request - ignoreWarning: {}", requestBody.isIgnoreWarning());
         
         log.info("Submitting case with caseId: {}, eventData: {}, eventToken: {}, ignoreWarning: {}",
                  caseId, eventData, eventToken, ignoreWarning);
@@ -134,14 +136,12 @@ public class CcdDataService {
     public List<IdValue<StatutoryTimeframe24Weeks>> toStf4w(String id, HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
         
         YesOrNo status = hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus() ? YesOrNo.YES : YesOrNo.NO;
-        String reason = "Home Office statutory timeframe update";
-        String user = "Home Office Integration API";
         String dateTimeAdded = hoStatutoryTimeframeDto.getTimeStamp().format(DateTimeFormatter.ISO_LOCAL_DATE) + "T00:00:00Z";
         
         StatutoryTimeframe24Weeks statutoryTimeframeValue = new StatutoryTimeframe24Weeks(
             status,
-            reason,
-            user,
+            STATUTORY_TIMEFRAME_REASON,
+            STATUTORY_TIMEFRAME_USER,
             dateTimeAdded
         );
         
