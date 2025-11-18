@@ -54,7 +54,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                         }
                     }
 
-                    log.error("StatusCode: {}, methodKey: {}, reason: {}, message: {}",
+                    log.error("Body Error StatusCode: {}, methodKey: {}, reason: {}, message: {}",
                         response.status(), methodKey, response.reason(), errMessage);
 
                 } catch (IOException ex) {
