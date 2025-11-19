@@ -8,31 +8,26 @@ import static java.util.Objects.requireNonNull;
 
 @EqualsAndHashCode
 @ToString
-public class StatutoryTimeFrame24WeeksFieldValue {
+public class StatutoryTimeframe24Weeks {
 
     private YesOrNo status;
     private String reason;
     private String user;
-    private String dateTimeAdded;
+    private String dateAdded;
 
-    /**
-     * Creates a new StatutoryTimeFrame24WeeksFieldValue.
-     *
-     * @param status the status
-     * @param reason the reason
-     * @param user the user
-     * @param dateTimeAdded the date and time added in ISO 8601 format (e.g., "2020-06-15T17:35:38Z")
-     */
-    public StatutoryTimeFrame24WeeksFieldValue(
+    private StatutoryTimeframe24Weeks() {
+    }
+
+    public StatutoryTimeframe24Weeks(
         YesOrNo status,
         String reason,
         String user,
-        String dateTimeAdded
+        String dateAdded
     ) {
         this.status = requireNonNull(status);
         this.reason = requireNonNull(reason);
         this.user = requireNonNull(user);
-        this.dateTimeAdded = requireNonNull(dateTimeAdded);
+        this.dateAdded = requireNonNull(dateAdded);
     }
 
     public YesOrNo getStatus() {
@@ -47,7 +42,7 @@ public class StatutoryTimeFrame24WeeksFieldValue {
         return requireNonNull(user);
     }
 
-    public String getDateTimeAdded() {
-        return requireNonNull(dateTimeAdded);
+    public String getDateAdded() {
+        return requireNonNull(dateAdded);
     }
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.DynamicList;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HearingCentre;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.NationalityFieldValue;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeFrame24WeeksFieldValue;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeframe24Weeks;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.WitnessDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
@@ -213,8 +213,8 @@ public enum AsylumCaseDefinition {
     APPEAL_OUT_OF_COUNTRY(
             "appealOutOfCountry", new TypeReference<YesOrNo>() {}),
 
-    STATUTORY_TIMEFRAME_24WEEKS(
-        "statutoryTimeframe24weeks", new TypeReference<List<IdValue<StatutoryTimeFrame24WeeksFieldValue>>>(){}),
+    STATUTORY_TIMEFRAME_24_WEEKS(
+        "statutoryTimeframe24Weeks", new TypeReference<List<IdValue<StatutoryTimeframe24Weeks>>>(){}),
         
     ;
 
