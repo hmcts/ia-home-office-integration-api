@@ -121,6 +121,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         // Then
         assertTrue(errors.isEmpty(), "JSON should validate against schema with midnight time. Errors: " + errors);
     }
+    
     @Test
     void shouldFailValidationWhenUanHasInvalidFormat() throws Exception {
         // Given - UAN without dashes
