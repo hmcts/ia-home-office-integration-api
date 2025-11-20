@@ -139,22 +139,10 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                             appellant.build(),
                             appellantDateOfBirth);
 
-            if (matchedApplicants.isEmpty() || isNull(matchedApplicants)) {
-
-                log.warn("Unable to find MAIN APPLICANT in Home office response, caseId: {}", caseId);
-                asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
-                asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE,
-                        HOME_OFFICE_WRONG_APPLICANT_NOT_FOUND_ERROR_MESSAGE);
-            } else if (matchedApplicants.size() > 1) {
-
-                log.warn("More than one MAIN APPLICANT found in Home office response, caseId: {}", caseId);
-                asylumCase.write(HOME_OFFICE_SEARCH_RESPONSE, homeOfficeSearchResponseJsonStr);
-                asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "MULTIPLE");
-                asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE,
-                        HOME_OFFICE_MULTIPLE_APPELLANTS_ERROR_MESSAGE);
-            } else {
-                asylumCase.write(HOME_OFFICE_SEARCH_RESPONSE, homeOfficeSearchResponseJsonStr);
-                asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
+            if (validMatchedApplicants(matchedApplicants,
+                    asylumCase,
+                    caseId,
+                    homeOfficeSearchResponseJsonStr)) {
 
                 matchedApplicants.stream().forEach(a -> {
 
@@ -201,6 +189,35 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
             }
 
         }
+    }
+
+    private boolean validMatchedApplicants(List<HomeOfficeCaseStatus> matchedApplicants,
+                                           AsylumCase asylumCase,
+                                           long caseId,
+                                           String homeOfficeSearchResponseJsonStr) {
+
+        if (matchedApplicants.isEmpty() || isNull(matchedApplicants)) {
+
+            log.warn("Unable to find MAIN APPLICANT in Home office response, caseId: {}", caseId);
+            asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
+            asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE,
+                    HOME_OFFICE_WRONG_APPLICANT_NOT_FOUND_ERROR_MESSAGE);
+
+        } else if (matchedApplicants.size() > 1) {
+
+            log.warn("More than one MAIN APPLICANT found in Home office response, caseId: {}", caseId);
+            asylumCase.write(HOME_OFFICE_SEARCH_RESPONSE, homeOfficeSearchResponseJsonStr);
+            asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "MULTIPLE");
+            asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE,
+                    HOME_OFFICE_MULTIPLE_APPELLANTS_ERROR_MESSAGE);
+        } else {
+            asylumCase.write(HOME_OFFICE_SEARCH_RESPONSE, homeOfficeSearchResponseJsonStr);
+            asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "SUCCESS");
+
+            return true;
+        }
+
+        return false;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
