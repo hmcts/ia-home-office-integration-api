@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.IdamService
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,7 +62,7 @@ class CcdDataServiceTest {
         testDto = new HomeOfficeStatutoryTimeframeDto();
         testDto.setCcdCaseNumber("12345");
         testDto.setHoStatutoryTimeframeStatus(true);
-        testDto.setTimeStamp(LocalDate.of(2023, 12, 1));
+        testDto.setTimeStamp(LocalDateTime.of(2023, 12, 1, 0, 0, 0));
 
         userInfo = new UserInfo("test@example.com", "test-uid", null, "Test User", "Test", "User");
 
@@ -113,6 +113,7 @@ class CcdDataServiceTest {
     void shouldTestToStf4wMethodWithTrueStatus() {
         // Given
         testDto.setHoStatutoryTimeframeStatus(true);
+        testDto.setTimeStamp(LocalDateTime.of(2023, 12, 1, 10, 15, 30));
 
         // When
         List<IdValue<StatutoryTimeframe24Weeks>> result = ccdDataService.toStf4w("1", testDto);
@@ -126,9 +127,9 @@ class CcdDataServiceTest {
         
         StatutoryTimeframe24Weeks value = idValue.getValue();
         assertEquals(YesOrNo.YES, value.getStatus());
-        assertEquals("Home Office statutory timeframe update", value.getReason());
+        assertEquals("Home Office initial determination", value.getReason());
         assertEquals("Home Office Integration API", value.getUser());
-        assertEquals("2023-12-01T00:00:00Z", value.getDateAdded());
+        assertEquals("2023-12-01T10:15:30", value.getDateAdded());
     }
 
     @Test
@@ -148,9 +149,9 @@ class CcdDataServiceTest {
         
         StatutoryTimeframe24Weeks value = idValue.getValue();
         assertEquals(YesOrNo.NO, value.getStatus());
-        assertEquals("Home Office statutory timeframe update", value.getReason());
+        assertEquals("Home Office initial determination", value.getReason());
         assertEquals("Home Office Integration API", value.getUser());
-        assertEquals("2023-12-01T00:00:00Z", value.getDateAdded());
+        assertEquals("2023-12-01T00:00:00", value.getDateAdded());
     }
 
     @Test
@@ -325,7 +326,7 @@ class CcdDataServiceTest {
         // Given
         String userToken = "test-user-token";
         testDto.setHoStatutoryTimeframeStatus(true);
-        testDto.setTimeStamp(LocalDate.of(2024, 1, 15));
+        testDto.setTimeStamp(LocalDateTime.of(2024, 1, 15, 0, 0, 0));
 
         String s2sToken = "test-s2s-token";
         when(idamService.getServiceUserToken()).thenReturn(userToken);
@@ -375,6 +376,23 @@ class CcdDataServiceTest {
         verify(mockCaseDetails).getState();
         verify(mockCaseDetails).getCreatedDate();
         verify(mockCaseDetails).getCaseData();
+    }
+
+    @Test
+    void shouldFormatDateTimeCorrectlyInToStf4wMethod() {
+        testDto.setHoStatutoryTimeframeStatus(true);
+        testDto.setTimeStamp(LocalDateTime.of(2024, 6, 15, 14, 28, 18));
+
+        List<IdValue<StatutoryTimeframe24Weeks>> result = ccdDataService.toStf4w("3", testDto);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        
+        IdValue<StatutoryTimeframe24Weeks> idValue = result.get(0);
+        StatutoryTimeframe24Weeks value = idValue.getValue();
+        
+        // Verify the datetime format preserves the time information (not just 00:00:00)
+        assertEquals("2024-06-15T14:28:18", value.getDateAdded());
     }
 
 }

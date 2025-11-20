@@ -54,7 +54,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                         }
                     }
 
-                    log.error("Body Error StatusCode: {}, methodKey: {}, reason: {}, message: {}",
+                    log.error("Error StatusCode: {}, methodKey: {}, reason: {}, message: {}",
                         response.status(), methodKey, response.reason(), errMessage);
 
                 } catch (IOException ex) {
@@ -62,7 +62,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                     log.error(ERROR_LOG, ex.getMessage());
                 }
                 return new HomeOfficeResponseException(errorCode, String.format(
-                    "400 StatusCode: %d, methodKey: %s, reason: %s, message: %s",
+                    "StatusCode: %d, methodKey: %s, reason: %s, message: %s",
                     response.status(),
                     methodKey,
                     response.reason(),
@@ -71,7 +71,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
             case 404:
                 try {
 
-                    log.error("404 StatusCode: {}, methodKey: {}, reason: {}, message: {}",
+                    log.error("StatusCode: {}, methodKey: {}, reason: {}, message: {}",
                         response.status(),
                         methodKey,
                         response.reason(),
@@ -82,14 +82,14 @@ public class FeignErrorDecoder implements ErrorDecoder {
                 return new ResponseStatusException(HttpStatus.valueOf(response.status()), response.reason());
 
             case 500:
-                log.error("500 StatusCode: {}, methodKey: {}, reason: {}",
+                log.error("StatusCode: {}, methodKey: {}, reason: {}",
                     response.status(),
                     methodKey,
                     response.reason());
                 throw new RetryableException(response.status(), response.reason(), response.request().httpMethod(), null, response.request());
 
             default:
-                log.error("Default StatusCode: {}, methodKey: {}, reason: {}",
+                log.error("StatusCode: {}, methodKey: {}, reason: {}",
                     response.status(),
                     methodKey,
                     response.reason()

@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -45,11 +46,11 @@ public class HomeOfficeStatutoryTimeframeDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT")
     private LocalDate dateOfBirth;
 
-    @JsonProperty(value = "hoStatutoryTimeframeStatus", required = true)
+    @JsonProperty(value = "hoAcceleratedAppeal", required = true)
     private boolean hoStatutoryTimeframeStatus;
 
     @JsonProperty(value = "timeStamp", required = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "GMT")
-    private LocalDate timeStamp;
+    private LocalDateTime timeStamp;
 
 }

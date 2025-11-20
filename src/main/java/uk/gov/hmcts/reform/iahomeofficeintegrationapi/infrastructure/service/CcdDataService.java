@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 @Slf4j
 public class CcdDataService {
 
-    private static final String STATUTORY_TIMEFRAME_REASON = "Home Office statutory timeframe update";
+    private static final String STATUTORY_TIMEFRAME_REASON = "Home Office initial determination";
     private static final String STATUTORY_TIMEFRAME_USER = "Home Office Integration API";
 
     private final CcdDataApi ccdDataApi;
@@ -136,7 +136,7 @@ public class CcdDataService {
     public List<IdValue<StatutoryTimeframe24Weeks>> toStf4w(String id, HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
         
         YesOrNo status = hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus() ? YesOrNo.YES : YesOrNo.NO;
-        String dateTimeAdded = hoStatutoryTimeframeDto.getTimeStamp().format(DateTimeFormatter.ISO_LOCAL_DATE) + "T00:00:00Z";
+        String dateTimeAdded = hoStatutoryTimeframeDto.getTimeStamp().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         
         StatutoryTimeframe24Weeks statutoryTimeframeValue = new StatutoryTimeframe24Weeks(
             status,
