@@ -121,4 +121,72 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         // Then
         assertTrue(errors.isEmpty(), "JSON should validate against schema with midnight time. Errors: " + errors);
     }
+    @Test
+    void shouldFailValidationWhenUanHasInvalidFormat() throws Exception {
+        // Given - UAN without dashes
+        HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
+            .uan("1234567890123456")
+            .familyName("Test")
+            .givenNames("User")
+            .dateOfBirth(LocalDate.of(1995, 6, 10))
+            .hoStatutoryTimeframeStatus(false)
+            .timeStamp(LocalDateTime.of(2023, 1, 1, 0, 0, 0))
+            .build();
+
+        // When
+        String json = objectMapper.writeValueAsString(dto);
+        JsonNode jsonNode = objectMapper.readTree(json);
+        Set<ValidationMessage> errors = schema.validate(jsonNode);
+
+        // Then
+        assertTrue(!errors.isEmpty(), "JSON should fail validation with invalid UAN format");
+        assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("uan")), 
+                   "Error should be related to UAN field. Errors: " + errors);
+    }
+
+    @Test
+    void shouldFailValidationWhenUanContainsLetters() throws Exception {
+        // Given - UAN with letters
+        HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
+            .uan("ABCD-5678-9012-3456")
+            .familyName("Test")
+            .givenNames("User")
+            .dateOfBirth(LocalDate.of(1995, 6, 10))
+            .hoStatutoryTimeframeStatus(true)
+            .timeStamp(LocalDateTime.of(2023, 1, 1, 12, 30, 45))
+            .build();
+
+        // When
+        String json = objectMapper.writeValueAsString(dto);
+        JsonNode jsonNode = objectMapper.readTree(json);
+        Set<ValidationMessage> errors = schema.validate(jsonNode);
+
+        // Then
+        assertTrue(!errors.isEmpty(), "JSON should fail validation with letters in UAN");
+        assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("uan")), 
+                   "Error should be related to UAN field. Errors: " + errors);
+    }
+
+    @Test
+    void shouldFailValidationWhenUanIsTooShort() throws Exception {
+        // Given - UAN with wrong length
+        HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
+            .uan("123-456-789-012")
+            .familyName("Test")
+            .givenNames("User")
+            .dateOfBirth(LocalDate.of(1995, 6, 10))
+            .hoStatutoryTimeframeStatus(true)
+            .timeStamp(LocalDateTime.of(2023, 1, 1, 12, 30, 45))
+            .build();
+
+        // When
+        String json = objectMapper.writeValueAsString(dto);
+        JsonNode jsonNode = objectMapper.readTree(json);
+        Set<ValidationMessage> errors = schema.validate(jsonNode);
+
+        // Then
+        assertTrue(!errors.isEmpty(), "JSON should fail validation with short UAN");
+        assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("uan")), 
+                   "Error should be related to UAN field. Errors: " + errors);
+    }
 }
