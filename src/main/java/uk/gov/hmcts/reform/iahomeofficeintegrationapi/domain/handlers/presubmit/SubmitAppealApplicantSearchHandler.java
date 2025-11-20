@@ -146,29 +146,14 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
 
                 matchedApplicants.stream().forEach(a -> {
 
-                    Person person = a.getPerson();
                     ApplicationStatus applicationStatus = a.getApplicationStatus();
-                    if (isNull(person)) {
-                        log.warn(
-                                "Note: Unable to find Person details "
-                                        + "for the applicant in Home office response, caseId: {}",
-                                caseId
-                        );
-                    } else {
-                        a.setDisplayDateOfBirth(
-                                HomeOfficeDateFormatter.getPersonDateOfBirth(person.getDayOfBirth(),
-                                        person.getMonthOfBirth(), person.getYearOfBirth()));
-                    }
+
+                    a = updateDateOfBirth(a, caseId);
 
                     a.setDisplayDecisionDate(
                             HomeOfficeDateFormatter.getIacDateTime(applicationStatus.getDecisionDate()));
-                    if (applicationStatus.getDecisionCommunication() != null) {
-                        a.setDisplayDecisionSentDate(
-                                HomeOfficeDateFormatter.getIacDateTime(
-                                        applicationStatus.getDecisionCommunication().getSentDate()
-                                )
-                        );
-                    }
+
+                    a = updateDecisionCommunication(a, applicationStatus);
 
                     Optional<HomeOfficeMetadata> metadata = selectMetadata(
                             caseId,
@@ -189,6 +174,38 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
             }
 
         }
+    }
+
+    private HomeOfficeCaseStatus updateDateOfBirth(HomeOfficeCaseStatus a,
+                                   long caseId) {
+        Person person = a.getPerson();
+
+        if (isNull(person)) {
+            log.warn(
+                    "Note: Unable to find Person details "
+                            + "for the applicant in Home office response, caseId: {}",
+                    caseId
+            );
+        } else {
+            a.setDisplayDateOfBirth(
+                    HomeOfficeDateFormatter.getPersonDateOfBirth(person.getDayOfBirth(),
+                            person.getMonthOfBirth(), person.getYearOfBirth()));
+        }
+
+        return a;
+    }
+
+    private HomeOfficeCaseStatus updateDecisionCommunication(HomeOfficeCaseStatus a,
+                                                             ApplicationStatus applicationStatus) {
+        if (applicationStatus.getDecisionCommunication() != null) {
+            a.setDisplayDecisionSentDate(
+                    HomeOfficeDateFormatter.getIacDateTime(
+                            applicationStatus.getDecisionCommunication().getSentDate()
+                    )
+            );
+        }
+
+        return a;
     }
 
     private boolean validMatchedApplicants(List<HomeOfficeCaseStatus> matchedApplicants,
