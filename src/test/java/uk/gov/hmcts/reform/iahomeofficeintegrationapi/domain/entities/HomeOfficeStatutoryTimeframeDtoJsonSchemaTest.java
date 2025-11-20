@@ -29,7 +29,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         objectMapper.registerModule(new JavaTimeModule());
 
         JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V4);
-        InputStream schemaStream = getClass().getResourceAsStream("/twentyFourWeekStatusSchema_v2.json");
+        InputStream schemaStream = getClass().getResourceAsStream("/twentyFourWeekStatusSchema.json");
         
         if (schemaStream == null) {
             fail("Schema file twentyFourWeekStatusSchema_v2.json not found in test resources");
@@ -42,6 +42,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     void shouldValidateAgainstJsonSchemaWithAcceleratedAppealTrue() throws Exception {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
+            .ccdCaseId(1234567890123456L)
             .uan("1234-5678-9012-3456")
             .familyName("Smith")
             .givenNames("John")
@@ -63,6 +64,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     void shouldValidateAgainstJsonSchemaWithAcceleratedAppealFalse() throws Exception {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
+            .ccdCaseId(9876543210987654L)
             .uan("9876-5432-1098-7654")
             .familyName("Doe")
             .givenNames("Jane")
@@ -84,6 +86,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     void shouldValidateTimeStampFormatWithEdgeCaseTime() throws Exception {
         // Given - test with edge case time values
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
+            .ccdCaseId(1111222233334444L)
             .uan("1111-2222-3333-4444")
             .familyName("Test")
             .givenNames("User")
@@ -105,6 +108,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     void shouldValidateTimeStampFormatWithMidnightTime() throws Exception {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
+            .ccdCaseId(5555666677778888L)
             .uan("5555-6666-7777-8888")
             .familyName("Midnight")
             .givenNames("Test")
@@ -121,11 +125,12 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         // Then
         assertTrue(errors.isEmpty(), "JSON should validate against schema with midnight time. Errors: " + errors);
     }
-    
+
     @Test
     void shouldFailValidationWhenUanHasInvalidFormat() throws Exception {
         // Given - UAN without dashes
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
+            .ccdCaseId(1234567890123456L)
             .uan("1234567890123456")
             .familyName("Test")
             .givenNames("User")
@@ -149,6 +154,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     void shouldFailValidationWhenUanContainsLetters() throws Exception {
         // Given - UAN with letters
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
+            .ccdCaseId(1234567890123456L)
             .uan("ABCD-5678-9012-3456")
             .familyName("Test")
             .givenNames("User")
@@ -172,6 +178,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     void shouldFailValidationWhenUanIsTooShort() throws Exception {
         // Given - UAN with wrong length
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
+            .ccdCaseId(1234567890123456L)
             .uan("123-456-789-012")
             .familyName("Test")
             .givenNames("User")

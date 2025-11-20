@@ -25,10 +25,10 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
     }
 
     @Test
-    void shouldPassValidationWithValidCcdCaseNumber() {
+    void shouldPassValidationWithValidData() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseNumber("1234567890123456")
+            .ccdCaseId(1234567890123456L)
             .uan("1234-5678-9012-3456")
             .familyName("Smith")
             .givenNames("John")
@@ -45,10 +45,10 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
     }
 
     @Test
-    void shouldFailValidationWhenCcdCaseNumberIsNot16Digits() {
+    void shouldFailValidationWhenCcdCaseIdIsTooShort() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseNumber("12345")
+            .ccdCaseId(12345L)
             .uan("1234-5678-9012-3456")
             .familyName("Smith")
             .givenNames("John")
@@ -63,15 +63,15 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
         // Then
         assertEquals(1, violations.size());
         ConstraintViolation<HomeOfficeStatutoryTimeframeDto> violation = violations.iterator().next();
-        assertEquals("ccdCaseNumber", violation.getPropertyPath().toString());
-        assertEquals("CCD Case Number must be a 16-digit number", violation.getMessage());
+        assertEquals("ccdCaseId", violation.getPropertyPath().toString());
+        assertEquals("CCD Case ID must be a 16-digit number", violation.getMessage());
     }
 
     @Test
-    void shouldFailValidationWhenCcdCaseNumberContainsNonDigits() {
+    void shouldFailValidationWhenCcdCaseIdIsTooLong() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseNumber("123456789012345A")
+            .ccdCaseId(12345678901234567L)
             .uan("1234-5678-9012-3456")
             .familyName("Smith")
             .givenNames("John")
@@ -86,15 +86,15 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
         // Then
         assertEquals(1, violations.size());
         ConstraintViolation<HomeOfficeStatutoryTimeframeDto> violation = violations.iterator().next();
-        assertEquals("ccdCaseNumber", violation.getPropertyPath().toString());
-        assertEquals("CCD Case Number must be a 16-digit number", violation.getMessage());
+        assertEquals("ccdCaseId", violation.getPropertyPath().toString());
+        assertEquals("CCD Case ID must be a 16-digit number", violation.getMessage());
     }
 
     @Test
-    void shouldFailValidationWhenCcdCaseNumberIsNull() {
+    void shouldFailValidationWhenCcdCaseIdIsNull() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseNumber(null)
+            .ccdCaseId(null)
             .uan("1234-5678-9012-3456")
             .familyName("Smith")
             .givenNames("John")
@@ -109,14 +109,14 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
         // Then
         assertEquals(1, violations.size());
         ConstraintViolation<HomeOfficeStatutoryTimeframeDto> violation = violations.iterator().next();
-        assertEquals("ccdCaseNumber", violation.getPropertyPath().toString());
+        assertEquals("ccdCaseId", violation.getPropertyPath().toString());
     }
 
     @Test
     void shouldPassValidationWithValidUan() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseNumber("1234567890123456")
+            .ccdCaseId(1234567890123456L)
             .uan("9876-5432-1098-7654")
             .familyName("Doe")
             .givenNames("Jane")
@@ -136,7 +136,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
     void shouldFailValidationWhenUanIsNull() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseNumber("1234567890123456")
+            .ccdCaseId(1234567890123456L)
             .uan(null)
             .familyName("Smith")
             .givenNames("John")
@@ -158,7 +158,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
     void shouldFailValidationWhenMultipleFieldsAreInvalid() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseNumber("123")
+            .ccdCaseId(123L)
             .uan("invalid-uan")
             .familyName(null)
             .givenNames(null)

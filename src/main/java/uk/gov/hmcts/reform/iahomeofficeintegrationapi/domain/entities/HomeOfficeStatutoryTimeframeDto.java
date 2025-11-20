@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Max;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,11 +31,11 @@ import lombok.NoArgsConstructor;
 @Data
 public class HomeOfficeStatutoryTimeframeDto {
 
-    @JsonProperty(value = "ccdCaseNumber", required = true)
+    @JsonProperty(value = "ccdCaseId", required = true)
     @NotNull
-    @Pattern(regexp = "^[0-9]{16}$", 
-             message = "CCD Case Number must be a 16-digit number")
-    private String ccdCaseNumber;
+    @Min(value = 1000000000000000L, message = "CCD Case ID must be a 16-digit number")
+    @Max(value = 9999999999999999L, message = "CCD Case ID must be a 16-digit number")
+    private Long ccdCaseId;
 
     @JsonProperty(value = "uan", required = true)
     @NotNull
@@ -54,7 +56,7 @@ public class HomeOfficeStatutoryTimeframeDto {
     @NotNull
     private LocalDate dateOfBirth;
 
-    @JsonProperty(value = "hoAcceleratedAppeal", required = true)
+    @JsonProperty(value = "stf24weeks", required = true)
     private boolean hoStatutoryTimeframeStatus;
 
     @JsonProperty(value = "timeStamp", required = true)

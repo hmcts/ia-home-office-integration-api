@@ -60,7 +60,7 @@ class CcdDataServiceTest {
     @BeforeEach
     void setUp() {
         testDto = new HomeOfficeStatutoryTimeframeDto();
-        testDto.setCcdCaseNumber("12345");
+        testDto.setCcdCaseId(12345L);
         testDto.setHoStatutoryTimeframeStatus(true);
         testDto.setTimeStamp(LocalDateTime.of(2023, 12, 1, 0, 0, 0));
 

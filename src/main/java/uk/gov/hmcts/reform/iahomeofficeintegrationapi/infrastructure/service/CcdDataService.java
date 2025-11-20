@@ -52,7 +52,7 @@ public class CcdDataService {
     public SubmitEventDetails setHomeOfficeStatutoryTimeframeStatus(HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
 
         String eventId = Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString();
-        String caseId = hoStatutoryTimeframeDto.getCcdCaseNumber();
+        String caseId = String.valueOf(hoStatutoryTimeframeDto.getCcdCaseId());
 
         String userToken;
         String s2sToken;
