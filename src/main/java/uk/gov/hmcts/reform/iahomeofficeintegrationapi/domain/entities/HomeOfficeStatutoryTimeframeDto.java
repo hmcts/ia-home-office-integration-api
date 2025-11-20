@@ -27,9 +27,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class HomeOfficeStatutoryTimeframeDto {
 
-    @JsonProperty(value = "id", required = true)
-    private String id;
-
     @JsonProperty(value = "ccdCaseNumber", required = true)
     private String ccdCaseNumber;
 

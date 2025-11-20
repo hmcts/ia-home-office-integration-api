@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 class HomeOfficeStatutoryTimeframeDtoTest {
 
-    private String id;
     private String ccdCaseNumber;
     private String uan;
     private String familyName;
@@ -25,7 +24,6 @@ class HomeOfficeStatutoryTimeframeDtoTest {
 
     @BeforeEach
     void setUp() {
-        id = "some-id";
         ccdCaseNumber = "1234567890123456";
         uan = "UAN123456";
         familyName = "Smith";
@@ -47,7 +45,6 @@ class HomeOfficeStatutoryTimeframeDtoTest {
     void should_hold_onto_values() {
 
         homeOfficeStatutoryTimeframeDtoDto = HomeOfficeStatutoryTimeframeDto.builder()
-            .id(id)
             .ccdCaseNumber(ccdCaseNumber)
             .uan(uan)
             .familyName(familyName)
@@ -57,7 +54,6 @@ class HomeOfficeStatutoryTimeframeDtoTest {
             .timeStamp(timeStamp)
             .build();
 
-        assertEquals(id, homeOfficeStatutoryTimeframeDtoDto.getId());
         assertEquals(ccdCaseNumber, homeOfficeStatutoryTimeframeDtoDto.getCcdCaseNumber());
         assertEquals(uan, homeOfficeStatutoryTimeframeDtoDto.getUan());
         assertEquals(familyName, homeOfficeStatutoryTimeframeDtoDto.getFamilyName());
