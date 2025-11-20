@@ -431,6 +431,8 @@ dependencies {
 
   contractTestImplementation sourceSets.main.runtimeClasspath
   contractTestImplementation sourceSets.test.runtimeClasspath
+
+  testImplementation 'com.networknt:json-schema-validator:1.0.87'
 }
 
 project.ext {
