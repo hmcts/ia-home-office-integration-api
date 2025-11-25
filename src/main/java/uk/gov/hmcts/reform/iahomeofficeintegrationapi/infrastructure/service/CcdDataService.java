@@ -71,8 +71,7 @@ public class CcdDataService {
         log.debug("ccd url: {}", coreCaseDataApiUrl);
         final StartEventDetails startEventDetails = getStartEventByCase(userToken, s2sToken, caseId, eventId);
         log.info("Case details found for the caseId: {}", caseId);
-        log.info("Start event details token: {}", startEventDetails.getToken());
-        log.info("Start event details id: {}", startEventDetails.getEventId());
+        log.info("Start event id: {}", startEventDetails.getEventId());
         CaseDetails<AsylumCase> caseDetails = startEventDetails.getCaseDetails();
         if (caseDetails == null) {
             log.error("Case details is null for caseId: {}", caseId);
@@ -102,8 +101,7 @@ public class CcdDataService {
 
     private StartEventDetails getStartEventByCase(
         String userToken, String s2sToken, String caseId, String eventId) {
-        log.info("Getting start event by case with userToken: {}, s2sToken: {}, caseId: {}, EventId: {}",
-                 userToken, s2sToken, caseId, eventId);
+        log.info("Getting start event by case with caseId: {}, EventId: {}", caseId, eventId);
         return ccdDataApi.startEventByCase(userToken, s2sToken, caseId, eventId);
     }
 
@@ -124,11 +122,10 @@ public class CcdDataService {
         log.debug("CaseDataContent Request - caseReference: {}", requestBody.getCaseReference());
         log.debug("CaseDataContent Request - data: {}", requestBody.getData());
         log.debug("CaseDataContent Request - event: {}", requestBody.getEvent());
-        log.debug("CaseDataContent Request - eventToken: {}", requestBody.getEventToken());
         log.debug("CaseDataContent Request - ignoreWarning: {}", requestBody.isIgnoreWarning());
         
-        log.info("Submitting case with caseId: {}, eventData: {}, eventToken: {}, ignoreWarning: {}",
-                 caseId, eventData, eventToken, ignoreWarning);
+        log.info("Submitting case with caseId: {}, eventData: {}, ignoreWarning: {}",
+                 caseId, eventData, ignoreWarning);
         
         return ccdDataApi.submitEventByCase(userToken, s2sToken, caseId, requestBody);
     }

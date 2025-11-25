@@ -165,8 +165,6 @@ class CcdDataServiceTest {
 
         StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
         when(mockStartEventDetails.getCaseDetails()).thenReturn(null);
-        when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
-        when(mockStartEventDetails.getEventId()).thenReturn(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS);
 
         when(ccdDataApi.startEventByCase(
             eq("Bearer test-user-token"),
