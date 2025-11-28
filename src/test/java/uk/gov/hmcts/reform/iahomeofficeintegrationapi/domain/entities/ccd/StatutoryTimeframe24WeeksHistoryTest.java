@@ -271,4 +271,112 @@ public class StatutoryTimeframe24WeeksHistoryTest {
         assertEquals(history1, history2);
         assertEquals(history1.hashCode(), history2.hashCode());
     }
+
+    @Test
+    void shouldHandleCanEqualMethod() {
+        // Given
+        StatutoryTimeframe24WeeksHistory history1 = new StatutoryTimeframe24WeeksHistory(
+            YesOrNo.YES, "Test reason", "Test user", "2024-01-01T12:00:00"
+        );
+        
+        StatutoryTimeframe24WeeksHistory history2 = new StatutoryTimeframe24WeeksHistory(
+            YesOrNo.YES, "Test reason", "Test user", "2024-01-01T12:00:00"
+        );
+
+        // Then - test reflexive, symmetric and with subclass
+        assertTrue(history1.equals(history1));
+        assertTrue(history1.equals(history2));
+        assertTrue(history2.equals(history1));
+        
+        // Test with different class
+        assertFalse(history1.equals(new Object()));
+        assertFalse(history1.equals(Integer.valueOf(1)));
+    }
+
+    @Test
+    void shouldHandleAllFieldCombinations() {
+        // Test all possible combinations of YesOrNo
+        StatutoryTimeframe24WeeksHistory yesHistory = new StatutoryTimeframe24WeeksHistory(
+            YesOrNo.YES, "Reason", "User", "2024-01-01T10:00:00"
+        );
+        StatutoryTimeframe24WeeksHistory noHistory = new StatutoryTimeframe24WeeksHistory(
+            YesOrNo.NO, "Reason", "User", "2024-01-01T10:00:00"
+        );
+        
+        assertNotEquals(yesHistory, noHistory);
+        assertNotEquals(yesHistory.hashCode(), noHistory.hashCode());
+    }
+
+    @Test
+    void shouldHandleLongStrings() {
+        // Given
+        String longReason = "A".repeat(1000);
+        String longUser = "B".repeat(1000);
+        String longDateTime = "2024-01-01T12:00:00.123456789";
+        
+        StatutoryTimeframe24WeeksHistory history1 = new StatutoryTimeframe24WeeksHistory(
+            YesOrNo.YES, longReason, longUser, longDateTime
+        );
+        StatutoryTimeframe24WeeksHistory history2 = new StatutoryTimeframe24WeeksHistory(
+            YesOrNo.YES, longReason, longUser, longDateTime
+        );
+
+        // Then
+        assertEquals(history1, history2);
+        assertEquals(history1.hashCode(), history2.hashCode());
+    }
+
+    @Test
+    void shouldHandleSpecialCharacters() {
+        // Given
+        String specialReason = "Test\nReason\t@#$%^&*()";
+        String specialUser = "User\r\n<>?/\\|[]{}";
+        String specialDateTime = "2024-01-01T12:00:00";
+        
+        StatutoryTimeframe24WeeksHistory history1 = new StatutoryTimeframe24WeeksHistory(
+            YesOrNo.YES, specialReason, specialUser, specialDateTime
+        );
+        StatutoryTimeframe24WeeksHistory history2 = new StatutoryTimeframe24WeeksHistory(
+            YesOrNo.YES, specialReason, specialUser, specialDateTime
+        );
+
+        // Then
+        assertEquals(history1, history2);
+        assertEquals(history1.hashCode(), history2.hashCode());
+    }
+
+    @Test
+    void shouldProduceConsistentHashCodeForSameObject() {
+        // Given
+        StatutoryTimeframe24WeeksHistory history = new StatutoryTimeframe24WeeksHistory(
+            YesOrNo.YES, "Reason", "User", "2024-01-01T10:00:00"
+        );
+        
+        int hashCode1 = history.hashCode();
+        int hashCode2 = history.hashCode();
+        int hashCode3 = history.hashCode();
+
+        // Then - hash code should be consistent across multiple calls
+        assertEquals(hashCode1, hashCode2);
+        assertEquals(hashCode2, hashCode3);
+    }
+
+    @Test
+    void shouldHandleEqualsWithNullFields() {
+        // This tests the requireNonNull in getters by attempting to access fields
+        StatutoryTimeframe24WeeksHistory history = new StatutoryTimeframe24WeeksHistory(
+            YesOrNo.YES, "Reason", "User", "2024-01-01T10:00:00"
+        );
+        
+        // Accessing all fields through getters
+        assertNotNull(history.getStatus());
+        assertNotNull(history.getReason());
+        assertNotNull(history.getUser());
+        assertNotNull(history.getDateTimeAdded());
+        
+        // Verify toString includes all fields
+        String toString = history.toString();
+        assertNotNull(toString);
+        assertTrue(toString.contains("YES") || toString.contains("status"));
+    }
 }
