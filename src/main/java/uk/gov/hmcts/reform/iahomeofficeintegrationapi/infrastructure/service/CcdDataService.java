@@ -133,7 +133,7 @@ public class CcdDataService {
         return ccdDataApi.submitEventByCase(userToken, s2sToken, caseId, requestBody);
     }
 
-    public List<IdValue<StatutoryTimeframe24Weeks>> toStf4w(String id, HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
+    public StatutoryTimeframe24Weeks toStf4w(String id, HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
         
         YesOrNo status = hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus() ? YesOrNo.YES : YesOrNo.NO;
         String dateTimeAdded = hoStatutoryTimeframeDto.getTimeStamp().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
@@ -146,15 +146,12 @@ public class CcdDataService {
         );
 
         List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList = new ArrayList<>();
-        historyList.add(new IdValue<>("1", historyEntry));
+        historyList.add(new IdValue<>(id, historyEntry));
 
-        StatutoryTimeframe24Weeks statutoryTimeframeValue = new StatutoryTimeframe24Weeks(
+        return new StatutoryTimeframe24Weeks(
             status,
             historyList
         );
         
-        IdValue<StatutoryTimeframe24Weeks> idValue = new IdValue<>(id, statutoryTimeframeValue);
-        
-        return List.of(idValue);
     }
 }
