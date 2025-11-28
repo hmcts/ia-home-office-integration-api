@@ -10,6 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class StatutoryTimeframe24WeeksTest {
 
@@ -104,6 +106,8 @@ public class StatutoryTimeframe24WeeksTest {
         // Then
         assertEquals(stf1, stf2);
         assertEquals(stf1.hashCode(), stf2.hashCode());
+        assertTrue(stf1.equals(stf2));
+        assertTrue(stf2.equals(stf1));
     }
 
     @Test
@@ -117,6 +121,7 @@ public class StatutoryTimeframe24WeeksTest {
         // Then
         assertNotEquals(stf1, stf2);
         assertNotEquals(stf1.hashCode(), stf2.hashCode());
+        assertFalse(stf1.equals(stf2));
     }
 
     @Test
@@ -131,6 +136,7 @@ public class StatutoryTimeframe24WeeksTest {
 
         // Then
         assertNotEquals(stf1, stf2);
+        assertFalse(stf1.equals(stf2));
     }
 
     @Test
@@ -144,6 +150,7 @@ public class StatutoryTimeframe24WeeksTest {
         // Then
         assertEquals(stf, stf);
         assertEquals(stf.hashCode(), stf.hashCode());
+        assertTrue(stf.equals(stf));
     }
 
     @Test
@@ -156,6 +163,7 @@ public class StatutoryTimeframe24WeeksTest {
 
         // Then
         assertNotEquals(null, stf);
+        assertFalse(stf.equals(null));
     }
 
     @Test
@@ -168,6 +176,8 @@ public class StatutoryTimeframe24WeeksTest {
 
         // Then
         assertNotEquals("different type", stf);
+        assertFalse(stf.equals("different type"));
+        assertFalse(stf.equals(new Object()));
     }
 
     @Test
@@ -182,6 +192,47 @@ public class StatutoryTimeframe24WeeksTest {
         // Then
         assertNotNull(stf1.toString());
         assertEquals(stf1.toString(), stf2.toString());
+    }
+
+    @Test
+    void shouldSatisfyEqualsTransitivity() {
+        // Given
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> history = createHistory("1", YesOrNo.YES);
+        
+        StatutoryTimeframe24Weeks stf1 = new StatutoryTimeframe24Weeks(YesOrNo.YES, history);
+        StatutoryTimeframe24Weeks stf2 = new StatutoryTimeframe24Weeks(YesOrNo.YES, history);
+        StatutoryTimeframe24Weeks stf3 = new StatutoryTimeframe24Weeks(YesOrNo.YES, history);
+
+        // Then - transitive property
+        assertTrue(stf1.equals(stf2));
+        assertTrue(stf2.equals(stf3));
+        assertTrue(stf1.equals(stf3));
+    }
+
+    @Test
+    void shouldHaveDifferentHashCodeWhenDifferentFields() {
+        // Given
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> history1 = createHistory("1", YesOrNo.YES);
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> history2 = createHistory("2", YesOrNo.NO);
+        
+        StatutoryTimeframe24Weeks stf1 = new StatutoryTimeframe24Weeks(YesOrNo.YES, history1);
+        StatutoryTimeframe24Weeks stf2 = new StatutoryTimeframe24Weeks(YesOrNo.NO, history2);
+
+        // Then - different objects should likely have different hash codes
+        assertNotEquals(stf1.hashCode(), stf2.hashCode());
+    }
+
+    @Test
+    void shouldHandleEmptyHistoryList() {
+        // Given
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> emptyHistory = new ArrayList<>();
+        
+        StatutoryTimeframe24Weeks stf1 = new StatutoryTimeframe24Weeks(YesOrNo.YES, emptyHistory);
+        StatutoryTimeframe24Weeks stf2 = new StatutoryTimeframe24Weeks(YesOrNo.YES, emptyHistory);
+
+        // Then
+        assertEquals(stf1, stf2);
+        assertEquals(stf1.hashCode(), stf2.hashCode());
     }
 
     private List<IdValue<StatutoryTimeframe24WeeksHistory>> createHistory(String id, YesOrNo status) {

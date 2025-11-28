@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class StatutoryTimeframe24WeeksHistoryTest {
 
@@ -76,6 +78,8 @@ public class StatutoryTimeframe24WeeksHistoryTest {
         // Then
         assertEquals(history1, history2);
         assertEquals(history1.hashCode(), history2.hashCode());
+        assertTrue(history1.equals(history2));
+        assertTrue(history2.equals(history1));
     }
 
     @Test
@@ -91,6 +95,7 @@ public class StatutoryTimeframe24WeeksHistoryTest {
         // Then
         assertNotEquals(history1, history2);
         assertNotEquals(history1.hashCode(), history2.hashCode());
+        assertFalse(history1.equals(history2));
     }
 
     @Test
@@ -105,6 +110,7 @@ public class StatutoryTimeframe24WeeksHistoryTest {
 
         // Then
         assertNotEquals(history1, history2);
+        assertFalse(history1.equals(history2));
     }
 
     @Test
@@ -119,6 +125,7 @@ public class StatutoryTimeframe24WeeksHistoryTest {
 
         // Then
         assertNotEquals(history1, history2);
+        assertFalse(history1.equals(history2));
     }
 
     @Test
@@ -133,6 +140,7 @@ public class StatutoryTimeframe24WeeksHistoryTest {
 
         // Then
         assertNotEquals(history1, history2);
+        assertFalse(history1.equals(history2));
     }
 
     @Test
@@ -145,6 +153,7 @@ public class StatutoryTimeframe24WeeksHistoryTest {
         // Then
         assertEquals(history, history);
         assertEquals(history.hashCode(), history.hashCode());
+        assertTrue(history.equals(history));
     }
 
     @Test
@@ -156,6 +165,7 @@ public class StatutoryTimeframe24WeeksHistoryTest {
 
         // Then
         assertNotEquals(null, history);
+        assertFalse(history.equals(null));
     }
 
     @Test
@@ -167,6 +177,8 @@ public class StatutoryTimeframe24WeeksHistoryTest {
 
         // Then
         assertNotEquals("different type", history);
+        assertFalse(history.equals("different type"));
+        assertFalse(history.equals(new Object()));
     }
 
     @Test
@@ -214,5 +226,49 @@ public class StatutoryTimeframe24WeeksHistoryTest {
         
         assertNotEquals(history1, history3);
         assertNotEquals(history1.hashCode(), history3.hashCode());
+        
+        // Symmetric
+        assertTrue(history1.equals(history2));
+        assertTrue(history2.equals(history1));
+        
+        // Transitive
+        StatutoryTimeframe24WeeksHistory history4 = new StatutoryTimeframe24WeeksHistory(
+            YesOrNo.YES,
+            "Reason 1",
+            "User 1",
+            "2023-01-01T10:00:00"
+        );
+        assertTrue(history1.equals(history2));
+        assertTrue(history2.equals(history4));
+        assertTrue(history1.equals(history4));
+    }
+
+    @Test
+    void shouldHaveDifferentHashCodeWhenDifferentFields() {
+        // Given
+        StatutoryTimeframe24WeeksHistory history1 = new StatutoryTimeframe24WeeksHistory(
+            YesOrNo.YES, "Reason A", "User A", "2024-01-01T10:00:00"
+        );
+        StatutoryTimeframe24WeeksHistory history2 = new StatutoryTimeframe24WeeksHistory(
+            YesOrNo.NO, "Reason B", "User B", "2024-01-02T10:00:00"
+        );
+
+        // Then - different objects should likely have different hash codes
+        assertNotEquals(history1.hashCode(), history2.hashCode());
+    }
+
+    @Test
+    void shouldHandleEmptyStrings() {
+        // Given
+        StatutoryTimeframe24WeeksHistory history1 = new StatutoryTimeframe24WeeksHistory(
+            YesOrNo.YES, "", "", ""
+        );
+        StatutoryTimeframe24WeeksHistory history2 = new StatutoryTimeframe24WeeksHistory(
+            YesOrNo.YES, "", "", ""
+        );
+
+        // Then
+        assertEquals(history1, history2);
+        assertEquals(history1.hashCode(), history2.hashCode());
     }
 }
