@@ -29,10 +29,10 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         objectMapper.registerModule(new JavaTimeModule());
 
         JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V4);
-        InputStream schemaStream = getClass().getResourceAsStream("/twentyFourWeekStatusSchema.json");
+        InputStream schemaStream = getClass().getResourceAsStream("/twentyFourWeekStatusSchema_v3.json");
         
         if (schemaStream == null) {
-            fail("Schema file twentyFourWeekStatusSchema_v2.json not found in test resources");
+            fail("Schema file twentyFourWeekStatusSchema_v3.json not found in test resources");
         }
         
         schema = factory.getSchema(schemaStream);
