@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Min;
@@ -57,11 +58,31 @@ public class HomeOfficeStatutoryTimeframeDto {
     private LocalDate dateOfBirth;
 
     @JsonProperty(value = "stf24weeks", required = true)
-    private boolean hoStatutoryTimeframeStatus;
+    @NotNull
+    @Valid
+    private Stf24Weeks stf24weeks;
 
     @JsonProperty(value = "timeStamp", required = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "GMT")
     @NotNull
     private LocalDateTime timeStamp;
 
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(NON_NULL)
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode
+    @Data
+    public static class Stf24Weeks {
+        @JsonProperty(value = "status", required = true)
+        @NotNull
+        @Pattern(regexp = "^[Yy][Ee][Ss]|[Nn][Oo]$", message = "Status must be 'Yes', 'No', 'YES', 'NO', 'yes', or 'no'")
+        private String status;
+
+        @JsonProperty(value = "caseType", required = true)
+        @NotNull
+        private String caseType;
+    }
 }
