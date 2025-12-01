@@ -62,7 +62,10 @@ class CcdDataServiceTest {
     void setUp() {
         testDto = new HomeOfficeStatutoryTimeframeDto();
         testDto.setCcdCaseId(12345L);
-        testDto.setHoStatutoryTimeframeStatus(true);
+        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+            .status("Yes")
+            .caseType("HU")
+            .build());
         testDto.setTimeStamp(LocalDateTime.of(2023, 12, 1, 0, 0, 0));
 
         userInfo = new UserInfo("test@example.com", "test-uid", null, "Test User", "Test", "User");
@@ -113,7 +116,10 @@ class CcdDataServiceTest {
     @Test
     void shouldTestToStf4wMethodWithTrueStatus() {
         // Given
-        testDto.setHoStatutoryTimeframeStatus(true);
+        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+            .status("Yes")
+            .caseType("HU")
+            .build());
         testDto.setTimeStamp(LocalDateTime.of(2023, 12, 1, 10, 15, 30));
 
         // When
@@ -137,7 +143,10 @@ class CcdDataServiceTest {
     @Test
     void shouldTestToStf4wMethodWithFalseStatus() {
         // Given
-        testDto.setHoStatutoryTimeframeStatus(false);
+        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+            .status("No")
+            .caseType("HU")
+            .build());
 
         // When
         StatutoryTimeframe24Weeks result = ccdDataService.toStf4w("2", testDto);
@@ -199,7 +208,10 @@ class CcdDataServiceTest {
         // Given
         String userToken = "test-user-token";
         String s2sToken = "test-s2s-token";
-        testDto.setHoStatutoryTimeframeStatus(true);
+        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+            .status("Yes")
+            .caseType("HU")
+            .build());
 
         when(idamService.getServiceUserToken()).thenReturn(userToken);
         when(serviceAuthorization.generate()).thenReturn(s2sToken);
@@ -263,7 +275,10 @@ class CcdDataServiceTest {
         // Given
         String userToken = "test-user-token";
         String s2sToken = "test-s2s-token";
-        testDto.setHoStatutoryTimeframeStatus(false);
+        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+            .status("No")
+            .caseType("HU")
+            .build());
 
         when(idamService.getServiceUserToken()).thenReturn(userToken);
         when(serviceAuthorization.generate()).thenReturn(s2sToken);
@@ -326,7 +341,10 @@ class CcdDataServiceTest {
     void shouldLogCaseDetailsWhenPresent() {
         // Given
         String userToken = "test-user-token";
-        testDto.setHoStatutoryTimeframeStatus(true);
+        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+            .status("Yes")
+            .caseType("HU")
+            .build());
         testDto.setTimeStamp(LocalDateTime.of(2024, 1, 15, 0, 0, 0));
 
         String s2sToken = "test-s2s-token";
@@ -381,7 +399,10 @@ class CcdDataServiceTest {
 
     @Test
     void shouldFormatDateTimeCorrectlyInToStf4wMethod() {
-        testDto.setHoStatutoryTimeframeStatus(true);
+        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+            .status("Yes")
+            .caseType("HU")
+            .build());
         testDto.setTimeStamp(LocalDateTime.of(2024, 6, 15, 14, 28, 18));
 
         StatutoryTimeframe24Weeks result = ccdDataService.toStf4w("3", testDto);
@@ -396,7 +417,10 @@ class CcdDataServiceTest {
     @Test
     void shouldReturnTypeCompatibleWithStatutoryTimeframe24WeeksDefinition() {
         // Given
-        testDto.setHoStatutoryTimeframeStatus(true);
+        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+            .status("Yes")
+            .caseType("HU")
+            .build());
         testDto.setTimeStamp(LocalDateTime.of(2024, 1, 1, 12, 0, 0));
 
         // When

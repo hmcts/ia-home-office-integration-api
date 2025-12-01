@@ -29,10 +29,10 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         objectMapper.registerModule(new JavaTimeModule());
 
         JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V4);
-        InputStream schemaStream = getClass().getResourceAsStream("/twentyFourWeekStatusSchema_v3.json");
+        InputStream schemaStream = getClass().getResourceAsStream("/twentyFourWeekStatusSchema_v4.json");
         
         if (schemaStream == null) {
-            fail("Schema file twentyFourWeekStatusSchema_v3.json not found in test resources");
+            fail("Schema file twentyFourWeekStatusSchema_v4.json not found in test resources");
         }
         
         schema = factory.getSchema(schemaStream);
@@ -47,7 +47,10 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 5, 15))
-            .hoStatutoryTimeframeStatus(true)
+            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+                .status("Yes")
+                .caseType("HU")
+                .build())
             .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 45))
             .build();
 
@@ -69,7 +72,10 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .familyName("Doe")
             .givenNames("Jane")
             .dateOfBirth(LocalDate.of(1985, 3, 20))
-            .hoStatutoryTimeframeStatus(false)
+            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+                .status("No")
+                .caseType("HU")
+                .build())
             .timeStamp(LocalDateTime.of(2024, 1, 15, 10, 20, 30))
             .build();
 
@@ -91,7 +97,10 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(2000, 12, 31))
-            .hoStatutoryTimeframeStatus(true)
+            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+                .status("Yes")
+                .caseType("HU")
+                .build())
             .timeStamp(LocalDateTime.of(2024, 6, 15, 23, 59, 59))
             .build();
 
@@ -113,7 +122,10 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .familyName("Midnight")
             .givenNames("Test")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
-            .hoStatutoryTimeframeStatus(false)
+            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+                .status("No")
+                .caseType("HU")
+                .build())
             .timeStamp(LocalDateTime.of(2023, 1, 1, 0, 0, 0))
             .build();
 
@@ -135,7 +147,10 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
-            .hoStatutoryTimeframeStatus(false)
+            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+                .status("No")
+                .caseType("HU")
+                .build())
             .timeStamp(LocalDateTime.of(2023, 1, 1, 0, 0, 0))
             .build();
 
@@ -159,7 +174,10 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
-            .hoStatutoryTimeframeStatus(true)
+            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+                .status("Yes")
+                .caseType("HU")
+                .build())
             .timeStamp(LocalDateTime.of(2023, 1, 1, 12, 30, 45))
             .build();
 
@@ -183,7 +201,10 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
-            .hoStatutoryTimeframeStatus(true)
+            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+                .status("Yes")
+                .caseType("HU")
+                .build())
             .timeStamp(LocalDateTime.of(2023, 1, 1, 12, 30, 45))
             .build();
 

@@ -50,7 +50,10 @@ class HomeOfficeStatutoryTimeframeDtoTest {
             .familyName(familyName)
             .givenNames(givenNames)
             .dateOfBirth(dateOfBirth)
-            .hoStatutoryTimeframeStatus(hoStatutoryTimeframeStatus)
+            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+                .status(hoStatutoryTimeframeStatus ? "Yes" : "No")
+                .caseType("HU")
+                .build())
             .timeStamp(timeStamp)
             .build();
 
@@ -59,7 +62,8 @@ class HomeOfficeStatutoryTimeframeDtoTest {
         assertEquals(familyName, homeOfficeStatutoryTimeframeDtoDto.getFamilyName());
         assertEquals(givenNames, homeOfficeStatutoryTimeframeDtoDto.getGivenNames());
         assertEquals(dateOfBirth, homeOfficeStatutoryTimeframeDtoDto.getDateOfBirth());
-        assertEquals(hoStatutoryTimeframeStatus, homeOfficeStatutoryTimeframeDtoDto.isHoStatutoryTimeframeStatus());
+        assertEquals(hoStatutoryTimeframeStatus ? "Yes" : "No", homeOfficeStatutoryTimeframeDtoDto.getStf24weeks().getStatus());
+        assertEquals("HU", homeOfficeStatutoryTimeframeDtoDto.getStf24weeks().getCaseType());
         assertEquals(timeStamp, homeOfficeStatutoryTimeframeDtoDto.getTimeStamp());
     }
 
