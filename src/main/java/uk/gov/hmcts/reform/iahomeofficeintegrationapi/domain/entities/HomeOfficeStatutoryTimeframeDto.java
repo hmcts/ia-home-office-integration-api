@@ -78,7 +78,7 @@ public class HomeOfficeStatutoryTimeframeDto {
     public static class Stf24Weeks {
         @JsonProperty(value = "status", required = true)
         @NotNull
-        @Pattern(regexp = "^[Yy][Ee][Ss]|[Nn][Oo]$", message = "Status must be 'Yes', 'No', 'YES', 'NO', 'yes', or 'no'")
+        @Pattern(regexp = "^([Yy][Ee][Ss])|([Nn][Oo])$", message = "Status must be 'Yes', 'No', 'YES', 'NO', 'yes', or 'no'")
         private String status;
 
         @JsonProperty(value = "caseType", required = true)
