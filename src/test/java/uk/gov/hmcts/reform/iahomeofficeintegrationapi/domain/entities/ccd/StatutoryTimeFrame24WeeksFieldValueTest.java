@@ -23,6 +23,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         historyList.add(new IdValue<>("1", new StatutoryTimeframe24WeeksHistory(
             YesOrNo.YES,
             "Test reason",
+            "Test case type",
             "Test user",
             "2024-01-01T10:00:00Z"
         )));
@@ -39,6 +40,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         StatutoryTimeframe24WeeksHistory history = statutoryTimeFrame24WeeksFieldValue.getHistory().get(0).getValue();
         assertEquals(YesOrNo.YES, history.getStatus());
         assertEquals("Test reason", history.getReason());
+        assertEquals("Test case type", history.getHomeOfficeCaseType());
         assertEquals("Test user", history.getUser());
         assertEquals("2024-01-01T10:00:00Z", history.getDateTimeAdded());
     }
@@ -47,12 +49,13 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
     void should_create_object_with_all_fields() {
         YesOrNo status = YesOrNo.YES;
         String reason = "Test reason";
+        String caseType = "Test case type";
         String user = "Test user";
         String dateAdded = "2023-01-01T10:00:00Z";
 
         List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList = new ArrayList<>();
         historyList.add(new IdValue<>("1", new StatutoryTimeframe24WeeksHistory(
-            status, reason, user, dateAdded
+            status, reason, caseType, user, dateAdded
         )));
 
         StatutoryTimeframe24Weeks fieldValue = new StatutoryTimeframe24Weeks(
@@ -66,6 +69,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         StatutoryTimeframe24WeeksHistory history = fieldValue.getHistory().get(0).getValue();
         assertEquals(status, history.getStatus());
         assertEquals(reason, history.getReason());
+        assertEquals(caseType, history.getHomeOfficeCaseType());
         assertEquals(user, history.getUser());
         assertEquals(dateAdded, history.getDateTimeAdded());
     }
@@ -76,6 +80,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         historyList1.add(new IdValue<>("1", new StatutoryTimeframe24WeeksHistory(
             YesOrNo.YES,
             "Test reason",
+            "Test case type",
             "Test user",
             "2024-01-01T10:00:00Z"
         )));
@@ -89,6 +94,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         historyList2.add(new IdValue<>("1", new StatutoryTimeframe24WeeksHistory(
             YesOrNo.YES,
             "Test reason",
+            "Test case type",
             "Test user",
             "2024-01-01T10:00:00Z"
         )));
@@ -107,6 +113,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         historyList.add(new IdValue<>("1", new StatutoryTimeframe24WeeksHistory(
             YesOrNo.YES,
             "Test reason",
+            "Test case type",
             "Test user",
             "2024-01-01T10:00:00Z"
         )));
@@ -125,12 +132,12 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
     void should_be_equal_when_all_fields_are_same() {
         List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList1 = new ArrayList<>();
         historyList1.add(new IdValue<>("1", new StatutoryTimeframe24WeeksHistory(
-            YesOrNo.YES, "reason1", "user1", "2020-06-15T17:35:38Z"
+            YesOrNo.YES, "reason1", "caseType1", "user1", "2020-06-15T17:35:38Z"
         )));
 
         List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList2 = new ArrayList<>();
         historyList2.add(new IdValue<>("1", new StatutoryTimeframe24WeeksHistory(
-            YesOrNo.YES, "reason1", "user1", "2020-06-15T17:35:38Z"
+            YesOrNo.YES, "reason1", "caseType1", "user1", "2020-06-15T17:35:38Z"
         )));
 
         StatutoryTimeframe24Weeks value1 = new StatutoryTimeframe24Weeks(YesOrNo.YES, historyList1);
@@ -144,12 +151,12 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
     void should_not_be_equal_when_fields_differ() {
         List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList1 = new ArrayList<>();
         historyList1.add(new IdValue<>("1", new StatutoryTimeframe24WeeksHistory(
-            YesOrNo.YES, "reason1", "user1", "2020-06-15T17:35:38Z"
+            YesOrNo.YES, "reason1", "caseType1", "user1", "2020-06-15T17:35:38Z"
         )));
 
         List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList2 = new ArrayList<>();
         historyList2.add(new IdValue<>("1", new StatutoryTimeframe24WeeksHistory(
-            YesOrNo.NO, "reason1", "user1", "2020-06-15T17:35:38Z"
+            YesOrNo.NO, "reason1", "caseType1", "user1", "2020-06-15T17:35:38Z"
         )));
 
         StatutoryTimeframe24Weeks value1 = new StatutoryTimeframe24Weeks(YesOrNo.YES, historyList1);
@@ -162,7 +169,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
     void should_not_be_equal_to_null_or_different_class() {
         List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList = new ArrayList<>();
         historyList.add(new IdValue<>("1", new StatutoryTimeframe24WeeksHistory(
-            YesOrNo.YES, "reason1", "user1", "2020-06-15T17:35:38Z"
+            YesOrNo.YES, "reason1", "caseType1", "user1", "2020-06-15T17:35:38Z"
         )));
 
         StatutoryTimeframe24Weeks value = new StatutoryTimeframe24Weeks(YesOrNo.YES, historyList);

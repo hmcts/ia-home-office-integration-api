@@ -21,6 +21,7 @@ public class StatutoryTimeframe24WeeksTest {
         historyList1.add(new IdValue<>("1", new StatutoryTimeframe24WeeksHistory(
             YesOrNo.YES,
             "Reason 1",
+            "Test case type",
             "User 1",
             "2023-01-01T10:00:00"
         )));
@@ -34,6 +35,7 @@ public class StatutoryTimeframe24WeeksTest {
         historyList2.add(new IdValue<>("1", new StatutoryTimeframe24WeeksHistory(
             YesOrNo.YES,
             "Reason 1",
+            "Test case type",
             "User 1",
             "2023-01-01T10:00:00"
         )));
@@ -47,6 +49,7 @@ public class StatutoryTimeframe24WeeksTest {
         historyList3.add(new IdValue<>("1", new StatutoryTimeframe24WeeksHistory(
             YesOrNo.NO,
             "Reason 2",
+            "Different case type",
             "User 2",
             "2023-01-02T10:00:00"
         )));
@@ -240,6 +243,7 @@ public class StatutoryTimeframe24WeeksTest {
         StatutoryTimeframe24WeeksHistory historyEntry = new StatutoryTimeframe24WeeksHistory(
             status,
             "Test reason",
+            "Test case type",
             "Test user",
             "2024-01-01T12:00:00"
         );

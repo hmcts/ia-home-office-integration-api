@@ -144,6 +144,7 @@ public class CcdDataService {
         StatutoryTimeframe24WeeksHistory historyEntry = new StatutoryTimeframe24WeeksHistory(
             status,
             STATUTORY_TIMEFRAME_REASON,
+            hoStatutoryTimeframeDto.getStf24weeks().getCaseType(),
             STATUTORY_TIMEFRAME_USER,
             dateTimeAdded
         );
