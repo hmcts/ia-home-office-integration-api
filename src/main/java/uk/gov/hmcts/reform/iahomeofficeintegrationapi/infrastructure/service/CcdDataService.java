@@ -35,6 +35,11 @@ public class CcdDataService {
 
     private static final String STATUTORY_TIMEFRAME_REASON = "Home Office initial determination";
     private static final String STATUTORY_TIMEFRAME_USER = "Home Office Integration API";
+    private static final String STATUTORY_TIMEFRAME_24_WEEKS_REASON_FIELD = "statutoryTimeframe24WeeksReason";
+    private static final String STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE_FIELD = "statutoryTimeframe24WeeksHomeOfficeCaseType";
+    private static final String EVENT_METADATA_ID_KEY = "id";
+    private static final String EVENT_METADATA_SUMMARY_KEY = "summary";
+    private static final String EVENT_METADATA_DESCRIPTION_KEY = "description";
 
     private final CcdDataApi ccdDataApi;
     private final IdamService idamService;
@@ -88,7 +93,8 @@ public class CcdDataService {
 
         Map<String, Object> eventData = new HashMap<>();
         eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
-        eventData.put("statutoryTimeframe24WeeksReason", STATUTORY_TIMEFRAME_REASON);
+        eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_REASON_FIELD, STATUTORY_TIMEFRAME_REASON);
+        eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE_FIELD, hoStatutoryTimeframeDto.getStf24weeks().getCaseType());
    
         log.debug("Event data to be submitted: {}", eventData);    
         log.info("Submitting event with method: {} for caseId: {} with Home Office statutory timeframe status: {}, caseType: {}", 
@@ -117,9 +123,9 @@ public class CcdDataService {
         log.info("Event data to be submitted: {}", eventData);
         
         Map<String, Object> eventMetadata = new HashMap<>();
-        eventMetadata.put("id", eventId);
-        eventMetadata.put("summary", "");
-        eventMetadata.put("description", "");
+        eventMetadata.put(EVENT_METADATA_ID_KEY, eventId);
+        eventMetadata.put(EVENT_METADATA_SUMMARY_KEY, "");
+        eventMetadata.put(EVENT_METADATA_DESCRIPTION_KEY, "");
         
         CaseDataContent requestBody =
             new CaseDataContent(caseId, eventData, eventMetadata, eventToken, ignoreWarning);
