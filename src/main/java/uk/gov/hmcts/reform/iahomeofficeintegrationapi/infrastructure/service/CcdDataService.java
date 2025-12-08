@@ -61,6 +61,7 @@ public class CcdDataService {
 
         String eventId = Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString();
         String caseId = String.valueOf(hoStatutoryTimeframeDto.getCcdCaseId());
+        String homeCaseType = hoStatutoryTimeframeDto.getStf24weeks().getCaseType();
 
         String userToken;
         String s2sToken;
@@ -94,13 +95,13 @@ public class CcdDataService {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
         eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_REASON_FIELD, STATUTORY_TIMEFRAME_REASON);
-        eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE_FIELD, hoStatutoryTimeframeDto.getStf24weeks().getCaseType());
+        eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE_FIELD, homeCaseType);
    
         log.debug("Event data to be submitted: {}", eventData);    
         log.info("Submitting event with method: {} for caseId: {} with Home Office statutory timeframe status: {}, caseType: {}", 
                  eventId, caseId,
                  hoStatutoryTimeframeDto.getStf24weeks().getStatus(),
-                 hoStatutoryTimeframeDto.getStf24weeks().getCaseType());
+                 homeCaseType);
         
         SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, eventData, startEventDetails.getToken(), eventId, true);
 
@@ -145,12 +146,13 @@ public class CcdDataService {
         
         boolean isYes = hoStatutoryTimeframeDto.getStf24weeks().getStatus().equalsIgnoreCase("yes");
         YesOrNo status = isYes ? YesOrNo.YES : YesOrNo.NO;
+        String homeOfficeCaseType = hoStatutoryTimeframeDto.getStf24weeks().getCaseType();
         String dateTimeAdded = hoStatutoryTimeframeDto.getTimeStamp().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         
         StatutoryTimeframe24WeeksHistory historyEntry = new StatutoryTimeframe24WeeksHistory(
             status,
             STATUTORY_TIMEFRAME_REASON,
-            hoStatutoryTimeframeDto.getStf24weeks().getCaseType(),
+            homeOfficeCaseType,
             STATUTORY_TIMEFRAME_USER,
             dateTimeAdded
         );
@@ -158,9 +160,12 @@ public class CcdDataService {
         List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList = new ArrayList<>();
         historyList.add(new IdValue<>(id, historyEntry));
 
+        log.info("new StatutoryTimeframe24Weeks created with status: {}, homeOfficeCaseType: {}, history size: {}",
+                 status, homeOfficeCaseType, historyList.size());
+
         return new StatutoryTimeframe24Weeks(
             status,
-            hoStatutoryTimeframeDto.getStf24weeks().getCaseType(),
+            homeOfficeCaseType,
             historyList
         );
         
