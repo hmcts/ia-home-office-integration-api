@@ -160,6 +160,7 @@ public class CcdDataService {
 
         return new StatutoryTimeframe24Weeks(
             status,
+            hoStatutoryTimeframeDto.getStf24weeks().getCaseType(),
             historyList
         );
         
