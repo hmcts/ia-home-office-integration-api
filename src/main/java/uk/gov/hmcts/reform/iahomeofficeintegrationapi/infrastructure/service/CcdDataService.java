@@ -61,7 +61,6 @@ public class CcdDataService {
 
         String eventId = Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString();
         String caseId = String.valueOf(hoStatutoryTimeframeDto.getCcdCaseId());
-        String homeCaseType = hoStatutoryTimeframeDto.getStf24weeks().getCaseType();
 
         String userToken;
         String s2sToken;
@@ -95,6 +94,7 @@ public class CcdDataService {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
         eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_REASON_FIELD, STATUTORY_TIMEFRAME_REASON);
+        String homeCaseType = hoStatutoryTimeframeDto.getStf24weeks().getCaseType();
         eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE_FIELD, homeCaseType);
    
         log.debug("Event data to be submitted: {}", eventData);    
