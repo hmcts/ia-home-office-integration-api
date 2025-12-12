@@ -41,7 +41,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class CcdDataServiceTest {
@@ -298,13 +297,13 @@ class CcdDataServiceTest {
         
         when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
         when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
-        when(mockStartEventDetails.getEventId()).thenReturn(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS);
+        when(mockStartEventDetails.getEventId()).thenReturn(Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS);
 
         when(ccdDataApi.startEventByCase(
             eq("Bearer test-user-token"),
             eq("test-s2s-token"),
             eq("12345"),
-            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
+            eq(Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS.toString())
         )).thenReturn(mockStartEventDetails);
 
         SubmitEventDetails mockSubmitEventDetails = mock(SubmitEventDetails.class);
@@ -332,7 +331,7 @@ class CcdDataServiceTest {
             "Bearer " + userToken,
             s2sToken,
             "12345",
-            Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
+            Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS.toString()
         );
         verify(ccdDataApi).submitEventByCase(
             eq("Bearer " + userToken),
@@ -620,13 +619,13 @@ class CcdDataServiceTest {
     void shouldThrowExceptionWhenStatusAlreadySetToYes() {
         // Given
         String userToken = "test-user-token";
-        String s2sToken = "test-s2s-token";
         testDto.setCcdCaseId(99999L);
         testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
             .status("No")
             .caseType("PA")
             .build());
 
+        String s2sToken = "test-s2s-token";
         when(idamService.getServiceUserToken()).thenReturn(userToken);
         when(serviceAuthorization.generate()).thenReturn(s2sToken);
 
@@ -654,13 +653,13 @@ class CcdDataServiceTest {
 
         when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
         lenient().when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
-        lenient().when(mockStartEventDetails.getEventId()).thenReturn(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS);
+        lenient().when(mockStartEventDetails.getEventId()).thenReturn(Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS);
 
         when(ccdDataApi.startEventByCase(
             eq("Bearer test-user-token"),
             eq("test-s2s-token"),
             eq("99999"),
-            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
+            eq(Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS.toString())
         )).thenReturn(mockStartEventDetails);
 
         // When & Then
@@ -680,7 +679,7 @@ class CcdDataServiceTest {
             "Bearer " + userToken,
             s2sToken,
             "99999",
-            Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
+            Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS.toString()
         );
         verify(mockAsylumCase).read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS);
         verify(existingData).getHistory();
