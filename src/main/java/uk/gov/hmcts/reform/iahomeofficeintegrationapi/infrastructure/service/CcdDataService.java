@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -91,8 +92,9 @@ public class CcdDataService {
             log.debug("Start case details data: {}", caseDetails.getCaseData());
         }
 
+        String historyId = nextHistoryId(caseDetails);
+
         Map<String, Object> eventData = new HashMap<>();
-        String historyId = "1";
         eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w(historyId, hoStatutoryTimeframeDto));
         eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_REASON_FIELD, STATUTORY_TIMEFRAME_REASON);
         String homeCaseType = hoStatutoryTimeframeDto.getStf24weeks().getCaseType();
@@ -170,5 +172,37 @@ public class CcdDataService {
             historyList
         );
         
+    }
+
+    private String nextHistoryId(CaseDetails<AsylumCase> caseDetails) {
+        AsylumCase asylumCase = caseDetails.getCaseData();
+        
+        Optional<StatutoryTimeframe24Weeks> existingData = 
+            asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS);
+        
+        if (existingData.isEmpty()) {
+            log.info("No existing statutory timeframe 24 weeks data found, returning historyId: 1");
+            return "1";
+        }
+        
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> existingHistory = 
+            existingData.get().getHistory();
+        
+        if (existingHistory == null || existingHistory.isEmpty()) {
+            log.info("Existing statutory timeframe 24 weeks data has no history, returning historyId: 1");
+            return "1";
+        }
+        
+        int maxId = existingHistory.stream()
+            .map(IdValue::getId)
+            .mapToInt(Integer::parseInt)
+            .max()
+            .orElse(0);
+        
+        String nextId = String.valueOf(maxId + 1);
+        log.info("Found {} existing history entries, max ID: {}, returning next historyId: {}", 
+                 existingHistory.size(), maxId, nextId);
+        
+        return nextId;
     }
 }
