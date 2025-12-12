@@ -92,7 +92,8 @@ public class CcdDataService {
         }
 
         Map<String, Object> eventData = new HashMap<>();
-        eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
+        String historyId = "1";
+        eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w(historyId, hoStatutoryTimeframeDto));
         eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_REASON_FIELD, STATUTORY_TIMEFRAME_REASON);
         String homeCaseType = hoStatutoryTimeframeDto.getStf24weeks().getCaseType();
         eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE_FIELD, homeCaseType);
