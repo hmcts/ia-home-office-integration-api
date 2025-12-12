@@ -41,6 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class CcdDataServiceTest {
@@ -450,77 +451,60 @@ class CcdDataServiceTest {
     @Test
     void nextHistoryId_shouldReturn1WhenNoExistingData() {
         // Given
-        AsylumCase asylumCase = mock(AsylumCase.class);
-        when(asylumCase.read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS))
-            .thenReturn(Optional.empty());
+        Optional<StatutoryTimeframe24Weeks> existingData = Optional.empty();
 
         // When
-        String result = ccdDataService.nextHistoryId(asylumCase);
+        String result = ccdDataService.nextHistoryId(existingData);
 
         // Then
         assertEquals("1", result);
-        verify(asylumCase).read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS);
     }
 
     @Test
     void nextHistoryId_shouldReturn1WhenHistoryIsNull() {
         // Given
-        StatutoryTimeframe24Weeks existingData = mock(StatutoryTimeframe24Weeks.class);
-        when(existingData.getHistory()).thenReturn(null);
-        
-        AsylumCase asylumCase = mock(AsylumCase.class);
-        when(asylumCase.read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS))
-            .thenReturn(Optional.of(existingData));
+        StatutoryTimeframe24Weeks data = mock(StatutoryTimeframe24Weeks.class);
+        when(data.getHistory()).thenReturn(null);
 
         // When
-        String result = ccdDataService.nextHistoryId(asylumCase);
+        String result = ccdDataService.nextHistoryId(Optional.of(data));
 
         // Then
         assertEquals("1", result);
-        verify(asylumCase).read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS);
-        verify(existingData).getHistory();
+        verify(data).getHistory();
     }
 
     @Test
     void nextHistoryId_shouldReturn1WhenHistoryIsEmpty() {
         // Given
-        AsylumCase asylumCase = mock(AsylumCase.class);
-        StatutoryTimeframe24Weeks existingData = mock(StatutoryTimeframe24Weeks.class);
-        when(existingData.getHistory()).thenReturn(new ArrayList<>());
-        
-        when(asylumCase.read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS))
-            .thenReturn(Optional.of(existingData));
+        StatutoryTimeframe24Weeks data = mock(StatutoryTimeframe24Weeks.class);
+        when(data.getHistory()).thenReturn(new ArrayList<>());
 
         // When
-        String result = ccdDataService.nextHistoryId(asylumCase);
+        String result = ccdDataService.nextHistoryId(Optional.of(data));
 
         // Then
         assertEquals("1", result);
-        verify(asylumCase).read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS);
-        verify(existingData).getHistory();
+        verify(data).getHistory();
     }
 
     @Test
     void nextHistoryId_shouldReturn2WhenHistoryHasOneEntry() {
         // Given
-        StatutoryTimeframe24Weeks existingData = mock(StatutoryTimeframe24Weeks.class);
+        StatutoryTimeframe24Weeks data = mock(StatutoryTimeframe24Weeks.class);
         
         StatutoryTimeframe24WeeksHistory historyEntry = mock(StatutoryTimeframe24WeeksHistory.class);
         List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList = new ArrayList<>();
         historyList.add(new IdValue<>("1", historyEntry));
-        AsylumCase asylumCase = mock(AsylumCase.class);
         
-        when(existingData.getHistory()).thenReturn(historyList);
-        when(asylumCase.read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS))
-            .thenReturn(Optional.of(existingData));
+        when(data.getHistory()).thenReturn(historyList);
 
         // When
-        String result = ccdDataService.nextHistoryId(asylumCase);
+        String result = ccdDataService.nextHistoryId(Optional.of(data));
 
         // Then
         assertEquals("2", result);
-        verify(asylumCase).read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS);
-        verify(existingData).getHistory();
+        verify(data).getHistory();
     }
 
     @Test
@@ -531,19 +515,15 @@ class CcdDataServiceTest {
         historyList.add(new IdValue<>("3", mock(StatutoryTimeframe24WeeksHistory.class)));
         historyList.add(new IdValue<>("5", mock(StatutoryTimeframe24WeeksHistory.class)));
         
-        AsylumCase asylumCase = mock(AsylumCase.class);
-        StatutoryTimeframe24Weeks existingData = mock(StatutoryTimeframe24Weeks.class);
-        when(existingData.getHistory()).thenReturn(historyList);
-        when(asylumCase.read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS))
-            .thenReturn(Optional.of(existingData));
+        StatutoryTimeframe24Weeks data = mock(StatutoryTimeframe24Weeks.class);
+        when(data.getHistory()).thenReturn(historyList);
 
         // When
-        String result = ccdDataService.nextHistoryId(asylumCase);
+        String result = ccdDataService.nextHistoryId(Optional.of(data));
 
         // Then
         assertEquals("6", result);
-        verify(asylumCase).read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS);
-        verify(existingData).getHistory();
+        verify(data).getHistory();
     }
 
     @Test
@@ -554,19 +534,158 @@ class CcdDataServiceTest {
         historyList.add(new IdValue<>("2", mock(StatutoryTimeframe24WeeksHistory.class)));
         historyList.add(new IdValue<>("15", mock(StatutoryTimeframe24WeeksHistory.class)));
         
-        AsylumCase asylumCase = mock(AsylumCase.class);
-        StatutoryTimeframe24Weeks existingData = mock(StatutoryTimeframe24Weeks.class);
-        when(existingData.getHistory()).thenReturn(historyList);
-        when(asylumCase.read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS))
-            .thenReturn(Optional.of(existingData));
+        StatutoryTimeframe24Weeks data = mock(StatutoryTimeframe24Weeks.class);
+        when(data.getHistory()).thenReturn(historyList);
 
         // When
-        String result = ccdDataService.nextHistoryId(asylumCase);
+        String result = ccdDataService.nextHistoryId(Optional.of(data));
 
         // Then
         assertEquals("16", result);
-        verify(asylumCase).read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS);
+        verify(data).getHistory();
+    }
+
+    @Test
+    void shouldThrowExceptionWhenStatutoryTimeframeStatusAlreadySet() {
+        // Given
+        String userToken = "test-user-token";
+        String s2sToken = "test-s2s-token";
+        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+            .status("Yes")
+            .caseType("HU")
+            .build());
+
+        when(idamService.getServiceUserToken()).thenReturn(userToken);
+        when(serviceAuthorization.generate()).thenReturn(s2sToken);
+
+        // Create existing data with history
+        StatutoryTimeframe24WeeksHistory existingHistoryEntry = mock(StatutoryTimeframe24WeeksHistory.class);
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> existingHistoryList = new ArrayList<>();
+        existingHistoryList.add(new IdValue<>("1", existingHistoryEntry));
+
+        StatutoryTimeframe24Weeks existingData = mock(StatutoryTimeframe24Weeks.class);
+        when(existingData.getHistory()).thenReturn(existingHistoryList);
+        when(existingData.getCurrentStatusAutoGenerated()).thenReturn(YesOrNo.NO);
+        when(existingData.getCurrentHomeOfficeCaseTypeAutoGenerated()).thenReturn("EEA");
+
+        AsylumCase mockAsylumCase = mock(AsylumCase.class);
+        when(mockAsylumCase.read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS))
+            .thenReturn(Optional.of(existingData));
+
+        StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
+        @SuppressWarnings("unchecked")
+        CaseDetails<AsylumCase> mockCaseDetails = mock(CaseDetails.class);
+        when(mockCaseDetails.getId()).thenReturn(12345L);
+        when(mockCaseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
+        when(mockCaseDetails.getCreatedDate()).thenReturn(java.time.LocalDateTime.now());
+        when(mockCaseDetails.getCaseData()).thenReturn(mockAsylumCase);
+
+        when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
+        lenient().when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
+        lenient().when(mockStartEventDetails.getEventId()).thenReturn(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS);
+
+        when(ccdDataApi.startEventByCase(
+            eq("Bearer test-user-token"),
+            eq("test-s2s-token"),
+            eq("12345"),
+            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
+        )).thenReturn(mockStartEventDetails);
+
+        // When & Then
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+
+        assertEquals(
+            "Statutory timeframe status has already been set to 'No' for case type 'EEA' for caseId: 12345",
+            exception.getMessage()
+        );
+
+        verify(idamService).getServiceUserToken();
+        verify(serviceAuthorization).generate();
+        verify(ccdDataApi).startEventByCase(
+            "Bearer " + userToken,
+            s2sToken,
+            "12345",
+            Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
+        );
+        verify(mockAsylumCase).read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS);
         verify(existingData).getHistory();
+        verify(existingData).getCurrentStatusAutoGenerated();
+        verify(existingData).getCurrentHomeOfficeCaseTypeAutoGenerated();
+    }
+
+    @Test
+    void shouldThrowExceptionWhenStatusAlreadySetToYes() {
+        // Given
+        String userToken = "test-user-token";
+        String s2sToken = "test-s2s-token";
+        testDto.setCcdCaseId(99999L);
+        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+            .status("No")
+            .caseType("PA")
+            .build());
+
+        when(idamService.getServiceUserToken()).thenReturn(userToken);
+        when(serviceAuthorization.generate()).thenReturn(s2sToken);
+
+        // Create existing data with multiple history entries
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> existingHistoryList = new ArrayList<>();
+        existingHistoryList.add(new IdValue<>("1", mock(StatutoryTimeframe24WeeksHistory.class)));
+        existingHistoryList.add(new IdValue<>("2", mock(StatutoryTimeframe24WeeksHistory.class)));
+
+        StatutoryTimeframe24Weeks existingData = mock(StatutoryTimeframe24Weeks.class);
+        when(existingData.getHistory()).thenReturn(existingHistoryList);
+        when(existingData.getCurrentStatusAutoGenerated()).thenReturn(YesOrNo.YES);
+        when(existingData.getCurrentHomeOfficeCaseTypeAutoGenerated()).thenReturn("HU");
+
+        AsylumCase mockAsylumCase = mock(AsylumCase.class);
+        when(mockAsylumCase.read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS))
+            .thenReturn(Optional.of(existingData));
+
+        StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
+        @SuppressWarnings("unchecked")
+        CaseDetails<AsylumCase> mockCaseDetails = mock(CaseDetails.class);
+        when(mockCaseDetails.getId()).thenReturn(99999L);
+        when(mockCaseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
+        when(mockCaseDetails.getCreatedDate()).thenReturn(java.time.LocalDateTime.now());
+        when(mockCaseDetails.getCaseData()).thenReturn(mockAsylumCase);
+
+        when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
+        lenient().when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
+        lenient().when(mockStartEventDetails.getEventId()).thenReturn(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS);
+
+        when(ccdDataApi.startEventByCase(
+            eq("Bearer test-user-token"),
+            eq("test-s2s-token"),
+            eq("99999"),
+            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
+        )).thenReturn(mockStartEventDetails);
+
+        // When & Then
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+
+        assertEquals(
+            "Statutory timeframe status has already been set to 'Yes' for case type 'HU' for caseId: 99999",
+            exception.getMessage()
+        );
+        
+        verify(idamService).getServiceUserToken();
+        verify(serviceAuthorization).generate();
+        verify(ccdDataApi).startEventByCase(
+            "Bearer " + userToken,
+            s2sToken,
+            "99999",
+            Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
+        );
+        verify(mockAsylumCase).read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS);
+        verify(existingData).getHistory();
+        verify(existingData).getCurrentStatusAutoGenerated();
+        verify(existingData).getCurrentHomeOfficeCaseTypeAutoGenerated();
     }
 
 }
