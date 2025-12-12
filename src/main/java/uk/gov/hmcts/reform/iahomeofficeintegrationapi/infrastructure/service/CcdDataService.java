@@ -89,29 +89,30 @@ public class CcdDataService {
             log.info("Start case details id: {}", caseDetails.getId());
             log.info("Start case details state: {}", caseDetails.getState());
             log.info("Start case details created date: {}", caseDetails.getCreatedDate());
-            log.debug("Start case details data: {}", caseDetails.getCaseData());
+            AsylumCase asylumCase = caseDetails.getCaseData();
+            log.debug("Start case details data: {}", asylumCase);
+
+            String historyId = nextHistoryId(asylumCase);
+
+            Map<String, Object> eventData = new HashMap<>();
+            eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w(historyId, hoStatutoryTimeframeDto));
+            eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_REASON_FIELD, STATUTORY_TIMEFRAME_REASON);
+            String homeCaseType = hoStatutoryTimeframeDto.getStf24weeks().getCaseType();
+            eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE_FIELD, homeCaseType);
+       
+            log.debug("Event data to be submitted: {}", eventData);    
+            log.info("Submitting event with method: {} for caseId: {} with Home Office statutory timeframe status: {}, caseType: {}", 
+                     eventId, caseId,
+                     hoStatutoryTimeframeDto.getStf24weeks().getStatus(),
+                     homeCaseType);
+            
+            SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, eventData, startEventDetails.getToken(), eventId, true);
+
+            log.info("Home Office statutory timeframe status updated for the caseId: {}, Status: {}, Message: {}", caseId,
+                     submitEventDetails.getCallbackResponseStatusCode(), submitEventDetails.getCallbackResponseStatus());
+
+            return submitEventDetails;
         }
-
-        String historyId = nextHistoryId(caseDetails);
-
-        Map<String, Object> eventData = new HashMap<>();
-        eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w(historyId, hoStatutoryTimeframeDto));
-        eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_REASON_FIELD, STATUTORY_TIMEFRAME_REASON);
-        String homeCaseType = hoStatutoryTimeframeDto.getStf24weeks().getCaseType();
-        eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE_FIELD, homeCaseType);
-   
-        log.debug("Event data to be submitted: {}", eventData);    
-        log.info("Submitting event with method: {} for caseId: {} with Home Office statutory timeframe status: {}, caseType: {}", 
-                 eventId, caseId,
-                 hoStatutoryTimeframeDto.getStf24weeks().getStatus(),
-                 homeCaseType);
-        
-        SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, eventData, startEventDetails.getToken(), eventId, true);
-
-        log.info("Home Office statutory timeframe status updated for the caseId: {}, Status: {}, Message: {}", caseId,
-                 submitEventDetails.getCallbackResponseStatusCode(), submitEventDetails.getCallbackResponseStatus());
-
-        return submitEventDetails;
     }
 
     private StartEventDetails getStartEventByCase(
@@ -174,9 +175,7 @@ public class CcdDataService {
         
     }
 
-    private String nextHistoryId(CaseDetails<AsylumCase> caseDetails) {
-        AsylumCase asylumCase = caseDetails.getCaseData();
-        
+    public String nextHistoryId(AsylumCase asylumCase) {
         Optional<StatutoryTimeframe24Weeks> existingData = 
             asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS);
         
