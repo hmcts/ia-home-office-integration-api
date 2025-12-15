@@ -43,6 +43,7 @@ spring:
 
 security:
   anonymousPaths:
+    - "/home-office-statutory-timeframe-status" 
     - "/"
     - "/health"
     - "/health/liveness"
