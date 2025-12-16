@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.controllers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,7 +15,9 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 
 import java.util.HashMap;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,8 +26,65 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
     @Mock
     private CcdDataService ccdDataService;
 
+    @Mock
+    private HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto;
+
+    @Mock
+    private SubmitEventDetails submitEventDetails;
+
     @InjectMocks
     private SetHomeOfficeStatutoryTimeframeStatusController controller;
+
+    @BeforeEach
+    void setUp() {
+        controller = new SetHomeOfficeStatutoryTimeframeStatusController(ccdDataService);
+    }
+
+    @Test
+    void should_return_s2s_token_successfully() {
+        // Given
+        String expectedToken = "test-s2s-token-value";
+        when(ccdDataService.generateS2SToken()).thenReturn(expectedToken);
+
+        // When
+        ResponseEntity<String> response = controller.getS2SToken();
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(expectedToken);
+        verify(ccdDataService).generateS2SToken();
+    }
+
+    @Test
+    void should_call_ccd_data_service_to_generate_s2s_token() {
+        // Given
+        String expectedToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
+        when(ccdDataService.generateS2SToken()).thenReturn(expectedToken);
+
+        // When
+        controller.getS2SToken();
+
+        // Then
+        verify(ccdDataService).generateS2SToken();
+    }
+
+    @Test
+    void should_update_statutory_timeframe_status_successfully() {
+        // Given
+        String s2sToken = "Bearer test-token";
+        when(submitEventDetails.getCallbackResponseStatusCode()).thenReturn(200);
+        when(ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto))
+            .thenReturn(submitEventDetails);
+
+        // When
+        ResponseEntity<SubmitEventDetails> response = 
+            controller.updateHomeOfficeStatutoryTimeframeStatus(s2sToken, hoStatutoryTimeframeDto);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(submitEventDetails);
+        verify(ccdDataService).setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
+    }
 
     @Test
     void should_return_success_response_when_update_home_office_statutory_timeframe_status() {

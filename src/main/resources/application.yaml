@@ -21,7 +21,7 @@ spring:
   application:
     name: Home Office Integration API
   main:
-      allow-bean-definition-overriding: true
+    allow-bean-definition-overriding: true
   jackson.date-format: yyyy-MM-dd
   security:
     oauth2:
@@ -43,7 +43,7 @@ spring:
 
 security:
   anonymousPaths:
-    - "/home-office-statutory-timeframe-status" 
+    - "/s2stoken"
     - "/"
     - "/health"
     - "/health/liveness"

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service.CcdDataService;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Tag(name = "Set Home Office statutory timeframe status controller")
 @OpenAPIDefinition(tags = {@Tag(name = "SetHomeOfficeStatutoryTimeframeStatusController", description = "Set Home Office statutory timeframe status")})
@@ -68,6 +69,24 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         log.info("HTTP POST /home-office-statutory-timeframe-status endpoint called with payload: {}", hoStatutoryTimeframeDto);
         SubmitEventDetails response = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
         return ResponseEntity.status(response.getCallbackResponseStatusCode()).body(response);
+    }
+
+    @Operation(
+        summary = "Get S2S token",
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Returns S2S token",
+                content = @Content(schema = @Schema(implementation = String.class))
+            )
+        }
+    )
+    @GetMapping(path = "/s2stoken", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> getS2SToken() {
+        log.info("HTTP GET /s2stoken endpoint called");
+        String s2sToken = ccdDataService.generateS2SToken();
+        log.info("S2S token value: {}", s2sToken);
+        return ResponseEntity.ok(s2sToken);
     }
 
 }
