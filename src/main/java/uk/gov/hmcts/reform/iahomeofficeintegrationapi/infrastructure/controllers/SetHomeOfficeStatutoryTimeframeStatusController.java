@@ -78,9 +78,10 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
                 responseCode = "200",
                 description = "Returns S2S token",
                 content = @Content(schema = @Schema(implementation = String.class))
-            )
+                )
         }
     )
+    
     @GetMapping(path = "/s2stoken", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> getS2SToken() {
         log.info("HTTP GET /s2stoken endpoint called");
