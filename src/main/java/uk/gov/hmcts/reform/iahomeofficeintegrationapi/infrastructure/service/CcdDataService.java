@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +20,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDe
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StartEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeframe24Weeks;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeframe24WeeksHistory;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
@@ -32,6 +36,11 @@ public class CcdDataService {
 
     private static final String STATUTORY_TIMEFRAME_REASON = "Home Office initial determination";
     private static final String STATUTORY_TIMEFRAME_USER = "Home Office Integration API";
+    private static final String STATUTORY_TIMEFRAME_24_WEEKS_REASON_FIELD = "statutoryTimeframe24WeeksReason";
+    private static final String STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE_FIELD = "statutoryTimeframe24WeeksHomeOfficeCaseType";
+    private static final String EVENT_METADATA_ID_KEY = "id";
+    private static final String EVENT_METADATA_SUMMARY_KEY = "summary";
+    private static final String EVENT_METADATA_DESCRIPTION_KEY = "description";
 
     private final CcdDataApi ccdDataApi;
     private final IdamService idamService;
@@ -51,7 +60,11 @@ public class CcdDataService {
 
     public SubmitEventDetails setHomeOfficeStatutoryTimeframeStatus(HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
 
-        String eventId = Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString();
+        boolean isStatusNo = hoStatutoryTimeframeDto.getStf24weeks().getStatus().equalsIgnoreCase("no");
+        Event event = isStatusNo 
+            ? Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS 
+            : Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS;
+        String eventId = event.toString();
         String caseId = String.valueOf(hoStatutoryTimeframeDto.getCcdCaseId());
 
         String userToken;
@@ -80,23 +93,33 @@ public class CcdDataService {
             log.info("Start case details id: {}", caseDetails.getId());
             log.info("Start case details state: {}", caseDetails.getState());
             log.info("Start case details created date: {}", caseDetails.getCreatedDate());
-            log.debug("Start case details data: {}", caseDetails.getCaseData());
+            AsylumCase asylumCase = caseDetails.getCaseData();
+            log.debug("Start case details data: {}", asylumCase);
+
+            Optional<StatutoryTimeframe24Weeks> existingData = asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS);
+            String newHistoryId = nextHistoryId(existingData);
+
+            checkStatusNotAlreadySet(newHistoryId, existingData, caseId);
+
+            Map<String, Object> eventData = new HashMap<>();
+            eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w(newHistoryId, hoStatutoryTimeframeDto));
+            eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_REASON_FIELD, STATUTORY_TIMEFRAME_REASON);
+            String homeCaseType = hoStatutoryTimeframeDto.getStf24weeks().getCaseType();
+            eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE_FIELD, homeCaseType);
+       
+            log.debug("Event data to be submitted: {}", eventData);    
+            log.info("Submitting event with method: {} for caseId: {} with Home Office statutory timeframe status: {}, caseType: {}", 
+                     eventId, caseId,
+                     hoStatutoryTimeframeDto.getStf24weeks().getStatus(),
+                     homeCaseType);
+            
+            SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, eventData, startEventDetails.getToken(), eventId, true);
+
+            log.info("Home Office statutory timeframe status updated for the caseId: {}, Status: {}, Message: {}", caseId,
+                     submitEventDetails.getCallbackResponseStatusCode(), submitEventDetails.getCallbackResponseStatus());
+
+            return submitEventDetails;
         }
-
-        Map<String, Object> eventData = new HashMap<>();
-        eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w("1", hoStatutoryTimeframeDto));
-        eventData.put("statutoryTimeframe24WeeksReason", STATUTORY_TIMEFRAME_REASON);
-   
-        log.debug("Event data to be submitted: {}", eventData);    
-        log.info("Submitting event with method: {} for caseId: {} with Home Office statutory timeframe status: {}", eventId, caseId,
-                 hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus());
-        
-        SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, eventData, startEventDetails.getToken(), eventId, true);
-
-        log.info("Home Office statutory timeframe status updated for the caseId: {}, Status: {}, Message: {}", caseId,
-                 submitEventDetails.getCallbackResponseStatusCode(), submitEventDetails.getCallbackResponseStatus());
-
-        return submitEventDetails;
     }
 
     private StartEventDetails getStartEventByCase(
@@ -112,9 +135,9 @@ public class CcdDataService {
         log.info("Event data to be submitted: {}", eventData);
         
         Map<String, Object> eventMetadata = new HashMap<>();
-        eventMetadata.put("id", eventId);
-        eventMetadata.put("summary", "");
-        eventMetadata.put("description", "");
+        eventMetadata.put(EVENT_METADATA_ID_KEY, eventId);
+        eventMetadata.put(EVENT_METADATA_SUMMARY_KEY, "");
+        eventMetadata.put(EVENT_METADATA_DESCRIPTION_KEY, "");
         
         CaseDataContent requestBody =
             new CaseDataContent(caseId, eventData, eventMetadata, eventToken, ignoreWarning);
@@ -130,20 +153,79 @@ public class CcdDataService {
         return ccdDataApi.submitEventByCase(userToken, s2sToken, caseId, requestBody);
     }
 
-    public List<IdValue<StatutoryTimeframe24Weeks>> toStf4w(String id, HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
+    public StatutoryTimeframe24Weeks toStf4w(String id, HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
         
-        YesOrNo status = hoStatutoryTimeframeDto.isHoStatutoryTimeframeStatus() ? YesOrNo.YES : YesOrNo.NO;
+        boolean isYes = hoStatutoryTimeframeDto.getStf24weeks().getStatus().equalsIgnoreCase("yes");
+        YesOrNo status = isYes ? YesOrNo.YES : YesOrNo.NO;
+        String homeOfficeCaseType = hoStatutoryTimeframeDto.getStf24weeks().getCaseType();
         String dateTimeAdded = hoStatutoryTimeframeDto.getTimeStamp().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         
-        StatutoryTimeframe24Weeks statutoryTimeframeValue = new StatutoryTimeframe24Weeks(
+        StatutoryTimeframe24WeeksHistory historyEntry = new StatutoryTimeframe24WeeksHistory(
             status,
             STATUTORY_TIMEFRAME_REASON,
+            homeOfficeCaseType,
             STATUTORY_TIMEFRAME_USER,
             dateTimeAdded
         );
+
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList = new ArrayList<>();
+        historyList.add(new IdValue<>(id, historyEntry));
+
+        log.info("new StatutoryTimeframe24Weeks created with status: {}, homeOfficeCaseType: {}, history size: {}",
+                 status, homeOfficeCaseType, historyList.size());
+
+        return new StatutoryTimeframe24Weeks(
+            status,
+            homeOfficeCaseType,
+            historyList
+        );
         
-        IdValue<StatutoryTimeframe24Weeks> idValue = new IdValue<>(id, statutoryTimeframeValue);
+    }
+
+    public String nextHistoryId(Optional<StatutoryTimeframe24Weeks> existingData) {
+        if (existingData.isEmpty()) {
+            log.info("No existing statutory timeframe 24 weeks data found, returning historyId: 1");
+            return "1";
+        }
         
-        return List.of(idValue);
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> existingHistory = 
+            existingData.get().getHistory();
+        
+        if (existingHistory == null || existingHistory.isEmpty()) {
+            log.info("Existing statutory timeframe 24 weeks data has no history, returning historyId: 1");
+            return "1";
+        }
+        
+        int maxId = existingHistory.stream()
+            .map(IdValue::getId)
+            .mapToInt(Integer::parseInt)
+            .max()
+            .orElse(0);
+        
+        String nextId = String.valueOf(maxId + 1);
+        log.info("Found {} existing history entries, max ID: {}, returning next historyId: {}", 
+                 existingHistory.size(), maxId, nextId);
+        
+        return nextId;
+    }
+
+    private void checkStatusNotAlreadySet(
+        String newHistoryId,
+        Optional<StatutoryTimeframe24Weeks> existingData,
+        String caseId) {
+        
+        if (!newHistoryId.equals("1")) {
+            YesOrNo existingStatus = existingData.get().getCurrentStatusAutoGenerated();
+            String existingCaseType = existingData.get().getCurrentHomeOfficeCaseTypeAutoGenerated();
+            
+            String errorMessage = String.format(
+                "Statutory timeframe status has already been set to '%s' for case type '%s' for caseId: %s",
+                existingStatus,
+                existingCaseType,
+                caseId
+            );
+            log.error(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
     }
 }

@@ -75,7 +75,18 @@ caseworker-ia-system:
      https://ia-case-api-pr-2856-home-office-integration-api.preview.platform.hmcts.net/home-office-statutory-timeframe-status \
      -H "Content-Type: application/json" \
      -H "ServiceAuthorization: Bearer YOUR_S2S_TOKEN_HERE" \
-     -d '{"ccdCaseId":1764079412780130,"uan":"1234-5678-9012-3455","familyName":"Smith","givenNames":"John","dateOfBirth":"1990-01-15","stf24weeks":true,"timeStamp":"2025-11-24T10:30:00"}' \
+     -d '{
+       "ccdCaseId": 1764079412780130,
+       "uan": "1234-5678-9012-3455",
+       "familyName": "Smith",
+       "givenNames": "John",
+       "dateOfBirth": "1990-01-15",
+       "stf24weeks": {
+         "status": "Yes",
+         "caseType": "EEA"
+       },
+       "timeStamp": "2025-11-24T10:30:00"
+     }' \
      -w "\nStatus: %{http_code}\n"
    ```
 
