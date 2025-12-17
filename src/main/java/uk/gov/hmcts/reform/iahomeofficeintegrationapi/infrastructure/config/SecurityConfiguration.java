@@ -26,7 +26,9 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AuthorizedRolesProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.CcdEventAuthorizor;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SpringAuthorizedRolesProvider;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Configuration
 @ConfigurationProperties(prefix = "security")
 @EnableWebSecurity
@@ -70,6 +72,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .sessionManagement().sessionCreationPolicy(STATELESS)
             .and()
             .exceptionHandling()
+            .authenticationEntryPoint((request, response, authException) -> {
+                log.info("Authentication failed for request to {}: {}",
+                    request.getRequestURI(), authException.getMessage());
+                log.info("Authorization header: {}", request.getHeader("Authorization"));
+                log.info("ServiceAuthorization header: {}", request.getHeader("ServiceAuthorization"));
+                response.sendError(401, authException.getMessage());
+            })
+            .accessDeniedHandler((request, response, accessDeniedException) -> {
+                log.info("Access denied for request to {}: {}",
+                    request.getRequestURI(), accessDeniedException.getMessage());
+                response.sendError(403, accessDeniedException.getMessage());
+            })
             .and()
             .csrf().disable()
             .formLogin().disable()

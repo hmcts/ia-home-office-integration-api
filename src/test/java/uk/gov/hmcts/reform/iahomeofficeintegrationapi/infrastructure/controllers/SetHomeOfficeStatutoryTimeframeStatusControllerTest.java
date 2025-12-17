@@ -111,4 +111,28 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
     }
+
+    @Test
+    void getS2SToken_shouldReturnS2SToken() {
+        String expectedToken = "test-s2s-token";
+        when(ccdDataService.generateS2SToken()).thenReturn(expectedToken);
+
+        ResponseEntity<String> response = controller.getS2SToken();
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(expectedToken);
+        verify(ccdDataService).generateS2SToken();
+    }
+
+    @Test
+    void getServiceUserToken_shouldReturnServiceUserToken() {
+        String expectedToken = "test-service-user-token";
+        when(ccdDataService.getServiceUserToken()).thenReturn(expectedToken);
+
+        ResponseEntity<String> response = controller.getServiceUserToken();
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(expectedToken);
+        verify(ccdDataService).getServiceUserToken();
+    }
 }

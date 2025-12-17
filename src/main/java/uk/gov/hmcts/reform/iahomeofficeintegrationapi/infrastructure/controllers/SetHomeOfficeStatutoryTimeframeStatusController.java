@@ -90,4 +90,23 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         return ResponseEntity.ok(s2sToken);
     }
 
+    @Operation(
+        summary = "Get service user token",
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Returns service user token",
+                content = @Content(schema = @Schema(implementation = String.class))
+                )
+        }
+    )
+    
+    @GetMapping(path = "/serviceusertoken", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> getServiceUserToken() {
+        log.info("HTTP GET /serviceusertoken endpoint called");
+        String serviceUserToken = ccdDataService.getServiceUserToken();
+        log.info("Service user token value: {}", serviceUserToken);
+        return ResponseEntity.ok(serviceUserToken);
+    }
+
 }
