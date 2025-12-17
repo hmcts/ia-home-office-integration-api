@@ -70,7 +70,7 @@ public class CcdDataService {
         String userToken;
         String s2sToken;
         try {
-            userToken = "Bearer " + idamService.getServiceUserToken();
+            userToken = "Bearer " + getServiceUserToken();
             log.info("A System user token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
             s2sToken = generateS2SToken();
@@ -234,5 +234,12 @@ public class CcdDataService {
         String s2sToken = serviceAuthorization.generate();
         log.info("S2S token generated successfully");
         return s2sToken;
+    }
+
+    public String getServiceUserToken() {
+        log.info("Generating service user token");
+        String serviceUserToken = idamService.getServiceUserToken();
+        log.info("Service user token generated successfully");
+        return serviceUserToken;
     }
 }
