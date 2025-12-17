@@ -43,6 +43,7 @@ spring:
 
 security:
   anonymousPaths:
+    - "/serviceusertoken"
     - "/s2stoken"
     - "/"
     - "/health"
