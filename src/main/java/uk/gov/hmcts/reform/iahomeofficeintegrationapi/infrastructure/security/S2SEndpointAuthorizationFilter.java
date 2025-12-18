@@ -52,28 +52,34 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
         try {
             String serviceName = getServiceName(s2sToken);
             log.info("S2S service '{}' attempting to access endpoint: {}", serviceName, requestPath);
+            log.info("Home Office allowed services: {}", homeOfficeServices);
+            log.info("Home Office allowed endpoints: {}", homeOfficeAllowedEndpoints);
 
             // If service is Home Office, check if endpoint is allowed
             if (homeOfficeServices.contains(serviceName)) {
+                log.info("Service '{}' identified as Home Office service", serviceName);
                 if (!isHomeOfficeAllowedToAccessEndpoint(requestPath)) {
-                    log.error("Home Office service '{}' is not authorised to access endpoint: {}",
-                        serviceName, requestPath);
+                    log.error("Access DENIED: Home Office service '{}' is not authorised to access endpoint '{}'. Allowed endpoints: {}",
+                        serviceName, requestPath, homeOfficeAllowedEndpoints);
                     throw new AccessDeniedException(
                         "Service '" + serviceName + "' is not authorised to access endpoint: " + requestPath
                     );
                 }
-                log.info("Home Office service '{}' is authorised to access endpoint: {}",
+                log.info("Access GRANTED: Home Office service '{}' is authorised to access endpoint '{}'",
                     serviceName, requestPath);
             } else {
                 // Ministry of Justice services can access all endpoints
-                log.info("Ministry of Justice service '{}' is authorised to access all endpoints", serviceName);
+                log.info("Access GRANTED: Ministry of Justice service '{}' is authorised to access all endpoints", serviceName);
             }
 
             filterChain.doFilter(request, response);
 
         } catch (AccessDeniedException e) {
-            log.error("Access denied: {}", e.getMessage());
+            log.error("Access denied for endpoint '{}': {}", requestPath, e.getMessage());
             response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+        } catch (Exception e) {
+            log.error("Error validating S2S token for endpoint '{}': {}", requestPath, e.getMessage(), e);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid S2S token");
         }
     }
 
