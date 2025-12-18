@@ -70,11 +70,8 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
                         "Service '" + serviceName + "' is not authorised to access endpoint: " + requestPath
                     );
                 }
-                log.info("Access GRANTED: IAC service '{}' is authorised to access endpoint '{}'",
-                    serviceName, requestPath);
-            }
-            // Check if service is Home Office service
-            else if (homeOfficeServices.contains(serviceName)) {
+                log.info("Access GRANTED: IAC service '{}' is authorised to access endpoint '{}'", serviceName, requestPath);
+            } else if (homeOfficeServices.contains(serviceName)) {
                 log.info("Service '{}' identified as Home Office service", serviceName);
                 log.info("Home Office allowed endpoints: {}", homeOfficeAllowedEndpoints);
                 if (!isEndpointAllowed(requestPath, homeOfficeAllowedEndpoints)) {
