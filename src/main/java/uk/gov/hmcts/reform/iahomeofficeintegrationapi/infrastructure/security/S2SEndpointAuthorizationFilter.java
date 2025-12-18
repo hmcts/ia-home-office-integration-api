@@ -21,6 +21,12 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
     private static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
     private static final String BEARER = "Bearer ";
 
+    @Value("#{'${idam.s2s-authorised.iac-services.allowed-endpoints}'.split(',')}")
+    private List<String> iacAllowedEndpoints;
+
+    @Value("#{'${idam.s2s-authorised.iac-services.allowed-services}'.split(',')}")
+    private List<String> iacServices;
+
     @Value("#{'${idam.s2s-authorised.home-office-immigration.allowed-endpoints}'.split(',')}")
     private List<String> homeOfficeAllowedEndpoints;
 
@@ -52,13 +58,26 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
         try {
             String serviceName = getServiceName(s2sToken);
             log.info("S2S service '{}' attempting to access endpoint: {}", serviceName, requestPath);
-            log.info("Home Office allowed services: {}", homeOfficeServices);
-            log.info("Home Office allowed endpoints: {}", homeOfficeAllowedEndpoints);
 
-            // If service is Home Office, check if endpoint is allowed
-            if (homeOfficeServices.contains(serviceName)) {
+            // Check if service is IAC service
+            if (iacServices.contains(serviceName)) {
+                log.info("Service '{}' identified as IAC service", serviceName);
+                log.info("IAC allowed endpoints: {}", iacAllowedEndpoints);
+                if (!isEndpointAllowed(requestPath, iacAllowedEndpoints)) {
+                    log.error("Access DENIED: IAC service '{}' is not authorised to access endpoint '{}'. Allowed endpoints: {}",
+                        serviceName, requestPath, iacAllowedEndpoints);
+                    throw new AccessDeniedException(
+                        "Service '" + serviceName + "' is not authorised to access endpoint: " + requestPath
+                    );
+                }
+                log.info("Access GRANTED: IAC service '{}' is authorised to access endpoint '{}'",
+                    serviceName, requestPath);
+            }
+            // Check if service is Home Office service
+            else if (homeOfficeServices.contains(serviceName)) {
                 log.info("Service '{}' identified as Home Office service", serviceName);
-                if (!isHomeOfficeAllowedToAccessEndpoint(requestPath)) {
+                log.info("Home Office allowed endpoints: {}", homeOfficeAllowedEndpoints);
+                if (!isEndpointAllowed(requestPath, homeOfficeAllowedEndpoints)) {
                     log.error("Access DENIED: Home Office service '{}' is not authorised to access endpoint '{}'. Allowed endpoints: {}",
                         serviceName, requestPath, homeOfficeAllowedEndpoints);
                     throw new AccessDeniedException(
@@ -68,8 +87,8 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
                 log.info("Access GRANTED: Home Office service '{}' is authorised to access endpoint '{}'",
                     serviceName, requestPath);
             } else {
-                // Ministry of Justice services can access all endpoints
-                log.info("Access GRANTED: Ministry of Justice service '{}' is authorised to access all endpoints", serviceName);
+                // Other MOJ services can access all endpoints
+                log.info("Access GRANTED: MOJ service '{}' is authorised to access all endpoints", serviceName);
             }
 
             filterChain.doFilter(request, response);
@@ -83,8 +102,8 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
         }
     }
 
-    private boolean isHomeOfficeAllowedToAccessEndpoint(String requestPath) {
-        return homeOfficeAllowedEndpoints.stream()
+    private boolean isEndpointAllowed(String requestPath, List<String> allowedEndpoints) {
+        return allowedEndpoints.stream()
             .anyMatch(requestPath::startsWith);
     }
 

@@ -37,7 +37,13 @@ class S2SEndpointAuthorizationFilterTest {
     void setUp() {
         filter = new S2SEndpointAuthorizationFilter(authTokenValidator);
         
-        // Set configuration values using ReflectionTestUtils
+        // Set IAC configuration values
+        ReflectionTestUtils.setField(filter, "iacAllowedEndpoints", 
+            List.of("/asylum/ccdAboutToStart", "/asylum/ccdAboutToSubmit"));
+        ReflectionTestUtils.setField(filter, "iacServices", 
+            List.of("iac"));
+        
+        // Set Home Office configuration values
         ReflectionTestUtils.setField(filter, "homeOfficeAllowedEndpoints", 
             List.of("/home-office-statutory-timeframe-status"));
         ReflectionTestUtils.setField(filter, "homeOfficeServices", 
@@ -154,6 +160,38 @@ class S2SEndpointAuthorizationFilterTest {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+        verify(authTokenValidator).getServiceName("Bearer " + token);
+    }
+
+    @Test
+    void should_allow_iac_service_to_access_allowed_endpoints() throws ServletException, IOException {
+        // Given
+        String token = "test-token";
+        request.setRequestURI("/asylum/ccdAboutToStart");
+        request.addHeader("ServiceAuthorization", token);
+        when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn("iac");
+
+        // When
+        filter.doFilterInternal(request, response, filterChain);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+        verify(authTokenValidator).getServiceName("Bearer " + token);
+    }
+
+    @Test
+    void should_deny_iac_service_access_to_unauthorized_endpoint() throws ServletException, IOException {
+        // Given
+        String token = "test-token";
+        request.setRequestURI("/s2stoken");
+        request.addHeader("ServiceAuthorization", token);
+        when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn("iac");
+
+        // When
+        filter.doFilterInternal(request, response, filterChain);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
         verify(authTokenValidator).getServiceName("Bearer " + token);
     }
 }
