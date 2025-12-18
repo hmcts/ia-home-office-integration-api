@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AuthorizedRolesProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.CcdEventAuthorizor;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SpringAuthorizedRolesProvider;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.S2SEndpointAuthorizationFilter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -41,11 +42,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final Converter<Jwt, Collection<GrantedAuthority>> idamAuthoritiesConverter;
     private final ServiceAuthFilter serviceAuthFiler;
+    private final S2SEndpointAuthorizationFilter s2SEndpointAuthorizationFilter;
 
     public SecurityConfiguration(Converter<Jwt, Collection<GrantedAuthority>> idamAuthoritiesConverter,
-                                 ServiceAuthFilter serviceAuthFiler) {
+                                 ServiceAuthFilter serviceAuthFiler,
+                                 S2SEndpointAuthorizationFilter s2SEndpointAuthorizationFilter) {
         this.idamAuthoritiesConverter = idamAuthoritiesConverter;
         this.serviceAuthFiler = serviceAuthFiler;
+        this.s2SEndpointAuthorizationFilter = s2SEndpointAuthorizationFilter;
     }
 
     public List<String> getAnonymousPaths() {
@@ -69,6 +73,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         http
             .addFilterBefore(serviceAuthFiler, AbstractPreAuthenticatedProcessingFilter.class)
+            .addFilterAfter(s2SEndpointAuthorizationFilter, ServiceAuthFilter.class)
             .sessionManagement().sessionCreationPolicy(STATELESS)
             .and()
             .exceptionHandling()

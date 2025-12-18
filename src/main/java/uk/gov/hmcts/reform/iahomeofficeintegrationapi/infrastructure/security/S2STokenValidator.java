@@ -38,6 +38,22 @@ public class S2STokenValidator {
         log.info("Service '{}' is authorised", serviceName);
     }
 
+    public void checkIfServiceIsAllowed(String token, List<String> allowedServices) {
+        log.info("Validating S2S token for service authentication. Token: {}", token);
+        String serviceName = authenticate(token);
+        if (!Objects.nonNull(serviceName)) {
+            log.error("Service name from S2S token is null");
+            throw new AccessDeniedException("Service name from S2S token ('ServiceAuthorization' header) is null");
+        }
+        log.info("S2S token validated for service: {}", serviceName);
+        log.info("Allowed services for this endpoint: {}", allowedServices);
+        if (!allowedServices.contains(serviceName)) {
+            log.error("Service name '{}' is not allowed to access this endpoint. Allowed services: {}", serviceName, allowedServices);
+            throw new AccessDeniedException("Service '" + serviceName + "' is not authorised to access this endpoint.");
+        }
+        log.info("Service '{}' is authorised for this endpoint", serviceName);
+    }
+
     private String authenticate(String authHeader) {
         String bearerAuthToken = getBearerToken(authHeader);
         log.info("Bearer auth token: {}", bearerAuthToken);
