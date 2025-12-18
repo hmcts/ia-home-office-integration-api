@@ -8,11 +8,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -34,6 +36,13 @@ class S2SEndpointAuthorizationFilterTest {
     @BeforeEach
     void setUp() {
         filter = new S2SEndpointAuthorizationFilter(authTokenValidator);
+        
+        // Set configuration values using ReflectionTestUtils
+        ReflectionTestUtils.setField(filter, "homeOfficeAllowedEndpoints", 
+            List.of("/home-office-statutory-timeframe-status"));
+        ReflectionTestUtils.setField(filter, "homeOfficeServices", 
+            List.of("home-office-immigration"));
+        
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
         filterChain = new MockFilterChain();

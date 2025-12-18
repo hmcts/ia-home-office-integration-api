@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -16,23 +16,22 @@ import java.util.List;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
 
     private static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
     private static final String BEARER = "Bearer ";
 
-    // Define which endpoints Home Office can access
-    private static final List<String> HOME_OFFICE_ALLOWED_ENDPOINTS = List.of(
-        "/home-office-statutory-timeframe-status"
-    );
+    @Value("#{'${idam.s2s-authorised.home-office-immigration.allowed-endpoints}'.split(',')}")
+    private List<String> homeOfficeAllowedEndpoints;
 
-    // Define Home Office service names
-    private static final List<String> HOME_OFFICE_SERVICES = List.of(
-        "home-office-immigration"
-    );
+    @Value("#{'${idam.s2s-authorised.home-office-immigration.allowed-services}'.split(',')}")
+    private List<String> homeOfficeServices;
 
     private final AuthTokenValidator authTokenValidator;
+
+    public S2SEndpointAuthorizationFilter(AuthTokenValidator authTokenValidator) {
+        this.authTokenValidator = authTokenValidator;
+    }
 
     @Override
     protected void doFilterInternal(
@@ -55,7 +54,7 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
             log.info("S2S service '{}' attempting to access endpoint: {}", serviceName, requestPath);
 
             // If service is Home Office, check if endpoint is allowed
-            if (HOME_OFFICE_SERVICES.contains(serviceName)) {
+            if (homeOfficeServices.contains(serviceName)) {
                 if (!isHomeOfficeAllowedToAccessEndpoint(requestPath)) {
                     log.error("Home Office service '{}' is not authorised to access endpoint: {}",
                         serviceName, requestPath);
@@ -79,7 +78,7 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private boolean isHomeOfficeAllowedToAccessEndpoint(String requestPath) {
-        return HOME_OFFICE_ALLOWED_ENDPOINTS.stream()
+        return homeOfficeAllowedEndpoints.stream()
             .anyMatch(requestPath::startsWith);
     }
 
