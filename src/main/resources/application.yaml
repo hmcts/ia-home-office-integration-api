@@ -254,7 +254,7 @@ idam:
   s2s-authorised:
     services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
     iac-services:
-      allowed-services: ${IAC_ALLOWED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
+      allowed-services: ${IAC_ALLOWED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps}
       allowed-endpoints: ${IAC_ALLOWED_ENDPOINTS:/asylum/ccdAboutToStart,/asylum/ccdAboutToSubmit}
     home-office-immigration:
       allowed-services: ${HOME_OFFICE_ALLOWED_SERVICES:iac}
