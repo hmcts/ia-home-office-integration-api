@@ -82,11 +82,11 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         }
     )
     
+    //Do not merge this endpoint. It used only for exploring purposes to get S2S token.
     @GetMapping(path = "/s2stoken", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> getS2SToken() {
         log.info("HTTP GET /s2stoken endpoint called");
         String s2sToken = ccdDataService.generateS2SToken();
-        log.info("S2S token value: {}", s2sToken);
         return ResponseEntity.ok(s2sToken);
     }
 
@@ -100,12 +100,11 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
                 )
         }
     )
-    
+    //Do not merge this endpoint. It used only for exploring purposes to get service user token.
     @GetMapping(path = "/serviceusertoken", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> getServiceUserToken() {
         log.info("HTTP GET /serviceusertoken endpoint called");
         String serviceUserToken = ccdDataService.getServiceUserToken();
-        log.info("Service user token value: {}", serviceUserToken);
         return ResponseEntity.ok(serviceUserToken);
     }
 

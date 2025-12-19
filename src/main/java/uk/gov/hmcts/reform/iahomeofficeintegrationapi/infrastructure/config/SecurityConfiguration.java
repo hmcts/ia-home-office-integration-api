@@ -80,8 +80,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .authenticationEntryPoint((request, response, authException) -> {
                 log.info("Authentication failed for request to {}: {}",
                     request.getRequestURI(), authException.getMessage());
-                log.info("Authorization header: {}", request.getHeader("Authorization"));
-                log.info("ServiceAuthorization header: {}", request.getHeader("ServiceAuthorization"));
                 response.sendError(401, authException.getMessage());
             })
             .accessDeniedHandler((request, response, accessDeniedException) -> {

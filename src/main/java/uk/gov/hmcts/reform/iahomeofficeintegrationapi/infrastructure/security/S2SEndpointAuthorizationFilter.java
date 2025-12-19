@@ -84,8 +84,10 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
                 log.info("Access GRANTED: Home Office service '{}' is authorised to access endpoint '{}'",
                     serviceName, requestPath);
             } else {
-                // Other MOJ services can access all endpoints
-                log.info("Access GRANTED: MOJ service '{}' is authorised to access all endpoints", serviceName);
+                log.info("Access not Granted: toservice '{}' is not authorised to access all endpoints", serviceName);
+                throw new AccessDeniedException(
+                    "Service '" + serviceName + "' is not authorised to access this endpoint: " + requestPath
+                );
             }
 
             filterChain.doFilter(request, response);
