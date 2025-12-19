@@ -97,3 +97,64 @@ caseworker-ia-system:
    ```bash
    kubectl delete pod -n ia ia-case-api-pr-2856-home-office-integration-api-568d84dfb7cr5fm
    ```
+
+## Spring Security Configuration
+
+When the home office endpoint is **not** configured as an anonymous path, it requires both a User Service Token and an S2S Token. The S2S Token must include the `home-office-integration` service name.
+
+### Authentication Requirements
+
+- **Authorization Header**: User Service Token
+- **ServiceAuthorization Header**: S2S Token (with `home-office-integration` service name)
+
+### Service Authorization Configuration
+
+Check the `s2s-authorised` configuration in `application.yaml` to see:
+- Services authorized to access all IAC endpoints
+- Services authorized to access the `home-office-statutory-timeframe-status` endpoint
+
+### Making Authenticated Requests
+
+Example curl command with full authentication:
+
+```bash
+curl -X POST \
+  https://ia-case-api-pr-2908-home-office-integration-api.preview.platform.hmcts.net/home-office-statutory-timeframe-status \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <User Service Token>" \
+  -H "ServiceAuthorization: Bearer <S2S Token>" \
+  -d '{
+    "ccdCaseId": 1765790176250362,
+    "uan": "1234-5678-9012-3556",
+    "familyName": "Smith",
+    "givenNames": "John",
+    "dateOfBirth": "1990-01-15",
+    "stf24weeks": {
+      "status": "Yes",
+      "caseType": "EEA"
+    },
+    "timeStamp": "2025-12-15T10:30:00"
+  }' \
+  --max-time 30 \
+  -v
+```
+
+### Simplified Testing (Temporary Endpoints)
+
+For easier testing, temporary endpoints are available that return tokens for IAC. **These will be removed before merging the PR.**
+
+Get S2S Token:
+```bash
+curl -X GET \
+  https://ia-case-api-pr-2908-home-office-integration-api.preview.platform.hmcts.net/s2stoken \
+  -H "Accept: text/plain" \
+  -w "\nStatus: %{http_code}\n"
+```
+
+Get Service User Token:
+```bash
+curl -X GET \
+  https://ia-case-api-pr-2908-home-office-integration-api.preview.platform.hmcts.net/serviceusertoken \
+  -H "Accept: text/plain" \
+  -w "\nStatus: %{http_code}\n"
+```

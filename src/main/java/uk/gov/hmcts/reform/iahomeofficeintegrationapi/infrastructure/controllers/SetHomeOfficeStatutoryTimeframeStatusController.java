@@ -83,6 +83,7 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
     )
     
     //Do not merge this endpoint. It used only for exploring purposes to get S2S token.
+    //Remove it from anonymous path too before merging.
     @GetMapping(path = "/s2stoken", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> getS2SToken() {
         log.info("HTTP GET /s2stoken endpoint called");
@@ -101,6 +102,7 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         }
     )
     //Do not merge this endpoint. It used only for exploring purposes to get service user token.
+    //Remove it from anonymous path too before merging.
     @GetMapping(path = "/serviceusertoken", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> getServiceUserToken() {
         log.info("HTTP GET /serviceusertoken endpoint called");

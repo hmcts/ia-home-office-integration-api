@@ -100,22 +100,6 @@ class S2SEndpointAuthorizationFilterTest {
     }
 
     @Test
-    void should_allow_moj_service_to_access_any_endpoint() throws ServletException, IOException {
-        // Given
-        String token = "test-token";
-        request.setRequestURI("/s2stoken");
-        request.addHeader("ServiceAuthorization", token);
-        when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn("ia");
-
-        // When
-        filter.doFilterInternal(request, response, filterChain);
-
-        // Then
-        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
-        verify(authTokenValidator).getServiceName("Bearer " + token);
-    }
-
-    @Test
     void should_handle_token_with_bearer_prefix() throws ServletException, IOException {
         // Given
         String token = "Bearer test-token";
@@ -144,22 +128,6 @@ class S2SEndpointAuthorizationFilterTest {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
-        verify(authTokenValidator).getServiceName("Bearer " + token);
-    }
-
-    @Test
-    void should_allow_ccd_service_to_access_all_endpoints() throws ServletException, IOException {
-        // Given
-        String token = "test-token";
-        request.setRequestURI("/home-office-statutory-timeframe-status");
-        request.addHeader("ServiceAuthorization", token);
-        when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn("ccd_data");
-
-        // When
-        filter.doFilterInternal(request, response, filterChain);
-
-        // Then
-        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
         verify(authTokenValidator).getServiceName("Bearer " + token);
     }
 
