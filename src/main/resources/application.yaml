@@ -254,10 +254,10 @@ idam:
   s2s-authorised:
     services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
     iac-services:
-      allowed-services: ${IAC_ALLOWED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps}
+      allowed-services: ${IAC_ALLOWED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac,home-office-immigration}
       allowed-endpoints: ${IAC_ALLOWED_ENDPOINTS:/asylum/ccdAboutToStart,/asylum/ccdAboutToSubmit}
     home-office-immigration:
-      allowed-services: ${HOME_OFFICE_ALLOWED_SERVICES:iac}
+      allowed-services: ${HOME_OFFICE_ALLOWED_SERVICES:home-office-immigration}
       allowed-endpoints: ${HOME_OFFICE_ALLOWED_ENDPOINTS:/home-office-statutory-timeframe-status}
   ia_system_user:
     username: ${IA_SYSTEM_USERNAME:system-user}
