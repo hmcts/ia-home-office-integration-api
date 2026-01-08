@@ -110,6 +110,7 @@ When the home office endpoint is **not** configured as an anonymous path, it req
 ### Service Authorization Configuration
 
 Check the `s2s-authorised` configuration in `application.yaml` to see:
+
 - Services authorized to access all IAC endpoints
 - Services authorized to access the `home-office-statutory-timeframe-status` endpoint
 
@@ -144,6 +145,7 @@ curl -X POST \
 For easier testing, temporary endpoints are available that return tokens for IAC. **These will be removed before merging the PR.**
 
 Get S2S Token:
+
 ```bash
 curl -X GET \
   https://ia-case-api-pr-2908-home-office-integration-api.preview.platform.hmcts.net/s2stoken \
@@ -152,6 +154,7 @@ curl -X GET \
 ```
 
 Get Service User Token:
+
 ```bash
 curl -X GET \
   https://ia-case-api-pr-2908-home-office-integration-api.preview.platform.hmcts.net/serviceusertoken \

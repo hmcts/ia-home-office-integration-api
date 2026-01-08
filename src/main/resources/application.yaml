@@ -252,7 +252,7 @@ idam:
     microservice: ${IA_S2S_MICROSERVICE:ia}
     url: ${S2S_URL:http://127.0.0.1:4502}
   s2s-authorised:
-    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
+    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac,home-office-immigration}
     iac-services:
       allowed-services: ${IAC_ALLOWED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac,home-office-immigration}
       allowed-endpoints: ${IAC_ALLOWED_ENDPOINTS:/asylum/ccdAboutToStart,/asylum/ccdAboutToSubmit}
