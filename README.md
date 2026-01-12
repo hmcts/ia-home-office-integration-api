@@ -1,6 +1,6 @@
 # ia-home-office-integration-api
 
-Service to trigger Home Office API calls (ATLAS)
+Service to trigger Home Office API calls (ATLAS).
 
 ### Background
 
