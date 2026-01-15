@@ -49,7 +49,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .dateOfBirth(LocalDate.of(1990, 5, 15))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .stf24wHomeOfficeCohort("HU")
+                .caseType("HU")
                 .build())
             .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 45))
             .build();
@@ -74,7 +74,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .dateOfBirth(LocalDate.of(1985, 3, 20))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("No")
-                .stf24wHomeOfficeCohort("HU")
+                .caseType("HU")
                 .build())
             .timeStamp(LocalDateTime.of(2024, 1, 15, 10, 20, 30))
             .build();
@@ -99,7 +99,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .dateOfBirth(LocalDate.of(2000, 12, 31))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .stf24wHomeOfficeCohort("HU")
+                .caseType("HU")
                 .build())
             .timeStamp(LocalDateTime.of(2024, 6, 15, 23, 59, 59))
             .build();
@@ -124,7 +124,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .dateOfBirth(LocalDate.of(1995, 6, 10))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("No")
-                .stf24wHomeOfficeCohort("HU")
+                .caseType("HU")
                 .build())
             .timeStamp(LocalDateTime.of(2023, 1, 1, 0, 0, 0))
             .build();
@@ -149,7 +149,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .dateOfBirth(LocalDate.of(1995, 6, 10))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("No")
-                .stf24wHomeOfficeCohort("HU")
+                .caseType("HU")
                 .build())
             .timeStamp(LocalDateTime.of(2023, 1, 1, 0, 0, 0))
             .build();
@@ -176,7 +176,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .dateOfBirth(LocalDate.of(1995, 6, 10))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .stf24wHomeOfficeCohort("HU")
+                .caseType("HU")
                 .build())
             .timeStamp(LocalDateTime.of(2023, 1, 1, 12, 30, 45))
             .build();
@@ -203,7 +203,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .dateOfBirth(LocalDate.of(1995, 6, 10))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .stf24wHomeOfficeCohort("HU")
+                .caseType("HU")
                 .build())
             .timeStamp(LocalDateTime.of(2023, 1, 1, 12, 30, 45))
             .build();

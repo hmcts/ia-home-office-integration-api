@@ -68,7 +68,7 @@ class CcdDataServiceTest {
         testDto.setCcdCaseId(12345L);
         testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
             .status("Yes")
-            .stf24wHomeOfficeCohort("HU")
+            .caseType("HU")
             .build());
         testDto.setTimeStamp(LocalDateTime.of(2023, 12, 1, 0, 0, 0));
 
@@ -122,7 +122,7 @@ class CcdDataServiceTest {
         // Given
         testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
             .status("Yes")
-            .stf24wHomeOfficeCohort("HU")
+            .caseType("HU")
             .build());
         testDto.setTimeStamp(LocalDateTime.of(2023, 12, 1, 10, 15, 30));
 
@@ -149,7 +149,7 @@ class CcdDataServiceTest {
         // Given
         testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
             .status("No")
-            .stf24wHomeOfficeCohort("HU")
+            .caseType("HU")
             .build());
 
         // When
@@ -214,7 +214,7 @@ class CcdDataServiceTest {
         String s2sToken = "test-s2s-token";
         testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
             .status("Yes")
-            .stf24wHomeOfficeCohort("HU")
+            .caseType("HU")
             .build());
 
         when(idamService.getServiceUserToken()).thenReturn(userToken);
@@ -281,7 +281,7 @@ class CcdDataServiceTest {
         String s2sToken = "test-s2s-token";
         testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
             .status("No")
-            .stf24wHomeOfficeCohort("HU")
+            .caseType("HU")
             .build());
 
         when(idamService.getServiceUserToken()).thenReturn(userToken);
@@ -347,7 +347,7 @@ class CcdDataServiceTest {
         String userToken = "test-user-token";
         testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
             .status("Yes")
-            .stf24wHomeOfficeCohort("HU")
+            .caseType("HU")
             .build());
         testDto.setTimeStamp(LocalDateTime.of(2024, 1, 15, 0, 0, 0));
 
@@ -405,7 +405,7 @@ class CcdDataServiceTest {
     void shouldFormatDateTimeCorrectlyInToStf4wMethod() {
         testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
             .status("Yes")
-            .stf24wHomeOfficeCohort("HU")
+            .caseType("HU")
             .build());
         testDto.setTimeStamp(LocalDateTime.of(2024, 6, 15, 14, 28, 18));
 
@@ -423,7 +423,7 @@ class CcdDataServiceTest {
         // Given
         testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
             .status("Yes")
-            .stf24wHomeOfficeCohort("HU")
+            .caseType("HU")
             .build());
         testDto.setTimeStamp(LocalDateTime.of(2024, 1, 1, 12, 0, 0));
 
@@ -551,7 +551,7 @@ class CcdDataServiceTest {
         String s2sToken = "test-s2s-token";
         testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
             .status("Yes")
-            .stf24wHomeOfficeCohort("HU")
+            .caseType("HU")
             .build());
 
         when(idamService.getServiceUserToken()).thenReturn(userToken);
@@ -622,7 +622,7 @@ class CcdDataServiceTest {
         testDto.setCcdCaseId(99999L);
         testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
             .status("No")
-            .stf24wHomeOfficeCohort("PA")
+            .caseType("PA")
             .build());
 
         String s2sToken = "test-s2s-token";
