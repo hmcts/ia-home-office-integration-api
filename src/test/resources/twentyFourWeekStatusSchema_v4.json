@@ -34,7 +34,7 @@
       },
       "required": [
         "status",
-        "caseType"
+        "stf24wHomeOfficeCohort"
       ]
     },
     "timeStamp": {

@@ -81,8 +81,8 @@ public class HomeOfficeStatutoryTimeframeDto {
         @Pattern(regexp = "^(([Yy][Ee][Ss])|([Nn][Oo]))$", message = "Status must be 'Yes', 'No', 'YES', 'NO', 'yes', or 'no'")
         private String status;
 
-        @JsonProperty(value = "caseType", required = true)
+        @JsonProperty(value = "stf24wHomeOfficeCohort", required = true)
         @NotNull
-        private String caseType;
+        private String stf24wHomeOfficeCohort;
     }
 }

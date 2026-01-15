@@ -35,7 +35,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .dateOfBirth(LocalDate.of(1990, 1, 1))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .stf24wHomeOfficeCohort("HU")
                 .build())
             .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 0))
             .build();
@@ -58,7 +58,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .dateOfBirth(LocalDate.of(1990, 1, 1))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .stf24wHomeOfficeCohort("HU")
                 .build())
             .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 0))
             .build();
@@ -84,7 +84,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .dateOfBirth(LocalDate.of(1990, 1, 1))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .stf24wHomeOfficeCohort("HU")
                 .build())
             .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 0))
             .build();
@@ -110,7 +110,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .dateOfBirth(LocalDate.of(1990, 1, 1))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .stf24wHomeOfficeCohort("HU")
                 .build())
             .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 0))
             .build();
@@ -135,7 +135,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .dateOfBirth(LocalDate.of(1985, 5, 15))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .stf24wHomeOfficeCohort("HU")
                 .build())
             .timeStamp(LocalDateTime.of(2024, 1, 15, 10, 20, 30))
             .build();
@@ -158,7 +158,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .dateOfBirth(LocalDate.of(1990, 1, 1))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .stf24wHomeOfficeCohort("HU")
                 .build())
             .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 0))
             .build();
@@ -183,7 +183,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .dateOfBirth(null)
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .stf24wHomeOfficeCohort("HU")
                 .build())
             .timeStamp(null)
             .build();

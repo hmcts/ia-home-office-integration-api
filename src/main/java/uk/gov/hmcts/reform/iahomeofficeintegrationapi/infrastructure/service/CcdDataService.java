@@ -37,7 +37,7 @@ public class CcdDataService {
     private static final String STATUTORY_TIMEFRAME_REASON = "Home Office initial determination";
     private static final String STATUTORY_TIMEFRAME_USER = "Home Office Integration API";
     private static final String STATUTORY_TIMEFRAME_24_WEEKS_REASON_FIELD = "statutoryTimeframe24WeeksReason";
-    private static final String STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE_FIELD = "statutoryTimeframe24WeeksHomeOfficeCaseType";
+    private static final String STF_24W_HOME_OFFICE_COHORT = "stf24wHomeOfficeCohort";
     private static final String EVENT_METADATA_ID_KEY = "id";
     private static final String EVENT_METADATA_SUMMARY_KEY = "summary";
     private static final String EVENT_METADATA_DESCRIPTION_KEY = "description";
@@ -104,14 +104,14 @@ public class CcdDataService {
             Map<String, Object> eventData = new HashMap<>();
             eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w(newHistoryId, hoStatutoryTimeframeDto));
             eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_REASON_FIELD, STATUTORY_TIMEFRAME_REASON);
-            String homeCaseType = hoStatutoryTimeframeDto.getStf24weeks().getCaseType();
-            eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE_FIELD, homeCaseType);
+            String stf24wHomeOfficeCohort = hoStatutoryTimeframeDto.getStf24weeks().getStf24wHomeOfficeCohort();
+            eventData.put(STF_24W_HOME_OFFICE_COHORT, stf24wHomeOfficeCohort);
        
             log.debug("Event data to be submitted: {}", eventData);    
             log.info("Submitting event with method: {} for caseId: {} with Home Office statutory timeframe status: {}, caseType: {}", 
                      eventId, caseId,
                      hoStatutoryTimeframeDto.getStf24weeks().getStatus(),
-                     homeCaseType);
+                     stf24wHomeOfficeCohort);
             
             SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, eventData, startEventDetails.getToken(), eventId, true);
 
@@ -157,7 +157,7 @@ public class CcdDataService {
         
         boolean isYes = hoStatutoryTimeframeDto.getStf24weeks().getStatus().equalsIgnoreCase("yes");
         YesOrNo status = isYes ? YesOrNo.YES : YesOrNo.NO;
-        String homeOfficeCaseType = hoStatutoryTimeframeDto.getStf24weeks().getCaseType();
+        String homeOfficeCaseType = hoStatutoryTimeframeDto.getStf24weeks().getStf24wHomeOfficeCohort();
         String dateTimeAdded = hoStatutoryTimeframeDto.getTimeStamp().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         
         StatutoryTimeframe24WeeksHistory historyEntry = new StatutoryTimeframe24WeeksHistory(
