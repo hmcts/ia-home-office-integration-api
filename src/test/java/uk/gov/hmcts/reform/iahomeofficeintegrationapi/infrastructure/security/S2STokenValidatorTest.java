@@ -24,61 +24,10 @@ class S2STokenValidatorTest {
     private AuthTokenValidator authTokenValidator;
 
     private S2STokenValidator s2STokenValidator;
-    private List<String> authorisedServices;
 
     @BeforeEach
     void setUp() {
-        authorisedServices = Arrays.asList("ia", "ccd_data", "ccd_gw");
-        s2STokenValidator = new S2STokenValidator(authorisedServices, authTokenValidator);
-    }
-
-    @Test
-    void should_pass_validation_when_service_is_authorised() {
-        // Given
-        String token = "test-token";
-        String serviceName = "ia";
-        when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn(serviceName);
-
-        // When & Then
-        assertDoesNotThrow(() -> s2STokenValidator.checkIfServiceIsAllowed(token));
-        verify(authTokenValidator).getServiceName("Bearer " + token);
-    }
-
-    @Test
-    void should_throw_exception_when_service_name_is_null() {
-        // Given
-        String token = "test-token";
-        when(authTokenValidator.getServiceName(anyString())).thenReturn(null);
-
-        // When & Then
-        assertThatThrownBy(() -> s2STokenValidator.checkIfServiceIsAllowed(token))
-            .isInstanceOf(AccessDeniedException.class)
-            .hasMessage("Service name from S2S token ('ServiceAuthorization' header) is null");
-    }
-
-    @Test
-    void should_throw_exception_when_service_is_not_authorised() {
-        // Given
-        String token = "test-token";
-        String serviceName = "unauthorised_service";
-        when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn(serviceName);
-
-        // When & Then
-        assertThatThrownBy(() -> s2STokenValidator.checkIfServiceIsAllowed(token))
-            .isInstanceOf(AccessDeniedException.class)
-            .hasMessage("Service name from S2S token ('ServiceAuthorization' header) is not recognised.");
-    }
-
-    @Test
-    void should_handle_token_with_bearer_prefix() {
-        // Given
-        String token = "Bearer test-token";
-        String serviceName = "ia";
-        when(authTokenValidator.getServiceName(token)).thenReturn(serviceName);
-
-        // When & Then
-        assertDoesNotThrow(() -> s2STokenValidator.checkIfServiceIsAllowed(token));
-        verify(authTokenValidator).getServiceName(token);
+        s2STokenValidator = new S2STokenValidator(authTokenValidator);
     }
 
     @Test
