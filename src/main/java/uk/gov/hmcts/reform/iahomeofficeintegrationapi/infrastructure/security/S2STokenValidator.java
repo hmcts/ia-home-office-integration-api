@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
