@@ -17,24 +17,7 @@ public class S2STokenValidator {
 
     private static final String BEARER = "Bearer ";
 
-    @Value("${idam.s2s-authorised.services}")
-    private final List<String> iaS2sAuthorisedServices;
-
     private final AuthTokenValidator authTokenValidator;
-
-    public void checkIfServiceIsAllowed(String token) {
-        String serviceName = authenticate(token);
-        if (!Objects.nonNull(serviceName)) {
-            log.error("Service name from S2S token is null");
-            throw new AccessDeniedException("Service name from S2S token ('ServiceAuthorization' header) is null");
-        }
-        log.info("S2S token validated for service: {}", serviceName);
-        if (!iaS2sAuthorisedServices.contains(serviceName)) {
-            log.error("Service name '{}' was not recognised for S2S authentication. Please check s2s-authorised.services in application.yaml", serviceName);
-            throw new AccessDeniedException("Service name from S2S token ('ServiceAuthorization' header) is not recognised.");
-        }
-        log.info("Service '{}' is authorised", serviceName);
-    }
 
     public void checkIfServiceIsAllowed(String token, List<String> allowedServices) {
         String serviceName = authenticate(token);
