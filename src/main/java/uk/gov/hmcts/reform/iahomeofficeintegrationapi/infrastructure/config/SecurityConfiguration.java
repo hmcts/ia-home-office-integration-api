@@ -21,7 +21,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
-import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AuthorizedRolesProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.CcdEventAuthorizor;
@@ -41,14 +40,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final Map<String, List<Event>> roleEventAccess = new HashMap<>();
 
     private final Converter<Jwt, Collection<GrantedAuthority>> idamAuthoritiesConverter;
-    private final ServiceAuthFilter serviceAuthFilter;
     private final S2SEndpointAuthorizationFilter s2SEndpointAuthorizationFilter;
 
     public SecurityConfiguration(Converter<Jwt, Collection<GrantedAuthority>> idamAuthoritiesConverter,
-                                 ServiceAuthFilter serviceAuthFilter,
                                  S2SEndpointAuthorizationFilter s2SEndpointAuthorizationFilter) {
         this.idamAuthoritiesConverter = idamAuthoritiesConverter;
-        this.serviceAuthFilter = serviceAuthFilter;
         this.s2SEndpointAuthorizationFilter = s2SEndpointAuthorizationFilter;
     }
 
@@ -72,8 +68,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(idamAuthoritiesConverter);
 
         http
-            .addFilterBefore(serviceAuthFilter, AbstractPreAuthenticatedProcessingFilter.class)
-            .addFilterAfter(s2SEndpointAuthorizationFilter, ServiceAuthFilter.class)
+            .addFilterBefore(s2SEndpointAuthorizationFilter, AbstractPreAuthenticatedProcessingFilter.class)
             .sessionManagement().sessionCreationPolicy(STATELESS)
             .and()
             .exceptionHandling()
