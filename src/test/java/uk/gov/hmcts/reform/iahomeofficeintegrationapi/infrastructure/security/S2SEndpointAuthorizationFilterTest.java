@@ -37,11 +37,11 @@ class S2SEndpointAuthorizationFilterTest {
     void setUp() {
         filter = new S2SEndpointAuthorizationFilter(authTokenValidator);
         
-        // Set IAC configuration values
+        // Set IAC configuration values - matching application.yaml
         ReflectionTestUtils.setField(filter, "iacAllowedEndpoints", 
             List.of("/asylum/ccdAboutToStart", "/asylum/ccdAboutToSubmit"));
         ReflectionTestUtils.setField(filter, "iacServices", 
-            List.of("iac"));
+            List.of("ccd", "ccd_data", "ccd_gw", "ccd_ps", "iac"));
         
         // Set Home Office configuration values
         ReflectionTestUtils.setField(filter, "homeOfficeAllowedEndpoints", 
@@ -161,5 +161,35 @@ class S2SEndpointAuthorizationFilterTest {
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
         verify(authTokenValidator).getServiceName("Bearer " + token);
+    }
+
+    @Test
+    void should_allow_ccd_service_to_access_allowed_endpoints() throws ServletException, IOException {
+        // Given
+        String token = "test-token";
+        request.setRequestURI("/asylum/ccdAboutToSubmit");
+        request.addHeader("ServiceAuthorization", token);
+        when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn("ccd");
+
+        // When
+        filter.doFilterInternal(request, response, filterChain);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+    }
+
+    @Test
+    void should_allow_ccd_data_service_to_access_allowed_endpoints() throws ServletException, IOException {
+        // Given
+        String token = "test-token";
+        request.setRequestURI("/asylum/ccdAboutToStart");
+        request.addHeader("ServiceAuthorization", token);
+        when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn("ccd_data");
+
+        // When
+        filter.doFilterInternal(request, response, filterChain);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
     }
 }
