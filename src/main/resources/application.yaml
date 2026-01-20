@@ -53,6 +53,7 @@ security:
     - "/v2/api-docs"
     - "/webjars/springfox-swagger-ui/**"
     - "/favicon.ico"
+    - "/home-office-statutory-timeframe-status"
   authorisedRoles:
     - "caseworker-ia"
     - "citizen"
