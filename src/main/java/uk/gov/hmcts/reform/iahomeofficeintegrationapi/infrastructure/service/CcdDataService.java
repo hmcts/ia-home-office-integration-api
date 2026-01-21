@@ -107,13 +107,13 @@ public class CcdDataService {
 
             Map<String, Object> eventData = new HashMap<>();
             eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w(newHistoryId, hoStatutoryTimeframeDto));
-            eventData.put(STF_24W_CURRENT_REASON_AUTO_GENERATED.value(), STATUTORY_TIMEFRAME_REASON);
             String[] stf24wHomeOfficeCohort = hoStatutoryTimeframeDto.getStf24weeks().getCohorts();
             eventData.put(STF_24W_HOME_OFFICE_COHORT.value(), Arrays.stream(stf24wHomeOfficeCohort).collect(Collectors.joining(",")));
             boolean isYes = hoStatutoryTimeframeDto.getStf24weeks().getStatus().equalsIgnoreCase(YesOrNo.YES.toString());
             YesOrNo status = isYes ? YesOrNo.YES : YesOrNo.NO;
             eventData.put(STF_24W_CURRENT_STATUS_AUTO_GENERATED.value(), status);
-       
+            log.debug("Setting Event data Siva: {}", eventData);
+            eventData.put(STF_24W_CURRENT_REASON_AUTO_GENERATED.value(), STATUTORY_TIMEFRAME_REASON);
             log.debug("Event data to be submitted: {}", eventData);    
             log.info("Submitting event with method: {} for caseId: {} with Home Office statutory timeframe status: {}, home office cohorts: {}",
                      eventId, caseId,
