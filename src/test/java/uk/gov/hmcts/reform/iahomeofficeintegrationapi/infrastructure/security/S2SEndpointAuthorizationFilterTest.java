@@ -192,4 +192,55 @@ class S2SEndpointAuthorizationFilterTest {
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
     }
+
+    @Test
+    void should_allow_service_in_multiple_groups_to_access_endpoints_from_any_group() throws ServletException, IOException {
+        // Given - iac service is in both iacServices and homeOfficeServices
+        ReflectionTestUtils.setField(filter, "homeOfficeServices",
+            List.of("home-office-immigration", "iac"));
+
+        String token = "test-token";
+        request.setRequestURI("/home-office-statutory-timeframe-status");
+        request.addHeader("ServiceAuthorization", token);
+        when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn("iac");
+
+        // When
+        filter.doFilterInternal(request, response, filterChain);
+
+        // Then - iac can access home-office endpoint because it's in homeOfficeServices
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+    }
+
+    @Test
+    void should_allow_service_in_multiple_groups_to_access_iac_endpoints() throws ServletException, IOException {
+        // Given - iac service is in both iacServices and homeOfficeServices
+        ReflectionTestUtils.setField(filter, "homeOfficeServices",
+            List.of("home-office-immigration", "iac"));
+
+        String token = "test-token";
+        request.setRequestURI("/asylum/ccdAboutToStart");
+        request.addHeader("ServiceAuthorization", token);
+        when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn("iac");
+
+        // When
+        filter.doFilterInternal(request, response, filterChain);
+
+        // Then - iac can still access IAC endpoints
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+    }
+
+    @Test
+    void should_deny_unknown_service() throws ServletException, IOException {
+        // Given
+        String token = "test-token";
+        request.setRequestURI("/asylum/ccdAboutToStart");
+        request.addHeader("ServiceAuthorization", token);
+        when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn("unknown-service");
+
+        // When
+        filter.doFilterInternal(request, response, filterChain);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
+    }
 }
