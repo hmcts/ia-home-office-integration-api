@@ -44,11 +44,15 @@ class S2SEndpointAuthorizationFilterTest {
             List.of("ccd", "ccd_data", "ccd_gw", "ccd_ps", "iac"));
         
         // Set Home Office configuration values
-        ReflectionTestUtils.setField(filter, "homeOfficeAllowedEndpoints", 
+        ReflectionTestUtils.setField(filter, "homeOfficeAllowedEndpoints",
             List.of("/home-office-statutory-timeframe-status"));
-        ReflectionTestUtils.setField(filter, "homeOfficeServices", 
+        ReflectionTestUtils.setField(filter, "homeOfficeServices",
             List.of("home-office-immigration"));
-        
+
+        // Set anonymous paths - these bypass S2S validation entirely
+        ReflectionTestUtils.setField(filter, "anonymousPaths",
+            List.of("/health", "/"));
+
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
         filterChain = new MockFilterChain();
@@ -242,5 +246,35 @@ class S2SEndpointAuthorizationFilterTest {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
+    }
+
+    @Test
+    void should_skip_s2s_validation_for_anonymous_paths() throws ServletException, IOException {
+        // Given - anonymous path with invalid S2S token
+        String invalidToken = "invalid-token";
+        request.setRequestURI("/health");
+        request.addHeader("ServiceAuthorization", invalidToken);
+
+        // When
+        filter.doFilterInternal(request, response, filterChain);
+
+        // Then - should pass without validating the token
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+        verify(authTokenValidator, never()).getServiceName(anyString());
+    }
+
+    @Test
+    void should_skip_s2s_validation_for_anonymous_path_subpath() throws ServletException, IOException {
+        // Given - subpath of anonymous path
+        String invalidToken = "invalid-token";
+        request.setRequestURI("/health/liveness");
+        request.addHeader("ServiceAuthorization", invalidToken);
+
+        // When
+        filter.doFilterInternal(request, response, filterChain);
+
+        // Then - should pass without validating the token
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+        verify(authTokenValidator, never()).getServiceName(anyString());
     }
 }

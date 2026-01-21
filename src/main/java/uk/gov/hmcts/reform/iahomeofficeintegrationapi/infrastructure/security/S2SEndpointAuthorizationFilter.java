@@ -33,6 +33,9 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
     @Value("#{'${idam.s2s-authorised.home-office-immigration.allowed-services}'.split(',')}")
     private List<String> homeOfficeServices;
 
+    @Value("#{'${security.anonymousPaths:}'.split(',')}")
+    private List<String> anonymousPaths;
+
     private final AuthTokenValidator authTokenValidator;
 
     public S2SEndpointAuthorizationFilter(AuthTokenValidator authTokenValidator) {
@@ -47,6 +50,14 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         String requestPath = request.getRequestURI();
+
+        // Skip S2S validation for anonymous paths
+        if (isAnonymousPath(requestPath)) {
+            log.info("Skipping S2S validation for anonymous path: {}", requestPath);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String s2sToken = request.getHeader(SERVICE_AUTHORIZATION_HEADER);
 
         if (s2sToken == null) {
@@ -119,5 +130,11 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
     private String getServiceName(String authHeader) {
         String bearerAuthToken = authHeader.startsWith(BEARER) ? authHeader : BEARER.concat(authHeader);
         return authTokenValidator.getServiceName(bearerAuthToken);
+    }
+
+    private boolean isAnonymousPath(String requestPath) {
+        return anonymousPaths.stream()
+            .filter(path -> path != null && !path.trim().isEmpty())
+            .anyMatch(path -> requestPath.equals(path.trim()) || requestPath.startsWith(path.trim() + "/"));
     }
 }
