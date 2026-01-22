@@ -98,7 +98,7 @@ public class CcdDataService {
             log.info("Start case details state: {}", caseDetails.getState());
             log.info("Start case details created date: {}", caseDetails.getCreatedDate());
             AsylumCase asylumCase = caseDetails.getCaseData();
-            log.debug("Start case details data: {}", asylumCase);
+            log.info("Start case details data: {}", asylumCase);
 
             Optional<StatutoryTimeframe24Weeks> existingData = asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS);
             String newHistoryId = nextHistoryId(existingData);
@@ -112,7 +112,7 @@ public class CcdDataService {
             boolean isYes = hoStatutoryTimeframeDto.getStf24weeks().getStatus().equalsIgnoreCase(YesOrNo.YES.toString());
             YesOrNo status = isYes ? YesOrNo.YES : YesOrNo.NO;
             eventData.put(STF_24W_CURRENT_STATUS_AUTO_GENERATED.value(), status);
-            log.debug("Setting Event data Siva: {}", eventData);
+            log.info("Setting Event data: {}", eventData);
             eventData.put(STF_24W_CURRENT_REASON_AUTO_GENERATED.value(), STATUTORY_TIMEFRAME_REASON);
             log.debug("Event data to be submitted: {}", eventData);    
             log.info("Submitting event with method: {} for caseId: {} with Home Office statutory timeframe status: {}, home office cohorts: {}",
