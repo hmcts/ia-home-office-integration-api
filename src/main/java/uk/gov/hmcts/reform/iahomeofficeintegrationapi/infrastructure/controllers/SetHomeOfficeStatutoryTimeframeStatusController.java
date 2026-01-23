@@ -7,8 +7,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -51,6 +53,10 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
                 @ApiResponse(
                     responseCode = "403",
                     description = "Calling service is not authorised to use this endpoint",
+                    content = @Content(schema = @Schema(implementation = String.class))),
+                @ApiResponse(
+                    responseCode = "409",
+                    description = "Statutory timeframe status has already been set for this case",
                     content = @Content(schema = @Schema(implementation = String.class))),
                 @ApiResponse(
                     responseCode = "500",
@@ -108,6 +114,12 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         log.info("HTTP GET /serviceusertoken endpoint called");
         String serviceUserToken = ccdDataService.getServiceUserToken();
         return ResponseEntity.ok(serviceUserToken);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
+        log.error("Conflict error: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
 }
