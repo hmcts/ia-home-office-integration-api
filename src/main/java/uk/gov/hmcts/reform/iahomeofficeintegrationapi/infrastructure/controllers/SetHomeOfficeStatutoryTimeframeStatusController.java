@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service.CcdDataService;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -53,6 +54,10 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
                 @ApiResponse(
                     responseCode = "403",
                     description = "Calling service is not authorised to use this endpoint",
+                    content = @Content(schema = @Schema(implementation = String.class))),
+                @ApiResponse(
+                    responseCode = "404",
+                    description = "Case not found",
                     content = @Content(schema = @Schema(implementation = String.class))),
                 @ApiResponse(
                     responseCode = "409",
@@ -120,6 +125,17 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
     public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
         log.error("Conflict error: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(HomeOfficeResponseException.class)
+    public ResponseEntity<String> handleHomeOfficeResponseException(HomeOfficeResponseException ex) {
+        String message = ex.getMessage();
+        if (message != null && message.contains("Case ID is not valid")) {
+            log.error("Case not found: {}", message);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Case not found\"}");
+        }
+        log.error("Home Office response error: {}", message);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"" + message + "\"}");
     }
 
 }
