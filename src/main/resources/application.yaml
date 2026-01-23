@@ -244,7 +244,7 @@ idam:
       allowed-services: ${IAC_ALLOWED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
       allowed-endpoints: ${IAC_ALLOWED_ENDPOINTS:/asylum/ccdAboutToStart,/asylum/ccdAboutToSubmit}
     home-office-immigration:
-      allowed-services: ${HOME_OFFICE_ALLOWED_SERVICES:home-office-immigration}
+      allowed-services: ${HOME_OFFICE_ALLOWED_SERVICES:home-office-immigration,iac}
       allowed-endpoints: ${HOME_OFFICE_ALLOWED_ENDPOINTS:/home-office-statutory-timeframe-status}
   ia_system_user:
     username: ${IA_SYSTEM_USERNAME:system-user}
