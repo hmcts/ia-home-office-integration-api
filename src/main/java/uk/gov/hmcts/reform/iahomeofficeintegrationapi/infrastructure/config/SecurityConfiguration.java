@@ -73,9 +73,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .and()
             .exceptionHandling()
             .authenticationEntryPoint((request, response, authException) -> {
-                log.info("Authentication failed for request to {}: {}",
-                    request.getRequestURI(), authException.getMessage());
-                response.sendError(401, authException.getMessage());
+                String authHeader = request.getHeader("Authorization");
+                String message;
+                if (authHeader == null || authHeader.isEmpty()) {
+                    message = "Missing Authorization header (Bearer token required)";
+                } else if (!authHeader.startsWith("Bearer ")) {
+                    message = "Invalid Authorization header format (Bearer token required)";
+                } else {
+                    message = "Invalid or expired Authorization token";
+                }
+                log.error("Authentication failed for {} {}: {}",
+                    request.getMethod(), request.getRequestURI(), message);
+                response.sendError(401, message);
             })
             .accessDeniedHandler((request, response, accessDeniedException) -> {
                 log.info("Access denied for request to {}: {}",

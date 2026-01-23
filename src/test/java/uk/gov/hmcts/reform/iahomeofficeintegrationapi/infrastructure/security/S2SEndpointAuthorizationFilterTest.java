@@ -59,7 +59,7 @@ class S2SEndpointAuthorizationFilterTest {
     }
 
     @Test
-    void should_allow_request_when_no_s2s_token_present() throws ServletException, IOException {
+    void should_return_401_when_no_s2s_token_present() throws ServletException, IOException {
         // Given
         request.setRequestURI("/some-endpoint");
 
@@ -67,7 +67,7 @@ class S2SEndpointAuthorizationFilterTest {
         filter.doFilterInternal(request, response, filterChain);
 
         // Then
-        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
         verify(authTokenValidator, never()).getServiceName(anyString());
     }
 

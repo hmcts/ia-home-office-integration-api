@@ -60,9 +60,10 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
 
         String s2sToken = request.getHeader(SERVICE_AUTHORIZATION_HEADER);
 
-        if (s2sToken == null) {
-            log.info("No S2S token found for request to {}", requestPath);
-            filterChain.doFilter(request, response);
+        if (s2sToken == null || s2sToken.isEmpty()) {
+            log.error("Authentication failed for {} {}: Missing ServiceAuthorization header (S2S token required)",
+                request.getMethod(), requestPath);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing ServiceAuthorization header (S2S token required)");
             return;
         }
 
