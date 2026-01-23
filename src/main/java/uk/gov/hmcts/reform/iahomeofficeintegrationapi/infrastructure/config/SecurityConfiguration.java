@@ -20,7 +20,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AuthorizedRolesProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.CcdEventAuthorizor;
@@ -68,7 +68,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(idamAuthoritiesConverter);
 
         http
-            .addFilterBefore(s2SEndpointAuthorizationFilter, AbstractPreAuthenticatedProcessingFilter.class)
+            .addFilterAfter(s2SEndpointAuthorizationFilter, BearerTokenAuthenticationFilter.class)
             .sessionManagement().sessionCreationPolicy(STATELESS)
             .and()
             .exceptionHandling()

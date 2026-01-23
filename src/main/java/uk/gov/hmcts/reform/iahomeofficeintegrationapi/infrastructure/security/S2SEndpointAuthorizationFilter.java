@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
@@ -61,66 +62,63 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
         String s2sToken = request.getHeader(SERVICE_AUTHORIZATION_HEADER);
 
         if (s2sToken == null || s2sToken.isEmpty()) {
-            log.error("Authentication failed for {} {}: Missing ServiceAuthorization header (S2S token required)",
+            log.error("S2S authentication failed for {} {}: Missing ServiceAuthorization header",
                 request.getMethod(), requestPath);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing ServiceAuthorization header (S2S token required)");
-            return;
+            throw new InsufficientAuthenticationException("Missing ServiceAuthorization header (S2S token required)");
         }
 
+        String serviceName;
         try {
-            String serviceName = getServiceName(s2sToken);
-            log.info("S2S service '{}' attempting to access endpoint: {}", serviceName, requestPath);
-
-            boolean isKnownService = false;
-            boolean isEndpointAllowed = false;
-
-            // Check IAC service group
-            if (iacServices.contains(serviceName)) {
-                isKnownService = true;
-                log.info("Service '{}' identified as IAC service", serviceName);
-                log.info("IAC allowed endpoints: {}", iacAllowedEndpoints);
-                if (isEndpointAllowed(requestPath, iacAllowedEndpoints)) {
-                    isEndpointAllowed = true;
-                    log.info("Endpoint '{}' allowed via IAC service group", requestPath);
-                }
-            }
-
-            // Check Home Office service group
-            if (homeOfficeServices.contains(serviceName)) {
-                isKnownService = true;
-                log.info("Service '{}' identified as Home Office service", serviceName);
-                log.info("Home Office allowed endpoints: {}", homeOfficeAllowedEndpoints);
-                if (isEndpointAllowed(requestPath, homeOfficeAllowedEndpoints)) {
-                    isEndpointAllowed = true;
-                    log.info("Endpoint '{}' allowed via Home Office service group", requestPath);
-                }
-            }
-
-            if (!isKnownService) {
-                log.error("Access DENIED: Service '{}' is not a known/authorised service", serviceName);
-                throw new AccessDeniedException(
-                    "Service '" + serviceName + "' is not authorised to access this endpoint: " + requestPath
-                );
-            }
-
-            if (!isEndpointAllowed) {
-                log.error("Access DENIED: Service '{}' is not authorised to access endpoint '{}'",
-                    serviceName, requestPath);
-                throw new AccessDeniedException(
-                    "Service '" + serviceName + "' is not authorised to access endpoint: " + requestPath
-                );
-            }
-
-            log.info("Access GRANTED: Service '{}' is authorised to access endpoint '{}'", serviceName, requestPath);
-            filterChain.doFilter(request, response);
-
-        } catch (AccessDeniedException e) {
-            log.error("Access denied for endpoint '{}': {}", requestPath, e.getMessage());
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+            serviceName = getServiceName(s2sToken);
         } catch (Exception e) {
-            log.error("Error validating S2S token for endpoint '{}': {}", requestPath, e.getMessage(), e);
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid S2S token");
+            log.error("S2S authentication failed for {} {}: Invalid or expired S2S token - {}",
+                request.getMethod(), requestPath, e.getMessage());
+            throw new InsufficientAuthenticationException("Invalid or expired S2S token");
         }
+        log.info("S2S service '{}' attempting to access endpoint: {}", serviceName, requestPath);
+
+        boolean isKnownService = false;
+        boolean isEndpointAllowed = false;
+
+        // Check IAC service group
+        if (iacServices.contains(serviceName)) {
+            isKnownService = true;
+            log.info("Service '{}' identified as IAC service", serviceName);
+            log.info("IAC allowed endpoints: {}", iacAllowedEndpoints);
+            if (isEndpointAllowed(requestPath, iacAllowedEndpoints)) {
+                isEndpointAllowed = true;
+                log.info("Endpoint '{}' allowed via IAC service group", requestPath);
+            }
+        }
+
+        // Check Home Office service group
+        if (homeOfficeServices.contains(serviceName)) {
+            isKnownService = true;
+            log.info("Service '{}' identified as Home Office service", serviceName);
+            log.info("Home Office allowed endpoints: {}", homeOfficeAllowedEndpoints);
+            if (isEndpointAllowed(requestPath, homeOfficeAllowedEndpoints)) {
+                isEndpointAllowed = true;
+                log.info("Endpoint '{}' allowed via Home Office service group", requestPath);
+            }
+        }
+
+        if (!isKnownService) {
+            log.error("S2S authentication failed: Service '{}' is not a known/authorised service", serviceName);
+            throw new InsufficientAuthenticationException(
+                "Service '" + serviceName + "' is not a recognised service"
+            );
+        }
+
+        if (!isEndpointAllowed) {
+            log.error("Access DENIED: Service '{}' is not authorised to access endpoint '{}'",
+                serviceName, requestPath);
+            throw new AccessDeniedException(
+                "Service '" + serviceName + "' is not authorised to access endpoint: " + requestPath
+            );
+        }
+
+        log.info("Access GRANTED: Service '{}' is authorised to access endpoint '{}'", serviceName, requestPath);
+        filterChain.doFilter(request, response);
     }
 
     private boolean isEndpointAllowed(String requestPath, List<String> allowedEndpoints) {
