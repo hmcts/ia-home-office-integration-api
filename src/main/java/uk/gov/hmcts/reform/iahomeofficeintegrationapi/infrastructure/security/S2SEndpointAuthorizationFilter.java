@@ -118,7 +118,7 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
         } catch (Exception e) {
             log.error("Error validating S2S token for endpoint '{}': {}", requestPath, e.getMessage(), e);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid S2S token");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid S2S token");
         }
     }
 
