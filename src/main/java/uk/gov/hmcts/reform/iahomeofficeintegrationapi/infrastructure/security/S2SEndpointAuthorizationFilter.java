@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
@@ -64,7 +62,8 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
         if (s2sToken == null || s2sToken.isEmpty()) {
             log.error("S2S authentication failed for {} {}: Missing ServiceAuthorization header",
                 request.getMethod(), requestPath);
-            throw new InsufficientAuthenticationException("Missing ServiceAuthorization header (S2S token required)");
+            sendUnauthorizedResponse(response, "Missing ServiceAuthorization header (S2S token required)");
+            return;
         }
 
         String serviceName;
@@ -73,7 +72,8 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             log.error("S2S authentication failed for {} {}: Invalid or expired S2S token - {}",
                 request.getMethod(), requestPath, e.getMessage());
-            throw new InsufficientAuthenticationException("Invalid or expired S2S token");
+            sendUnauthorizedResponse(response, "Invalid or expired S2S token");
+            return;
         }
         log.info("S2S service '{}' attempting to access endpoint: {}", serviceName, requestPath);
 
@@ -104,21 +104,33 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
 
         if (!isKnownService) {
             log.error("S2S authentication failed: Service '{}' is not a known/authorised service", serviceName);
-            throw new InsufficientAuthenticationException(
-                "Service '" + serviceName + "' is not a recognised service"
-            );
+            sendUnauthorizedResponse(response, "Service '" + serviceName + "' is not a recognised service");
+            return;
         }
 
         if (!isEndpointAllowed) {
             log.error("Access DENIED: Service '{}' is not authorised to access endpoint '{}'",
                 serviceName, requestPath);
-            throw new AccessDeniedException(
-                "Service '" + serviceName + "' is not authorised to access endpoint: " + requestPath
-            );
+            sendForbiddenResponse(response, "Service '" + serviceName + "' is not authorised to access endpoint: " + requestPath);
+            return;
         }
 
         log.info("Access GRANTED: Service '{}' is authorised to access endpoint '{}'", serviceName, requestPath);
         filterChain.doFilter(request, response);
+    }
+
+    private void sendUnauthorizedResponse(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"error\":\"" + message + "\"}");
+        response.getWriter().flush();
+    }
+
+    private void sendForbiddenResponse(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"error\":\"" + message + "\"}");
+        response.getWriter().flush();
     }
 
     private boolean isEndpointAllowed(String requestPath, List<String> allowedEndpoints) {

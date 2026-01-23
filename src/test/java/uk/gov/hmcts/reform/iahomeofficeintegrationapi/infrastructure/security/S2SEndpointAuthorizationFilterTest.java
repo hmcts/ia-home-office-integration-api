@@ -8,8 +8,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
@@ -19,7 +17,6 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -66,32 +63,35 @@ class S2SEndpointAuthorizationFilterTest {
     // ===========================================
 
     @Test
-    void should_throw_authentication_exception_when_no_s2s_token_present() {
+    void should_return_401_when_no_s2s_token_present() throws ServletException, IOException {
         // Given
         request.setRequestURI("/some-endpoint");
 
-        // When/Then
-        assertThatThrownBy(() -> filter.doFilterInternal(request, response, filterChain))
-            .isInstanceOf(InsufficientAuthenticationException.class)
-            .hasMessageContaining("Missing ServiceAuthorization header");
+        // When
+        filter.doFilterInternal(request, response, filterChain);
 
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
+        assertThat(response.getContentAsString()).contains("Missing ServiceAuthorization header");
         verify(authTokenValidator, never()).getServiceName(anyString());
     }
 
     @Test
-    void should_throw_authentication_exception_when_s2s_token_is_empty() {
+    void should_return_401_when_s2s_token_is_empty() throws ServletException, IOException {
         // Given
         request.setRequestURI("/some-endpoint");
         request.addHeader("ServiceAuthorization", "");
 
-        // When/Then
-        assertThatThrownBy(() -> filter.doFilterInternal(request, response, filterChain))
-            .isInstanceOf(InsufficientAuthenticationException.class)
-            .hasMessageContaining("Missing ServiceAuthorization header");
+        // When
+        filter.doFilterInternal(request, response, filterChain);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
+        assertThat(response.getContentAsString()).contains("Missing ServiceAuthorization header");
     }
 
     @Test
-    void should_throw_authentication_exception_when_s2s_token_is_invalid() {
+    void should_return_401_when_s2s_token_is_invalid() throws ServletException, IOException {
         // Given
         String token = "invalid-token";
         request.setRequestURI("/some-endpoint");
@@ -99,14 +99,16 @@ class S2SEndpointAuthorizationFilterTest {
         when(authTokenValidator.getServiceName("Bearer " + token))
             .thenThrow(new RuntimeException("Token validation failed"));
 
-        // When/Then
-        assertThatThrownBy(() -> filter.doFilterInternal(request, response, filterChain))
-            .isInstanceOf(InsufficientAuthenticationException.class)
-            .hasMessageContaining("Invalid or expired S2S token");
+        // When
+        filter.doFilterInternal(request, response, filterChain);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
+        assertThat(response.getContentAsString()).contains("Invalid or expired S2S token");
     }
 
     @Test
-    void should_throw_authentication_exception_when_s2s_token_is_expired() {
+    void should_return_401_when_s2s_token_is_expired() throws ServletException, IOException {
         // Given
         String token = "expired-token";
         request.setRequestURI("/some-endpoint");
@@ -114,25 +116,29 @@ class S2SEndpointAuthorizationFilterTest {
         when(authTokenValidator.getServiceName("Bearer " + token))
             .thenThrow(new RuntimeException("Token expired"));
 
-        // When/Then
-        assertThatThrownBy(() -> filter.doFilterInternal(request, response, filterChain))
-            .isInstanceOf(InsufficientAuthenticationException.class)
-            .hasMessageContaining("Invalid or expired S2S token");
+        // When
+        filter.doFilterInternal(request, response, filterChain);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
+        assertThat(response.getContentAsString()).contains("Invalid or expired S2S token");
     }
 
     @Test
-    void should_throw_authentication_exception_for_unknown_service() {
+    void should_return_401_for_unknown_service() throws ServletException, IOException {
         // Given
         String token = "test-token";
         request.setRequestURI("/asylum/ccdAboutToStart");
         request.addHeader("ServiceAuthorization", token);
         when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn("unknown-service");
 
-        // When/Then
-        assertThatThrownBy(() -> filter.doFilterInternal(request, response, filterChain))
-            .isInstanceOf(InsufficientAuthenticationException.class)
-            .hasMessageContaining("unknown-service")
-            .hasMessageContaining("not a recognised service");
+        // When
+        filter.doFilterInternal(request, response, filterChain);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
+        assertThat(response.getContentAsString()).contains("unknown-service");
+        assertThat(response.getContentAsString()).contains("not a recognised service");
     }
 
     // ===========================================
@@ -140,49 +146,54 @@ class S2SEndpointAuthorizationFilterTest {
     // ===========================================
 
     @Test
-    void should_throw_access_denied_when_home_office_service_accesses_unauthorized_endpoint() {
+    void should_return_403_when_home_office_service_accesses_unauthorized_endpoint() throws ServletException, IOException {
         // Given
         String token = "test-token";
         request.setRequestURI("/s2stoken");
         request.addHeader("ServiceAuthorization", token);
         when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn("home-office-immigration");
 
-        // When/Then
-        assertThatThrownBy(() -> filter.doFilterInternal(request, response, filterChain))
-            .isInstanceOf(AccessDeniedException.class)
-            .hasMessageContaining("home-office-immigration")
-            .hasMessageContaining("not authorised to access endpoint");
+        // When
+        filter.doFilterInternal(request, response, filterChain);
 
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
+        assertThat(response.getContentAsString()).contains("home-office-immigration");
+        assertThat(response.getContentAsString()).contains("not authorised to access endpoint");
         verify(authTokenValidator).getServiceName("Bearer " + token);
     }
 
     @Test
-    void should_throw_access_denied_when_iac_service_accesses_unauthorized_endpoint() {
+    void should_return_403_when_iac_service_accesses_unauthorized_endpoint() throws ServletException, IOException {
         // Given
         String token = "test-token";
         request.setRequestURI("/home-office-statutory-timeframe-status");
         request.addHeader("ServiceAuthorization", token);
         when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn("iac");
 
-        // When/Then
-        assertThatThrownBy(() -> filter.doFilterInternal(request, response, filterChain))
-            .isInstanceOf(AccessDeniedException.class)
-            .hasMessageContaining("iac")
-            .hasMessageContaining("not authorised to access endpoint");
+        // When
+        filter.doFilterInternal(request, response, filterChain);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
+        assertThat(response.getContentAsString()).contains("iac");
+        assertThat(response.getContentAsString()).contains("not authorised to access endpoint");
     }
 
     @Test
-    void should_throw_access_denied_when_home_office_accesses_serviceusertoken_endpoint() {
+    void should_return_403_when_home_office_accesses_serviceusertoken_endpoint() throws ServletException, IOException {
         // Given
         String token = "test-token";
         request.setRequestURI("/serviceusertoken");
         request.addHeader("ServiceAuthorization", token);
         when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn("home-office-immigration");
 
-        // When/Then
-        assertThatThrownBy(() -> filter.doFilterInternal(request, response, filterChain))
-            .isInstanceOf(AccessDeniedException.class)
-            .hasMessageContaining("not authorised to access endpoint");
+        // When
+        filter.doFilterInternal(request, response, filterChain);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
+        assertThat(response.getContentAsString()).contains("not authorised to access endpoint");
     }
 
     // ===========================================
