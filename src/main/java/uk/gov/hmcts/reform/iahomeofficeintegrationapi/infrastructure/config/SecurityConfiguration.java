@@ -82,9 +82,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 } else {
                     message = "Invalid or expired Authorization token";
                 }
-                log.error("Authentication failed for {} {}: {}",
+                log.error("JWT authentication failed for {} {}: {}",
                     request.getMethod(), request.getRequestURI(), message);
-                response.sendError(401, message);
+                response.setStatus(401);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\":\"" + message + "\"}");
+                response.getWriter().flush();
             })
             .accessDeniedHandler((request, response, accessDeniedException) -> {
                 log.info("Access denied for request to {}: {}",
