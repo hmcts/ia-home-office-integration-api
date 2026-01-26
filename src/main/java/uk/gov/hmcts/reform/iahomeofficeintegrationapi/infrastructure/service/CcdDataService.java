@@ -75,10 +75,10 @@ public class CcdDataService {
         String s2sToken;
         try {
             userToken = "Bearer " + idamService.getServiceUserToken();
-            log.info("A System user token has been generated for event: {}, caseId: {}.", eventId, caseId);
+            log.debug("A System user token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
             s2sToken = serviceAuthorization.generate();
-            log.info("S2S token has been generated for event: {}, caseId: {}.", eventId, caseId);
+            log.debug("S2S token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
         } catch (IdentityManagerResponseException ex) {
             log.error("Unauthorised access to getCaseById", ex.getMessage());
@@ -87,18 +87,18 @@ public class CcdDataService {
         
         log.debug("ccd url: {}", coreCaseDataApiUrl);
         final StartEventDetails startEventDetails = getStartEventByCase(userToken, s2sToken, caseId, eventId);
-        log.info("Case details found for the caseId: {}", caseId);
-        log.info("Start event id: {}", startEventDetails.getEventId());
+        log.debug("Case details found for the caseId: {}", caseId);
+        log.debug("Start event id: {}", startEventDetails.getEventId());
         CaseDetails<AsylumCase> caseDetails = startEventDetails.getCaseDetails();
         if (caseDetails == null) {
             log.error("Case details is null for caseId: {}", caseId);
             throw new IllegalStateException("Case details is null for caseId: " + caseId);
         } else {
-            log.info("Start case details id: {}", caseDetails.getId());
-            log.info("Start case details state: {}", caseDetails.getState());
-            log.info("Start case details created date: {}", caseDetails.getCreatedDate());
+            log.debug("Start case details id: {}", caseDetails.getId());
+            log.debug("Start case details state: {}", caseDetails.getState());
+            log.debug("Start case details created date: {}", caseDetails.getCreatedDate());
             AsylumCase asylumCase = caseDetails.getCaseData();
-            log.info("Start case details data: {}", asylumCase);
+            log.debug("Start case details data: {}", asylumCase);
 
             Optional<StatutoryTimeframe24Weeks> existingData = asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS);
             String newHistoryId = nextHistoryId(existingData);
@@ -112,17 +112,17 @@ public class CcdDataService {
             boolean isYes = hoStatutoryTimeframeDto.getStf24weeks().getStatus().equalsIgnoreCase(YesOrNo.YES.toString());
             YesOrNo status = isYes ? YesOrNo.YES : YesOrNo.NO;
             eventData.put(STF_24W_CURRENT_STATUS_AUTO_GENERATED.value(), status);
-            log.info("Setting Event data: {}", eventData);
+            log.debug("Setting Event data: {}", eventData);
             eventData.put(STF_24W_CURRENT_REASON_AUTO_GENERATED.value(), STATUTORY_TIMEFRAME_REASON);
             log.debug("Event data to be submitted: {}", eventData);    
-            log.info("Submitting event with method: {} for caseId: {} with Home Office statutory timeframe status: {}, home office cohorts: {}",
+            log.debug("Submitting event with method: {} for caseId: {} with Home Office statutory timeframe status: {}, home office cohorts: {}",
                      eventId, caseId,
                      hoStatutoryTimeframeDto.getStf24weeks().getStatus(),
                     stf24wHomeOfficeCohort);
             
             SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, eventData, startEventDetails.getToken(), eventId, true);
 
-            log.info("Home Office statutory timeframe status updated for the caseId: {}, Status: {}, Message: {}", caseId,
+            log.debug("Home Office statutory timeframe status updated for the caseId: {}, Status: {}, Message: {}", caseId,
                      submitEventDetails.getCallbackResponseStatusCode(), submitEventDetails.getCallbackResponseStatus());
 
             return submitEventDetails;
@@ -131,7 +131,7 @@ public class CcdDataService {
 
     private StartEventDetails getStartEventByCase(
         String userToken, String s2sToken, String caseId, String eventId) {
-        log.info("Getting start event by case with caseId: {}, EventId: {}", caseId, eventId);
+        log.debug("Getting start event by case with caseId: {}, EventId: {}", caseId, eventId);
         return ccdDataApi.startEventByCase(userToken, s2sToken, caseId, eventId);
     }
 
@@ -139,7 +139,7 @@ public class CcdDataService {
         String userToken, String s2sToken, String caseId, Map<String, Object> eventData,
         String eventToken, String eventId, boolean ignoreWarning) {
 
-        log.info("Event data to be submitted: {}", eventData);
+        log.debug("Event data to be submitted: {}", eventData);
         
         Map<String, Object> eventMetadata = new HashMap<>();
         eventMetadata.put(EVENT_METADATA_ID_KEY, eventId);
@@ -154,7 +154,7 @@ public class CcdDataService {
         log.debug("CaseDataContent Request - event: {}", requestBody.getEvent());
         log.debug("CaseDataContent Request - ignoreWarning: {}", requestBody.isIgnoreWarning());
         
-        log.info("Submitting case with caseId: {}, eventData: {}, ignoreWarning: {}",
+        log.debug("Submitting case with caseId: {}, eventData: {}, ignoreWarning: {}",
                  caseId, eventData, ignoreWarning);
         
         return ccdDataApi.submitEventByCase(userToken, s2sToken, caseId, requestBody);
@@ -177,7 +177,7 @@ public class CcdDataService {
         List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList = new ArrayList<>();
         historyList.add(new IdValue<>(id, historyEntry));
 
-        log.info("new StatutoryTimeframe24Weeks created with status: {}, cohorts: {}, history size: {}",
+        log.debug("new StatutoryTimeframe24Weeks created with status: {}, cohorts: {}, history size: {}",
                  status, cohorts, historyList.size());
 
         return new StatutoryTimeframe24Weeks(
@@ -188,7 +188,7 @@ public class CcdDataService {
 
     public String nextHistoryId(Optional<StatutoryTimeframe24Weeks> existingData) {
         if (existingData.isEmpty()) {
-            log.info("No existing statutory timeframe 24 weeks data found, returning historyId: 1");
+            log.debug("No existing statutory timeframe 24 weeks data found, returning historyId: 1");
             return "1";
         }
         
@@ -196,7 +196,7 @@ public class CcdDataService {
             existingData.get().getHistory();
         
         if (existingHistory == null || existingHistory.isEmpty()) {
-            log.info("Existing statutory timeframe 24 weeks data has no history, returning historyId: 1");
+            log.debug("Existing statutory timeframe 24 weeks data has no history, returning historyId: 1");
             return "1";
         }
         
@@ -207,7 +207,7 @@ public class CcdDataService {
             .orElse(0);
         
         String nextId = String.valueOf(maxId + 1);
-        log.info("Found {} existing history entries, max ID: {}, returning next historyId: {}", 
+        log.debug("Found {} existing history entries, max ID: {}, returning next historyId: {}",
                  existingHistory.size(), maxId, nextId);
         
         return nextId;
