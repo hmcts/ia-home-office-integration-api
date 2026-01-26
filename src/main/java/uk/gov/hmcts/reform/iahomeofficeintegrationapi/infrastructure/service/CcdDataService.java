@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Statut
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeframe24WeeksHistory;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
@@ -125,7 +126,15 @@ public class CcdDataService {
     private StartEventDetails getStartEventByCase(
         String userToken, String s2sToken, String caseId, String eventId) {
         log.info("Getting start event by case with caseId: {}, EventId: {}", caseId, eventId);
-        return ccdDataApi.startEventByCase(userToken, s2sToken, caseId, eventId);
+        try {
+            return ccdDataApi.startEventByCase(userToken, s2sToken, caseId, eventId);
+        } catch (Exception ex) {
+            if (ex.getMessage() != null && ex.getMessage().contains("Case ID is not valid")) {
+                log.error("Case not found for caseId: {}", caseId);
+                throw new CaseNotFoundException("Case not found for caseId: " + caseId);
+            }
+            throw ex;
+        }
     }
 
     private SubmitEventDetails submitEvent(

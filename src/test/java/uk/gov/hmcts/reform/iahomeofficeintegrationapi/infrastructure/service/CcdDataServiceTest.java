@@ -20,7 +20,9 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Statut
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.IdamService;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
@@ -712,6 +714,66 @@ class CcdDataServiceTest {
 
         // Then
         verify(serviceAuthorization).generate();
+    }
+
+    @Test
+    void shouldThrowCaseNotFoundExceptionWhenCaseIdIsNotValid() {
+        // Given
+        String userToken = "test-user-token";
+        String s2sToken = "test-s2s-token";
+
+        when(idamService.getServiceUserToken()).thenReturn(userToken);
+        when(serviceAuthorization.generate()).thenReturn(s2sToken);
+
+        when(ccdDataApi.startEventByCase(
+            eq("Bearer test-user-token"),
+            eq("test-s2s-token"),
+            eq("12345"),
+            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
+        )).thenThrow(new HomeOfficeResponseException("StatusCode: 400, methodKey: CcdDataApi#startEventByCase, reason: null, message: Case ID is not valid"));
+
+        // When & Then
+        CaseNotFoundException exception = assertThrows(
+            CaseNotFoundException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+
+        assertEquals("Case not found for caseId: 12345", exception.getMessage());
+
+        verify(idamService).getServiceUserToken();
+        verify(serviceAuthorization).generate();
+        verify(ccdDataApi).startEventByCase(
+            "Bearer " + userToken,
+            s2sToken,
+            "12345",
+            Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
+        );
+    }
+
+    @Test
+    void shouldRethrowOtherExceptionsFromStartEventByCase() {
+        // Given
+        String userToken = "test-user-token";
+        String s2sToken = "test-s2s-token";
+
+        when(idamService.getServiceUserToken()).thenReturn(userToken);
+        when(serviceAuthorization.generate()).thenReturn(s2sToken);
+
+        RuntimeException originalException = new RuntimeException("Some other error");
+        when(ccdDataApi.startEventByCase(
+            eq("Bearer test-user-token"),
+            eq("test-s2s-token"),
+            eq("12345"),
+            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
+        )).thenThrow(originalException);
+
+        // When & Then
+        RuntimeException exception = assertThrows(
+            RuntimeException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+
+        assertEquals("Some other error", exception.getMessage());
     }
 
 }

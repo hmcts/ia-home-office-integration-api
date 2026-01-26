@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service.CcdDataService;
@@ -134,5 +135,18 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(expectedToken);
         verify(ccdDataService).getServiceUserToken();
+    }
+
+    @Test
+    void handleCaseNotFoundException_shouldReturn404NotFound() {
+        // Given
+        CaseNotFoundException exception = new CaseNotFoundException("Case not found for caseId: 12345");
+
+        // When
+        ResponseEntity<String> response = controller.handleCaseNotFoundException(exception);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).contains("Case not found for caseId: 12345");
     }
 }
