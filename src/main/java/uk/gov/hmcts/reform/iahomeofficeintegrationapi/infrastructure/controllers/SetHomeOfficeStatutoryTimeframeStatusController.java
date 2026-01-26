@@ -6,10 +6,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -76,7 +78,7 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SubmitEventDetails> updateHomeOfficeStatutoryTimeframeStatus(
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
-        @RequestBody HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto
+        @Valid @RequestBody HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto
     ) {
         log.info("HTTP POST /home-office-statutory-timeframe-status endpoint called with payload: {}", hoStatutoryTimeframeDto);
         SubmitEventDetails response = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
@@ -143,6 +145,16 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         }
         log.error("Home Office response error: {}", message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"" + message + "\"}");
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
+        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+            .map(error -> error.getField() + ": " + error.getDefaultMessage())
+            .reduce((a, b) -> a + ", " + b)
+            .orElse("Validation failed");
+        log.error("Validation error: {}", errorMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"" + errorMessage + "\"}");
     }
 
 }

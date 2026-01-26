@@ -8,6 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.core.MethodParameter;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
@@ -148,5 +152,26 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).contains("Case not found for caseId: 12345");
+    }
+
+    @Test
+    void handleValidationException_shouldReturn400BadRequest() throws NoSuchMethodException {
+        // Given
+        HomeOfficeStatutoryTimeframeDto dto = new HomeOfficeStatutoryTimeframeDto();
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(dto, "hoStatutoryTimeframeDto");
+        bindingResult.addError(new FieldError("hoStatutoryTimeframeDto", "stf24weeks", "must not be null"));
+
+        MethodParameter methodParameter = new MethodParameter(
+            SetHomeOfficeStatutoryTimeframeStatusController.class.getMethod(
+                "updateHomeOfficeStatutoryTimeframeStatus", String.class, HomeOfficeStatutoryTimeframeDto.class), 1);
+        MethodArgumentNotValidException exception = new MethodArgumentNotValidException(methodParameter, bindingResult);
+
+        // When
+        ResponseEntity<String> response = controller.handleValidationException(exception);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).contains("stf24weeks");
+        assertThat(response.getBody()).contains("must not be null");
     }
 }
