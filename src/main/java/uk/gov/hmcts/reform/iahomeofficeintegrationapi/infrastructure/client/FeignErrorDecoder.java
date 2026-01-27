@@ -39,17 +39,28 @@ public class FeignErrorDecoder implements ErrorDecoder {
 
                         String rawResponse = IOUtils.toString(response.body().asReader(Charset.defaultCharset()));
                         log.error("Raw 400 response from {}: {}", methodKey, rawResponse);
-                        
-                        HomeOfficeInstructResponse homeOfficeError = objectMapper.readValue(
-                            rawResponse,HomeOfficeInstructResponse.class);
 
-                        if (homeOfficeError != null) {
-                            if (homeOfficeError.getErrorDetail() != null) {
-                                errorCode = homeOfficeError.getErrorDetail().getErrorCode();
-                                errMessage = String.format("Home office error code: %s, message: %s",
-                                    errorCode, homeOfficeError.getErrorDetail().getMessageText());
+                        // Check if this is a CCD API error response
+                        if (methodKey.contains("CcdDataApi")) {
+                            // CCD returns {"message": "Case ID is not valid", ...}
+                            var jsonNode = objectMapper.readTree(rawResponse);
+                            if (jsonNode.has("message")) {
+                                errMessage = jsonNode.get("message").asText();
                             } else {
-                                errMessage = "Home office error detail is null";
+                                errMessage = rawResponse;
+                            }
+                        } else {
+                            HomeOfficeInstructResponse homeOfficeError = objectMapper.readValue(
+                                rawResponse, HomeOfficeInstructResponse.class);
+
+                            if (homeOfficeError != null) {
+                                if (homeOfficeError.getErrorDetail() != null) {
+                                    errorCode = homeOfficeError.getErrorDetail().getErrorCode();
+                                    errMessage = String.format("Home office error code: %s, message: %s",
+                                        errorCode, homeOfficeError.getErrorDetail().getMessageText());
+                                } else {
+                                    errMessage = "Home office error detail is null";
+                                }
                             }
                         }
                     }

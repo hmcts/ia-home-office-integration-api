@@ -161,6 +161,43 @@ class FeignErrorDecoderTest {
         return errorResponse.getBytes();
     }
 
+    @Test
+    void should_decode_for_400_ccd_api_case_not_found() {
+        String ccdErrorResponse = "{\"exception\":\"uk.gov.hmcts.ccd.endpoint.exceptions.BadRequestException\","
+            + "\"status\":400,\"error\":\"Bad Request\",\"message\":\"Case ID is not valid\","
+            + "\"path\":\"/cases/123/event-triggers/addStatutoryTimeframe24Weeks\"}";
+
+        response = builder()
+            .status(400)
+            .reason("Bad request")
+            .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
+                    Request.Body.empty(), null))
+            .body(ccdErrorResponse.getBytes())
+            .build();
+
+        Exception exception = feignErrorDecoder.decode("CcdDataApi#startEventByCase", response);
+        assertEquals(HomeOfficeResponseException.class, exception.getClass());
+        assertTrue(exception.getMessage().contains("Case ID is not valid"));
+    }
+
+    @Test
+    void should_decode_for_400_ccd_api_other_error() {
+        String ccdErrorResponse = "{\"exception\":\"some.Exception\","
+            + "\"status\":400,\"error\":\"Bad Request\",\"message\":\"Some other CCD error\"}";
+
+        response = builder()
+            .status(400)
+            .reason("Bad request")
+            .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
+                    Request.Body.empty(), null))
+            .body(ccdErrorResponse.getBytes())
+            .build();
+
+        Exception exception = feignErrorDecoder.decode("CcdDataApi#submitEvent", response);
+        assertEquals(HomeOfficeResponseException.class, exception.getClass());
+        assertTrue(exception.getMessage().contains("Some other CCD error"));
+    }
+
     @ParameterizedTest
     @MethodSource("feignExceptionSource")
     void should_default_decode_for_role_assignment_api(int status, Class exceptionClass) {

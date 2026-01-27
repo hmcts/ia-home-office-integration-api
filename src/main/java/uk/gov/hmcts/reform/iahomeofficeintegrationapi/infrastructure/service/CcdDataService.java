@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Statut
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeframe24WeeksHistory;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
@@ -70,10 +71,10 @@ public class CcdDataService {
         String userToken;
         String s2sToken;
         try {
-            userToken = "Bearer " + idamService.getServiceUserToken();
+            userToken = "Bearer " + getServiceUserToken();
             log.info("A System user token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
-            s2sToken = serviceAuthorization.generate();
+            s2sToken = generateS2SToken();
             log.info("S2S token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
         } catch (IdentityManagerResponseException ex) {
@@ -125,7 +126,15 @@ public class CcdDataService {
     private StartEventDetails getStartEventByCase(
         String userToken, String s2sToken, String caseId, String eventId) {
         log.info("Getting start event by case with caseId: {}, EventId: {}", caseId, eventId);
-        return ccdDataApi.startEventByCase(userToken, s2sToken, caseId, eventId);
+        try {
+            return ccdDataApi.startEventByCase(userToken, s2sToken, caseId, eventId);
+        } catch (Exception ex) {
+            if (ex.getMessage() != null && ex.getMessage().contains("Case ID is not valid")) {
+                log.error("Case not found for caseId: {}", caseId);
+                throw new CaseNotFoundException("Case not found for caseId: " + caseId);
+            }
+            throw ex;
+        }
     }
 
     private SubmitEventDetails submitEvent(
@@ -227,5 +236,19 @@ public class CcdDataService {
             log.error(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
+    }
+
+    public String generateS2SToken() {
+        log.info("Generating S2S token");
+        String s2sToken = serviceAuthorization.generate();
+        log.info("S2S token generated successfully");
+        return s2sToken;
+    }
+
+    public String getServiceUserToken() {
+        log.info("Generating service user token");
+        String serviceUserToken = idamService.getServiceUserToken();
+        log.info("Service user token generated successfully");
+        return serviceUserToken;
     }
 }

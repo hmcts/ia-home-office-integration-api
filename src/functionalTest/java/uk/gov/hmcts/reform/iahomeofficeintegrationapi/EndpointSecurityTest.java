@@ -90,7 +90,7 @@ public class EndpointSecurityTest {
     }
 
     @Test
-    public void should_not_allow_requests_without_valid_service_authorisation_and_return_401_response_code() {
+    public void should_not_allow_requests_without_valid_service_authorisation_and_return_403_response_code() {
 
         String invalidServiceToken = "invalid";
 
@@ -108,7 +108,7 @@ public class EndpointSecurityTest {
                 .when()
                 .post(callbackEndpoint)
                 .then()
-                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .statusCode(HttpStatus.FORBIDDEN.value())
         );
     }
 

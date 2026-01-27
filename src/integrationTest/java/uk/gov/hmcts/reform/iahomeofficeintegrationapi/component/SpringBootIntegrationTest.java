@@ -29,7 +29,8 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.TestCo
     "IA_IDAM_SECRET=something",
     "IA_HOMEOFFICE_CLIENT_ID=ho-client-id",
     "IA_HOMEOFFICE_SECRET=something",
-    "HOME_OFFICE_ENDPOINT=http://127.0.0.1:8990"
+    "HOME_OFFICE_ENDPOINT=http://127.0.0.1:8990",
+    "security.anonymousPaths=/health,/"
 })
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("integration")
