@@ -18,11 +18,8 @@ public class ServiceTokenGeneratorConfiguration {
     public AuthTokenGenerator authTokenGenerator(
         @Value("${idam.s2s-auth.totp_secret}") String secret,
         @Value("${idam.s2s-auth.microservice}") String microService,
-        @Value("${idam.s2s-auth.url}") String s2sUrl,
         ServiceAuthorisationApi serviceAuthorisationApi
     ) {
-        log.info("S2S auth URL: {}", s2sUrl); // DO NOT MERGE THIS
-        log.info("S2S microservice: {}", microService);
         return AuthTokenGeneratorFactory.createDefaultGenerator(
             secret,
             microService,

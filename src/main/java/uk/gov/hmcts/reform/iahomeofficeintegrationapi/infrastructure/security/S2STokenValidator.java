@@ -34,7 +34,6 @@ public class S2STokenValidator {
 
     private String authenticate(String authHeader) {
         String bearerAuthToken = getBearerToken(authHeader);
-        log.info("Bearer auth token: {}", bearerAuthToken);
         return authTokenValidator.getServiceName(bearerAuthToken);
     }
 
