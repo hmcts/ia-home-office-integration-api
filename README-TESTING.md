@@ -161,3 +161,126 @@ curl -X GET \
   -H "Accept: text/plain" \
   -w "\nStatus: %{http_code}\n"
 ```
+
+### Standard Testing (Without Temporary Endpoints)
+
+To obtain the necessary tokens without using the temporary endpoints, follow these steps:
+
+#### Step 1: Retrieve Secrets from Azure Key Vault
+
+First, authenticate with Azure:
+
+```bash
+az login
+```
+
+Then retrieve the required secrets:
+
+```bash
+# Get IDAM admin username
+az keyvault secret show --vault-name ia-aat --name idam-admin-username --query value -o tsv
+
+# Get IDAM admin password
+az keyvault secret show --vault-name ia-aat --name idam-admin-password --query value -o tsv
+
+# Get IDAM client secret
+az keyvault secret show --vault-name ia-aat --name idam-secret --query value -o tsv
+```
+
+#### Step 2: Get Service User Token
+
+Use curl to obtain the Service User Token from IDAM:
+
+```bash
+curl -X POST "https://idam-api.aat.platform.hmcts.net/o/token" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=password" \
+  -d "redirect_uri=https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback" \
+  -d "client_id=iac" \
+  -d "client_secret=<ADMIN_WEB_IDAM_SECRET>" \
+  -d "username=<IA_CCD_ADMIN_USERNAME>" \
+  -d "password=<IA_CCD_ADMIN_PASSWORD>" \
+  -d "scope=openid profile roles"
+```
+
+Replace the placeholders:
+
+- `<ADMIN_WEB_IDAM_SECRET>`: Value from `idam-secret`
+- `<IA_CCD_ADMIN_USERNAME>`: Value from `idam-admin-username`
+- `<IA_CCD_ADMIN_PASSWORD>`: Value from `idam-admin-password`
+
+The response will contain several fields. Extract the `access_token` value - this is your `<User Service Token>`.
+
+Example response:
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "Bearer",
+  "expires_in": 28800
+}
+```
+
+#### Step 3: Get S2S Token
+
+First, install the OATH Toolkit on macOS (if not already installed):
+
+```bash
+brew install oath-toolkit
+```
+
+Retrieve the S2S secret from Azure Key Vault:
+
+```bash
+az keyvault secret show --vault-name s2s-aat --name microservicekey-iac --query value -o tsv
+```
+
+Use curl to obtain the S2S Token. The command generates a one-time password using the S2S secret and sends it to the S2S auth provider:
+
+```bash
+curl -X POST "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal/lease" \
+  -H "Content-Type: application/json" \
+  -d '{"microservice":"iac","oneTimePassword":"'"$(oathtool --totp -b "<S2S_SECRET>")"'"}'
+```
+
+Replace `<S2S_SECRET>` with the value retrieved from the Key Vault in the previous step.
+
+The response will contain the S2S token:
+
+```json
+{
+  "token": "Bearer eyJhbGciOiJIUzUxMiJ9..."
+}
+```
+
+Extract the token value (including "Bearer ") - this is your `<S2S Token>`.
+
+**Note:** The S2S token already includes the "Bearer " prefix in the response, so use it as-is in the `ServiceAuthorization` header.
+
+#### Step 4: Make the Authenticated Request
+
+Now use both tokens to make the request:
+
+```bash
+curl -X POST \
+  https://ia-case-api-pr-2908-home-office-integration-api.preview.platform.hmcts.net/home-office-statutory-timeframe-status \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <User Service Token>" \
+  -H "ServiceAuthorization: <S2S Token>" \
+  -d '{
+    "ccdCaseId": 1765790176250362,
+    "uan": "1234-5678-9012-3556",
+    "familyName": "Smith",
+    "givenNames": "John",
+    "dateOfBirth": "1990-01-15",
+    "stf24weeks": {
+      "status": "Yes",
+      "caseType": "EEA"
+    },
+    "timeStamp": "2025-12-15T10:30:00"
+  }' \
+  --max-time 30 \
+  -v
+```
+
+**Note:** The S2S token already includes "Bearer " prefix in the response, so use it as-is in the `ServiceAuthorization` header.
