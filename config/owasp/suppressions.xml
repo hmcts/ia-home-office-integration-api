@@ -11,8 +11,6 @@
         <cve>CVE-2025-55752</cve>
         <cve>CVE-2025-15104</cve>
         <cve>CVE-2025-68161</cve>
-    </suppress>
-    <suppress>
         <cve>CVE-2025-46392</cve>
     </suppress>
 </suppressions>
