@@ -86,13 +86,13 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
-        log.error("Conflict error: {}", ex.getMessage());
+        log.info("Conflict error: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
     @ExceptionHandler(CaseNotFoundException.class)
     public ResponseEntity<String> handleCaseNotFoundException(CaseNotFoundException ex) {
-        log.error("Case not found: {}", ex.getMessage());
+        log.info("Case not found: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"" + ex.getMessage() + "\"}");
     }
 
@@ -100,10 +100,10 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
     public ResponseEntity<String> handleHomeOfficeResponseException(HomeOfficeResponseException ex) {
         String message = ex.getMessage();
         if (message != null && message.contains("Case ID is not valid")) {
-            log.error("Case not found: {}", message);
+            log.info("Case not found: {}", message);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Case not found\"}");
         }
-        log.error("Home Office response error: {}", message);
+        log.info("Home Office response error: {}", message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"" + message + "\"}");
     }
 
@@ -113,7 +113,7 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
             .map(error -> error.getField() + ": " + error.getDefaultMessage())
             .reduce((a, b) -> a + ", " + b)
             .orElse("Validation failed");
-        log.error("Validation error: {}", errorMessage);
+        log.info("Validation error: {}", errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"" + errorMessage + "\"}");
     }
 

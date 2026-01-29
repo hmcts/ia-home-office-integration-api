@@ -38,7 +38,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                     if (response.body() != null && response.body().asInputStream() != null) {
 
                         String rawResponse = IOUtils.toString(response.body().asReader(Charset.defaultCharset()));
-                        log.error("Raw 400 response from {}: {}", methodKey, rawResponse);
+                        log.info("Raw 400 response from {}: {}", methodKey, rawResponse);
 
                         // Check if this is a CCD API error response
                         if (methodKey.contains("CcdDataApi")) {
@@ -65,7 +65,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                         }
                     }
 
-                    log.error("Error StatusCode: {}, methodKey: {}, reason: {}, message: {}",
+                    log.info("Error StatusCode: {}, methodKey: {}, reason: {}, message: {}",
                         response.status(), methodKey, response.reason(), errMessage);
 
                 } catch (IOException ex) {
@@ -82,7 +82,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
             case 404:
                 try {
 
-                    log.error("StatusCode: {}, methodKey: {}, reason: {}, message: {}",
+                    log.info("StatusCode: {}, methodKey: {}, reason: {}, message: {}",
                         response.status(),
                         methodKey,
                         response.reason(),
