@@ -46,34 +46,6 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
     }
 
     @Test
-    void should_return_s2s_token_successfully() {
-        // Given
-        String expectedToken = "test-s2s-token-value";
-        when(ccdDataService.generateS2SToken()).thenReturn(expectedToken);
-
-        // When
-        ResponseEntity<String> response = controller.getS2SToken();
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(expectedToken);
-        verify(ccdDataService).generateS2SToken();
-    }
-
-    @Test
-    void should_call_ccd_data_service_to_generate_s2s_token() {
-        // Given
-        String expectedToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
-        when(ccdDataService.generateS2SToken()).thenReturn(expectedToken);
-
-        // When
-        controller.getS2SToken();
-
-        // Then
-        verify(ccdDataService).generateS2SToken();
-    }
-
-    @Test
     void should_update_statutory_timeframe_status_successfully() {
         // Given
         String s2sToken = "Bearer test-token";
@@ -115,30 +87,6 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
-    }
-
-    @Test
-    void getS2SToken_shouldReturnS2SToken() {
-        String expectedToken = "test-s2s-token";
-        when(ccdDataService.generateS2SToken()).thenReturn(expectedToken);
-
-        ResponseEntity<String> response = controller.getS2SToken();
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(expectedToken);
-        verify(ccdDataService).generateS2SToken();
-    }
-
-    @Test
-    void getServiceUserToken_shouldReturnServiceUserToken() {
-        String expectedToken = "test-service-user-token";
-        when(ccdDataService.getServiceUserToken()).thenReturn(expectedToken);
-
-        ResponseEntity<String> response = controller.getServiceUserToken();
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(expectedToken);
-        verify(ccdDataService).getServiceUserToken();
     }
 
     @Test

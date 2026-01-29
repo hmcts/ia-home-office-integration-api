@@ -140,31 +140,10 @@ curl -X POST \
   -v
 ```
 
-### Simplified Testing (Temporary Endpoints)
 
-For easier testing, temporary endpoints are available that return tokens for IAC. **These will be removed before merging the PR.**
+### Curl Testing 
 
-Get S2S Token:
-
-```bash
-curl -X GET \
-  https://ia-case-api-pr-2908-home-office-integration-api.preview.platform.hmcts.net/s2stoken \
-  -H "Accept: text/plain" \
-  -w "\nStatus: %{http_code}\n"
-```
-
-Get Service User Token:
-
-```bash
-curl -X GET \
-  https://ia-case-api-pr-2908-home-office-integration-api.preview.platform.hmcts.net/serviceusertoken \
-  -H "Accept: text/plain" \
-  -w "\nStatus: %{http_code}\n"
-```
-
-### Standard Testing (Without Temporary Endpoints)
-
-To obtain the necessary tokens without using the temporary endpoints, follow these steps:
+To obtain the necessary tokens  follow these steps:
 
 #### Step 1: Retrieve Secrets from Azure Key Vault
 
@@ -255,8 +234,6 @@ The response will contain the S2S token:
 
 Extract the token value (including "Bearer ") - this is your `<S2S Token>`.
 
-**Note:** The S2S token already includes the "Bearer " prefix in the response, so use it as-is in the `ServiceAuthorization` header.
-
 #### Step 4: Make the Authenticated Request
 
 Now use both tokens to make the request:
@@ -266,7 +243,7 @@ curl -X POST \
   https://ia-case-api-pr-2908-home-office-integration-api.preview.platform.hmcts.net/home-office-statutory-timeframe-status \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <User Service Token>" \
-  -H "ServiceAuthorization: <S2S Token>" \
+  -H "ServiceAuthorization: Bearer <S2S Token>" \
   -d '{
     "ccdCaseId": 1765790176250362,
     "uan": "1234-5678-9012-3556",
@@ -282,5 +259,3 @@ curl -X POST \
   --max-time 30 \
   -v
 ```
-
-**Note:** The S2S token already includes "Bearer " prefix in the response, so use it as-is in the `ServiceAuthorization` header.

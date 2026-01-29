@@ -42,7 +42,7 @@ spring:
       spec: expireAfterAccess=3600s
 
 security:
-  anonymousPaths: ${ANONYMOUS_PATHS:/serviceusertoken,/s2stoken,/,/health,/health/liveness,/health/readiness,/loggers/**,/swagger-ui.html,/swagger-resources/**,/v2/api-docs,/webjars/springfox-swagger-ui/**,/favicon.ico}
+  anonymousPaths: ${ANONYMOUS_PATHS:/,/health,/health/liveness,/health/readiness,/loggers/**,/swagger-ui.html,/swagger-resources/**,/v2/api-docs,/webjars/springfox-swagger-ui/**,/favicon.ico}
   authorisedRoles:
     - "caseworker-ia"
     - "citizen"

@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Submit
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service.CcdDataService;
-import org.springframework.web.bind.annotation.GetMapping;
 
 @Tag(name = "Set Home Office statutory timeframe status controller")
 @OpenAPIDefinition(tags = {@Tag(name = "SetHomeOfficeStatutoryTimeframeStatusController", description = "Set Home Office statutory timeframe status")})
@@ -83,45 +82,6 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         log.info("HTTP POST /home-office-statutory-timeframe-status endpoint called with payload: {}", hoStatutoryTimeframeDto);
         SubmitEventDetails response = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
         return ResponseEntity.status(response.getCallbackResponseStatusCode()).body(response);
-    }
-
-    @Operation(
-        summary = "Get S2S token",
-        responses = {
-            @ApiResponse(
-                responseCode = "200",
-                description = "Returns S2S token",
-                content = @Content(schema = @Schema(implementation = String.class))
-                )
-        }
-    )
-    
-    //Do not merge this endpoint. It used only for exploring purposes to get S2S token.
-    //Remove it from anonymous path too before merging.
-    @GetMapping(path = "/s2stoken", produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> getS2SToken() {
-        log.info("HTTP GET /s2stoken endpoint called");
-        String s2sToken = ccdDataService.generateS2SToken();
-        return ResponseEntity.ok(s2sToken);
-    }
-
-    @Operation(
-        summary = "Get service user token",
-        responses = {
-            @ApiResponse(
-                responseCode = "200",
-                description = "Returns service user token",
-                content = @Content(schema = @Schema(implementation = String.class))
-                )
-        }
-    )
-    //Do not merge this endpoint. It used only for exploring purposes to get service user token.
-    //Remove it from anonymous path too before merging.
-    @GetMapping(path = "/serviceusertoken", produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> getServiceUserToken() {
-        log.info("HTTP GET /serviceusertoken endpoint called");
-        String serviceUserToken = ccdDataService.getServiceUserToken();
-        return ResponseEntity.ok(serviceUserToken);
     }
 
     @ExceptionHandler(IllegalStateException.class)
