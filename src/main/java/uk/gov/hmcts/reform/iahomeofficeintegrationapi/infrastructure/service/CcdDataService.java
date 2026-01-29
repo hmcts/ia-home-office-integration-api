@@ -72,27 +72,26 @@ public class CcdDataService {
         String s2sToken;
         try {
             userToken = "Bearer " + getServiceUserToken();
-            log.info("A System user token has been generated for event: {}, caseId: {}.", eventId, caseId);
+            log.debug("A System user token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
             s2sToken = generateS2SToken();
-            log.info("S2S token has been generated for event: {}, caseId: {}.", eventId, caseId);
+            log.debug("S2S token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
         } catch (IdentityManagerResponseException ex) {
-            log.error("Unauthorised access to getCaseById", ex.getMessage());
+            log.info("Unauthorised access to getCaseById", ex.getMessage());
             throw new IdentityManagerResponseException(ex.getMessage(), ex);
         }
         
-        log.debug("ccd url: {}", coreCaseDataApiUrl);
         final StartEventDetails startEventDetails = getStartEventByCase(userToken, s2sToken, caseId, eventId);
         log.info("Case details found for the caseId: {}", caseId);
-        log.info("Start event id: {}", startEventDetails.getEventId());
+        log.debug("Start event id: {}", startEventDetails.getEventId());
         CaseDetails<AsylumCase> caseDetails = startEventDetails.getCaseDetails();
         if (caseDetails == null) {
-            log.error("Case details is null for caseId: {}", caseId);
+            log.info("Case details is null for caseId: {}", caseId);
             throw new IllegalStateException("Case details is null for caseId: " + caseId);
         } else {
-            log.info("Start case details id: {}", caseDetails.getId());
-            log.info("Start case details state: {}", caseDetails.getState());
+            log.debug("Start case details id: {}", caseDetails.getId());
+            log.debug("Start case details state: {}", caseDetails.getState());
             log.info("Start case details created date: {}", caseDetails.getCreatedDate());
             AsylumCase asylumCase = caseDetails.getCaseData();
             log.debug("Start case details data: {}", asylumCase);
@@ -109,7 +108,7 @@ public class CcdDataService {
             eventData.put(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE_FIELD, homeCaseType);
        
             log.debug("Event data to be submitted: {}", eventData);    
-            log.info("Submitting event with method: {} for caseId: {} with Home Office statutory timeframe status: {}, caseType: {}", 
+            log.debug("Submitting event with method: {} for caseId: {} with Home Office statutory timeframe status: {}, caseType: {}", 
                      eventId, caseId,
                      hoStatutoryTimeframeDto.getStf24weeks().getStatus(),
                      homeCaseType);
@@ -125,12 +124,12 @@ public class CcdDataService {
 
     private StartEventDetails getStartEventByCase(
         String userToken, String s2sToken, String caseId, String eventId) {
-        log.info("Getting start event by case with caseId: {}, EventId: {}", caseId, eventId);
+        log.debug("Getting start event by case with caseId: {}, EventId: {}", caseId, eventId);
         try {
             return ccdDataApi.startEventByCase(userToken, s2sToken, caseId, eventId);
         } catch (Exception ex) {
             if (ex.getMessage() != null && ex.getMessage().contains("Case ID is not valid")) {
-                log.error("Case not found for caseId: {}", caseId);
+                log.info("Case not found for caseId: {}", caseId);
                 throw new CaseNotFoundException("Case not found for caseId: " + caseId);
             }
             throw ex;
@@ -141,7 +140,7 @@ public class CcdDataService {
         String userToken, String s2sToken, String caseId, Map<String, Object> eventData,
         String eventToken, String eventId, boolean ignoreWarning) {
 
-        log.info("Event data to be submitted: {}", eventData);
+        log.debug("Event data to be submitted: {}", eventData);
         
         Map<String, Object> eventMetadata = new HashMap<>();
         eventMetadata.put(EVENT_METADATA_ID_KEY, eventId);
@@ -156,7 +155,7 @@ public class CcdDataService {
         log.debug("CaseDataContent Request - event: {}", requestBody.getEvent());
         log.debug("CaseDataContent Request - ignoreWarning: {}", requestBody.isIgnoreWarning());
         
-        log.info("Submitting case with caseId: {}, eventData: {}, ignoreWarning: {}",
+        log.debug("Submitting case with caseId: {}, eventData: {}, ignoreWarning: {}",
                  caseId, eventData, ignoreWarning);
         
         return ccdDataApi.submitEventByCase(userToken, s2sToken, caseId, requestBody);
@@ -180,7 +179,7 @@ public class CcdDataService {
         List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList = new ArrayList<>();
         historyList.add(new IdValue<>(id, historyEntry));
 
-        log.info("new StatutoryTimeframe24Weeks created with status: {}, homeOfficeCaseType: {}, history size: {}",
+        log.debug("new StatutoryTimeframe24Weeks created with status: {}, homeOfficeCaseType: {}, history size: {}",
                  status, homeOfficeCaseType, historyList.size());
 
         return new StatutoryTimeframe24Weeks(
@@ -233,22 +232,22 @@ public class CcdDataService {
                 existingCaseType,
                 caseId
             );
-            log.error(errorMessage);
+            log.info(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
     }
 
     public String generateS2SToken() {
-        log.info("Generating S2S token");
+        log.debug("Generating S2S token");
         String s2sToken = serviceAuthorization.generate();
-        log.info("S2S token generated successfully");
+        log.debug("S2S token generated successfully");
         return s2sToken;
     }
 
     public String getServiceUserToken() {
-        log.info("Generating service user token");
+        log.debug("Generating service user token");
         String serviceUserToken = idamService.getServiceUserToken();
-        log.info("Service user token generated successfully");
+        log.debug("Service user token generated successfully");
         return serviceUserToken;
     }
 }

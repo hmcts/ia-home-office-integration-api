@@ -60,7 +60,7 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
         String s2sToken = request.getHeader(SERVICE_AUTHORIZATION_HEADER);
 
         if (s2sToken == null || s2sToken.isEmpty()) {
-            log.error("S2S authentication failed for {} {}: Missing ServiceAuthorization header",
+            log.info("S2S authentication failed for {} {}: Missing ServiceAuthorization header",
                 request.getMethod(), requestPath);
             sendUnauthorizedResponse(response, "Missing ServiceAuthorization header (S2S token required)");
             return;
@@ -70,12 +70,12 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
         try {
             serviceName = getServiceName(s2sToken);
         } catch (Exception e) {
-            log.error("S2S authentication failed for {} {}: Invalid or expired S2S token - {}",
+            log.info("S2S authentication failed for {} {}: Invalid or expired S2S token - {}",
                 request.getMethod(), requestPath, e.getMessage());
             sendUnauthorizedResponse(response, "Invalid or expired S2S token");
             return;
         }
-        log.info("S2S service '{}' attempting to access endpoint: {}", serviceName, requestPath);
+        log.debug("S2S service '{}' attempting to access endpoint: {}", serviceName, requestPath);
 
         boolean isKnownService = false;
         boolean isEndpointAllowed = false;
@@ -83,39 +83,39 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
         // Check IAC service group
         if (iacServices.contains(serviceName)) {
             isKnownService = true;
-            log.info("Service '{}' identified as IAC service", serviceName);
-            log.info("IAC allowed endpoints: {}", iacAllowedEndpoints);
+            log.debug("Service '{}' identified as IAC service", serviceName);
+            log.debug("IAC allowed endpoints: {}", iacAllowedEndpoints);
             if (isEndpointAllowed(requestPath, iacAllowedEndpoints)) {
                 isEndpointAllowed = true;
-                log.info("Endpoint '{}' allowed via IAC service group", requestPath);
+                log.debug("Endpoint '{}' allowed via IAC service group", requestPath);
             }
         }
 
         // Check Home Office service group
         if (homeOfficeServices.contains(serviceName)) {
             isKnownService = true;
-            log.info("Service '{}' identified as Home Office service", serviceName);
-            log.info("Home Office allowed endpoints: {}", homeOfficeAllowedEndpoints);
+            log.debug("Service '{}' identified as Home Office service", serviceName);
+            log.debug("Home Office allowed endpoints: {}", homeOfficeAllowedEndpoints);
             if (isEndpointAllowed(requestPath, homeOfficeAllowedEndpoints)) {
                 isEndpointAllowed = true;
-                log.info("Endpoint '{}' allowed via Home Office service group", requestPath);
+                log.debug("Endpoint '{}' allowed via Home Office service group", requestPath);
             }
         }
 
         if (!isKnownService) {
-            log.error("S2S authentication failed: Service '{}' is not a known/authorised service", serviceName);
+            log.info("S2S authentication failed: Service '{}' is not a known/authorised service", serviceName);
             sendUnauthorizedResponse(response, "Service '" + serviceName + "' is not a recognised service");
             return;
         }
 
         if (!isEndpointAllowed) {
-            log.error("Access DENIED: Service '{}' is not authorised to access endpoint '{}'",
+            log.info("Access DENIED: Service '{}' is not authorised to access endpoint '{}'",
                 serviceName, requestPath);
             sendForbiddenResponse(response, "Service '" + serviceName + "' is not authorised to access endpoint: " + requestPath);
             return;
         }
 
-        log.info("Access GRANTED: Service '{}' is authorised to access endpoint '{}'", serviceName, requestPath);
+        log.debug("Access GRANTED: Service '{}' is authorised to access endpoint '{}'", serviceName, requestPath);
         filterChain.doFilter(request, response);
     }
 
