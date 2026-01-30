@@ -8,6 +8,7 @@ public enum Event {
     PAY_AND_SUBMIT_APPEAL("payAndSubmitAppeal"),
     MARK_APPEAL_PAID("markAppealPaid"),
     REQUEST_HOME_OFFICE_DATA("requestHomeOfficeData"),
+    GET_HOME_OFFICE_APPELLANT_DATA("getHomeOfficeAppellantData"),
     REQUEST_RESPONDENT_EVIDENCE("requestRespondentEvidence"),
     REQUEST_RESPONDENT_REVIEW("requestRespondentReview"),
     LIST_CASE("listCase"),

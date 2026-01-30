@@ -33,6 +33,42 @@ public enum AsylumCaseDefinition {
     HOME_OFFICE_API_ERROR(
             "homeOfficeApiError", new TypeReference<String>() {}),
 
+    HOME_OFFICE_APPELLANT_ASYLUM_SUPPORT(
+        "homeOfficeAppellantAsylumSupport", new TypeReference<YesOrNo>(){}),
+
+    HOME_OFFICE_APPELLANT_CLAIM_DATE(
+        "homeOfficeAppellantClaimDate", new TypeReference<String>(){}),
+
+    HOME_OFFICE_APPELLANT_DECISION_DATE(
+        "homeOfficeAppellantDecisionDate", new TypeReference<String>() {}),
+
+    HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE(
+        "homeOfficeAppellantDecisionLetterDate", new TypeReference<String>(){}),
+
+    HOME_OFFICE_APPELLANT_GIVEN_NAMES(
+        "homeOfficeAppellantGivenNames", new TypeReference<String>(){}),
+
+    HOME_OFFICE_APPELLANT_FAMILY_NAME(
+        "homeOfficeAppellantFamilyName", new TypeReference<String>(){}),
+
+    HOME_OFFICE_APPELLANT_DATE_OF_BIRTH(
+        "homeOfficeAppellantDateOfBirth", new TypeReference<String>() {}),
+
+    HOME_OFFICE_APPELLANT_NATIONALITY(
+        "homeOfficeAppellantNationality", new TypeReference<String>(){}),
+
+    HOME_OFFICE_APPELLANT_ROA(
+        "homeOfficeAppellantRoa", new TypeReference<YesOrNo>(){}),
+
+    HOME_OFFICE_APPELLANT_FEE_WAIVER(
+        "homeOfficeAppellantFeeWaiver", new TypeReference<YesOrNo>(){}),
+
+    HOME_OFFICE_APPELLANT_LANGUAGE(
+        "homeOfficeAppellantLanguage", new TypeReference<String>() {}),
+
+    HOME_OFFICE_APPELLANT_INTERPRETER_NEEDED(
+        "homeOfficeAppellantInterpreterNeeded", new TypeReference<YesOrNo>(){}),
+
     APPELLANT_GIVEN_NAMES(
         "appellantGivenNames", new TypeReference<String>(){}),
 
