@@ -12,6 +12,7 @@ class EventTest {
         assertEquals("payAndSubmitAppeal", Event.PAY_AND_SUBMIT_APPEAL.toString());
         assertEquals("markAppealPaid", Event.MARK_APPEAL_PAID.toString());
         assertEquals("requestHomeOfficeData", Event.REQUEST_HOME_OFFICE_DATA.toString());
+        assertEquals("getHomeOfficeAppellantData", Event.GET_HOME_OFFICE_APPELLANT_DATA.toString());        
         assertEquals("requestRespondentEvidence", Event.REQUEST_RESPONDENT_EVIDENCE.toString());
         assertEquals("requestRespondentReview", Event.REQUEST_RESPONDENT_REVIEW.toString());
         assertEquals("listCase", Event.LIST_CASE.toString());
