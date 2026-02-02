@@ -75,19 +75,23 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
             asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, applicationDto.getHoDecisionLetterDate());
 
             for (HomeOfficeAppellantDto appellantDto : applicationDto.getAppellants()) {
-                Boolean roa = appellantDto.getRoa();
-                Boolean asylumSupport = appellantDto.getAsylumSupport();
-                Boolean hoFeeWaiver = appellantDto.getHoFeeWaiver();
-                Boolean interpreterNeeded = appellantDto.getInterpreterNeeded();
+                Boolean dtoRoa = appellantDto.getRoa();
+                Boolean dtoAsylumSupport = appellantDto.getAsylumSupport();
+                Boolean dtoHoFeeWaiver = appellantDto.getHoFeeWaiver();
+                Boolean dtoInterpreterNeeded = appellantDto.getInterpreterNeeded();
+                YesOrNo roa = Boolean.TRUE.equals(dtoRoa) ? YesOrNo.YES : Boolean.TRUE.equals(dtoRoa) ? YesOrNo.NO : null;
+                YesOrNo asylumSupport = Boolean.TRUE.equals(dtoAsylumSupport) ? YesOrNo.YES : Boolean.TRUE.equals(dtoAsylumSupport) ? YesOrNo.NO : null;
+                YesOrNo hoFeeWaiver = Boolean.TRUE.equals(dtoHoFeeWaiver) ? YesOrNo.YES : Boolean.TRUE.equals(dtoHoFeeWaiver) ? YesOrNo.NO : null;
+                YesOrNo interpreterNeeded = Boolean.TRUE.equals(dtoInterpreterNeeded) ? YesOrNo.YES : Boolean.TRUE.equals(dtoInterpreterNeeded) ? YesOrNo.NO : null;
                 HomeOfficeAppellant appellant = new HomeOfficeAppellant(appellantDto.getFamilyName(), 
                                                                         appellantDto.getGivenNames(), 
                                                                         appellantDto.getDateOfBirth(), 
                                                                         appellantDto.getNationality(), 
-                                                                        Boolean.TRUE.equals(roa) ? YesOrNo.YES : Boolean.TRUE.equals(roa) ? YesOrNo.NO : null, 
-                                                                        Boolean.TRUE.equals(asylumSupport) ? YesOrNo.YES : Boolean.TRUE.equals(asylumSupport) ? YesOrNo.NO : null, 
-                                                                        Boolean.TRUE.equals(hoFeeWaiver) ? YesOrNo.YES : Boolean.TRUE.equals(hoFeeWaiver) ? YesOrNo.NO : null, 
+                                                                        roa, 
+                                                                        asylumSupport, 
+                                                                        hoFeeWaiver, 
                                                                         appellantDto.getLanguage(), 
-                                                                        Boolean.TRUE.equals(interpreterNeeded) ? YesOrNo.YES : Boolean.TRUE.equals(interpreterNeeded) ? YesOrNo.NO : null);
+                                                                        interpreterNeeded);
                 asylumCase.write(HOME_OFFICE_APPELLANTS, appellant);
             }
             // We know the HTTP status code is 200 here (although I acknowledge this isn't great coding - but I can only get it explicitly when an exception is thrown)
