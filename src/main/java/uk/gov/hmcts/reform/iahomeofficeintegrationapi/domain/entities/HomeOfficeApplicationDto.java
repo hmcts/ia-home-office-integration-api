@@ -5,12 +5,11 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class HomeOfficeApplication {
+public class HomeOfficeApplicationDto {
 
-    private boolean asylumSupport;
     private LocalDate hoClaimDate;
     private LocalDate hoDecisionDate;
     private LocalDate hoDecisionLetterDate;
-    private List<HomeOfficeAppellant> appellants;
+    private List<HomeOfficeAppellantDto> appellants;
 
 }

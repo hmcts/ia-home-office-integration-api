@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeApplication;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeApplicationDto;
 
 @FeignClient(name = "home-office-application-api", url = "${home-office.api.url}")
 public interface HomeOfficeApplicationApi {
 
     @GetMapping("/applications/v1/{id}")
-    ResponseEntity<HomeOfficeApplication> getApplication(@PathVariable(name = "id") final String uanOrGwf,
+    ResponseEntity<HomeOfficeApplicationDto> getApplication(@PathVariable(name = "id") final String uanOrGwf,
         @RequestHeader(AUTHORIZATION) String bearerToken,
         @RequestHeader("Home-Office-Correlation-ID") final String correlationID,
         @RequestHeader("Home-Office-Consumer") final String consumerCode,

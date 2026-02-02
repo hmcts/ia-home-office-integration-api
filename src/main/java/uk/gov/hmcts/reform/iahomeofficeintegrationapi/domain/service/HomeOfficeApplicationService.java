@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeApplication;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeApplicationDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeApplicationApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeMissingApplicationException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeDateFormatter;
@@ -32,7 +32,7 @@ public class HomeOfficeApplicationService {
         this.accessTokenProvider = accessTokenProvider;
     }
 
-    public HomeOfficeApplication getApplication(
+    public HomeOfficeApplicationDto getApplication(
         String homeOfficeReferenceNumber) throws HomeOfficeMissingApplicationException {
 
         final String accessToken = accessTokenProvider.getAccessToken();
@@ -46,7 +46,7 @@ public class HomeOfficeApplicationService {
             homeOfficeConsumer,
             homeOfficeEventDateTime
         );
-        ResponseEntity<HomeOfficeApplication> response;
+        ResponseEntity<HomeOfficeApplicationDto> response;
         try {
             response = homeOfficeApplicationApi.getApplication(homeOfficeReferenceNumber, accessToken, homeOfficeCorrelationId, homeOfficeConsumer, homeOfficeEventDateTime);
             int statusCode = response.getStatusCodeValue();

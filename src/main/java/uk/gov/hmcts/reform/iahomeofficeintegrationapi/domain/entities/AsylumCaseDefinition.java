@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Statut
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.WitnessDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HomeOfficeAppellant;
 
 public enum AsylumCaseDefinition {
 
@@ -33,8 +34,8 @@ public enum AsylumCaseDefinition {
     HOME_OFFICE_API_ERROR(
             "homeOfficeApiError", new TypeReference<String>() {}),
 
-    HOME_OFFICE_APPELLANT_ASYLUM_SUPPORT(
-        "homeOfficeAppellantAsylumSupport", new TypeReference<YesOrNo>(){}),
+    HOME_OFFICE_APPELLANT_API_HTTP_STATUS(
+        "homeOfficeAppellantApiHttpStatus", new TypeReference<String>(){}),
 
     HOME_OFFICE_APPELLANT_CLAIM_DATE(
         "homeOfficeAppellantClaimDate", new TypeReference<String>(){}),
@@ -45,29 +46,8 @@ public enum AsylumCaseDefinition {
     HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE(
         "homeOfficeAppellantDecisionLetterDate", new TypeReference<String>(){}),
 
-    HOME_OFFICE_APPELLANT_GIVEN_NAMES(
-        "homeOfficeAppellantGivenNames", new TypeReference<String>(){}),
-
-    HOME_OFFICE_APPELLANT_FAMILY_NAME(
-        "homeOfficeAppellantFamilyName", new TypeReference<String>(){}),
-
-    HOME_OFFICE_APPELLANT_DATE_OF_BIRTH(
-        "homeOfficeAppellantDateOfBirth", new TypeReference<String>() {}),
-
-    HOME_OFFICE_APPELLANT_NATIONALITY(
-        "homeOfficeAppellantNationality", new TypeReference<String>(){}),
-
-    HOME_OFFICE_APPELLANT_ROA(
-        "homeOfficeAppellantRoa", new TypeReference<YesOrNo>(){}),
-
-    HOME_OFFICE_APPELLANT_FEE_WAIVER(
-        "homeOfficeAppellantFeeWaiver", new TypeReference<YesOrNo>(){}),
-
-    HOME_OFFICE_APPELLANT_LANGUAGE(
-        "homeOfficeAppellantLanguage", new TypeReference<String>() {}),
-
-    HOME_OFFICE_APPELLANT_INTERPRETER_NEEDED(
-        "homeOfficeAppellantInterpreterNeeded", new TypeReference<YesOrNo>(){}),
+    HOME_OFFICE_APPELLANTS(
+        "homeOfficeAppellants", new TypeReference<List<HomeOfficeAppellant>>(){}),
 
     APPELLANT_GIVEN_NAMES(
         "appellantGivenNames", new TypeReference<String>(){}),
