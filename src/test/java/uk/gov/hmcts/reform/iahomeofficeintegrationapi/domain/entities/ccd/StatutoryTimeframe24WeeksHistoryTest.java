@@ -22,7 +22,7 @@ public class StatutoryTimeframe24WeeksHistoryTest {
 
         // When
         StatutoryTimeframe24WeeksHistory history = new StatutoryTimeframe24WeeksHistory(
-            status, reason,   user, dateTimeAdded
+            status, reason, user, dateTimeAdded
         );
 
         // Then
