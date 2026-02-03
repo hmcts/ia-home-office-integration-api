@@ -122,7 +122,7 @@ public class CcdDataService {
             
             SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, eventData, startEventDetails.getToken(), eventId, true);
 
-            log.debug("Home Office statutory timeframe status updated for the caseId: {}, Status: {}, Message: {}", caseId,
+            log.info("Home Office statutory timeframe status updated for the caseId: {}, Status: {}, Message: {}", caseId,
                      submitEventDetails.getCallbackResponseStatusCode(), submitEventDetails.getCallbackResponseStatus());
 
             return submitEventDetails;
