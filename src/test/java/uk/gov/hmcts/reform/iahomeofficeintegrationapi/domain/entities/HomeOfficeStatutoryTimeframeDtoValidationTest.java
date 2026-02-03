@@ -28,14 +28,14 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
     void shouldPassValidationWithValidData() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId(1234567890123456L)
+            .ccdCaseId("1234567890123456")
             .uan("1234-5678-9012-3456")
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .cohorts(new String[]{"HU"})
                 .build())
             .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 0))
             .build();
@@ -51,14 +51,14 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
     void shouldFailValidationWhenCcdCaseIdIsTooShort() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId(12345L)
+            .ccdCaseId("12345")
             .uan("1234-5678-9012-3456")
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .cohorts(new String[]{"HU"})
                 .build())
             .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 0))
             .build();
@@ -77,14 +77,14 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
     void shouldFailValidationWhenCcdCaseIdIsTooLong() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId(12345678901234567L)
+            .ccdCaseId("12345678901234567")
             .uan("1234-5678-9012-3456")
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .cohorts(new String[]{"HU"})
                 .build())
             .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 0))
             .build();
@@ -110,7 +110,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .dateOfBirth(LocalDate.of(1990, 1, 1))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .cohorts(new String[]{"HU"})
                 .build())
             .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 0))
             .build();
@@ -128,14 +128,14 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
     void shouldPassValidationWithValidUan() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId(1234567890123456L)
+            .ccdCaseId("1234567890123456")
             .uan("9876-5432-1098-7654")
             .familyName("Doe")
             .givenNames("Jane")
             .dateOfBirth(LocalDate.of(1985, 5, 15))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .cohorts(new String[]{"HU"})
                 .build())
             .timeStamp(LocalDateTime.of(2024, 1, 15, 10, 20, 30))
             .build();
@@ -151,14 +151,14 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
     void shouldFailValidationWhenUanIsNull() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId(1234567890123456L)
+            .ccdCaseId("1234567890123456")
             .uan(null)
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .cohorts(new String[]{"HU"})
                 .build())
             .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 0))
             .build();
@@ -176,14 +176,14 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
     void shouldFailValidationWhenMultipleFieldsAreInvalid() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId(123L)
+            .ccdCaseId("123")
             .uan("invalid-uan")
             .familyName(null)
             .givenNames(null)
             .dateOfBirth(null)
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .cohorts(new String[]{"HU"})
                 .build())
             .timeStamp(null)
             .build();

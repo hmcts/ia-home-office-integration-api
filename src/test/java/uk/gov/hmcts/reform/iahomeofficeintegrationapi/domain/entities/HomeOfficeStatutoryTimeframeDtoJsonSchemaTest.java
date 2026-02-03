@@ -29,7 +29,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         objectMapper.registerModule(new JavaTimeModule());
 
         JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V4);
-        InputStream schemaStream = getClass().getResourceAsStream("/twentyFourWeekStatusSchema_v4.json");
+        InputStream schemaStream = getClass().getResourceAsStream("/twentyFourWeekStatusSchema_v6.json");
         
         if (schemaStream == null) {
             fail("Schema file twentyFourWeekStatusSchema_v4.json not found in test resources");
@@ -42,14 +42,14 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     void shouldValidateAgainstJsonSchemaWithAcceleratedAppealTrue() throws Exception {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId(1234567890123456L)
+            .ccdCaseId("1234567890123456")
             .uan("1234-5678-9012-3456")
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 5, 15))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .cohorts(new String[]{"HU"})
                 .build())
             .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 45))
             .build();
@@ -67,14 +67,14 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     void shouldValidateAgainstJsonSchemaWithAcceleratedAppealFalse() throws Exception {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId(9876543210987654L)
+            .ccdCaseId("9876543210987654")
             .uan("9876-5432-1098-7654")
             .familyName("Doe")
             .givenNames("Jane")
             .dateOfBirth(LocalDate.of(1985, 3, 20))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("No")
-                .caseType("HU")
+                .cohorts(new String[]{"HU"})
                 .build())
             .timeStamp(LocalDateTime.of(2024, 1, 15, 10, 20, 30))
             .build();
@@ -92,14 +92,14 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     void shouldValidateTimeStampFormatWithEdgeCaseTime() throws Exception {
         // Given - test with edge case time values
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId(1111222233334444L)
+            .ccdCaseId("1111222233334444")
             .uan("1111-2222-3333-4444")
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(2000, 12, 31))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .cohorts(new String[]{"HU"})
                 .build())
             .timeStamp(LocalDateTime.of(2024, 6, 15, 23, 59, 59))
             .build();
@@ -117,14 +117,14 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     void shouldValidateTimeStampFormatWithMidnightTime() throws Exception {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId(5555666677778888L)
+            .ccdCaseId("5555666677778888")
             .uan("5555-6666-7777-8888")
             .familyName("Midnight")
             .givenNames("Test")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("No")
-                .caseType("HU")
+                .cohorts(new String[]{"HU"})
                 .build())
             .timeStamp(LocalDateTime.of(2023, 1, 1, 0, 0, 0))
             .build();
@@ -142,14 +142,14 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     void shouldFailValidationWhenUanHasInvalidFormat() throws Exception {
         // Given - UAN without dashes
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId(1234567890123456L)
+            .ccdCaseId("1234567890123456")
             .uan("1234567890123456")
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("No")
-                .caseType("HU")
+                .cohorts(new String[]{"HU"})
                 .build())
             .timeStamp(LocalDateTime.of(2023, 1, 1, 0, 0, 0))
             .build();
@@ -169,14 +169,14 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     void shouldFailValidationWhenUanContainsLetters() throws Exception {
         // Given - UAN with letters
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId(1234567890123456L)
+            .ccdCaseId("1234567890123456")
             .uan("ABCD-5678-9012-3456")
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .cohorts(new String[]{"HU"})
                 .build())
             .timeStamp(LocalDateTime.of(2023, 1, 1, 12, 30, 45))
             .build();
@@ -196,14 +196,14 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     void shouldFailValidationWhenUanIsTooShort() throws Exception {
         // Given - UAN with wrong length
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId(1234567890123456L)
+            .ccdCaseId("1234567890123456")
             .uan("123-456-789-012")
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status("Yes")
-                .caseType("HU")
+                .cohorts(new String[]{"HU"})
                 .build())
             .timeStamp(LocalDateTime.of(2023, 1, 1, 12, 30, 45))
             .build();

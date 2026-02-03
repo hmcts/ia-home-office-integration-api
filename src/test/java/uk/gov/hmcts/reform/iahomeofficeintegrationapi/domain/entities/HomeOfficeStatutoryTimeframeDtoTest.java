@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 class HomeOfficeStatutoryTimeframeDtoTest {
 
-    private Long ccdCaseId;
+    private String ccdCaseId;
     private String uan;
     private String familyName;
     private String givenNames;
@@ -24,7 +25,7 @@ class HomeOfficeStatutoryTimeframeDtoTest {
 
     @BeforeEach
     void setUp() {
-        ccdCaseId = 1234567890123456L;
+        ccdCaseId = "1234567890123456L";
         uan = "UAN123456";
         familyName = "Smith";
         givenNames = "John";
@@ -52,7 +53,7 @@ class HomeOfficeStatutoryTimeframeDtoTest {
             .dateOfBirth(dateOfBirth)
             .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
                 .status(hoStatutoryTimeframeStatus ? "Yes" : "No")
-                .caseType("HU")
+                .cohorts(new String[]{"HU"})
                 .build())
             .timeStamp(timeStamp)
             .build();
@@ -63,7 +64,7 @@ class HomeOfficeStatutoryTimeframeDtoTest {
         assertEquals(givenNames, homeOfficeStatutoryTimeframeDtoDto.getGivenNames());
         assertEquals(dateOfBirth, homeOfficeStatutoryTimeframeDtoDto.getDateOfBirth());
         assertEquals(hoStatutoryTimeframeStatus ? "Yes" : "No", homeOfficeStatutoryTimeframeDtoDto.getStf24weeks().getStatus());
-        assertEquals("HU", homeOfficeStatutoryTimeframeDtoDto.getStf24weeks().getCaseType());
+        assertArrayEquals(new String[]{"HU"}, homeOfficeStatutoryTimeframeDtoDto.getStf24weeks().getCohorts());
         assertEquals(timeStamp, homeOfficeStatutoryTimeframeDtoDto.getTimeStamp());
     }
 
