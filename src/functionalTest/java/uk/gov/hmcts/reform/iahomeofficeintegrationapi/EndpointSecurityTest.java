@@ -108,7 +108,7 @@ public class EndpointSecurityTest {
                 .when()
                 .post(callbackEndpoint)
                 .then()
-                .statusCode(HttpStatus.FORBIDDEN.value())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
         );
     }
 
