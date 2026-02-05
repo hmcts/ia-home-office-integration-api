@@ -27,6 +27,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 class FeignErrorDecoderTest {
@@ -162,7 +163,7 @@ class FeignErrorDecoderTest {
     }
 
     @Test
-    void should_decode_for_400_ccd_api_case_not_found() {
+    void should_decode_for_404_ccd_api_case_not_found() {
         String ccdErrorResponse = "{\"exception\":\"uk.gov.hmcts.ccd.endpoint.exceptions.BadRequestException\","
             + "\"status\":400,\"error\":\"Bad Request\",\"message\":\"Case ID is not valid\","
             + "\"path\":\"/cases/123/event-triggers/addStatutoryTimeframe24Weeks\"}";
@@ -176,7 +177,10 @@ class FeignErrorDecoderTest {
             .build();
 
         Exception exception = feignErrorDecoder.decode("CcdDataApi#startEventByCase", response);
-        assertEquals(HomeOfficeResponseException.class, exception.getClass());
+        // CCD returns 400 "Case ID is not valid" when case not found - should be treated as 404
+        assertEquals(ResponseStatusException.class, exception.getClass());
+        ResponseStatusException responseStatusException = (ResponseStatusException) exception;
+        assertEquals(HttpStatus.NOT_FOUND, responseStatusException.getStatus());
         assertTrue(exception.getMessage().contains("Case ID is not valid"));
     }
 

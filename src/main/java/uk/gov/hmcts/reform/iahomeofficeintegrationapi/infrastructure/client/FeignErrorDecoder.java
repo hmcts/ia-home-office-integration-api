@@ -46,6 +46,11 @@ public class FeignErrorDecoder implements ErrorDecoder {
                             var jsonNode = objectMapper.readTree(rawResponse);
                             if (jsonNode.has("message")) {
                                 errMessage = jsonNode.get("message").asText();
+                                // CCD returns 400 "Case ID is not valid" when case not found - treat as 404
+                                if (errMessage.contains("Case ID is not valid")) {
+                                    log.info("CCD returned 400 for case not found, treating as 404: {}", errMessage);
+                                    return new ResponseStatusException(HttpStatus.NOT_FOUND, errMessage);
+                                }
                             } else {
                                 errMessage = rawResponse;
                             }
