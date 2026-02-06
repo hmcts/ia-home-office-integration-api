@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -147,18 +149,30 @@ class S2SEndpointAuthorizationFilterTest {
 
     @Test
     void should_return_403_when_home_office_service_accesses_unauthorized_endpoint() throws ServletException, IOException {
-        // Given
-        String token = "test-token";
+        // Given - a known home office service trying to access an endpoint it's not authorized for
+        // Using a well-formed JWT token (the mock controls what service name is returned)
+        String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJob21lb2ZmaWNlLXdyb25nLXNlcnZpY2UiLCJleHAiOjE3Njk3ODc2ODd9.test-signature";
+        String unauthorizedService = "homeoffice-wrong-service";
+
+        // Verify the token payload contains the expected service name
+        String[] tokenParts = token.split("\\.");
+        String payload = new String(Base64.getUrlDecoder().decode(tokenParts[1]), StandardCharsets.UTF_8);
+        assertThat(payload).contains("\"sub\":\"" + unauthorizedService + "\"");
+
+        // Add the service to known services so it's recognized (gets past 401)
+        ReflectionTestUtils.setField(filter, "homeOfficeServices",
+            List.of("home-office-immigration", unauthorizedService));
+
         request.setRequestURI("/s2stoken");
         request.addHeader("ServiceAuthorization", token);
-        when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn("home-office-immigration");
+        when(authTokenValidator.getServiceName("Bearer " + token)).thenReturn(unauthorizedService);
 
         // When
         filter.doFilterInternal(request, response, filterChain);
 
-        // Then
+        // Then - should get 403 because /s2stoken is not in homeOfficeAllowedEndpoints
         assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
-        assertThat(response.getContentAsString()).contains("home-office-immigration");
+        assertThat(response.getContentAsString()).contains(unauthorizedService);
         assertThat(response.getContentAsString()).contains("not authorised to access endpoint");
         verify(authTokenValidator).getServiceName("Bearer " + token);
     }
