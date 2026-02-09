@@ -76,14 +76,14 @@ caseworker-ia-system:
      -H "Content-Type: application/json" \
      -H "ServiceAuthorization: Bearer YOUR_S2S_TOKEN_HERE" \
      -d '{
-       "ccdCaseId": 1764079412780130,
+       "ccdCaseId": "1764079412780130",
        "uan": "1234-5678-9012-3455",
        "familyName": "Smith",
        "givenNames": "John",
        "dateOfBirth": "1990-01-15",
        "stf24weeks": {
          "status": "Yes",
-         "caseType": "EEA"
+         "cohorts": ["EEA"]
        },
        "timeStamp": "2025-11-24T10:30:00"
      }' \
@@ -125,14 +125,14 @@ curl -X POST \
   -H "Authorization: Bearer <User Service Token>" \
   -H "ServiceAuthorization: Bearer <S2S Token>" \
   -d '{
-    "ccdCaseId": 1765790176250362,
+    "ccdCaseId": "1765790176250362",
     "uan": "1234-5678-9012-3556",
     "familyName": "Smith",
     "givenNames": "John",
     "dateOfBirth": "1990-01-15",
     "stf24weeks": {
       "status": "Yes",
-      "caseType": "EEA"
+      "cohorts": ["EEA"]
     },
     "timeStamp": "2025-12-15T10:30:00"
   }' \
@@ -245,14 +245,14 @@ curl -X POST \
   -H "Authorization: Bearer <User Service Token>" \
   -H "ServiceAuthorization: Bearer <S2S Token>" \
   -d '{
-    "ccdCaseId": 1765790176250362,
+    "ccdCaseId": "1765790176250362",
     "uan": "1234-5678-9012-3556",
     "familyName": "Smith",
     "givenNames": "John",
     "dateOfBirth": "1990-01-15",
     "stf24weeks": {
       "status": "Yes",
-      "caseType": "EEA"
+      "cohorts": ["EEA"]
     },
     "timeStamp": "2025-12-15T10:30:00"
   }' \
