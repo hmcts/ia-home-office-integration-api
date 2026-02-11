@@ -113,10 +113,7 @@ public class CcdDataService {
             boolean isYes = hoStatutoryTimeframeDto.getStf24weeks().getStatus().equalsIgnoreCase(YesOrNo.YES.toString());
             YesOrNo status = isYes ? YesOrNo.YES : YesOrNo.NO;
             eventData.put(STF_24W_CURRENT_STATUS_AUTO_GENERATED.value(), status);
-            Optional<YesOrNo> currentPreviousStatusWasYes = asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class);
-            if (currentPreviousStatusWasYes.isEmpty() || !currentPreviousStatusWasYes.get().equals(YesOrNo.YES)) {
-                eventData.put(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value(), status);
-            }
+            eventData.put(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value(), status);
             log.debug("Setting Event data: {}", eventData);
             eventData.put(STF_24W_CURRENT_REASON_AUTO_GENERATED.value(), STATUTORY_TIMEFRAME_REASON);
             log.debug("Event data to be submitted: {}", eventData);    
