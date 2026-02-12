@@ -68,6 +68,9 @@ public class HomeOfficeApplicationService {
             // Throw new exception to be caught by the event handler
             String message = "Biographic information from Home Office application with HMCTS reference " + homeOfficeReferenceNumber + " could not be retrieved.";
             switch (statusCode) {
+                case -1:
+                    message += "\n\nThe Home Office validation API did not respond.";
+                    break;
                 case 400:
                     message += "\n\nThe request to the Home Office validation API was not correctly formed.";
                     break;
@@ -88,6 +91,7 @@ public class HomeOfficeApplicationService {
                     message += "\n\nThe Home Office validation API was not available.";
                     break;            
                 default:
+                    message += "\n\nThe HTTP status code was " + String.valueOf(statusCode) + ".";
                     break;
             }
             throw new HomeOfficeMissingApplicationException(statusCode, message);

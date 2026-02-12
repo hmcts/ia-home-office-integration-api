@@ -99,6 +99,10 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
         } catch (HomeOfficeMissingApplicationException exception) {
             // log as an error if the return status indicates a problem somewhere in our code (which may be a result of something changing at the Home Office's end)
             switch (exception.getHttpStatus()) {
+                case -1:
+                    // This means we didn't get a response from the Home Office (time-out)
+                    log.warn(exception.getMessage());
+                    break;
                 case 400:
                 case 401:
                 case 403:
