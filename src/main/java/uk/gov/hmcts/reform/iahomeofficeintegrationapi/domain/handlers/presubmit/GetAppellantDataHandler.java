@@ -97,7 +97,7 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
             // We know the HTTP status code is 200 here (although I acknowledge this isn't great coding - but I can only get it explicitly when an exception is thrown)
             asylumCase.write(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, "200");
         } catch (HomeOfficeMissingApplicationException exception) {
-            // log as an error if the return status indicates a problem somewhere in our code (which may be a result of something changing at the Home Office's end)
+            // Log as an error if the return status indicates a problem somewhere in our code (which may be a result of something changing at the Home Office's end)
             switch (exception.getHttpStatus()) {
                 case -1:
                     // This means we didn't get a response from the Home Office (time-out)
@@ -122,7 +122,8 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                     log.warn(exception.getMessage());
                     break;
                 default:
-                    log.info(exception.getMessage());
+                    // Don't know - safest to assume it's a problem with our own code
+                    log.error(exception.getMessage());
                     break;
             }
             // Send the HTTP status code back to the ia-case-api service by writing it in the case record
