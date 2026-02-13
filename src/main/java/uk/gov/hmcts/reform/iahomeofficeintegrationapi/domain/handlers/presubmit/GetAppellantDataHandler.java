@@ -103,9 +103,7 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                     // This means we didn't get a response from the Home Office (time-out)
                     log.warn(exception.getMessage());
                     break;
-                case 400:
-                case 401:
-                case 403:
+                case 400, 401, 403:
                     // If the request is malformed, unauthenticated or unauthorised, it's a problem in our code
                     log.error(exception.getMessage());
                     break;
@@ -113,11 +111,7 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                     // This will happen regularly due to user error; the code is fine
                     log.info(exception.getMessage());
                     break;
-                case 500:
-                case 501:
-                case 502:
-                case 503:
-                case 504:
+                case 500, 501, 502, 503, 504:
                     // One of these signifies a problem at the Home Office's end - nothing we can do
                     log.warn(exception.getMessage());
                     break;
