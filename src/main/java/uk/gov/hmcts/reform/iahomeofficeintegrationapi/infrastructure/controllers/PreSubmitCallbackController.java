@@ -4,13 +4,16 @@ import static java.util.Objects.requireNonNull;
 import static org.springframework.http.ResponseEntity.ok;
 
 import javax.validation.constraints.NotNull;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -52,27 +55,60 @@ public class PreSubmitCallbackController {
 
     }
 
+    @PostMapping(path = "/ccdMidEvent")
+    public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdMidEvent(
+        @NotNull @RequestBody Callback<AsylumCase> callback,
+        @RequestParam(name = "pageId", required = false) String pageId
+    ) {
+        if (pageId != null) {
+            callback.setPageId(pageId);
+        }
+        return performStageRequest(PreSubmitCallbackStage.MID_EVENT, callback);
+    }
+
+
     private ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> performStageRequest(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
 
-        log.info(
-            "Asylum Case CCD `{}` event `{}` received for Case ID `{}`",
-            callbackStage,
-            callback.getEvent(),
-            callback.getCaseDetails().getId()
-        );
+        // Log pageId if mid-event
+        if (callbackStage.equals(PreSubmitCallbackStage.MID_EVENT)) {
+            log.info(
+                "Asylum Case CCD `{}` event `{}` received for Case ID `{}` from page ID `{}`",
+                callbackStage,
+                callback.getEvent(),
+                callback.getCaseDetails().getId(),
+                callback.getPageId()
+            );
+        } else {
+            log.info(
+                "Asylum Case CCD `{}` event `{}` received for Case ID `{}`",
+                callbackStage,
+                callback.getEvent(),
+                callback.getCaseDetails().getId()
+            );
+        }
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             callbackDispatcher.handle(callbackStage, callback);
 
-        log.info(
-            "Asylum Case CCD `{}` event `{}` handled for Case ID `{}`",
-            callbackStage,
-            callback.getEvent(),
-            callback.getCaseDetails().getId()
-        );
+        if (!callbackResponse.getErrors().isEmpty()) {
+            log.warn(
+                "Asylum Case CCD `{}` event `{}` handled for Case ID `{}` with errors `{}`",
+                callbackStage,
+                callback.getEvent(),
+                callback.getCaseDetails().getId(),
+                callbackResponse.getErrors()
+            );
+        } else {
+            log.info(
+                "Asylum Case CCD `{}` event `{}` handled for Case ID `{}`",
+                callbackStage,
+                callback.getEvent(),
+                callback.getCaseDetails().getId()
+            );
+        }
 
         return ok(callbackResponse);
     }
