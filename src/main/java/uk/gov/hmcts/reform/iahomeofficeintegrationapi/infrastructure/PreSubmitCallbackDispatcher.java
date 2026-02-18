@@ -5,8 +5,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseData;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.CcdEventAuthorizor;
 
-@Component
 public class PreSubmitCallbackDispatcher<T extends CaseData> {
 
     private final CcdEventAuthorizor ccdEventAuthorizor;
@@ -24,7 +23,7 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
         CcdEventAuthorizor ccdEventAuthorizor,
         List<PreSubmitCallbackHandler<T>> callbackHandlers
     ) {
-        requireNonNull(ccdEventAuthorizor, "ccdEventAuthorizor must not be null");
+        requireNonNull(ccdEventAuthorizor, "ccdEventAuthorizer must not be null");
         requireNonNull(callbackHandlers, "callbackHandlers must not be null");
         this.ccdEventAuthorizor = ccdEventAuthorizor;
         this.sortedCallbackHandlers = callbackHandlers.stream()
@@ -50,11 +49,18 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
         PreSubmitCallbackResponse<T> callbackResponse =
             new PreSubmitCallbackResponse<>(caseData);
 
-        dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse,
-            DispatchPriority.EARLIEST);
-        dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.EARLY);
-        dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.LATE);
-        dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.LATEST);
+        dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers,
+                           callbackResponse, DispatchPriority.EARLIEST
+        );
+        dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers,
+                           callbackResponse, DispatchPriority.EARLY
+        );
+        dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers,
+                           callbackResponse, DispatchPriority.LATE
+        );
+        dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers,
+                           callbackResponse, DispatchPriority.LATEST
+        );
 
         return callbackResponse;
     }
@@ -68,16 +74,40 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
     ) {
         for (PreSubmitCallbackHandler<T> callbackHandler : callbackHandlers) {
 
-            if (callbackHandler.getDispatchPriority() == dispatchPriority
-                && callbackHandler.canHandle(callbackStage, callback)) {
+            if (callbackHandler.getDispatchPriority() == dispatchPriority) {
 
-                PreSubmitCallbackResponse<T> callbackResponseFromHandler =
-                    callbackHandler.handle(callbackStage, callback);
+                CaseDetails<T> caseDetails = callback.getCaseDetails();
+                Callback<T> callbackForHandler = new Callback<>(
+                    new CaseDetails<>(
+                        caseDetails.getId(),
+                        caseDetails.getJurisdiction(),
+                        caseDetails.getCaseTypeId(),
+                        caseDetails.getState(),
+                        callbackResponse.getData(),
+                        caseDetails.getCreatedDate(),
+                        caseDetails.getLastModified(),
+                        caseDetails.getLockedBy(),
+                        caseDetails.getSecurityLevel(),
+                        caseDetails.getSecurityClassification(),
+                        caseDetails.getCallbackResponseStatus(),
+                        caseDetails.getVersion()
+                    ),
+                    callback.getCaseDetailsBefore(),
+                    callback.getEvent()
+                );
 
-                callbackResponse.setData(callbackResponseFromHandler.getData());
+                callbackForHandler.setPageId(callback.getPageId());
 
-                if (!callbackResponseFromHandler.getErrors().isEmpty()) {
-                    callbackResponse.addErrors(callbackResponseFromHandler.getErrors());
+                if (callbackHandler.canHandle(callbackStage, callbackForHandler)) {
+
+                    PreSubmitCallbackResponse<T> callbackResponseFromHandler =
+                        callbackHandler.handle(callbackStage, callbackForHandler);
+
+                    callbackResponse.setData(callbackResponseFromHandler.getData());
+
+                    if (!callbackResponseFromHandler.getErrors().isEmpty()) {
+                        callbackResponse.addErrors(callbackResponseFromHandler.getErrors());
+                    }
                 }
             }
         }
