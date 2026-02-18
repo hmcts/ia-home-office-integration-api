@@ -35,6 +35,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STF_24W_CURRENT_REASON_AUTO_GENERATED;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STF_24W_HOME_OFFICE_COHORT;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
 
 @Service
 @Slf4j
@@ -112,6 +113,7 @@ public class CcdDataService {
             boolean isYes = hoStatutoryTimeframeDto.getStf24weeks().getStatus().equalsIgnoreCase(YesOrNo.YES.toString());
             YesOrNo status = isYes ? YesOrNo.YES : YesOrNo.NO;
             eventData.put(STF_24W_CURRENT_STATUS_AUTO_GENERATED.value(), status);
+            eventData.put(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value(), status);
             log.debug("Setting Event data: {}", eventData);
             eventData.put(STF_24W_CURRENT_REASON_AUTO_GENERATED.value(), STATUTORY_TIMEFRAME_REASON);
             log.debug("Event data to be submitted: {}", eventData);    

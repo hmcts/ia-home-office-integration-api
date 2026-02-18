@@ -27,6 +27,8 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.id
 import com.fasterxml.jackson.core.type.TypeReference;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
+
+import java.util.HashMap;
 import java.util.Optional;
 
 import java.time.LocalDateTime;
@@ -43,6 +45,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
 
 @ExtendWith(MockitoExtension.class)
 class CcdDataServiceTest {
@@ -244,6 +247,10 @@ class CcdDataServiceTest {
         when(mockSubmitEventDetails.getCallbackResponseStatusCode()).thenReturn(200);
         when(mockSubmitEventDetails.getCallbackResponseStatus()).thenReturn("Success");
 
+        HashMap<String, Object> data = new HashMap<>();
+        data.put(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value(), YesOrNo.YES);
+        when(mockSubmitEventDetails.getData()).thenReturn(data);
+
         when(ccdDataApi.submitEventByCase(
             eq("Bearer test-user-token"),
             eq("test-s2s-token"),
@@ -258,7 +265,8 @@ class CcdDataServiceTest {
         assertNotNull(result);
         assertEquals(200, result.getCallbackResponseStatusCode());
         assertEquals("Success", result.getCallbackResponseStatus());
-        
+        assertEquals(YesOrNo.YES, result.getData().get(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value()));
+
         verify(idamService).getServiceUserToken();
         verify(serviceAuthorization).generate();
         verify(ccdDataApi).startEventByCase(
@@ -311,6 +319,10 @@ class CcdDataServiceTest {
         when(mockSubmitEventDetails.getCallbackResponseStatusCode()).thenReturn(200);
         when(mockSubmitEventDetails.getCallbackResponseStatus()).thenReturn("Success");
 
+        HashMap<String, Object> data = new HashMap<>();
+        data.put(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value(), YesOrNo.NO);
+        when(mockSubmitEventDetails.getData()).thenReturn(data);
+
         when(ccdDataApi.submitEventByCase(
             eq("Bearer test-user-token"),
             eq("test-s2s-token"),
@@ -325,6 +337,7 @@ class CcdDataServiceTest {
         assertNotNull(result);
         assertEquals(200, result.getCallbackResponseStatusCode());
         assertEquals("Success", result.getCallbackResponseStatus());
+        assertEquals(YesOrNo.NO, result.getData().get(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value()));
         
         verify(idamService).getServiceUserToken();
         verify(serviceAuthorization).generate();
