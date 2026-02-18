@@ -13,12 +13,14 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_INSTRUCT_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
-import groovy.util.logging.Slf4j;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
+
+import groovy.util.logging.Slf4j;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.CallbackForTest.CallbackForTestBuilder;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.IaCaseHomeOfficeIntegrationApiClient;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.PreSubmitCallbackResponseForTest;
@@ -83,7 +85,9 @@ class HomeOfficeInstructIntegrationTest
                     .with(AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER, "DC/50001/2020")
                     .with(APPEAL_SUBMISSION_DATE, "2020-10-10")
                     .with(DIRECTIONS, getRequestEvidenceDirection())
-                ));
+                )
+                .createdDate("2020-10-10T10:10:10.000")
+            );
     }
 
     @Test

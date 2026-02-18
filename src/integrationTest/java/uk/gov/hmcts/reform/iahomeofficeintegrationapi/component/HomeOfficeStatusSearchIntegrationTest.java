@@ -80,7 +80,10 @@ class HomeOfficeStatusSearchIntegrationTest
                     .with(AsylumCaseDefinition.APPELLANT_GIVEN_NAMES, APPELLANT_GIVEN_NAME)
                     .with(AsylumCaseDefinition.APPELLANT_FAMILY_NAME, APPELLANT_FAMILY_NAME)
                     .with(AsylumCaseDefinition.APPELLANT_DATE_OF_BIRTH, APPELLANT_DATE_OF_BIRTH)
-                    .with(HOME_OFFICE_REFERENCE_NUMBER, homeOfficeReference)));
+                    .with(HOME_OFFICE_REFERENCE_NUMBER, homeOfficeReference)
+                )
+                .createdDate("2020-10-10T10:10:10.000")
+            );
 
 
         PreSubmitCallbackResponseForTest response = iaCaseHomeOfficeIntegrationApiClient.aboutToSubmit(callback);
@@ -124,7 +127,10 @@ class HomeOfficeStatusSearchIntegrationTest
                 .caseData(anAsylumCase()
                     .with(AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER, APPEAL_REFERENCE_NUMBER)
                     .with(AsylumCaseDefinition.APPELLANT_DATE_OF_BIRTH, "1980-11-11")
-                    .with(HOME_OFFICE_REFERENCE_NUMBER, homeOfficeReference)));
+                    .with(HOME_OFFICE_REFERENCE_NUMBER, homeOfficeReference)
+                )
+                .createdDate("2020-10-10T10:10:10.000")
+            );
 
 
         PreSubmitCallbackResponseForTest response = iaCaseHomeOfficeIntegrationApiClient.aboutToSubmit(callback);
@@ -190,7 +196,10 @@ class HomeOfficeStatusSearchIntegrationTest
                     .with(AsylumCaseDefinition.APPELLANT_GIVEN_NAMES, APPELLANT_GIVEN_NAME)
                     .with(AsylumCaseDefinition.APPELLANT_FAMILY_NAME, APPELLANT_FAMILY_NAME)
                     .with(AsylumCaseDefinition.APPELLANT_DATE_OF_BIRTH, APPELLANT_DATE_OF_BIRTH)
-                    .with(HOME_OFFICE_REFERENCE_NUMBER, homeOfficeReference)));
+                    .with(HOME_OFFICE_REFERENCE_NUMBER, homeOfficeReference)
+                )
+                .createdDate("2020-10-10T10:10:10.000")
+            );
 
 
         PreSubmitCallbackResponseForTest response = iaCaseHomeOfficeIntegrationApiClient.aboutToSubmit(callback);
@@ -295,7 +304,10 @@ class HomeOfficeStatusSearchIntegrationTest
                     .with(AsylumCaseDefinition.APPELLANT_GIVEN_NAMES, APPELLANT_GIVEN_NAME)
                     .with(AsylumCaseDefinition.APPELLANT_FAMILY_NAME, APPELLANT_FAMILY_NAME)
                     .with(AsylumCaseDefinition.APPELLANT_DATE_OF_BIRTH, APPELLANT_DATE_OF_BIRTH)
-                    .with(HOME_OFFICE_REFERENCE_NUMBER, homeOfficeReference)));
+                    .with(HOME_OFFICE_REFERENCE_NUMBER, homeOfficeReference)
+                )
+                .createdDate("2020-10-10T10:10:10.000")
+            );
 
         return iaCaseHomeOfficeIntegrationApiClient.aboutToSubmit(callback);
     }
