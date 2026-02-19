@@ -58,9 +58,11 @@ security:
     - "citizen"
   roleEventAccess:
     citizen:
+      - "startAppeal"
       - "submitAppeal"
       - "applyForFTPAAppellant"
     caseworker-ia-legalrep-solicitor:
+      - "startAppeal"
       - "submitAppeal"
       - "payAndSubmitAppeal"
       - "applyForFTPAAppellant"
@@ -116,6 +118,7 @@ security:
       - "sendDecisionAndReasons"
       - "endAppeal"
     ctsc:
+      - "startAppeal"
       - "markAppealPaid"
       - "submitAppeal"
       - "applyForFTPAAppellant"
@@ -125,6 +128,7 @@ security:
       - "sendDecisionAndReasons"
       - "endAppeal"
     ctsc-team-leader:
+      - "startAppeal"
       - "markAppealPaid"
       - "submitAppeal"
       - "applyForFTPAAppellant"
