@@ -70,7 +70,6 @@ security:
       - "applyForFTPAAppellant"
     tribunal-caseworker:
       - "requestHomeOfficeData"
-      - "getHomeOfficeAppellantData"
       - "requestRespondentEvidence"
       - "requestRespondentReview"
       - "editCaseListing"
@@ -84,7 +83,6 @@ security:
       - "markAppealPaid"
     challenged-access-legal-operations:
       - "requestHomeOfficeData"
-      - "getHomeOfficeAppellantData"
       - "requestRespondentEvidence"
       - "requestRespondentReview"
       - "editCaseListing"
@@ -98,7 +96,6 @@ security:
       - "markAppealPaid"
     senior-tribunal-caseworker:
       - "requestHomeOfficeData"
-      - "getHomeOfficeAppellantData"
       - "requestRespondentEvidence"
       - "requestRespondentReview"
       - "editCaseListing"

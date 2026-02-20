@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeApplicationDto;
 
-@FeignClient(name = "home-office-application-api", url = "${home-office.api.url}")
+@FeignClient(name = "home-office-application-api", url = "${home-office.api.url}") // http://localhost:8081 for testing
 public interface HomeOfficeApplicationApi {
 
     @GetMapping("/applications/v1/{id}")

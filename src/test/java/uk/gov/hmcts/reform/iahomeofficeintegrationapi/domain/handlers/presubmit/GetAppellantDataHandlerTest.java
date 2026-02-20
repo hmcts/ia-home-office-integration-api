@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -71,17 +72,49 @@ class GetAppellantDataHandlerTest {
     }
 
     @Test
-    void canHandle_returnsTrue_whenStageAndEventCorrect() {
-        when(callback.getEvent()).thenReturn(Event.GET_HOME_OFFICE_APPELLANT_DATA);
+    void canHandle_returnsTrue_whenStageAndEventAndPageIdCorrect() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
 
-        boolean result = handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        boolean result = handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertTrue(result);
     }
 
     @Test
+    void canHandle_returnsFalse_WrongPageId() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("thisPageDoesNotExist");
+
+        boolean result = handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void canHandle_returnsFalse_WrongEvent() {
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getPageId()).thenReturn("thisPageDoesNotExist");
+
+        boolean result = handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void canHandle_returnsFalse_WrongStage() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+
+        boolean result = handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertFalse(result);
+    }
+
+    @Test
     void handle_writesData_whenServiceReturnsApplication() throws Exception {
-        when(callback.getEvent()).thenReturn(Event.GET_HOME_OFFICE_APPELLANT_DATA);
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(callback.getPageId()).thenReturn("appellantBasicDetails");
         when(caseDetails.getId()).thenReturn(12345L);
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("UAN123"));
 
@@ -109,7 +142,7 @@ class GetAppellantDataHandlerTest {
 
         when(homeOfficeApplicationService.getApplication("UAN123")).thenReturn(applicationDto);
 
-        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
@@ -123,14 +156,15 @@ class GetAppellantDataHandlerTest {
 
     @Test
     void handle_writesHttpStatus_whenServiceThrowsException() throws Exception {
-        when(callback.getEvent()).thenReturn(Event.GET_HOME_OFFICE_APPELLANT_DATA);
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("oocHomeOfficeReferenceNumber");
         when(caseDetails.getId()).thenReturn(12345L);
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("UAN123"));
 
         when(homeOfficeApplicationService.getApplication("UAN123"))
             .thenThrow(new HomeOfficeMissingApplicationException(404, "Not found"));
 
-        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
@@ -143,6 +177,6 @@ class GetAppellantDataHandlerTest {
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(false);
 
         assertThrows(IllegalStateException.class,
-            () -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+            () -> handler.handle(PreSubmitCallbackStage.MID_EVENT, callback));
     }
 }

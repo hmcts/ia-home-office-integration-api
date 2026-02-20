@@ -5,8 +5,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseData;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -74,40 +74,16 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
     ) {
         for (PreSubmitCallbackHandler<T> callbackHandler : callbackHandlers) {
 
-            if (callbackHandler.getDispatchPriority() == dispatchPriority) {
+            if (callbackHandler.getDispatchPriority() == dispatchPriority
+                && callbackHandler.canHandle(callbackStage, callback)) {
 
-                CaseDetails<T> caseDetails = callback.getCaseDetails();
-                Callback<T> callbackForHandler = new Callback<>(
-                    new CaseDetails<>(
-                        caseDetails.getId(),
-                        caseDetails.getJurisdiction(),
-                        caseDetails.getCaseTypeId(),
-                        caseDetails.getState(),
-                        callbackResponse.getData(),
-                        caseDetails.getCreatedDate(),
-                        caseDetails.getLastModified(),
-                        caseDetails.getLockedBy(),
-                        caseDetails.getSecurityLevel(),
-                        caseDetails.getSecurityClassification(),
-                        caseDetails.getCallbackResponseStatus(),
-                        caseDetails.getVersion()
-                    ),
-                    callback.getCaseDetailsBefore(),
-                    callback.getEvent()
-                );
+                PreSubmitCallbackResponse<T> callbackResponseFromHandler =
+                    callbackHandler.handle(callbackStage, callback);
 
-                callbackForHandler.setPageId(callback.getPageId());
+                callbackResponse.setData(callbackResponseFromHandler.getData());
 
-                if (callbackHandler.canHandle(callbackStage, callbackForHandler)) {
-
-                    PreSubmitCallbackResponse<T> callbackResponseFromHandler =
-                        callbackHandler.handle(callbackStage, callbackForHandler);
-
-                    callbackResponse.setData(callbackResponseFromHandler.getData());
-
-                    if (!callbackResponseFromHandler.getErrors().isEmpty()) {
-                        callbackResponse.addErrors(callbackResponseFromHandler.getErrors());
-                    }
+                if (!callbackResponseFromHandler.getErrors().isEmpty()) {
+                    callbackResponse.addErrors(callbackResponseFromHandler.getErrors());
                 }
             }
         }
