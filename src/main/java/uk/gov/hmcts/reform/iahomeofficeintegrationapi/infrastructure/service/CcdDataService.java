@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Statut
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeframe24WeeksHistory;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
@@ -82,17 +83,16 @@ public class CcdDataService {
             log.debug("S2S token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
         } catch (IdentityManagerResponseException ex) {
-            log.error("Unauthorised access to getCaseById", ex.getMessage());
+            log.info("Unauthorised access to getCaseById", ex.getMessage());
             throw new IdentityManagerResponseException(ex.getMessage(), ex);
         }
         
-        log.debug("ccd url: {}", coreCaseDataApiUrl);
         final StartEventDetails startEventDetails = getStartEventByCase(userToken, s2sToken, caseId, eventId);
         log.debug("Case details found for the caseId: {}", caseId);
         log.debug("Start event id: {}", startEventDetails.getEventId());
         CaseDetails<AsylumCase> caseDetails = startEventDetails.getCaseDetails();
         if (caseDetails == null) {
-            log.error("Case details is null for caseId: {}", caseId);
+            log.info("Case details is null for caseId: {}", caseId);
             throw new IllegalStateException("Case details is null for caseId: " + caseId);
         } else {
             log.debug("Start case details id: {}", caseDetails.getId());
@@ -134,7 +134,15 @@ public class CcdDataService {
     private StartEventDetails getStartEventByCase(
         String userToken, String s2sToken, String caseId, String eventId) {
         log.debug("Getting start event by case with caseId: {}, EventId: {}", caseId, eventId);
-        return ccdDataApi.startEventByCase(userToken, s2sToken, caseId, eventId);
+        try {
+            return ccdDataApi.startEventByCase(userToken, s2sToken, caseId, eventId);
+        } catch (Exception ex) {
+            if (ex.getMessage() != null && ex.getMessage().contains("Case ID is not valid")) {
+                log.info("Case not found for caseId: {}", caseId);
+                throw new CaseNotFoundException("Case not found for caseId: " + caseId);
+            }
+            throw ex;
+        }
     }
 
     private SubmitEventDetails submitEvent(
@@ -227,8 +235,22 @@ public class CcdDataService {
                 "Statutory timeframe status has already been set for caseId: %s",
                 caseId
             );
-            log.error(errorMessage);
+            log.info(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
+    }
+
+    public String generateS2SToken() {
+        log.debug("Generating S2S token");
+        String s2sToken = serviceAuthorization.generate();
+        log.debug("S2S token generated successfully");
+        return s2sToken;
+    }
+
+    public String getServiceUserToken() {
+        log.debug("Generating service user token");
+        String serviceUserToken = idamService.getServiceUserToken();
+        log.debug("Service user token generated successfully");
+        return serviceUserToken;
     }
 }

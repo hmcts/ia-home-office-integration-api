@@ -20,13 +20,15 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
-import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AuthorizedRolesProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.CcdEventAuthorizor;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SpringAuthorizedRolesProvider;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.S2SEndpointAuthorizationFilter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Configuration
 @ConfigurationProperties(prefix = "security")
 @EnableWebSecurity
@@ -38,12 +40,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final Map<String, List<Event>> roleEventAccess = new HashMap<>();
 
     private final Converter<Jwt, Collection<GrantedAuthority>> idamAuthoritiesConverter;
-    private final ServiceAuthFilter serviceAuthFiler;
+    private final S2SEndpointAuthorizationFilter s2SEndpointAuthorizationFilter;
 
     public SecurityConfiguration(Converter<Jwt, Collection<GrantedAuthority>> idamAuthoritiesConverter,
-                                 ServiceAuthFilter serviceAuthFiler) {
+                                 S2SEndpointAuthorizationFilter s2SEndpointAuthorizationFilter) {
         this.idamAuthoritiesConverter = idamAuthoritiesConverter;
-        this.serviceAuthFiler = serviceAuthFiler;
+        this.s2SEndpointAuthorizationFilter = s2SEndpointAuthorizationFilter;
     }
 
     public List<String> getAnonymousPaths() {
@@ -66,10 +68,32 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(idamAuthoritiesConverter);
 
         http
-            .addFilterBefore(serviceAuthFiler, AbstractPreAuthenticatedProcessingFilter.class)
+            .addFilterAfter(s2SEndpointAuthorizationFilter, BearerTokenAuthenticationFilter.class)
             .sessionManagement().sessionCreationPolicy(STATELESS)
             .and()
             .exceptionHandling()
+            .authenticationEntryPoint((request, response, authException) -> {
+                String authHeader = request.getHeader("Authorization");
+                String message;
+                if (authHeader == null || authHeader.isEmpty()) {
+                    message = "Missing Authorization header (Bearer token required)";
+                } else if (!authHeader.startsWith("Bearer ")) {
+                    message = "Invalid Authorization header format (Bearer token required)";
+                } else {
+                    message = "Invalid or expired Authorization token";
+                }
+                log.info("JWT authentication failed for {} {}: {}",
+                    request.getMethod(), request.getRequestURI(), message);
+                response.setStatus(401);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\":\"" + message + "\"}");
+                response.getWriter().flush();
+            })
+            .accessDeniedHandler((request, response, accessDeniedException) -> {
+                log.info("Access denied for request to {}: {}",
+                    request.getRequestURI(), accessDeniedException.getMessage());
+                response.sendError(403, accessDeniedException.getMessage());
+            })
             .and()
             .csrf().disable()
             .formLogin().disable()
