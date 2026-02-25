@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeApplicationDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeApplicationApi;
@@ -46,51 +45,17 @@ public class HomeOfficeApplicationService {
             homeOfficeConsumer,
             homeOfficeEventDateTime
         );
-        ResponseEntity<HomeOfficeApplicationDto> response;
-        try {
-            response = homeOfficeApplicationApi.getApplication(homeOfficeReferenceNumber, accessToken, homeOfficeCorrelationId, homeOfficeConsumer, homeOfficeEventDateTime);
-            int statusCode = response.getStatusCodeValue();
-            log.info(
-                "Home Office /applications/v1/{id} GET response has been received with HTTP status {}.",
-                homeOfficeReferenceNumber,
-                statusCode
-            );
-            return response.getBody();
-        } catch (FeignException e) {
-            int statusCode = e.status();
-            String responseBody = e.contentUTF8();
-            log.info(
-                "Home Office /applications/v1/{id} GET response has been received with HTTP status {}.  The body of the response is:\n\n{}",
-                homeOfficeReferenceNumber,
-                statusCode,
-                responseBody
-            );
-            // Throw new exception to be caught by the event handler
-            String message = "Biographic information from Home Office application with HMCTS reference " + homeOfficeReferenceNumber + " could not be retrieved.";
-            switch (statusCode) {
-                case -1:
-                    message += "\n\nThe Home Office validation API did not respond.";
-                    break;
-                case 400:
-                    message += "\n\nThe request to the Home Office validation API was not correctly formed.";
-                    break;
-                case 401:
-                    message += "\n\nThe request to the Home Office validation API could not be authenticated.";
-                    break;
-                case 403:
-                    message += "\n\nThe request to the Home Office validation API was authenticated but not authorised.";
-                    break;
-                case 404:
-                    message += "\n\nNo application matching this HMCTS reference number was found.";
-                    break;
-                case 500, 501, 502, 503, 504:
-                    message += "\n\nThe Home Office validation API was not available.";
-                    break;            
-                default:
-                    message += "\n\nThe HTTP status code was " + String.valueOf(statusCode) + ".";
-                    break;
-            }
-            throw new HomeOfficeMissingApplicationException(statusCode, message);
-        }
+        ResponseEntity<HomeOfficeApplicationDto> response = homeOfficeApplicationApi.getApplication(homeOfficeReferenceNumber, 
+                                                                                                    accessToken, 
+                                                                                                    homeOfficeCorrelationId, 
+                                                                                                    homeOfficeConsumer, 
+                                                                                                    homeOfficeEventDateTime);
+        int statusCode = response.getStatusCodeValue();
+        log.info(
+            "Home Office /applications/v1/{id} GET response has been received with HTTP status {}.",
+            homeOfficeReferenceNumber,
+            statusCode
+        );
+        return response.getBody();
     }
 }
