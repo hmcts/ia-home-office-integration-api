@@ -13,7 +13,7 @@ import feign.Response;
 import feign.RetryableException;
 import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeErrorResponse;
 
 @Slf4j
 public class FeignErrorDecoder implements ErrorDecoder {
@@ -41,8 +41,8 @@ public class FeignErrorDecoder implements ErrorDecoder {
                         String rawResponse = IOUtils.toString(response.body().asReader(Charset.defaultCharset()));
                         log.error("Raw 400 response from {}: {}", methodKey, rawResponse);
                         
-                        HomeOfficeInstructResponse homeOfficeError = objectMapper.readValue(
-                            rawResponse,HomeOfficeInstructResponse.class);
+                        HomeOfficeErrorResponse homeOfficeError = objectMapper.readValue(
+                            rawResponse,HomeOfficeErrorResponse.class);
 
                         if (homeOfficeError != null) {
                             if (homeOfficeError.getErrorDetail() != null) {

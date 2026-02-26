@@ -40,7 +40,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.Cc
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class PreSubmitCallbackDispatcherTest {
+public class PreSubmitCallbackDispatcherTestOldOldOld {
 
     @Mock private CcdEventAuthorizor ccdEventAuthorizor;
     @Mock private PreSubmitCallbackHandler<CaseData> handler1;
@@ -56,11 +56,11 @@ public class PreSubmitCallbackDispatcherTest {
     @Mock private PreSubmitCallbackResponse<CaseData> response2;
     @Mock private PreSubmitCallbackResponse<CaseData> response3;
 
-    private PreSubmitCallbackDispatcher<CaseData> preSubmitCallbackDispatcher;
+    private PreSubmitCallbackDispatcherOldOldOld<CaseData> preSubmitCallbackDispatcher;
 
     @BeforeEach
     public void setUp() {
-        preSubmitCallbackDispatcher = new PreSubmitCallbackDispatcher<>(
+        preSubmitCallbackDispatcher = new PreSubmitCallbackDispatcherOldOldOld<>(
             ccdEventAuthorizor,
             Arrays.asList(
                 handler1,
@@ -210,8 +210,8 @@ public class PreSubmitCallbackDispatcherTest {
     @Test
     public void should_not_error_if_no_handlers_are_provided() {
 
-        PreSubmitCallbackDispatcher<CaseData> preSubmitCallbackDispatcher =
-            new PreSubmitCallbackDispatcher<>(ccdEventAuthorizor, Collections.emptyList());
+        PreSubmitCallbackDispatcherOldOldOld<CaseData> preSubmitCallbackDispatcher =
+            new PreSubmitCallbackDispatcherOldOldOld<>(ccdEventAuthorizor, Collections.emptyList());
 
         for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -242,7 +242,7 @@ public class PreSubmitCallbackDispatcherTest {
     @Test
     public void should_not_allow_null_ccd_event_authorizor() {
 
-        assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(null, Collections.emptyList()))
+        assertThatThrownBy(() -> new PreSubmitCallbackDispatcherOldOldOld<>(null, Collections.emptyList()))
             .hasMessage("ccdEventAuthorizor must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -250,7 +250,7 @@ public class PreSubmitCallbackDispatcherTest {
     @Test
     public void should_not_allow_null_handlers() {
 
-        assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(ccdEventAuthorizor, null))
+        assertThatThrownBy(() -> new PreSubmitCallbackDispatcherOldOldOld<>(ccdEventAuthorizor, null))
             .hasMessage("callbackHandlers must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

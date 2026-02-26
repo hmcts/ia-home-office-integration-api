@@ -11,25 +11,25 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class HomeOfficeInstructResponseTest {
+public class HomeOfficeErrorResponseTest {
     @Mock
     MessageHeader messageHeader;
     @Mock
     private HomeOfficeError errorDetail;
-    private HomeOfficeInstructResponse instructResponse;
+    private HomeOfficeErrorResponse errorResponse;
 
     @BeforeEach
     void setUp() {
-        instructResponse = new HomeOfficeInstructResponse(
+        errorResponse = new HomeOfficeErrorResponse(
             messageHeader, errorDetail
         );
     }
 
     @Test
     public void has_correct_values_after_setting() {
-        assertNotNull(instructResponse);
-        assertNotNull(instructResponse.getMessageHeader());
-        assertEquals(messageHeader, instructResponse.getMessageHeader());
-        assertEquals(errorDetail, instructResponse.getErrorDetail());
+        assertNotNull(errorResponse);
+        assertNotNull(errorResponse.getMessageHeader());
+        assertEquals(messageHeader, errorResponse.getMessageHeader());
+        assertEquals(errorDetail, errorResponse.getErrorDetail());
     }
 }

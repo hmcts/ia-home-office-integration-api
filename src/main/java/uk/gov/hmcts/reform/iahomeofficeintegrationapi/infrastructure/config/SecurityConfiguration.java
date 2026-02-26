@@ -38,12 +38,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final Map<String, List<Event>> roleEventAccess = new HashMap<>();
 
     private final Converter<Jwt, Collection<GrantedAuthority>> idamAuthoritiesConverter;
-    private final ServiceAuthFilter serviceAuthFiler;
+    private final ServiceAuthFilter serviceAuthFilter;
 
     public SecurityConfiguration(Converter<Jwt, Collection<GrantedAuthority>> idamAuthoritiesConverter,
-                                 ServiceAuthFilter serviceAuthFiler) {
+                                 ServiceAuthFilter serviceAuthFilter) {
         this.idamAuthoritiesConverter = idamAuthoritiesConverter;
-        this.serviceAuthFiler = serviceAuthFiler;
+        this.serviceAuthFilter = serviceAuthFilter;
     }
 
     public List<String> getAnonymousPaths() {
@@ -66,7 +66,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(idamAuthoritiesConverter);
 
         http
-            .addFilterBefore(serviceAuthFiler, AbstractPreAuthenticatedProcessingFilter.class)
+            .addFilterBefore(serviceAuthFilter, AbstractPreAuthenticatedProcessingFilter.class)
             .sessionManagement().sessionCreationPolicy(STATELESS)
             .and()
             .exceptionHandling()

@@ -1,15 +1,15 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
-public class HomeOfficeInstructResponse {
+public class HomeOfficeErrorResponse {
 
     private MessageHeader messageHeader;
 
     private HomeOfficeError errorDetail;
 
-    private HomeOfficeInstructResponse() {
+    private HomeOfficeErrorResponse() {
     }
 
-    public HomeOfficeInstructResponse(MessageHeader messageHeader, HomeOfficeError errorDetail) {
+    public HomeOfficeErrorResponse(MessageHeader messageHeader, HomeOfficeError errorDetail) {
         this.messageHeader = messageHeader;
         this.errorDetail = errorDetail;
     }
