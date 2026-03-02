@@ -40,10 +40,10 @@ public class HomeOfficeMissingApplicationDecoder implements ErrorDecoder {
         Map<String, Collection<String>> requestHeaders = request.headers();
         String headersAsString = requestHeaders.entrySet().stream()
                                 .flatMap(entry -> entry.getValue().stream()
-                                .map(value -> entry.getKey() + ": " + value))
+                                .map(value -> "  " + entry.getKey() + ": " + value))
                                 .collect(Collectors.joining(System.lineSeparator()));
         log.warn(
-            "{}: HTTP {} request to Home Office endpoint {}.\n\nHTTP headers: {}\nStatus code: {}:\nResponse body: {}",
+            "An exception was thrown from {}:\n\nHTTP {} request to Home Office endpoint {}\n\nHTTP headers:\n{}\nHTTP status code: {}\nHTTP response body:\n  {}",
             methodKey,
             requestMethod,
             requestUrl,
@@ -52,9 +52,9 @@ public class HomeOfficeMissingApplicationDecoder implements ErrorDecoder {
             responseBody
         );
         // Prune the Home Office ID from the end of the URL
-        String homeOfficeReferenceNumber = requestUrl.substring(requestUrl.lastIndexOf('/'));
+        String homeOfficeReferenceNumber = requestUrl.substring(requestUrl.lastIndexOf('/') + 1);
         // Throw new exception to be caught by the event handler
-        String message = "Biographic information from Home Office application with HMCTS reference " + homeOfficeReferenceNumber + " could not be retrieved.";
+        String message = "Biographic information from Home Office asylum (etc.) application with HMCTS reference " + homeOfficeReferenceNumber + " could not be retrieved.";
         switch (statusCode) {
             case -1:
                 message += "\n\nThe Home Office validation API did not respond.";
@@ -83,7 +83,7 @@ public class HomeOfficeMissingApplicationDecoder implements ErrorDecoder {
             try {
                 HomeOfficeErrorResponse homeOfficeError = objectMapper.readValue(responseBody,HomeOfficeErrorResponse.class);
                 if (homeOfficeError != null && homeOfficeError.getErrorDetail() != null) {
-                    message += "\n\n" + String.format("Home Office details:\nError code: %s\nMessage: %s",
+                    message += "\n\n" + String.format("Home Office details:\n  Error code: %s\n  Message: %s",
                                 homeOfficeError.getErrorDetail().getErrorCode(), homeOfficeError.getErrorDetail().getMessageText());
                 }
             } catch (Exception ex) {

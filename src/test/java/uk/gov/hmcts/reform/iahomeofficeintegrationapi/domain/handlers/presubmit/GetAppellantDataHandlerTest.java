@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_DECISION_DATE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HomeOfficeAppellant;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -150,7 +150,7 @@ class GetAppellantDataHandlerTest {
         verify(asylumCase).write(HOME_OFFICE_APPELLANT_CLAIM_DATE, claimDate);
         verify(asylumCase).write(HOME_OFFICE_APPELLANT_DECISION_DATE, decisionDate);
         verify(asylumCase).write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, decisionLetterDate);
-        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANTS), any(HomeOfficeAppellant.class));
+        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANTS), anyList());
         verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, "200");
     }
 

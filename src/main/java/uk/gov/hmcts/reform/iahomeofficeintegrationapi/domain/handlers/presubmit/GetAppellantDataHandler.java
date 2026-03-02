@@ -8,6 +8,9 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +22,13 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HomeOf
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeApplicationService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeMissingApplicationException;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.RetriesExceededException;
 
 @Slf4j
 @Component
@@ -83,26 +88,23 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
             asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_DATE, applicationDto.getHoDecisionDate());
             asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, applicationDto.getHoDecisionLetterDate());
 
+            List<IdValue<HomeOfficeAppellant>> appellants = new ArrayList<>();
             for (HomeOfficeAppellantDto appellantDto : applicationDto.getAppellants()) {
-                Boolean dtoRoa = appellantDto.getRoa();
-                Boolean dtoAsylumSupport = appellantDto.getAsylumSupport();
-                Boolean dtoHoFeeWaiver = appellantDto.getHoFeeWaiver();
-                Boolean dtoInterpreterNeeded = appellantDto.getInterpreterNeeded();
-                YesOrNo roa = Boolean.TRUE.equals(dtoRoa) ? YesOrNo.YES : Boolean.TRUE.equals(dtoRoa) ? YesOrNo.NO : null;
-                YesOrNo asylumSupport = Boolean.TRUE.equals(dtoAsylumSupport) ? YesOrNo.YES : Boolean.TRUE.equals(dtoAsylumSupport) ? YesOrNo.NO : null;
-                YesOrNo hoFeeWaiver = Boolean.TRUE.equals(dtoHoFeeWaiver) ? YesOrNo.YES : Boolean.TRUE.equals(dtoHoFeeWaiver) ? YesOrNo.NO : null;
-                YesOrNo interpreterNeeded = Boolean.TRUE.equals(dtoInterpreterNeeded) ? YesOrNo.YES : Boolean.TRUE.equals(dtoInterpreterNeeded) ? YesOrNo.NO : null;
-                HomeOfficeAppellant appellant = new HomeOfficeAppellant(appellantDto.getFamilyName(), 
+                String pp = appellantDto.getPp();
+                HomeOfficeAppellant appellant = new HomeOfficeAppellant(pp,
+                                                                        appellantDto.getFamilyName(), 
                                                                         appellantDto.getGivenNames(), 
-                                                                        appellantDto.getDateOfBirth(), 
+                                                                        appellantDto.getDateOfBirth().toString(), 
                                                                         appellantDto.getNationality(), 
-                                                                        roa, 
-                                                                        asylumSupport, 
-                                                                        hoFeeWaiver, 
+                                                                        yesOrNoFromBoolean(appellantDto.getRoa()), 
+                                                                        yesOrNoFromBoolean(appellantDto.getAsylumSupport()), 
+                                                                        yesOrNoFromBoolean(appellantDto.getHoFeeWaiver()), 
                                                                         appellantDto.getLanguage(), 
-                                                                        interpreterNeeded);
-                asylumCase.write(HOME_OFFICE_APPELLANTS, appellant);
+                                                                        yesOrNoFromBoolean(appellantDto.getInterpreterNeeded()));
+                String id = pp == null ? homeOfficeReferenceNumber : homeOfficeReferenceNumber + "/" + pp; 
+                appellants.add(new IdValue<HomeOfficeAppellant>(id, appellant));
             }
+            asylumCase.write(HOME_OFFICE_APPELLANTS, appellants);
             // We know the HTTP status code is 200 here (although I acknowledge this isn't great coding - but I can only get it explicitly when an exception is thrown)
             asylumCase.write(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, "200");
         } catch (HomeOfficeMissingApplicationException exception) {
@@ -131,9 +133,15 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
             }
             // Send the HTTP status code back to the ia-case-api service by writing it in the case record
             asylumCase.write(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, exception.getHttpStatus());
+        } catch (RetriesExceededException ex) {
+            log.warn("Retries exhausted calling Home Office", ex);
+            asylumCase.write(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, -1);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
+    private YesOrNo yesOrNoFromBoolean(Boolean value) {
+        return value == null ? null : (value ? YesOrNo.YES : YesOrNo.NO);
+    }
 }

@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeApplicationDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeApplicationApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeMissingApplicationException;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.RetriesExceededException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeDateFormatter;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeRequestUuidGenerator;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties;
@@ -37,25 +38,31 @@ public class HomeOfficeApplicationService {
         final String accessToken = accessTokenProvider.getAccessToken();
         String homeOfficeCorrelationId = HomeOfficeRequestUuidGenerator.generateUuid();
         String homeOfficeConsumer = homeOfficeProperties.getCodes().get("consumer").getCode();
-        String homeOfficeEventDateTime = HomeOfficeDateFormatter.getCurrentDateTime();
+        String homeOfficeEventDateTime = HomeOfficeDateFormatter.getCurrentDateTime().replace("T", " ").replace("Z", "");
         log.info(
-            "Home Office /applications/v1/{id} GET request will be sent with correlation ID {}, consumer code {} and event date-time {}.",
+            "Home Office /applications/v1/{} GET request will be sent with correlation ID {}, consumer code {} and event date-time {}.",
             homeOfficeReferenceNumber,
             homeOfficeCorrelationId,
             homeOfficeConsumer,
             homeOfficeEventDateTime
         );
-        ResponseEntity<HomeOfficeApplicationDto> response = homeOfficeApplicationApi.getApplication(homeOfficeReferenceNumber, 
-                                                                                                    accessToken, 
-                                                                                                    homeOfficeCorrelationId, 
-                                                                                                    homeOfficeConsumer, 
-                                                                                                    homeOfficeEventDateTime);
-        int statusCode = response.getStatusCodeValue();
-        log.info(
-            "Home Office /applications/v1/{id} GET response has been received with HTTP status {}.",
-            homeOfficeReferenceNumber,
-            statusCode
-        );
-        return response.getBody();
+        try {
+            ResponseEntity<HomeOfficeApplicationDto> response = homeOfficeApplicationApi.getApplication(homeOfficeReferenceNumber, 
+                                                                                                        accessToken, 
+                                                                                                        homeOfficeCorrelationId, 
+                                                                                                        homeOfficeConsumer, 
+                                                                                                        homeOfficeEventDateTime);
+            int statusCode = response.getStatusCodeValue();
+            log.info(
+                "Home Office /applications/v1/{} GET response has been received with HTTP status {}.",
+                homeOfficeReferenceNumber,
+                statusCode
+            );
+            return response.getBody();
+        } catch (RetriesExceededException e) {
+            String message = "Biographic information from Home Office asylum (etc.) application with HMCTS reference " + homeOfficeReferenceNumber
+                           + " could not be retrieved.\n\nThe Home Office validation API did not respond.";
+            throw new HomeOfficeMissingApplicationException(-1, message);
+        }       
     }
 }

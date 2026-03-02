@@ -47,7 +47,7 @@ public enum AsylumCaseDefinition {
         "homeOfficeAppellantDecisionLetterDate", new TypeReference<String>(){}),
 
     HOME_OFFICE_APPELLANTS(
-        "homeOfficeAppellants", new TypeReference<List<HomeOfficeAppellant>>(){}),
+        "homeOfficeAppellants", new TypeReference<List<IdValue<HomeOfficeAppellant>>>(){}),
 
     APPELLANT_GIVEN_NAMES(
         "appellantGivenNames", new TypeReference<String>(){}),

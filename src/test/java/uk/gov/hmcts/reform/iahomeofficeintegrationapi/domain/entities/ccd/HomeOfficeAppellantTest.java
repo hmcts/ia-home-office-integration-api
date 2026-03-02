@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -15,9 +13,10 @@ class HomeOfficeAppellantTest {
     void shouldThrowExceptionWhenFamilyNameIsNull() {
         assertThrows(NullPointerException.class, () ->
             new HomeOfficeAppellant(
+                "01",
                 null,
                 "Long John",
-                LocalDate.of(1990, 1, 1),
+                "1990-01-01",
                 "British",
                 YesOrNo.YES,
                 YesOrNo.NO,
@@ -32,9 +31,10 @@ class HomeOfficeAppellantTest {
     void shouldThrowExceptionWhenGivenNamesIsNull() {
         assertThrows(NullPointerException.class, () ->
             new HomeOfficeAppellant(
+                null,
                 "Silver",
                 null,
-                LocalDate.of(1990, 1, 1),
+                "1990-01-01",
                 "British",
                 YesOrNo.YES,
                 YesOrNo.NO,
@@ -49,6 +49,7 @@ class HomeOfficeAppellantTest {
     void shouldThrowExceptionWhenDateOfBirthIsNull() {
         assertThrows(NullPointerException.class, () ->
             new HomeOfficeAppellant(
+                "02",
                 "Silver",
                 "Long John",
                 null,
@@ -66,9 +67,10 @@ class HomeOfficeAppellantTest {
     void shouldThrowExceptionWhenNationalityIsNull() {
         assertThrows(NullPointerException.class, () ->
             new HomeOfficeAppellant(
+                null,
                 "Silver",
                 "Long John",
-                LocalDate.of(1990, 1, 1),
+                "1990-01-01",
                 null,
                 YesOrNo.YES,
                 YesOrNo.NO,
@@ -83,9 +85,10 @@ class HomeOfficeAppellantTest {
     void shouldThrowExceptionWhenLanguageIsNull() {
         assertThrows(NullPointerException.class, () ->
             new HomeOfficeAppellant(
+                "99",
                 "Silver",
                 "Long John",
-                LocalDate.of(1990, 1, 1),
+                "1990-01-01",
                 "British",
                 YesOrNo.YES,
                 YesOrNo.NO,
@@ -100,9 +103,10 @@ class HomeOfficeAppellantTest {
     void shouldAllowOptionalFieldsToBeNull() {
         HomeOfficeAppellant appellant =
             new HomeOfficeAppellant(
+                null,
                 "Silver",
                 "Long John",
-                LocalDate.of(1990, 1, 1),
+                "1990-01-01",
                 "British",
                 null,
                 null,
@@ -118,9 +122,10 @@ class HomeOfficeAppellantTest {
     void shouldCreateAppellantWhenAllFieldsProvided() {
         HomeOfficeAppellant appellant =
             new HomeOfficeAppellant(
+                "01",
                 "Smith",
                 "John",
-                LocalDate.of(1990, 1, 1),
+                "1990-01-01",
                 "British",
                 YesOrNo.YES,
                 YesOrNo.NO,
@@ -136,9 +141,10 @@ class HomeOfficeAppellantTest {
     void shouldBeEqualWhenAllFieldsMatch() {
         HomeOfficeAppellant first =
             new HomeOfficeAppellant(
+                "35",
                 "Smith",
                 "John",
-                LocalDate.of(1990, 1, 1),
+                "1990-01-01",
                 "British",
                 YesOrNo.YES,
                 YesOrNo.NO,
@@ -149,9 +155,10 @@ class HomeOfficeAppellantTest {
 
         HomeOfficeAppellant second =
             new HomeOfficeAppellant(
+                "35",
                 "Smith",
                 "John",
-                LocalDate.of(1990, 1, 1),
+                "1990-01-01",
                 "British",
                 YesOrNo.YES,
                 YesOrNo.NO,
@@ -168,9 +175,10 @@ class HomeOfficeAppellantTest {
     void toStringShouldContainClassName() {
         HomeOfficeAppellant appellant =
             new HomeOfficeAppellant(
+                null,
                 "Smith",
                 "John",
-                LocalDate.of(1990, 1, 1),
+                "1990-01-01",
                 "British",
                 null,
                 null,

@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class HomeOfficeAppellantDto {
 
+    private String pp;
     private String familyName;
     private String givenNames;
     private LocalDate dateOfBirth;
