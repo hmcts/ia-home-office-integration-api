@@ -230,7 +230,7 @@ dependencyUpdates {
 }
 
 dependencyCheck {
-  suppressionFile = 'config/owasp/suppressions.xml'
+  suppressionFile = 'https://raw.githubusercontent.com/hmcts/ia-owasp-suppressions/refs/heads/master/ia-home-office-integration-api/suppressions.xml'
   analyzers {
     // Disable scanning of .NET related binaries
     assemblyEnabled = false
