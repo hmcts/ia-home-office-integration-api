@@ -72,11 +72,11 @@ class HomeOfficeApplicationServiceTest {
         )).thenReturn(new ResponseEntity<>(dto, HttpStatus.OK));
 
         // Act
-        HomeOfficeApplicationDto result = service.getApplication(referenceNumber);
-
+        ResponseEntity<HomeOfficeApplicationDto> result = service.getApplication(referenceNumber);
+        HomeOfficeApplicationDto body = result.getBody();
         // Assert
-        assertThat(result).isNotNull();
-        assertThat(result).isSameAs(dto);
+        assertThat(body).isNotNull();
+        assertThat(body).isSameAs(dto);
 
         // Verify interactions
         verify(accessTokenProvider).getAccessToken();
@@ -106,10 +106,11 @@ class HomeOfficeApplicationServiceTest {
         )).thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
 
         // Act
-        HomeOfficeApplicationDto result = service.getApplication(referenceNumber);
+        ResponseEntity<HomeOfficeApplicationDto> result = service.getApplication(referenceNumber);
+        HomeOfficeApplicationDto body = result.getBody();
 
         // Assert
-        assertThat(result).isNull();
+        assertThat(body).isNull();
 
         verify(accessTokenProvider).getAccessToken();
         verify(homeOfficeApplicationApi).getApplication(

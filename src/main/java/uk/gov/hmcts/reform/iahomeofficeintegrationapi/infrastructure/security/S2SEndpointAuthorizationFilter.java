@@ -52,7 +52,7 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
 
         // Skip S2S validation for anonymous paths
         if (isAnonymousPath(requestPath)) {
-            log.warn("Skipping S2S validation for anonymous path: {}", requestPath);
+            log.debug("Skipping S2S validation for anonymous path: {}", requestPath);
             filterChain.doFilter(request, response);
             return;
         }

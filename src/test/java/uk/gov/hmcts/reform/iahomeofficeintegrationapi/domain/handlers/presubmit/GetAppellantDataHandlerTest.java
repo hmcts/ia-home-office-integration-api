@@ -27,6 +27,8 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeAppellantDto;
@@ -140,7 +142,8 @@ class GetAppellantDataHandlerTest {
         applicationDto.setHoDecisionLetterDate(decisionLetterDate);
         applicationDto.setAppellants(List.of(appellantDto));
 
-        when(homeOfficeApplicationService.getApplication("UAN123")).thenReturn(applicationDto);
+        ResponseEntity<HomeOfficeApplicationDto> homeOfficeResponse = new ResponseEntity<>(applicationDto, HttpStatus.OK);
+        when(homeOfficeApplicationService.getApplication("UAN123")).thenReturn(homeOfficeResponse);
 
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 

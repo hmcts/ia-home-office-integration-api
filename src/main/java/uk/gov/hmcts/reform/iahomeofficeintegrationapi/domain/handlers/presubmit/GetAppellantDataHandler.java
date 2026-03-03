@@ -10,7 +10,9 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +37,9 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Retr
 public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private HomeOfficeApplicationService homeOfficeApplicationService;
-
     private final FeatureToggler featureToggler;
+
+    public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|(GWF[0-9]{9}))$");
 
     public GetAppellantDataHandler(HomeOfficeApplicationService homeOfficeApplicationService, FeatureToggler featureToggler) {
         this.homeOfficeApplicationService = homeOfficeApplicationService;
@@ -83,7 +86,31 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
 
         try {
             // We want to call the Home Office /applications/{id} endpoint and write all data it returns to the case record
-            HomeOfficeApplicationDto applicationDto = homeOfficeApplicationService.getApplication(homeOfficeReferenceNumber);
+            ResponseEntity<HomeOfficeApplicationDto> homeOfficeResponse = homeOfficeApplicationService.getApplication(homeOfficeReferenceNumber);
+            HomeOfficeApplicationDto applicationDto = homeOfficeResponse.getBody();
+            // Error checking even though we received a 2xx status code (things could still be wrong)
+            if (applicationDto == null || applicationDto.getAppellants() == null || applicationDto.getAppellants().isEmpty()) {
+                throw new HomeOfficeMissingApplicationException(-2, 
+                            "Biographic information from Home Office asylum (etc.) application with HMCTS reference " +
+                             homeOfficeReferenceNumber +
+                             " could not be retrieved.\n\nThe Home Office validation API responded but the necessary information was not present.");
+            }
+            // If we supplied a UAN (rather than a GWF) and the Home Office returned one, make sure they match 
+            if (HOME_OFFICE_REF_PATTERN.matcher(homeOfficeReferenceNumber).matches()) {
+                String uan = applicationDto.getUan();
+                if (uan == null) {
+                    // Odd but not a show-stopper; they might not always send it back
+                    log.warn("Home Office response did not contain a UAN despite the fact that the appellant is known to have one: {}.", homeOfficeReferenceNumber);
+                } else if (!uan.equals(homeOfficeReferenceNumber)) {
+                    // The Home Office returned a *different* UAN: very bad
+                    throw new HomeOfficeMissingApplicationException(-3, 
+                                "Biographic information from Home Office asylum (etc.) application with HMCTS reference " +
+                                homeOfficeReferenceNumber +
+                                " could not be retrieved.\n\nThe Home Office validation API responded but the information " + 
+                                "appears to be from an application with reference " + uan + ".");                    
+                }
+            }
+
             asylumCase.write(HOME_OFFICE_APPELLANT_CLAIM_DATE, applicationDto.getHoClaimDate());
             asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_DATE, applicationDto.getHoDecisionDate());
             asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, applicationDto.getHoDecisionLetterDate());
@@ -105,30 +132,31 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                 appellants.add(new IdValue<HomeOfficeAppellant>(id, appellant));
             }
             asylumCase.write(HOME_OFFICE_APPELLANTS, appellants);
-            // We know the HTTP status code is 200 here (although I acknowledge this isn't great coding - but I can only get it explicitly when an exception is thrown)
-            asylumCase.write(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, "200");
+            asylumCase.write(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, String.valueOf(homeOfficeResponse.getStatusCodeValue()));
         } catch (HomeOfficeMissingApplicationException exception) {
+            String message = exception.getMessage();
             // Log as an error if the return status indicates a problem somewhere in our code (which may be a result of something changing at the Home Office's end)
             switch (exception.getHttpStatus()) {
-                case -1:
-                    // This means we didn't get a response from the Home Office (time-out)
-                    log.warn(exception.getMessage());
+                // These negative numbers are obviously not real HTTP response codes; but they nonetheless convey useful information
+                case -3, -2, -1:
+                    // This means we didn't get a valid response from the Home Office (wrong response, empty response or time-out)
+                    log.warn(message);
                     break;
                 case 400, 401, 403:
                     // If the request is malformed, unauthenticated or unauthorised, it's a problem in our code
-                    log.error(exception.getMessage());
+                    log.error(message);
                     break;
                 case 404:
                     // This will happen regularly due to user error; the code is fine
-                    log.info(exception.getMessage());
+                    log.info(message);
                     break;
                 case 500, 501, 502, 503, 504:
                     // One of these signifies a problem at the Home Office's end - nothing we can do
-                    log.warn(exception.getMessage());
+                    log.warn(message);
                     break;
                 default:
                     // Don't know - safest to assume it's a problem with our own code
-                    log.error(exception.getMessage());
+                    log.error(message);
                     break;
             }
             // Send the HTTP status code back to the ia-case-api service by writing it in the case record

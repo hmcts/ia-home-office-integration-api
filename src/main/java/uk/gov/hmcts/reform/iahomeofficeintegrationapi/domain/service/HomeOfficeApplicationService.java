@@ -32,13 +32,13 @@ public class HomeOfficeApplicationService {
         this.accessTokenProvider = accessTokenProvider;
     }
 
-    public HomeOfficeApplicationDto getApplication(
+    public ResponseEntity<HomeOfficeApplicationDto> getApplication(
         String homeOfficeReferenceNumber) throws HomeOfficeMissingApplicationException {
 
         final String accessToken = accessTokenProvider.getAccessToken();
         String homeOfficeCorrelationId = HomeOfficeRequestUuidGenerator.generateUuid();
         String homeOfficeConsumer = homeOfficeProperties.getCodes().get("consumer").getCode();
-        String homeOfficeEventDateTime = HomeOfficeDateFormatter.getCurrentDateTime().replace("T", " ").replace("Z", "");
+        String homeOfficeEventDateTime = HomeOfficeDateFormatter.getCurrentDateTime();
         log.info(
             "Home Office /applications/v1/{} GET request will be sent with correlation ID {}, consumer code {} and event date-time {}.",
             homeOfficeReferenceNumber,
@@ -58,7 +58,7 @@ public class HomeOfficeApplicationService {
                 homeOfficeReferenceNumber,
                 statusCode
             );
-            return response.getBody();
+            return response;
         } catch (RetriesExceededException e) {
             String message = "Biographic information from Home Office asylum (etc.) application with HMCTS reference " + homeOfficeReferenceNumber
                            + " could not be retrieved.\n\nThe Home Office validation API did not respond.";

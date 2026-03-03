@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class HomeOfficeApplicationDto {
 
+    private String uan;
     private LocalDate hoClaimDate;
     private LocalDate hoDecisionDate;
     private LocalDate hoDecisionLetterDate;
