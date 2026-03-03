@@ -39,16 +39,6 @@ public class FeignErrorDecoder implements ErrorDecoder {
                     if (response.body() != null && response.body().asInputStream() != null) {
 
                         String rawResponse = IOUtils.toString(response.body().asReader(Charset.defaultCharset()));
-                        log.error("Raw 400 response from {}: {}", methodKey, rawResponse);
-                        
-                        HomeOfficeErrorResponse homeOfficeError = objectMapper.readValue(
-                            rawResponse,HomeOfficeErrorResponse.class);
-
-                        if (homeOfficeError != null) {
-                            if (homeOfficeError.getErrorDetail() != null) {
-                                errorCode = homeOfficeError.getErrorDetail().getErrorCode();
-                                errMessage = String.format("Home office error code: %s, message: %s",
-                                    errorCode, homeOfficeError.getErrorDetail().getMessageText());
                         log.debug("Raw 400 response from {}: {}", methodKey, rawResponse);
 
                         // Check if this is a CCD API error response
@@ -66,8 +56,8 @@ public class FeignErrorDecoder implements ErrorDecoder {
                                 errMessage = rawResponse;
                             }
                         } else {
-                            HomeOfficeInstructResponse homeOfficeError = objectMapper.readValue(
-                                rawResponse, HomeOfficeInstructResponse.class);
+                            HomeOfficeErrorResponse homeOfficeError = objectMapper.readValue(
+                                rawResponse, HomeOfficeErrorResponse.class);
 
                             if (homeOfficeError != null) {
                                 if (homeOfficeError.getErrorDetail() != null) {
