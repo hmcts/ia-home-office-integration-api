@@ -49,13 +49,39 @@ public class FeignErrorDecoder implements ErrorDecoder {
                                 errorCode = homeOfficeError.getErrorDetail().getErrorCode();
                                 errMessage = String.format("Home office error code: %s, message: %s",
                                     errorCode, homeOfficeError.getErrorDetail().getMessageText());
+                        log.debug("Raw 400 response from {}: {}", methodKey, rawResponse);
+
+                        // Check if this is a CCD API error response
+                        if (methodKey.contains("CcdDataApi")) {
+                            // CCD returns {"message": "Case ID is not valid", ...}
+                            var jsonNode = objectMapper.readTree(rawResponse);
+                            if (jsonNode.has("message")) {
+                                errMessage = jsonNode.get("message").asText();
+                                // CCD returns 400 "Case ID is not valid" when case not found - treat as 404
+                                if (errMessage.contains("Case ID is not valid")) {
+                                    log.info("CCD returned 400 for case not found, treating as 404: {}", errMessage);
+                                    return new ResponseStatusException(HttpStatus.NOT_FOUND, errMessage);
+                                }
                             } else {
-                                errMessage = "Home office error detail is null";
+                                errMessage = rawResponse;
+                            }
+                        } else {
+                            HomeOfficeInstructResponse homeOfficeError = objectMapper.readValue(
+                                rawResponse, HomeOfficeInstructResponse.class);
+
+                            if (homeOfficeError != null) {
+                                if (homeOfficeError.getErrorDetail() != null) {
+                                    errorCode = homeOfficeError.getErrorDetail().getErrorCode();
+                                    errMessage = String.format("Home office error code: %s, message: %s",
+                                        errorCode, homeOfficeError.getErrorDetail().getMessageText());
+                                } else {
+                                    errMessage = "Home office error detail is null";
+                                }
                             }
                         }
                     }
 
-                    log.error("Error StatusCode: {}, methodKey: {}, reason: {}, message: {}",
+                    log.info("Error StatusCode: {}, methodKey: {}, reason: {}, message: {}",
                         response.status(), methodKey, response.reason(), errMessage);
 
                 } catch (IOException ex) {
@@ -72,7 +98,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
             case 404:
                 try {
 
-                    log.error("StatusCode: {}, methodKey: {}, reason: {}, message: {}",
+                    log.info("StatusCode: {}, methodKey: {}, reason: {}, message: {}",
                         response.status(),
                         methodKey,
                         response.reason(),
