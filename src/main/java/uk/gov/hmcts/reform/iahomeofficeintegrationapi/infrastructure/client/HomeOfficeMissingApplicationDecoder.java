@@ -88,7 +88,7 @@ public class HomeOfficeMissingApplicationDecoder implements ErrorDecoder {
                 }
             } catch (Exception ex) {
                 // Log this
-                log.warn("Could not read the Home Office error response.");
+                log.warn("Could not read the Home Office error response:\n\n{}.", ex.getMessage());
             }
         }
         return new HomeOfficeMissingApplicationException(statusCode, message);
