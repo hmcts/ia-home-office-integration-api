@@ -19,9 +19,13 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -157,22 +161,36 @@ class GetAppellantDataHandlerTest {
         verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, "200");
     }
 
-    @Test
-    void handle_writesHttpStatus_whenServiceThrowsException() throws Exception {
+    @ParameterizedTest
+    @MethodSource("homeOfficeExceptionSource")
+    void handle_writesHttpStatus_whenServiceThrowsException(int status, String message) throws Exception {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getPageId()).thenReturn("oocHomeOfficeReferenceNumber");
         when(caseDetails.getId()).thenReturn(12345L);
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("UAN123"));
 
         when(homeOfficeApplicationService.getApplication("UAN123"))
-            .thenThrow(new HomeOfficeMissingApplicationException(404, "Not found"));
+            .thenThrow(new HomeOfficeMissingApplicationException(status, message));
 
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
 
-        verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, 404);
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, status);
+    }
+
+    private static Stream<Arguments> homeOfficeExceptionSource() {
+        return Stream.of(
+            Arguments.of(-3, "Wrong information"),
+            Arguments.of(-2, "Missing information"),
+            Arguments.of(-1, "No response"),
+            Arguments.of(400, "Bad request"),
+            Arguments.of(401, "Not authenticated"),
+            Arguments.of(403, "Not authorised"),
+            Arguments.of(404, "Not found"),
+            Arguments.of(500, "Internal server error")
+        );
     }
 
     @Test
