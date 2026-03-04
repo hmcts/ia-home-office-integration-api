@@ -21,7 +21,7 @@ spring:
   application:
     name: Home Office Integration API
   main:
-      allow-bean-definition-overriding: true
+    allow-bean-definition-overriding: true
   jackson.date-format: yyyy-MM-dd
   security:
     oauth2:
@@ -42,17 +42,7 @@ spring:
       spec: expireAfterAccess=3600s
 
 security:
-  anonymousPaths:
-    - "/"
-    - "/health"
-    - "/health/liveness"
-    - "/health/readiness"
-    - "/loggers/**"
-    - "/swagger-ui.html"
-    - "/swagger-resources/**"
-    - "/v2/api-docs"
-    - "/webjars/springfox-swagger-ui/**"
-    - "/favicon.ico"
+  anonymousPaths: ${ANONYMOUS_PATHS:/,/health,/health/liveness,/health/readiness,/loggers/**,/swagger-ui.html,/swagger-resources/**,/v2/api-docs,/webjars/springfox-swagger-ui/**,/favicon.ico}
   authorisedRoles:
     - "caseworker-ia"
     - "citizen"
@@ -250,7 +240,12 @@ idam:
     microservice: ${IA_S2S_MICROSERVICE:ia}
     url: ${S2S_URL:http://127.0.0.1:4502}
   s2s-authorised:
-    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
+    iac-services:
+      allowed-services: ${IAC_ALLOWED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
+      allowed-endpoints: ${IAC_ALLOWED_ENDPOINTS:/asylum/ccdAboutToStart,/asylum/ccdAboutToSubmit}
+    home-office-immigration:
+      allowed-services: ${HOME_OFFICE_ALLOWED_SERVICES:home-office-immigration,iac}
+      allowed-endpoints: ${HOME_OFFICE_ALLOWED_ENDPOINTS:/home-office-statutory-timeframe-status}
   ia_system_user:
     username: ${IA_SYSTEM_USERNAME:system-user}
     password: ${IA_SYSTEM_PASSWORD:system-password}
