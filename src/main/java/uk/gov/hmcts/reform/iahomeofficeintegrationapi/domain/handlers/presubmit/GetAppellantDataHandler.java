@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_API_HTTP_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_CLAIM_DATE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_DECISION_DATE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE;
@@ -55,14 +55,8 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && featureToggler.getValue("home-office-uan-feature", false)
-                && (callback.getEvent() == Event.START_APPEAL
-                || callback.getEvent() == Event.EDIT_APPEAL)
-                // && (callback.getPageId().equals("homeOfficeReferenceNumber_TEMPORARILY_DISABLED") || 
-                //     // TODO - add logic for this case below (the other two have been implemented, whereas this one hasn't)
-                //     callback.getPageId().equals("oocHomeOfficeReferenceNumber_TEMPORARILY_DISABLED") ||
-                //     callback.getPageId().equals("appellantBasicDetails_TEMPORARILY_DISABLED"));
+                && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL)
                 && (callback.getPageId().equals("homeOfficeReferenceNumber") || 
-                    // TODO - add logic for this case below (the other two have been implemented, whereas this one hasn't)
                     callback.getPageId().equals("oocHomeOfficeReferenceNumber") ||
                     callback.getPageId().equals("appellantBasicDetails"));
     }
@@ -93,7 +87,7 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                 throw new HomeOfficeMissingApplicationException(-2, 
                             "Biographic information from Home Office asylum (etc.) application with HMCTS reference " +
                              homeOfficeReferenceNumber +
-                             " could not be retrieved.\n\nThe Home Office validation API responded but the necessary information was not present.");
+                             " could not be retrieved.\n\nThe Home Office validation API responded but the response contained no data.");
             }
             // If we supplied a UAN (rather than a GWF) and the Home Office returned one, make sure they match 
             if (HOME_OFFICE_REF_PATTERN.matcher(homeOfficeReferenceNumber).matches()) {
@@ -132,7 +126,7 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                 appellants.add(new IdValue<HomeOfficeAppellant>(id, appellant));
             }
             asylumCase.write(HOME_OFFICE_APPELLANTS, appellants);
-            asylumCase.write(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, String.valueOf(homeOfficeResponse.getStatusCodeValue()));
+            asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, String.valueOf(homeOfficeResponse.getStatusCodeValue()));
         } catch (HomeOfficeMissingApplicationException exception) {
             String message = exception.getMessage();
             // Log as an error if the return status indicates a problem somewhere in our code (which may be a result of something changing at the Home Office's end)
@@ -160,10 +154,10 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                     break;
             }
             // Send the HTTP status code back to the ia-case-api service by writing it in the case record
-            asylumCase.write(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, exception.getHttpStatus());
+            asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, exception.getHttpStatus());
         } catch (RetriesExceededException ex) {
             log.warn("Retries exhausted calling Home Office", ex);
-            asylumCase.write(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, -1);
+            asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, -1);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

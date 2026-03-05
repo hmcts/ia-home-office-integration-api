@@ -10,7 +10,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_API_HTTP_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_CLAIM_DATE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_DECISION_DATE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE;
@@ -158,7 +158,7 @@ class GetAppellantDataHandlerTest {
         verify(asylumCase).write(HOME_OFFICE_APPELLANT_DECISION_DATE, decisionDate);
         verify(asylumCase).write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, decisionLetterDate);
         verify(asylumCase).write(eq(HOME_OFFICE_APPELLANTS), anyList());
-        verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, "200");
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, "200");
     }
 
     @ParameterizedTest
@@ -177,7 +177,7 @@ class GetAppellantDataHandlerTest {
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
 
-        verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, status);
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, status);
     }
 
     private static Stream<Arguments> homeOfficeExceptionSource() {
