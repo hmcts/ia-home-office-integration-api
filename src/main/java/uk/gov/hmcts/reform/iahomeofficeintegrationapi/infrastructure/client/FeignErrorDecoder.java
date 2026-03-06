@@ -13,7 +13,7 @@ import feign.Response;
 import feign.RetryableException;
 import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeErrorResponse;
 
 @Slf4j
 public class FeignErrorDecoder implements ErrorDecoder {
@@ -56,8 +56,8 @@ public class FeignErrorDecoder implements ErrorDecoder {
                                 errMessage = rawResponse;
                             }
                         } else {
-                            HomeOfficeInstructResponse homeOfficeError = objectMapper.readValue(
-                                rawResponse, HomeOfficeInstructResponse.class);
+                            HomeOfficeErrorResponse homeOfficeError = objectMapper.readValue(
+                                rawResponse, HomeOfficeErrorResponse.class);
 
                             if (homeOfficeError != null) {
                                 if (homeOfficeError.getErrorDetail() != null) {

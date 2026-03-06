@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Event {
+
+    START_APPEAL("startAppeal"),
+    EDIT_APPEAL("editAppeal"),
     SUBMIT_APPEAL("submitAppeal"),
     PAY_AND_SUBMIT_APPEAL("payAndSubmitAppeal"),
     MARK_APPEAL_PAID("markAppealPaid"),

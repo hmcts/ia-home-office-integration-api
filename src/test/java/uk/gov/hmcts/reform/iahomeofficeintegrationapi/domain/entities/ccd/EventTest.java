@@ -8,6 +8,9 @@ class EventTest {
 
     @Test
     void has_correct_values() {
+
+        assertEquals("startAppeal", Event.START_APPEAL.toString());
+        assertEquals("editAppeal", Event.EDIT_APPEAL.toString());
         assertEquals("submitAppeal", Event.SUBMIT_APPEAL.toString());
         assertEquals("payAndSubmitAppeal", Event.PAY_AND_SUBMIT_APPEAL.toString());
         assertEquals("markAppealPaid", Event.MARK_APPEAL_PAID.toString());
@@ -34,6 +37,6 @@ class EventTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(23, Event.values().length);
+        assertEquals(25, Event.values().length);
     }
 }

@@ -2,12 +2,12 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,12 +21,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
+
+import com.google.common.collect.ImmutableMap;
+
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AuthorizedRolesProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.CcdEventAuthorizor;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SpringAuthorizedRolesProvider;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.S2SEndpointAuthorizationFilter;
-import lombok.extern.slf4j.Slf4j;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.SpringAuthorizedRolesProvider;
 
 @Slf4j
 @Configuration

@@ -10,7 +10,7 @@ import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import com.google.common.collect.Maps;
-import groovy.util.logging.Slf4j;
+import lombok.extern.slf4j.Slf4j;
 import io.restassured.RestAssured;
 import io.restassured.config.EncoderConfig;
 import io.restassured.parsing.Parser;
