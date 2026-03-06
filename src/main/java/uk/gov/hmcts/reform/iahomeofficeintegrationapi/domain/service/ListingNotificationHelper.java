@@ -90,12 +90,14 @@ public class ListingNotificationHelper {
     public HearingInstructMessage.HearingInstructMessageBuilder getHearingBuilderWithCoreFields(
         ConsumerReference consumerReference,
         MessageHeader messageHeader,
-        String homeOfficeReferenceNumber) {
+        String homeOfficeReferenceNumber,
+        long ccdCaseId) {
 
         return hearingInstructMessage()
             .withConsumerReference(consumerReference)
             .withHoReference(homeOfficeReferenceNumber)
             .withMessageHeader(messageHeader)
+            .withCcdCaseId(ccdCaseId)
             .withMessageType(HEARING.name());
     }
 
@@ -103,12 +105,14 @@ public class ListingNotificationHelper {
         AsylumCase asylumCase,
         ConsumerReference consumerReference,
         MessageHeader messageHeader,
-        String homeOfficeReferenceNumber) {
+        String homeOfficeReferenceNumber,
+        long ccdCaseId) {
 
         return getHearingBuilderWithCoreFields(
             consumerReference,
             messageHeader,
-            homeOfficeReferenceNumber)
+            homeOfficeReferenceNumber,
+            ccdCaseId)
             .withNote(getAdjournHearingNotificationContent(asylumCase))
             .withHearing(getHearingData(asylumCase))
             .build();
@@ -145,12 +149,14 @@ public class ListingNotificationHelper {
         AsylumCase asylumCase,
         ConsumerReference consumerReference,
         MessageHeader messageHeader,
-        String homeOfficeReferenceNumber) {
+        String homeOfficeReferenceNumber,
+        long ccdCaseId) {
 
         return getHearingBuilderWithCoreFields(
             consumerReference,
             messageHeader,
-            homeOfficeReferenceNumber)
+            homeOfficeReferenceNumber,
+            ccdCaseId)
             .withNote(getHearingNotificationContent(asylumCase))
             .withHearing(getHearingDataWithDate(asylumCase))
             .build();
