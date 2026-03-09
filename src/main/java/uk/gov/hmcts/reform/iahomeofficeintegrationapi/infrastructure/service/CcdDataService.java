@@ -71,7 +71,7 @@ public class CcdDataService {
             ? Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS 
             : Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS;
         String eventId = event.toString();
-        String caseId = String.valueOf(hoStatutoryTimeframeDto.getCcdCaseId());
+        String caseId = String.valueOf(hoStatutoryTimeframeDto.getHmctsReferenceNumber());
 
         String userToken;
         String s2sToken;

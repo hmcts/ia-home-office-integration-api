@@ -1,15 +1,37 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDataContent;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
@@ -18,34 +40,12 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeframe24Weeks;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeframe24WeeksHistory;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
-
-import java.util.HashMap;
-import java.util.Optional;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
 
 @ExtendWith(MockitoExtension.class)
 class CcdDataServiceTest {
@@ -64,21 +64,17 @@ class CcdDataServiceTest {
     private CcdDataService ccdDataService;
 
     private HomeOfficeStatutoryTimeframeDto testDto;
-    private UserInfo userInfo;
-    private StartEventDetails startEventDetails;
     private SubmitEventDetails submitEventDetails;
 
     @BeforeEach
     void setUp() {
         testDto = new HomeOfficeStatutoryTimeframeDto();
-        testDto.setCcdCaseId(CCD_CASE_ID);
+        testDto.setHmctsReferenceNumber(CCD_CASE_ID);
         testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
             .status("Yes")
             .cohorts(new String[]{"HU"})
             .build());
         testDto.setTimeStamp(LocalDateTime.of(2023, 12, 1, 0, 0, 0));
-
-        userInfo = new UserInfo("test@example.com", "test-uid", null, "Test User", "Test", "User");
 
         // Mock SubmitEventDetails with lenient stubbing to avoid unnecessary stubbing exceptions
         submitEventDetails = mock(SubmitEventDetails.class);
@@ -630,7 +626,7 @@ class CcdDataServiceTest {
     void shouldThrowExceptionWhenStatusAlreadySetToYes() {
         // Given
         String userToken = "test-user-token";
-        testDto.setCcdCaseId("99999");
+        testDto.setHmctsReferenceNumber("99999");
         testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
             .status("No")
             .cohorts(new String[]{"HU"})
