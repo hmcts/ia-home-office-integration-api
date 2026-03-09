@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerReference;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeErrorResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHeader;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceBundleInstructMessage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeInstructApi;
@@ -85,10 +85,10 @@ class HomeOfficeInstructServiceTest {
         return new ConsumerReference("hmcts", new CodeWithDescription("", ""), "HMCTS API", "HMCTS REF");
     }
 
-    private HomeOfficeInstructResponse getResponse() {
+    private HomeOfficeErrorResponse getResponse() {
 
         String someCorrelationId = "some-id";
-        return new HomeOfficeInstructResponse(
+        return new HomeOfficeErrorResponse(
             new MessageHeader(
                 new CodeWithDescription("HMCTS", "HM Courts and Tribunal Service"),
                 someCorrelationId,
