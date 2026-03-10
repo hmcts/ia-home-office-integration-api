@@ -1,5 +1,17 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -7,16 +19,6 @@ import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.io.InputStream;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
 
@@ -27,7 +29,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     void setUp() throws Exception {
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        String jsonSchemaFile = "twentyFourWeekStatusSchema_v7.json";
+        String jsonSchemaFile = "twentyFourWeekStatusSchema_v8.json";
 
         JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V4);
         InputStream schemaStream = getClass().getResourceAsStream("/" + jsonSchemaFile);
@@ -42,17 +44,19 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldValidateAgainstJsonSchemaWithAcceleratedAppealTrue() throws Exception {
         // Given
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
+            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                .name("HU")
+                .included(true)
+                .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("PA/12345/2026")
             .uan("1234-5678-9012-3456")
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 5, 15))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("Yes")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 45))
+            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{cohort})
+            .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 45, 0, ZoneOffset.UTC))
             .build();
 
         // When
@@ -67,17 +71,19 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldValidateAgainstJsonSchemaWithAcceleratedAppealFalse() throws Exception {
         // Given
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
+            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                .name("HU")
+                .included(true)
+                .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("HU/54321/2021")
             .uan("9876-5432-1098-7654")
             .familyName("Doe")
             .givenNames("Jane")
             .dateOfBirth(LocalDate.of(1985, 3, 20))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("No")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2024, 1, 15, 10, 20, 30))
+            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{cohort})
+            .timeStamp(OffsetDateTime.of(2024, 1, 15, 10, 20, 30, 0, ZoneOffset.UTC))
             .build();
 
         // When
@@ -92,17 +98,19 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldValidateTimeStampFormatWithEdgeCaseTime() throws Exception {
         // Given - test with edge case time values
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
+            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                .name("HU")
+                .included(true)
+                .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("RP/23432/2006")
             .uan("1111-2222-3333-4444")
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(2000, 12, 31))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("Yes")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2024, 6, 15, 23, 59, 59))
+            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{cohort})
+            .timeStamp(OffsetDateTime.of(2024, 6, 15, 23, 59, 59, 0, ZoneOffset.UTC))
             .build();
 
         // When
@@ -117,17 +125,19 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldValidateTimeStampFormatWithMidnightTime() throws Exception {
         // Given
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
+            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                .name("HU")
+                .included(true)
+                .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("EA/98765/1976")
             .uan("5555-6666-7777-8888")
             .familyName("Midnight")
             .givenNames("Test")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("No")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2023, 1, 1, 0, 0, 0))
+            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{cohort})
+            .timeStamp(OffsetDateTime.of(2023, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
             .build();
 
         // When
@@ -142,16 +152,18 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldValidateAgainstJsonSchemaWithMissingUan() throws Exception {
         // Given
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
+            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                .name("HU")
+                .included(true)
+                .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("EU/66666/1842")
             .familyName("Doe")
             .givenNames("Jane")
             .dateOfBirth(LocalDate.of(1985, 3, 20))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("No")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2024, 1, 15, 10, 20, 30))
+            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{cohort})
+            .timeStamp(OffsetDateTime.of(2024, 1, 15, 10, 20, 30, 0, ZoneOffset.UTC))
             .build();
 
         // When
@@ -166,17 +178,19 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldValidateAgainstJsonSchemaWithNullStatus() throws Exception {
         // Given
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
+            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                .name("HU")
+                .included(true)
+                .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("EU/66666/1842")
             .uan("1122-3344-5566-7788")
             .familyName("Doe")
             .givenNames("Jane")
             .dateOfBirth(LocalDate.of(1985, 3, 20))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("Null")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2024, 1, 15, 10, 20, 30))
+            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{cohort})
+            .timeStamp(OffsetDateTime.of(2024, 1, 15, 10, 20, 30, 0, ZoneOffset.UTC))
             .build();
 
         // When
@@ -191,17 +205,19 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldFailValidationWhenUanHasInvalidFormat() throws Exception {
         // Given - UAN without dashes
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
+            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                .name("HU")
+                .included(true)
+                .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("PA/12345/2026")
             .uan("1234567890123456")
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("No")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2023, 1, 1, 0, 0, 0))
+            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{cohort})
+            .timeStamp(OffsetDateTime.of(2023, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
             .build();
 
         // When
@@ -216,19 +232,17 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     }
 
     @Test
-    void shouldFailValidationWithInvalidStatus() throws Exception {
+    void shouldPassValidationWithEmptyCohortArray() throws Exception {
         // Given
+
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("EU/66666/1842")
             .uan("1122-3344-5566-7788")
             .familyName("Doe")
             .givenNames("Jane")
             .dateOfBirth(LocalDate.of(1985, 3, 20))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("Maybe - I really don't know, to be honest")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2024, 1, 15, 10, 20, 30))
+            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{})
+            .timeStamp(OffsetDateTime.of(2024, 1, 15, 10, 20, 30, 0, ZoneOffset.UTC))
             .build();
 
         // When
@@ -237,25 +251,25 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         Set<ValidationMessage> errors = schema.validate(jsonNode);
 
         // Then
-        assertTrue(!errors.isEmpty(), "JSON should fail validation with invalid status");
-        assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("status")), 
-                   "Error should be related to 24-week status field. Errors: " + errors);
+        assertTrue(errors.isEmpty(), "JSON should pass validation with empty cohort array");
     }
 
     @Test
     void shouldFailValidationWhenUanContainsLetters() throws Exception {
         // Given - UAN with letters
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
+            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                .name("HU")
+                .included(true)
+                .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("PA/12345/2026")
             .uan("ABCD-5678-9012-3456")
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("Yes")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2023, 1, 1, 12, 30, 45))
+            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{cohort})
+            .timeStamp(OffsetDateTime.of(2023, 1, 1, 12, 30, 45, 0, ZoneOffset.UTC))
             .build();
 
         // When
@@ -272,17 +286,19 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldFailValidationWhenUanIsTooShort() throws Exception {
         // Given - UAN with wrong length
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
+            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                .name("HU")
+                .included(true)
+                .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("PA/12345/2026")
             .uan("123-456-789-012")
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("Yes")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2023, 1, 1, 12, 30, 45))
+            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{cohort})
+            .timeStamp(OffsetDateTime.of(2023, 1, 1, 12, 30, 45, 0, ZoneOffset.UTC))
             .build();
 
         // When
@@ -299,17 +315,20 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldFailValidationWhenHmctsRefNumIsWrong() throws Exception {
         // Given - wrong HMCTS reference number
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
+            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                .name("HU")
+                .included(true)
+                .build();
+
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("1234567890123456")
             .uan("1233-4456-7899-0012")
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("Yes")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2023, 1, 1, 12, 30, 45))
+            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{cohort})
+            .timeStamp(OffsetDateTime.of(2023, 1, 1, 12, 30, 45, 0, ZoneOffset.UTC))
             .build();
 
         // When
@@ -326,16 +345,18 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldFailValidationWhenHmctsRefNumIsMissing() throws Exception {
         // Given - wrong HMCTS reference number
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
+            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                .name("HU")
+                .included(true)
+                .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .uan("1233-4456-7899-0012")
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("Yes")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2023, 1, 1, 12, 30, 45))
+            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{cohort})
+            .timeStamp(OffsetDateTime.of(2023, 1, 1, 12, 30, 45, 0, ZoneOffset.UTC))
             .build();
 
         // When

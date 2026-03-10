@@ -2,6 +2,13 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -9,11 +16,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -51,19 +53,19 @@ public class HomeOfficeStatutoryTimeframeDto {
     private String givenNames;
 
     @JsonProperty(value = "dateOfBirth", required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @NotNull
     private LocalDate dateOfBirth;
 
-    @JsonProperty(value = "stf24weeks", required = true)
+    @JsonProperty(value = "stf24weekCohorts", required = true)
     @NotNull
     @Valid
-    private Stf24Weeks stf24weeks;
+    private Stf24WeekCohort[] stf24weekCohorts;
 
     @JsonProperty(value = "timeStamp", required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "GMT")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     @NotNull
-    private LocalDateTime timeStamp;
+    private OffsetDateTime timeStamp;
 
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -73,14 +75,13 @@ public class HomeOfficeStatutoryTimeframeDto {
     @NoArgsConstructor
     @EqualsAndHashCode
     @Data
-    public static class Stf24Weeks {
-        @JsonProperty(value = "status", required = true)
+    public static class Stf24WeekCohort {
+        @JsonProperty(value = "name", required = true)
         @NotNull
-        @Pattern(regexp = "^(([Yy][Ee][Ss])|([Nn][Oo])|([Nn][Uu][Ll][Ll]))$", message = "Status must be 'Yes', 'No' or 'Null' (case-insensitive)")
-        private String status;
+        private String name;
 
-        @JsonProperty(value = "cohorts", required = true)
+        @JsonProperty(value = "included", required = true)
         @NotNull
-        private String[] cohorts;
+        private boolean included;
     }
 }

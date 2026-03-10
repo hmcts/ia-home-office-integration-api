@@ -4,13 +4,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
+
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("unchecked")
 class StatutoryTimeFrame24WeeksFieldValueTest {
 
     private StatutoryTimeframe24Weeks statutoryTimeFrame24WeeksFieldValue;
@@ -25,8 +28,25 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
             "2024-01-01T10:00:00Z"
         )));
 
+        // Prepare a dummy HomeOffice DTO for the constructor
+        HomeOfficeStatutoryTimeframeDto homeOfficeDto = HomeOfficeStatutoryTimeframeDto.builder()
+            .hmctsReferenceNumber("PA/12345/2026")
+            .uan("1234-5678-9012-3456")
+            .familyName("Smith")
+            .givenNames("John")
+            .dateOfBirth(LocalDate.of(1990, 1, 1))
+            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                    .name("HU")
+                    .included(true)
+                    .build()
+            })
+            .timeStamp(OffsetDateTime.parse("2024-01-01T10:00:00Z"))
+            .build();
+       
         statutoryTimeFrame24WeeksFieldValue = new StatutoryTimeframe24Weeks(
-            historyList
+            historyList,
+            homeOfficeDto
         );
         
         assertNotNull(statutoryTimeFrame24WeeksFieldValue.getHistory());
@@ -36,6 +56,11 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         assertEquals("Test reason", history.getReason());
         assertEquals("Test user", history.getUser());
         assertEquals("2024-01-01T10:00:00Z", history.getDateTimeAdded());
+        // Check that DTO is retained correctly
+        assertNotNull(statutoryTimeFrame24WeeksFieldValue.getHomeOfficeResponse());
+        assertEquals("PA/12345/2026", statutoryTimeFrame24WeeksFieldValue.getHomeOfficeResponse().getHmctsReferenceNumber());
+        assertEquals("John", statutoryTimeFrame24WeeksFieldValue.getHomeOfficeResponse().getGivenNames());
+        assertEquals(1, statutoryTimeFrame24WeeksFieldValue.getHomeOfficeResponse().getStf24weekCohorts().length);
     }
 
     @Test
@@ -51,7 +76,24 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
             status, reason, user, dateAdded
         )));
 
-        StatutoryTimeframe24Weeks fieldValue = new StatutoryTimeframe24Weeks(historyList
+        HomeOfficeStatutoryTimeframeDto homeOfficeDto = HomeOfficeStatutoryTimeframeDto.builder()
+            .hmctsReferenceNumber("PA/12345/2026")
+            .uan("1234-5678-9012-3456")
+            .familyName("Smith")
+            .givenNames("John")
+            .dateOfBirth(LocalDate.of(1990, 1, 1))
+            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                    .name("HU")
+                    .included(true)
+                    .build()
+            })
+            .timeStamp(OffsetDateTime.parse("2024-01-01T10:00:00Z"))
+            .build();
+
+        StatutoryTimeframe24Weeks fieldValue = new StatutoryTimeframe24Weeks(
+            historyList,
+            homeOfficeDto
         );
 
         assertNotNull(fieldValue.getHistory());
@@ -62,5 +104,21 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         assertEquals(reason, history.getReason());
         assertEquals(user, history.getUser());
         assertEquals(dateAdded, history.getDateTimeAdded());
+
+        HomeOfficeStatutoryTimeframeDto homeOfficeResponse = fieldValue.getHomeOfficeResponse();
+        assertNotNull(homeOfficeResponse);
+        assertEquals(homeOfficeResponse.getHmctsReferenceNumber(), "PA/12345/2026");
+        assertEquals(homeOfficeResponse.getUan(), "1234-5678-9012-3456");
+        assertEquals(homeOfficeResponse.getFamilyName(), "Smith");
+        assertEquals(homeOfficeResponse.getGivenNames(), "John");
+        assertEquals(homeOfficeResponse.getDateOfBirth(), LocalDate.of(1990, 1, 1));
+        assertNotNull(homeOfficeResponse.getStf24weekCohorts());
+        assertEquals(1, homeOfficeResponse.getStf24weekCohorts().length);
+        var cohort = homeOfficeResponse.getStf24weekCohorts()[0];
+        assertEquals(cohort.getName(), "HU");
+        assertEquals(cohort.isIncluded(), true);
+        assertEquals(homeOfficeResponse.getHmctsReferenceNumber(), "PA/12345/2026");
+        assertEquals(homeOfficeResponse.getTimeStamp(), OffsetDateTime.parse("2024-01-01T10:00:00Z"));
+
     }
 }
