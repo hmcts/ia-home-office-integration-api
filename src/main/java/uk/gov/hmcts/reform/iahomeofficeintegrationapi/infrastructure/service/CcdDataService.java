@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Statut
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.DbUtils;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
@@ -51,17 +52,20 @@ public class CcdDataService {
     private final CcdDataApi ccdDataApi;
     private final IdamService idamService;
     private final AuthTokenGenerator serviceAuthorization;
+    private final DbUtils dbUtils;
 
     @Value("${core_case_data_api_url}")
     private String coreCaseDataApiUrl;
 
     public CcdDataService(CcdDataApi ccdDataApi,
                           IdamService systemTokenGenerator,
-                          AuthTokenGenerator serviceAuthorization) {
+                          AuthTokenGenerator serviceAuthorization,
+                          DbUtils dbUtils) {
 
         this.ccdDataApi = ccdDataApi;
         this.idamService = systemTokenGenerator;
         this.serviceAuthorization = serviceAuthorization;
+        this.dbUtils = dbUtils;
     }
 
     public SubmitEventDetails setHomeOfficeStatutoryTimeframeStatus(HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
@@ -128,9 +132,7 @@ public class CcdDataService {
     }
 
     private String getCaseIdFromHmctsRefNum(String hmctsRefNum) {
-        // TODO Auto-generated method stub
-        return "1773047655725509";
-        //        throw new UnsupportedOperationException("Unimplemented method 'getCaseIdFromHmctsRefNum'");
+        return dbUtils.getCaseId(hmctsRefNum);
     }
 
     private StartEventDetails getStartEventByCase(

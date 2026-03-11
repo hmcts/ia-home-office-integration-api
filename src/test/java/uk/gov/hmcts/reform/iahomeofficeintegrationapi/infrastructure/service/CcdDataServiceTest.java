@@ -49,7 +49,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.IdamService;
-
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.DbUtils;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
 
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
@@ -58,6 +58,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.id
 class CcdDataServiceTest {
 
     private static final String CASE_ID = "1773047655725509";
+    private static final String HMCTS_REF_NUM = "PA/12345/2026";
 
     @Mock
     private CcdDataApi ccdDataApi;
@@ -68,6 +69,9 @@ class CcdDataServiceTest {
     @Mock
     private AuthTokenGenerator serviceAuthorization;
 
+    @Mock
+    private DbUtils dbUtils;
+
     @InjectMocks
     private CcdDataService ccdDataService;
 
@@ -77,7 +81,7 @@ class CcdDataServiceTest {
     void setup() {
 
         dto = new HomeOfficeStatutoryTimeframeDto();
-        dto.setHmctsReferenceNumber("PA/12345/2026");
+        dto.setHmctsReferenceNumber(HMCTS_REF_NUM);
 
         dto.setStf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
@@ -157,6 +161,7 @@ class CcdDataServiceTest {
 
         when(idamService.getServiceUserToken()).thenReturn("token");
         when(serviceAuthorization.generate()).thenReturn("s2s");
+        when(dbUtils.getCaseId(HMCTS_REF_NUM)).thenReturn(CASE_ID);
 
         StartEventDetails start = mock(StartEventDetails.class);
         when(start.getCaseDetails()).thenReturn(null);
@@ -177,6 +182,7 @@ class CcdDataServiceTest {
 
         when(idamService.getServiceUserToken()).thenReturn("user");
         when(serviceAuthorization.generate()).thenReturn("s2s");
+        when(dbUtils.getCaseId(HMCTS_REF_NUM)).thenReturn(CASE_ID);
 
         AsylumCase asylumCase = mock(AsylumCase.class);
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS))
@@ -217,6 +223,7 @@ class CcdDataServiceTest {
 
         when(idamService.getServiceUserToken()).thenReturn("user");
         when(serviceAuthorization.generate()).thenReturn("s2s");
+        when(dbUtils.getCaseId(HMCTS_REF_NUM)).thenReturn(CASE_ID);
 
         AsylumCase asylumCase = mock(AsylumCase.class);
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS))
@@ -246,6 +253,7 @@ class CcdDataServiceTest {
 
         when(idamService.getServiceUserToken()).thenReturn("user");
         when(serviceAuthorization.generate()).thenReturn("s2s");
+        when(dbUtils.getCaseId(HMCTS_REF_NUM)).thenReturn(CASE_ID);
 
         StatutoryTimeframe24Weeks existing = mock(StatutoryTimeframe24Weeks.class);
 
@@ -346,6 +354,7 @@ class CcdDataServiceTest {
 
         when(idamService.getServiceUserToken()).thenReturn("user");
         when(serviceAuthorization.generate()).thenReturn("s2s");
+        when(dbUtils.getCaseId(HMCTS_REF_NUM)).thenReturn(CASE_ID);
 
         when(ccdDataApi.startEventByCase(any(), any(), eq(CASE_ID), any()))
             .thenThrow(new RuntimeException("Case ID is not valid"));
@@ -361,6 +370,7 @@ class CcdDataServiceTest {
 
         when(idamService.getServiceUserToken()).thenReturn("user");
         when(serviceAuthorization.generate()).thenReturn("s2s");
+        when(dbUtils.getCaseId(HMCTS_REF_NUM)).thenReturn(CASE_ID);
 
         RuntimeException ex = new RuntimeException("boom");
 
