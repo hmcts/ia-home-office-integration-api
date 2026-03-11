@@ -3,3 +3,6 @@ java:
   ingressHost: ${SERVICE_FQDN}
   environment:
     HOME_OFFICE_ENDPOINT: "http://ia-home-office-mock-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    POSTGRES_USERNAME: hmcts
+    POSTGRES_PASSWORD: hmcts
+  
