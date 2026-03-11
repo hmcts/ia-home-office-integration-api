@@ -84,22 +84,22 @@ public class CacheConfiguration {
         }
 
         try {
-            RedisURI redisURI = RedisURI.create(redisUrl);
+            RedisURI redisUri = RedisURI.create(redisUrl);
 
             boolean useSsl = redisUrl.contains("tls=true") || redisUrl.startsWith("rediss://");
             log.info("Redis SSL enabled: {}", useSsl);
 
             // checked azure portal,
             if (useSsl) {
-                redisURI.setSsl(true);
-                redisURI.setVerifyPeer(false); // for Azure (self signed certs)
+                redisUri.setSsl(true);
+                redisUri.setVerifyPeer(false); // for Azure (self signed certs)
             }
 
-            redisURI.setTimeout(Duration.ofSeconds(10)); // 64seconds is default, so fail quicker
+            redisUri.setTimeout(Duration.ofSeconds(10)); // 64seconds is default, so fail quicker
 
             RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-            config.setHostName(redisURI.getHost());
-            config.setPort(redisURI.getPort());
+            config.setHostName(redisUri.getHost());
+            config.setPort(redisUri.getPort());
             if (accessKey != null && !accessKey.isBlank()) {
                 config.setPassword(RedisPassword.of(accessKey));
                 log.info("adding password to redis");
