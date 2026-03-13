@@ -78,7 +78,7 @@ public class IdamService {
         idamAuthDetails.put("username", systemUserName);
         idamAuthDetails.put("password", systemUserPass);
         idamAuthDetails.put("scope", systemUserScope);
-
+        log.info("System user token expired. Getting a new token in ia-home-offcie-integration-api");
         return idamApi.token(idamAuthDetails).getAccessToken();
     }
 
