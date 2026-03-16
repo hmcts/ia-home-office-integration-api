@@ -4,7 +4,7 @@ java:
   environment:
     HOME_OFFICE_ENDPOINT: "http://ia-home-office-mock-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     POSTGRES_HOST: ia-preview.postgres.database.azure.com
-    POSTGRES_NAME: "{{ .Values.global.environment }}ia-case-api"
+    POSTGRES_NAME: "pr-3076-ia-case-api"
     POSTGRES_USERNAME: hmcts
     POSTGRES_PASSWORD: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
