@@ -284,7 +284,6 @@ feign:
         readTimeout: 5000
 
 launchDarkly:
-  enabled: true
   sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
   connectionTimeout: 5000
   socketTimeout: 5000
