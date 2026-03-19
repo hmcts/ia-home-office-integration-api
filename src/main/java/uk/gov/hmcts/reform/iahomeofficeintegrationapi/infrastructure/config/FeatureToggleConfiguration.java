@@ -6,6 +6,7 @@ import com.launchdarkly.sdk.server.LDConfig;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,6 +23,7 @@ public class FeatureToggleConfiguration {
     private Integer socketTimeout;
 
     @Bean
+    @ConditionalOnProperty(name = "launchDarkly.enabled", havingValue = "true", matchIfMissing = true)
     public LDConfig ldConfig() {
         return new LDConfig.Builder()
                 .http(Components
@@ -33,6 +35,7 @@ public class FeatureToggleConfiguration {
     }
 
     @Bean
+    @ConditionalOnProperty(name = "launchDarkly.enabled", havingValue = "true", matchIfMissing = true)
     public LDClientInterface ldClient(LDConfig ldConfig) {
         return new LDClient(sdkKey, ldConfig);
     }

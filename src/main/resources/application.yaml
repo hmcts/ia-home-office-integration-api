@@ -284,6 +284,7 @@ feign:
         readTimeout: 5000
 
 launchDarkly:
+  enabled: true
   sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
   connectionTimeout: 5000
   socketTimeout: 5000
@@ -295,3 +296,7 @@ auth.homeoffice.client.baseUrl: ${HOME_OFFICE_ENDPOINT:http://127.0.0.1:8098}
 auth.homeoffice.token.path: /ichallenge/token
 auth.homeoffice.client.id: ${IA_HOMEOFFICE_CLIENT_ID:}
 auth.homeoffice.client.secret: ${IA_HOMEOFFICE_SECRET:}
+
+app:
+  public-ip:
+    enabled: ${APP_PUBLIC_IP_ENABLED:false}
