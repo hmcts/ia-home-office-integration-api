@@ -2,9 +2,10 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -101,7 +102,7 @@ class EditCaseListingNotificationHandlerTest extends AbstractNotificationsHandle
 
         when(listingNotificationHelper.getHearingInstructMessage(
                 any(AsylumCase.class), any(),
-                any(), anyString())).thenReturn(hearingInstructMessage);
+                any(), anyString(), anyLong())).thenReturn(hearingInstructMessage);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             editCaseListingNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -128,7 +129,7 @@ class EditCaseListingNotificationHandlerTest extends AbstractNotificationsHandle
 
         when(listingNotificationHelper.getHearingInstructMessage(
             any(AsylumCase.class), any(),
-            any(), anyString())).thenReturn(hearingInstructMessageReheard);
+            any(), anyString(), anyLong())).thenReturn(hearingInstructMessageReheard);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             editCaseListingNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -155,7 +156,7 @@ class EditCaseListingNotificationHandlerTest extends AbstractNotificationsHandle
             .thenReturn("FAIL");
         when(listingNotificationHelper.getHearingInstructMessage(
                 any(AsylumCase.class), any(),
-                any(), anyString())).thenReturn(hearingInstructMessage);
+                any(), anyString(), anyLong())).thenReturn(hearingInstructMessage);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             editCaseListingNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
