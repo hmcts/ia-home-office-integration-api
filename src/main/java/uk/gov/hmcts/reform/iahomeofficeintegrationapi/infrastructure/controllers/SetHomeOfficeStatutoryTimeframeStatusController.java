@@ -75,13 +75,20 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
     @PostMapping(path = "/home-office-statutory-timeframe-status",
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SubmitEventDetails> updateHomeOfficeStatutoryTimeframeStatus(
+    public ResponseEntity<HomeOfficeStatutoryTimeframeDto> updateHomeOfficeStatutoryTimeframeStatus(
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
         @Valid @RequestBody HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto
-    ) {
-        log.info("HTTP POST /home-office-statutory-timeframe-status endpoint called with payload: {}", hoStatutoryTimeframeDto);
+    ) throws Exception {
+        log.info("HTTP POST to /home-office-statutory-timeframe-status endpoint called with payload: {}", hoStatutoryTimeframeDto);
         SubmitEventDetails response = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
-        return ResponseEntity.status(response.getCallbackResponseStatusCode()).body(response);
+        int httpStatus = response.getCallbackResponseStatusCode();
+        if (httpStatus == HttpStatus.OK.value()) {
+            log.info("HTTP POST to /home-office-statutory-timeframe-status endpoint was successful.");
+            return ResponseEntity.status(HttpStatus.CREATED).body(hoStatutoryTimeframeDto);
+        } else {
+            log.error("HTTP POST to /home-office-statutory-timeframe-status endpoint was unsuccessful.  The return status from CCD was {}.", httpStatus);
+            throw new Exception("The 24-week status could not be set.");
+        }
     }
 
     @ExceptionHandler(IllegalStateException.class)
@@ -115,6 +122,13 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
             .orElse("Validation failed");
         log.info("Validation error: {}", errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"" + errorMessage + "\"}");
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception ex) {
+        String errorMessage = ex.getMessage();
+        log.error("Unspecified server error: {}", errorMessage);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"" + errorMessage + "\"}");
     }
 
 }

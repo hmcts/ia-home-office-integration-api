@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.DbUtils;
 
 
 @Slf4j
@@ -45,6 +47,9 @@ class HomeOfficeInstructIntegrationTest
     implements
         WithIdamStub, WithServiceAuthStub,
         WithHomeOfficeStatusSearchStub, WithHomeOfficeInstructStub, WithHomeOfficeAuthStub {
+
+    @MockBean
+    private DbUtils dbUtils;
 
     public static final String APPEAL_REFERENCE_NUMBER = "some-appeal-reference-number";
     public static final String HOME_OFFICE_REFERENCE = "CustRef123";

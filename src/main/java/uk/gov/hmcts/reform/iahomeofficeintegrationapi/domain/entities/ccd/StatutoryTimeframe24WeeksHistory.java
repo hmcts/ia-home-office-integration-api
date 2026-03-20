@@ -38,7 +38,6 @@ public class StatutoryTimeframe24WeeksHistory {
         return requireNonNull(reason);
     }
 
-
     public String getUser() {
         return requireNonNull(user);
     }

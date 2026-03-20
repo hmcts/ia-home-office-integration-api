@@ -8,13 +8,19 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.SpringBootIntegrationTest;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.DbUtils;
 
 /**
  * Built-in feature which saves service's swagger specs in temporary directory.
  * Each travis run on master should automatically save and upload (if updated) documentation.
  */
 class SwaggerPublisher extends SpringBootIntegrationTest {
+
+    @MockBean
+    private DbUtils dbUtils;
 
     @DisplayName("Generate swagger documentation")
     @Test
