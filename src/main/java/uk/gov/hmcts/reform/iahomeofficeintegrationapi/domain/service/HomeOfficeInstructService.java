@@ -3,9 +3,6 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHeader;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerReference;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeErrorResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeInstructApi;
@@ -47,20 +44,6 @@ public class HomeOfficeInstructService {
                 messageType,
                 correlationId
             );
-            log.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-            log.info("*Request info*\n  hoReference: {}\n  messageType: {}\n  note: {}", 
-                request.getHoReference(), request.getMessageType(), request.getNote());
-            MessageHeader rmessageHeader = request.getMessageHeader();
-            log.info("*Message header*\n  eventDateTime: {}\n  correlationId: {}\n  consumerCode: {}\n" +
-                "  consumerDescription: {}",
-                rmessageHeader.getEventDateTime(), rmessageHeader.getCorrelationId(), 
-                rmessageHeader.getConsumer().getCode(), rmessageHeader.getConsumer().getDescription());
-            ConsumerReference consumerReference = request.getConsumerReference();
-            log.info("*Consumer reference*\n  code: {}\n  description: {}\n  value: {}\n" +
-                "  consumerCode: {}\n  consumerDescription: {}", 
-                consumerReference.getCode(), consumerReference.getDescription(), consumerReference.getValue(), 
-                consumerReference.getConsumer().getCode(), consumerReference.getConsumer().getDescription());
-            log.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             instructResponse = homeOfficeInstructApi.sendNotification(accessToken, request);
             var errorDetail = instructResponse.getErrorDetail();
             if (errorDetail != null) {
