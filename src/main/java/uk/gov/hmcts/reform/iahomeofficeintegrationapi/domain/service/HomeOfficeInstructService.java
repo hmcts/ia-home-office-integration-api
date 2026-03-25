@@ -45,20 +45,8 @@ public class HomeOfficeInstructService {
                 correlationId
             );
             instructResponse = homeOfficeInstructApi.sendNotification(accessToken, request);
-            var errorDetail = instructResponse.getErrorDetail();
-            if (errorDetail != null) {
-                log.info("**>>isSuccess: {}<<**\n**>>errorCode: {}<<**\n**>>messageText: {}<<**", 
-                    errorDetail.isSuccess(), errorDetail.getErrorCode(), errorDetail.getMessageText());
-            }
-            var messageHeader = instructResponse.getMessageHeader();
-            if (messageHeader != null) {
-                log.info("**--correlationId: {}--**\n**--eventDateTime: {}--**\n**--consumerCode: {}--**\n**--consumerDescription: {}--**\n", 
-                    messageHeader.getCorrelationId(), messageHeader.getEventDateTime(), messageHeader.getConsumer().getCode(), 
-                    messageHeader.getConsumer().getDescription());
-            }
 
             if (instructResponse == null || instructResponse.getMessageHeader() == null) {
-                log.info("Response was null or header was null");
                 log.error("Error sending notification to Home Office for caseId: {},  reference number: {}, "
                           + "message type: {} and correlation ID: {}",
                     caseId,
@@ -68,7 +56,6 @@ public class HomeOfficeInstructService {
                 );
                 status = "FAIL";
             } else {
-                log.info("Response was NOT null and header was NOT null");
                 log.info(
                     "HomeOffice-Notification request response received for caseId: {},  reference number: {}, "
                     + "message type: {} and correlation ID: {}",
@@ -80,7 +67,6 @@ public class HomeOfficeInstructService {
                 status = "OK";
             }
         } catch (RetriesExceededException e) {
-            log.info("Retry count exceeded");
             log.error("Server error sending notification to Home office for caseId: {},  reference number: {}, "
                       + "message type: {} and correlation ID: {}, Message: {}: ",
                 caseId,
