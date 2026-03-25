@@ -39,7 +39,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                     if (response.body() != null && response.body().asInputStream() != null) {
 
                         String rawResponse = IOUtils.toString(response.body().asReader(Charset.defaultCharset()));
-                        log.debug("Raw 400 response from {}: {}", methodKey, rawResponse);
+                        log.info("Raw 400 response from {}: {}", methodKey, rawResponse);
 
                         // Check if this is a CCD API error response
                         if (methodKey.contains("CcdDataApi")) {

@@ -50,6 +50,8 @@ public class HomeOfficeInstructService {
                 messageType,
                 correlationId
             );
+            log.info("Request info: **>>hoReference: {}<<**\n**>>messageType: {}<<**\\n**>>note: {}<<**\n**>>consumerReference: {}<<**\n**>>messageHeader: {}<<**", request.getHoReference(), request.getMessageType(), request.getNote(), request.getConsumerReference().toString(), request.getMessageHeader().toString());
+
             instructResponse = homeOfficeInstructApi.sendNotification(accessToken, request);
             var errorDetail = instructResponse.getErrorDetail();
             if (errorDetail != null) {
