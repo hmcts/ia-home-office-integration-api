@@ -1,13 +1,15 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import java.time.LocalDateTime;
+
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.RequiredFieldMissingException;
 
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CaseDetails<T extends CaseData> {
 
     private long id;

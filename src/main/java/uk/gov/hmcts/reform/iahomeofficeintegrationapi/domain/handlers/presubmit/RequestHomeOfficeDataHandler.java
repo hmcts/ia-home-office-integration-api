@@ -119,7 +119,7 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
             } else {
                 String homeOfficeSearchResponseJsonStr =
                         asylumCase.read(HOME_OFFICE_SEARCH_RESPONSE, String.class)
-                                .orElseThrow(() -> new IllegalStateException("Home search response is not present."));
+                                .orElseThrow(() -> new IllegalStateException("Home Office search response is not present."));
 
                 searchResponse = new ObjectMapper()
                         .readValue(homeOfficeSearchResponseJsonStr, HomeOfficeSearchResponse.class);
