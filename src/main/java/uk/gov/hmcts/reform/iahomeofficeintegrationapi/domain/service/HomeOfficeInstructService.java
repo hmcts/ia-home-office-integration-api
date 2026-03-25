@@ -95,8 +95,7 @@ public class HomeOfficeInstructService {
                 homeOfficeReferenceNumber,
                 messageType,
                 correlationId,
-                e.getMessage(),
-                e);
+                e.getMessage());
             status = "FAIL";
 
         } catch (Exception e) {
@@ -106,8 +105,7 @@ public class HomeOfficeInstructService {
                 homeOfficeReferenceNumber,
                 messageType,
                 correlationId,
-                e.getMessage(),
-                e);
+                e.getMessage());
 
             status = "FAIL";
         }
