@@ -166,8 +166,7 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
             log.warn(
                     "Error processing Home Office response from case data: {}",
                     caseId,
-                    e.getMessage(),
-                    e);
+                    e.getMessage());
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
         }
@@ -199,7 +198,7 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
                                 .findFirst();
 
             } catch (Exception e) {
-                log.warn("Unable to find APPEALABLE metadata in Home office response, caseId: {}", caseId, e);
+                log.warn("Unable to find APPEALABLE metadata in Home office response, caseId: {}; message: {}", caseId, e.getMessage());
             }
         }
         return metadata;

@@ -267,10 +267,9 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                     .setErrorMessageForErrorCode(caseId, asylumCase, hoe.getErrorCode(), hoe.getMessage());
         } catch (Exception e) {
             log.warn(
-                "Error while calling Home office case status search: caseId: {}, error message: {}",
+                "Error while calling Home office case status search: caseId: {}; message: {}",
                 caseId,
-                e.getMessage(),
-                e);
+                e.getMessage());
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
             asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_CALL_ERROR_MESSAGE);
         }
@@ -298,7 +297,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                     .collect(Collectors.toList());
 
             } catch (Exception e) {
-                log.warn("Unable to find MAIN APPLICANT in Home office response, caseId: {}", caseId, e);
+                log.warn("Unable to find MAIN APPLICANT in Home office response, caseId: {}; message: {}", caseId, e.getMessage());
             }
         }
         return null;
@@ -320,7 +319,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                         .findAny();
 
             } catch (Exception e) {
-                log.warn("Unable to find APPLICANT in Home office response, caseId: {}", caseId, e);
+                log.warn("Unable to find APPLICANT in Home office response, caseId: {}; message: {}", caseId, e.getMessage());
             }
         }
         return searchStatus;
@@ -336,7 +335,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                     .findFirst();
 
             } catch (Exception e) {
-                log.warn("Unable to find APPEALABLE metadata in Home office response, caseId: {}", caseId, e);
+                log.warn("Unable to find APPEALABLE metadata in Home office response, caseId: {}; message: {}", caseId, e.getMessage());
             }
         }
         return metadata;
