@@ -8,3 +8,21 @@ java:
     POSTGRES_USERNAME: hmcts
     POSTGRES_PASSWORD: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
+  keyVaults:
+    ia:
+      resourceGroup: ia
+      secrets:
+        - name: postgres-auth-values-password
+          alias: PG_AUTH_VALUES_YAML_PASS
+  secrets:
+    POSTGRES_PASSWORD:
+      secretRef: postgres
+      key: PASSWORD
+      disabled: false
+
+postgresql:
+  enabled: true
+  flexibleserver: ia-preview
+  setup:
+    databases:
+      - name: "pr-${CHANGE_ID}-ia-case-api"
