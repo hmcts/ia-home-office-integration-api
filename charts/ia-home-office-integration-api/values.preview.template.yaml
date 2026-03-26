@@ -2,4 +2,4 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
-    HOME_OFFICE_ENDPOINT: https://ia-home-office-mock-api-pr-163.preview.platform.hmcts.net
+    HOME_OFFICE_ENDPOINT: "http://ia-home-office-mock-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
