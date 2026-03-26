@@ -1,5 +1,5 @@
 {
-  "description": "RIA-33788 Gets Home Office data for a valid appeal reference",
+  "description": "RIA-3378 Gets Home Office data for a valid appeal reference",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -9,8 +9,9 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
-          "appellantDateOfBirth": "1995-4-4"
+          "appellantGivenNames": "Aishwarya",
+          "appellantFamilyName": "Rai",
+          "appellantDateOfBirth": "1973-11-1"
         }
       }
     }
@@ -21,8 +22,9 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
-        "appellantDateOfBirth": "1995-4-4",
+        "appellantGivenNames": "Aishwarya",
+        "appellantFamilyName": "Rai",
+        "appellantDateOfBirth": "1973-11-1",
         "homeOfficeSearchStatus": "SUCCESS"
       }
     }
