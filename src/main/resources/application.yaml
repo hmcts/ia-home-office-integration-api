@@ -63,9 +63,6 @@ spring:
       remove-abandoned-timeout: 60
       log-abandoned: true
       abandon-when-percentage-full: 0
-  flyway.enabled: true
-  flyway.baselineOnMigrate: true
-  flyway.schemas: ${POSTGRES_NAME:ia_case_api}
 
 security:
   anonymousPaths: ${ANONYMOUS_PATHS:/,/health,/health/liveness,/health/readiness,/loggers/**,/swagger-ui.html,/swagger-resources/**,/v2/api-docs,/webjars/springfox-swagger-ui/**,/favicon.ico}
