@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.DbUtils;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdamUserDetails;
 
 @Slf4j
@@ -44,6 +45,9 @@ class HomeOfficeStatusSearchIntegrationTest
     implements
         WithIdamStub, WithServiceAuthStub,
         WithHomeOfficeStatusSearchStub, WithHomeOfficeInstructStub, WithHomeOfficeAuthStub {
+
+    @MockBean
+    private DbUtils dbUtils;
 
     public static final String APPELLANT_FAMILY_NAME = "appellantFamilyName";
     public static final String APPELLANT_GIVEN_NAME = "appellantGivenName";

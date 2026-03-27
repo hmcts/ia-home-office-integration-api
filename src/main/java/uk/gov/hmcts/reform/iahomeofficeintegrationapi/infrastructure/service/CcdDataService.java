@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Statut
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.DbUtils;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
@@ -51,27 +52,30 @@ public class CcdDataService {
     private final CcdDataApi ccdDataApi;
     private final IdamService idamService;
     private final AuthTokenGenerator serviceAuthorization;
+    private final DbUtils dbUtils;
 
     @Value("${core_case_data_api_url}")
     private String coreCaseDataApiUrl;
 
     public CcdDataService(CcdDataApi ccdDataApi,
                           IdamService systemTokenGenerator,
-                          AuthTokenGenerator serviceAuthorization) {
+                          AuthTokenGenerator serviceAuthorization,
+                          DbUtils dbUtils) {
 
         this.ccdDataApi = ccdDataApi;
         this.idamService = systemTokenGenerator;
         this.serviceAuthorization = serviceAuthorization;
+        this.dbUtils = dbUtils;
     }
 
     public SubmitEventDetails setHomeOfficeStatutoryTimeframeStatus(HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
-
-        boolean isStatusNo = hoStatutoryTimeframeDto.getStf24weeks().getStatus().equalsIgnoreCase("no");
-        Event event = isStatusNo 
-            ? Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS 
-            : Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS;
+        // This caters for cases where no cohort information is returned (which we interpret as "No")
+        boolean isYes = Arrays.stream(hoStatutoryTimeframeDto.getStf24weekCohorts()).anyMatch(cohort -> cohort.isIncluded());
+        Event event = isYes 
+            ? Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS
+            : Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS;
         String eventId = event.toString();
-        String caseId = String.valueOf(hoStatutoryTimeframeDto.getCcdCaseId());
+        String caseId = getCaseIdFromHmctsRefNum(String.valueOf(hoStatutoryTimeframeDto.getHmctsReferenceNumber()));
 
         String userToken;
         String s2sToken;
@@ -107,20 +111,16 @@ public class CcdDataService {
             checkStatusNotAlreadySet(newHistoryId, existingData, caseId);
 
             Map<String, Object> eventData = new HashMap<>();
-            eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf4w(newHistoryId, hoStatutoryTimeframeDto));
-            String[] stf24wHomeOfficeCohort = hoStatutoryTimeframeDto.getStf24weeks().getCohorts();
-            eventData.put(STF_24W_HOME_OFFICE_COHORT.value(), Arrays.stream(stf24wHomeOfficeCohort).collect(Collectors.joining(",")));
-            boolean isYes = hoStatutoryTimeframeDto.getStf24weeks().getStatus().equalsIgnoreCase(YesOrNo.YES.toString());
+            eventData.put(STF_24W_HOME_OFFICE_COHORT.value(), 
+                          Arrays.stream(hoStatutoryTimeframeDto.getStf24weekCohorts())
+                          .filter(cohort -> cohort.isIncluded())
+                          .map(cohort -> cohort.getName()).collect(Collectors.joining(",")));
             YesOrNo status = isYes ? YesOrNo.YES : YesOrNo.NO;
             eventData.put(STF_24W_CURRENT_STATUS_AUTO_GENERATED.value(), status);
             eventData.put(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value(), status);
-            log.debug("Setting Event data: {}", eventData);
             eventData.put(STF_24W_CURRENT_REASON_AUTO_GENERATED.value(), STATUTORY_TIMEFRAME_REASON);
-            log.debug("Event data to be submitted: {}", eventData);    
-            log.debug("Submitting event with method: {} for caseId: {} with Home Office statutory timeframe status: {}, home office cohorts: {}",
-                     eventId, caseId,
-                     hoStatutoryTimeframeDto.getStf24weeks().getStatus(),
-                    stf24wHomeOfficeCohort);
+            eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf24w(newHistoryId, status, hoStatutoryTimeframeDto));
+            log.debug("Event data to be submitted: {}", eventData);
             
             SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, eventData, startEventDetails.getToken(), eventId, true);
 
@@ -129,6 +129,10 @@ public class CcdDataService {
 
             return submitEventDetails;
         }
+    }
+
+    private String getCaseIdFromHmctsRefNum(String hmctsRefNum) {
+        return dbUtils.getCaseId(hmctsRefNum);
     }
 
     private StartEventDetails getStartEventByCase(
@@ -170,12 +174,9 @@ public class CcdDataService {
         return ccdDataApi.submitEventByCase(userToken, s2sToken, caseId, requestBody);
     }
 
-    public StatutoryTimeframe24Weeks toStf4w(String id, HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
+    public StatutoryTimeframe24Weeks toStf24w(String historyId, YesOrNo status, HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
         
-        boolean isYes = hoStatutoryTimeframeDto.getStf24weeks().getStatus().equalsIgnoreCase("yes");
-        YesOrNo status = isYes ? YesOrNo.YES : YesOrNo.NO;
-        String cohorts = Arrays.stream(hoStatutoryTimeframeDto.getStf24weeks().getCohorts()).collect(Collectors.joining(","));
-        String dateTimeAdded = hoStatutoryTimeframeDto.getTimeStamp().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        String dateTimeAdded = hoStatutoryTimeframeDto.getTimeStamp().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         
         StatutoryTimeframe24WeeksHistory historyEntry = new StatutoryTimeframe24WeeksHistory(
             status,
@@ -185,13 +186,16 @@ public class CcdDataService {
         );
 
         List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList = new ArrayList<>();
-        historyList.add(new IdValue<>(id, historyEntry));
+        historyList.add(new IdValue<>(historyId, historyEntry));
 
-        log.debug("new StatutoryTimeframe24Weeks created with status: {}, cohorts: {}, history size: {}",
-                 status, cohorts, historyList.size());
+        log.debug("new StatutoryTimeframe24Weeks.history created with status: {}, date-time added: {} and history size: {}",
+                 status, dateTimeAdded, historyList.size());
+        log.debug("new StatutoryTimeframe24Weeks.homeOfficeResponse created: {}",
+                 hoStatutoryTimeframeDto);
 
         return new StatutoryTimeframe24Weeks(
-            historyList
+            historyList,
+            hoStatutoryTimeframeDto
         );
         
     }
@@ -229,8 +233,6 @@ public class CcdDataService {
         String caseId) {
         
         if (!newHistoryId.equals("1")) {
-
-            
             String errorMessage = String.format(
                 "Statutory timeframe status has already been set for caseId: %s",
                 caseId
