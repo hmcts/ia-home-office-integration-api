@@ -17,6 +17,8 @@ java:
     POSTGRES_USERNAME: ia_case_api
     POSTGRES_PASSWORD: ${IA_CASE_API_POSTGRES_PASSWORD}
     POSTGRES_CONNECTION_OPTIONS: "?sslmode=require"
+    APP_PUBLIC_IP_ENABLED: true
+    ANOTHER_ENV_VAR: "willThisAppear"
     
   keyVaults:
     ia:
