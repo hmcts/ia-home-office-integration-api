@@ -275,7 +275,7 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
                                 getFormattedDecisionDate(p.getApplicationStatus().getDecisionDate())));
 
             } catch (Exception e) {
-                log.warn("Unable to find MAIN APPLICANT in Home office response, caseId: {}", caseId, e);
+                log.warn("Unable to find MAIN APPLICANT in Home office response, caseId: {}; message: {}", caseId, e.getMessage());
             }
         }
         return searchStatus;
@@ -296,7 +296,7 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
                         .findAny();
 
             } catch (Exception e) {
-                log.warn("Unable to find APPLICANT in Home office response, caseId: {}", caseId, e);
+                log.warn("Unable to find APPLICANT in Home office response, caseId: {}; message: {}", caseId, e.getMessage());
             }
         }
         return Optional.empty();
@@ -310,7 +310,7 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
                         "APPEALABLE".equalsIgnoreCase(metadata1.getCode())).findFirst();
 
             } catch (Exception e) {
-                log.warn("Unable to find APPEALABLE metadata in Home office response, caseId: {}", caseId, e);
+                log.warn("Unable to find APPEALABLE metadata in Home office response, caseId: {}; message: {}", caseId, e.getMessage());
             }
         }
         return Optional.empty();

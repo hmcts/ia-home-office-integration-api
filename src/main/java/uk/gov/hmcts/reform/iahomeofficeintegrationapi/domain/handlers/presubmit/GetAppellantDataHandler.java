@@ -156,7 +156,7 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
             // Send the HTTP status code back to the ia-case-api service by writing it in the case record
             asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, exception.getHttpStatus());
         } catch (RetriesExceededException ex) {
-            log.warn("Retries exhausted calling Home Office", ex);
+            log.warn("Retries exhausted calling Home Office: message - {}", ex.getMessage());
             asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, -1);
         }
 

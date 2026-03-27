@@ -59,7 +59,7 @@ public class IdamService {
             amRoles = roleAssignmentService.getAmRolesFromUser(userInfo.getUid(), accessToken);
         } catch (Exception e) {
             if (idamRoles.stream().anyMatch(amOnboardedRoles::contains)) {
-                log.error("Error fetching AM roles for user: {}", userInfo.getUid(), e);
+                log.error("Error fetching AM roles for user: {}; message: {}", userInfo.getUid(), e.getMessage());
             }
         }
         List<String> roles = Stream.concat(amRoles.stream(), idamRoles.stream()).toList();

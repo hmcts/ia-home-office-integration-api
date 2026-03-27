@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import java.io.Serial;
@@ -19,6 +21,8 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class UserInfo implements Serializable {
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public class UserInfo {
 
     @Serial
     private static final long serialVersionUID = 1L;

@@ -28,7 +28,7 @@ ia-home-office-integration-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-435
+    image: hmctsprod.azurecr.io/ia/home-office-integration-api:pr-435
 ```
 
 3. Ensure in `src/main/resources/application.yaml` you have:
