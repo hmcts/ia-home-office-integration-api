@@ -119,9 +119,42 @@ public class CcdDataService {
             eventData.put(STF_24W_CURRENT_STATUS_AUTO_GENERATED.value(), status);
             eventData.put(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value(), status);
             eventData.put(STF_24W_CURRENT_REASON_AUTO_GENERATED.value(), STATUTORY_TIMEFRAME_REASON);
-            eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf24w(newHistoryId, status, hoStatutoryTimeframeDto));
+            StatutoryTimeframe24Weeks stf24w = toStf24w(newHistoryId, status, hoStatutoryTimeframeDto);
+            eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), stf24w);
+            //eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf24w(newHistoryId, status, hoStatutoryTimeframeDto));
             log.debug("Event data to be submitted: {}", eventData);
-            
+
+
+            Optional<String> test1 = asylumCase.read(STF_24W_CURRENT_REASON_AUTO_GENERATED, String.class);
+            log.info("STF_24W_CURRENT_REASON_AUTO_GENERATED: {}", test1);
+            Optional<YesOrNo> test2 = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
+            log.info("STF_24W_CURRENT_STATUS_AUTO_GENERATED: {}", test2);
+            Optional<YesOrNo> test3 = asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class);
+            log.info("STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED: {}", test3);
+            Optional<StatutoryTimeframe24Weeks> test4 = asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS, StatutoryTimeframe24Weeks.class);
+            log.info("STATUTORY_TIMEFRAME_24_WEEKS: {}", test4);
+
+            log.info("----------------------------------------------");
+            log.info("----------------------------------------------");
+
+            log.info("STF_24W_CURRENT_REASON_AUTO_GENERATED: {}", STATUTORY_TIMEFRAME_REASON);
+            log.info("STF_24W_CURRENT_STATUS_AUTO_GENERATED: {}", status);
+            log.info("STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED: {}", status);
+            log.info("STATUTORY_TIMEFRAME_24_WEEKS: {}", stf24w);
+
+            log.info("----------------------------------------------");
+            log.info("----------------------------------------------");
+
+            String test5 = (String) eventData.get(STF_24W_CURRENT_REASON_AUTO_GENERATED.value());
+            log.info("STF_24W_CURRENT_REASON_AUTO_GENERATED: {}", test5);
+            YesOrNo test6 = (YesOrNo) eventData.get(STF_24W_CURRENT_STATUS_AUTO_GENERATED.value());
+            log.info("STF_24W_CURRENT_STATUS_AUTO_GENERATED: {}", test6);
+            YesOrNo test7 = (YesOrNo) eventData.get(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value());
+            log.info("STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED: {}", test7);
+            StatutoryTimeframe24Weeks test8 = (StatutoryTimeframe24Weeks) eventData.get(STATUTORY_TIMEFRAME_24_WEEKS.value());
+            log.info("STATUTORY_TIMEFRAME_24_WEEKS: {}", test8);
+
+
             SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, eventData, startEventDetails.getToken(), eventId, true);
 
             log.info("Home Office statutory timeframe status updated for the caseId: {}, Status: {}, Message: {}", caseId,
@@ -164,7 +197,7 @@ public class CcdDataService {
             new CaseDataContent(caseId, eventData, eventMetadata, eventToken, ignoreWarning);
 
         log.debug("CaseDataContent Request - caseReference: {}", requestBody.getCaseReference());
-        log.debug("CaseDataContent Request - data: {}", requestBody.getData());
+        log.info("CaseDataContent Request - data: {}", requestBody.getData());
         log.debug("CaseDataContent Request - event: {}", requestBody.getEvent());
         log.debug("CaseDataContent Request - ignoreWarning: {}", requestBody.isIgnoreWarning());
         
