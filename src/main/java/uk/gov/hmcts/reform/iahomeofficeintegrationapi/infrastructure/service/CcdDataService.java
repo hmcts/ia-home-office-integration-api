@@ -197,7 +197,7 @@ public class CcdDataService {
             new CaseDataContent(caseId, eventData, eventMetadata, eventToken, ignoreWarning);
 
         log.debug("CaseDataContent Request - caseReference: {}", requestBody.getCaseReference());
-        log.info("CaseDataContent Request - data: {}", requestBody.getData());
+        log.debug("CaseDataContent Request - data: {}", requestBody.getData());
         log.debug("CaseDataContent Request - event: {}", requestBody.getEvent());
         log.debug("CaseDataContent Request - ignoreWarning: {}", requestBody.isIgnoreWarning());
         
