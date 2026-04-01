@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -78,12 +79,12 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
                 .familyName("Smith")
                 .givenNames("John")
                 .dateOfBirth(LocalDate.of(1990, 1, 15))
-                .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[] {
+                .stf24weekCohorts(List.of(
                     HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                         .name("cohortA")
-                        .included(true)
+                        .included("true")
                         .build()
-                })
+                ))
                 .timeStamp(OffsetDateTime.now())
                 .build();
 

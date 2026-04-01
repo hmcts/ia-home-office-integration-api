@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -35,12 +36,12 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
-                    .included(true)
+                    .included("true")
                     .build()
-            })
+            ))
             .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC))
             .build();
 
@@ -60,12 +61,12 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
-                    .included(true)
+                    .included("true")
                     .build()
-            })
+            ))
             .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC))
             .build();
 
@@ -89,12 +90,12 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
-                    .included(true)
+                    .included("true")
                     .build()
-            })
+            ))
             .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC))
             .build();
 
@@ -118,12 +119,12 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
-                    .included(true)
+                    .included("true")
                     .build()
-            })
+            ))
             .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC))
             .build();
 
@@ -145,12 +146,12 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName("Doe")
             .givenNames("Jane")
             .dateOfBirth(LocalDate.of(1985, 5, 15))
-            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
-                    .included(true)
+                    .included("true")
                     .build()
-            })
+            ))
             .timeStamp(OffsetDateTime.of(2024, 1, 15, 10, 20, 30, 0, ZoneOffset.UTC))
             .build();
 
@@ -170,12 +171,12 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName(null)
             .givenNames(null)
             .dateOfBirth(null)
-            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
-                    .included(true)
+                    .included("true")
                     .build()
-            })
+            ))
             .timeStamp(null)
             .build();
 

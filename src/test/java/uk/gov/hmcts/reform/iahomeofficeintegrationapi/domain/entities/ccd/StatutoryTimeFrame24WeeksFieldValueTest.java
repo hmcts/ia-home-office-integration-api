@@ -35,12 +35,12 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
-                    .included(true)
+                    .included("true")
                     .build()
-            })
+            ))
             .timeStamp(OffsetDateTime.parse("2024-01-01T10:00:00Z"))
             .build();
        
@@ -60,7 +60,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         assertNotNull(statutoryTimeFrame24WeeksFieldValue.getHomeOfficeResponse());
         assertEquals("PA/12345/2026", statutoryTimeFrame24WeeksFieldValue.getHomeOfficeResponse().getHmctsReferenceNumber());
         assertEquals("John", statutoryTimeFrame24WeeksFieldValue.getHomeOfficeResponse().getGivenNames());
-        assertEquals(1, statutoryTimeFrame24WeeksFieldValue.getHomeOfficeResponse().getStf24weekCohorts().length);
+        assertEquals(1, statutoryTimeFrame24WeeksFieldValue.getHomeOfficeResponse().getStf24weekCohorts().size());
     }
 
     @Test
@@ -82,12 +82,12 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
-                    .included(true)
+                    .included("true")
                     .build()
-            })
+            ))
             .timeStamp(OffsetDateTime.parse("2024-01-01T10:00:00Z"))
             .build();
 
@@ -113,10 +113,10 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         assertEquals(homeOfficeResponse.getGivenNames(), "John");
         assertEquals(homeOfficeResponse.getDateOfBirth(), LocalDate.of(1990, 1, 1));
         assertNotNull(homeOfficeResponse.getStf24weekCohorts());
-        assertEquals(1, homeOfficeResponse.getStf24weekCohorts().length);
-        var cohort = homeOfficeResponse.getStf24weekCohorts()[0];
+        assertEquals(1, homeOfficeResponse.getStf24weekCohorts().size());
+        var cohort = homeOfficeResponse.getStf24weekCohorts().get(0);
         assertEquals(cohort.getName(), "HU");
-        assertEquals(cohort.isIncluded(), true);
+        assertEquals(cohort.getIncluded(), "true");
         assertEquals(homeOfficeResponse.getHmctsReferenceNumber(), "PA/12345/2026");
         assertEquals(homeOfficeResponse.getTimeStamp(), OffsetDateTime.parse("2024-01-01T10:00:00Z"));
 

@@ -83,12 +83,12 @@ class CcdDataServiceTest {
         dto = new HomeOfficeStatutoryTimeframeDto();
         dto.setHmctsReferenceNumber(HMCTS_REF_NUM);
 
-        dto.setStf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{
+        dto.setStf24weekCohorts(List.of(
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included(true)
+                .included("true")
                 .build()
-        });
+        ));
 
         dto.setTimeStamp(
             OffsetDateTime.of(2024,1,1,12,0,0,0, ZoneOffset.UTC)
@@ -214,12 +214,12 @@ class CcdDataServiceTest {
     @Test
     void shouldSetStatusNoWhenNoCohortsIncluded() {
 
-        dto.setStf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{
+        dto.setStf24weekCohorts(List.of(
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included(false)
+                .included("false")
                 .build()
-        });
+        ));
 
         when(idamService.getServiceUserToken()).thenReturn("user");
         when(serviceAuthorization.generate()).thenReturn("s2s");

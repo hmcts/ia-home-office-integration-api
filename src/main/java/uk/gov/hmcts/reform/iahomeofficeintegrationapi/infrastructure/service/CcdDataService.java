@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +69,7 @@ public class CcdDataService {
 
     public SubmitEventDetails setHomeOfficeStatutoryTimeframeStatus(HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
         // This caters for cases where no cohort information is returned (which we interpret as "No")
-        boolean isYes = Arrays.stream(hoStatutoryTimeframeDto.getStf24weekCohorts()).anyMatch(cohort -> cohort.isIncluded());
+        boolean isYes = hoStatutoryTimeframeDto.getStf24weekCohorts().stream().anyMatch(cohort -> Boolean.parseBoolean(cohort.getIncluded()));
         Event event = isYes 
             ? Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS
             : Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS;
@@ -111,10 +110,16 @@ public class CcdDataService {
             checkStatusNotAlreadySet(newHistoryId, existingData, caseId);
 
             Map<String, Object> eventData = new HashMap<>();
+            // Ugly hack to work around a CCD bug where event data properties with collection values are not being written to the case record
+            // Reinstate this code if the CCD bug is ever fixed (yeah, I know) and make the corresponding change in ia-case-api
+            // eventData.put(STF_24W_HOME_OFFICE_COHORT.value(), 
+            //               hoStatutoryTimeframeDto.getStf24weekCohorts().stream()
+            //               .filter(cohort -> cohort.isIncluded())
+            //               .map(cohort -> cohort.getName()).collect(Collectors.joining(",")));
+            // Remove this code if the CCD bug is ever fixed and make the corresponding change in ia-case-api
             eventData.put(STF_24W_HOME_OFFICE_COHORT.value(), 
-                          Arrays.stream(hoStatutoryTimeframeDto.getStf24weekCohorts())
-                          .filter(cohort -> cohort.isIncluded())
-                          .map(cohort -> cohort.getName()).collect(Collectors.joining(",")));
+                          hoStatutoryTimeframeDto.getStf24weekCohorts().stream()
+                          .map(cohort -> cohort.getName() + "=" + cohort.getIncluded()).collect(Collectors.joining(",")));
             YesOrNo status = isYes ? YesOrNo.YES : YesOrNo.NO;
             eventData.put(STF_24W_CURRENT_STATUS_AUTO_GENERATED.value(), status);
             eventData.put(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value(), status);
@@ -123,37 +128,6 @@ public class CcdDataService {
             eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), stf24w);
             //eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), toStf24w(newHistoryId, status, hoStatutoryTimeframeDto));
             log.debug("Event data to be submitted: {}", eventData);
-
-
-            Optional<String> test1 = asylumCase.read(STF_24W_CURRENT_REASON_AUTO_GENERATED, String.class);
-            log.info("STF_24W_CURRENT_REASON_AUTO_GENERATED: {}", test1);
-            Optional<YesOrNo> test2 = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
-            log.info("STF_24W_CURRENT_STATUS_AUTO_GENERATED: {}", test2);
-            Optional<YesOrNo> test3 = asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class);
-            log.info("STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED: {}", test3);
-            Optional<StatutoryTimeframe24Weeks> test4 = asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS, StatutoryTimeframe24Weeks.class);
-            log.info("STATUTORY_TIMEFRAME_24_WEEKS: {}", test4);
-
-            log.info("----------------------------------------------");
-            log.info("----------------------------------------------");
-
-            log.info("STF_24W_CURRENT_REASON_AUTO_GENERATED: {}", STATUTORY_TIMEFRAME_REASON);
-            log.info("STF_24W_CURRENT_STATUS_AUTO_GENERATED: {}", status);
-            log.info("STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED: {}", status);
-            log.info("STATUTORY_TIMEFRAME_24_WEEKS: {}", stf24w);
-
-            log.info("----------------------------------------------");
-            log.info("----------------------------------------------");
-
-            String test5 = (String) eventData.get(STF_24W_CURRENT_REASON_AUTO_GENERATED.value());
-            log.info("STF_24W_CURRENT_REASON_AUTO_GENERATED: {}", test5);
-            YesOrNo test6 = (YesOrNo) eventData.get(STF_24W_CURRENT_STATUS_AUTO_GENERATED.value());
-            log.info("STF_24W_CURRENT_STATUS_AUTO_GENERATED: {}", test6);
-            YesOrNo test7 = (YesOrNo) eventData.get(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value());
-            log.info("STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED: {}", test7);
-            StatutoryTimeframe24Weeks test8 = (StatutoryTimeframe24Weeks) eventData.get(STATUTORY_TIMEFRAME_24_WEEKS.value());
-            log.info("STATUTORY_TIMEFRAME_24_WEEKS: {}", test8);
-
 
             SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, eventData, startEventDetails.getToken(), eventId, true);
 
