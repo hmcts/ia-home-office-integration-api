@@ -69,7 +69,7 @@ public class CcdDataService {
 
     public SubmitEventDetails setHomeOfficeStatutoryTimeframeStatus(HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
         // This caters for cases where no cohort information is returned (which we interpret as "No")
-        boolean isYes = hoStatutoryTimeframeDto.getStf24weekCohorts().stream().anyMatch(cohort -> Boolean.parseBoolean(cohort.getIncluded()));
+        boolean isYes = hoStatutoryTimeframeDto.getStf24WeekCohorts().stream().anyMatch(cohort -> Boolean.parseBoolean(cohort.getIncluded()));
         Event event = isYes 
             ? Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS
             : Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS;
@@ -113,12 +113,12 @@ public class CcdDataService {
             // Ugly hack to work around a CCD bug where event data properties with collection values are not being written to the case record
             // Reinstate this code if the CCD bug is ever fixed (yeah, I know) and make the corresponding change in ia-case-api
             // eventData.put(STF_24W_HOME_OFFICE_COHORT.value(), 
-            //               hoStatutoryTimeframeDto.getStf24weekCohorts().stream()
+            //               hoStatutoryTimeframeDto.getStf24WeekCohorts().stream()
             //               .filter(cohort -> cohort.isIncluded())
             //               .map(cohort -> cohort.getName()).collect(Collectors.joining(",")));
             // Remove this code if the CCD bug is ever fixed and make the corresponding change in ia-case-api
             eventData.put(STF_24W_HOME_OFFICE_COHORT.value(), 
-                          hoStatutoryTimeframeDto.getStf24weekCohorts().stream()
+                          hoStatutoryTimeframeDto.getStf24WeekCohorts().stream()
                           .map(cohort -> cohort.getName() + "=" + cohort.getIncluded()).collect(Collectors.joining(",")));
             YesOrNo status = isYes ? YesOrNo.YES : YesOrNo.NO;
             eventData.put(STF_24W_CURRENT_STATUS_AUTO_GENERATED.value(), status);
