@@ -35,7 +35,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24WeekCohorts(List.of(
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
                     .included("true")
@@ -60,7 +60,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         assertNotNull(statutoryTimeFrame24WeeksFieldValue.getHomeOfficeResponse());
         assertEquals("PA/12345/2026", statutoryTimeFrame24WeeksFieldValue.getHomeOfficeResponse().getHmctsReferenceNumber());
         assertEquals("John", statutoryTimeFrame24WeeksFieldValue.getHomeOfficeResponse().getGivenNames());
-        assertEquals(1, statutoryTimeFrame24WeeksFieldValue.getHomeOfficeResponse().getStf24WeekCohorts().size());
+        assertEquals(1, statutoryTimeFrame24WeeksFieldValue.getHomeOfficeResponse().getStf24weekCohorts().size());
     }
 
     @Test
@@ -82,7 +82,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24WeekCohorts(List.of(
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
                     .included("true")
@@ -112,9 +112,9 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         assertEquals(homeOfficeResponse.getFamilyName(), "Smith");
         assertEquals(homeOfficeResponse.getGivenNames(), "John");
         assertEquals(homeOfficeResponse.getDateOfBirth(), LocalDate.of(1990, 1, 1));
-        assertNotNull(homeOfficeResponse.getStf24WeekCohorts());
-        assertEquals(1, homeOfficeResponse.getStf24WeekCohorts().size());
-        var cohort = homeOfficeResponse.getStf24WeekCohorts().get(0);
+        assertNotNull(homeOfficeResponse.getStf24weekCohorts());
+        assertEquals(1, homeOfficeResponse.getStf24weekCohorts().size());
+        var cohort = homeOfficeResponse.getStf24weekCohorts().get(0);
         assertEquals(cohort.getName(), "HU");
         assertEquals(cohort.getIncluded(), "true");
         assertEquals(homeOfficeResponse.getHmctsReferenceNumber(), "PA/12345/2026");

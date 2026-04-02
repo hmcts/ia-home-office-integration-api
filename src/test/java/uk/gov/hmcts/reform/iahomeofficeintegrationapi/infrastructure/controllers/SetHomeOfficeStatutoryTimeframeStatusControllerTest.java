@@ -79,7 +79,7 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
                 .familyName("Smith")
                 .givenNames("John")
                 .dateOfBirth(LocalDate.of(1990, 1, 15))
-                .stf24WeekCohorts(List.of(
+                .stf24weekCohorts(List.of(
                     HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                         .name("cohortA")
                         .included("true")

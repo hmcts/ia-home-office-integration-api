@@ -83,7 +83,7 @@ class CcdDataServiceTest {
         dto = new HomeOfficeStatutoryTimeframeDto();
         dto.setHmctsReferenceNumber(HMCTS_REF_NUM);
 
-        dto.setStf24WeekCohorts(List.of(
+        dto.setStf24weekCohorts(List.of(
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
                 .included("true")
@@ -214,7 +214,7 @@ class CcdDataServiceTest {
     @Test
     void shouldSetStatusNoWhenNoCohortsIncluded() {
 
-        dto.setStf24WeekCohorts(List.of(
+        dto.setStf24weekCohorts(List.of(
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
                 .included("false")
