@@ -112,8 +112,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && Arrays.asList(SUBMIT_APPEAL, PAY_AND_SUBMIT_APPEAL, MARK_APPEAL_PAID).contains(callback.getEvent())
-                && featureToggler.getValue("home-office-uan-feature", false);
+                && Arrays.asList(SUBMIT_APPEAL, PAY_AND_SUBMIT_APPEAL, MARK_APPEAL_PAID).contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

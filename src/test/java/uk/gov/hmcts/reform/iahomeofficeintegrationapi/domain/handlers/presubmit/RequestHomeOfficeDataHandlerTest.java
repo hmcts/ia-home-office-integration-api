@@ -94,7 +94,6 @@ public class RequestHomeOfficeDataHandlerTest {
     @Test
     void handler_should_error_if_appellant_not_selected() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -129,7 +128,6 @@ public class RequestHomeOfficeDataHandlerTest {
     @Test
     void handle_should_return_no_match_if_no_appellant_matched() throws Exception {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -151,7 +149,6 @@ public class RequestHomeOfficeDataHandlerTest {
 
         String hoSearchResponseJsonStr = new ObjectMapper().writeValueAsString(getSampleResponse());
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -176,7 +173,6 @@ public class RequestHomeOfficeDataHandlerTest {
     @Test
     void handler_should_throw_error_for_no_search_response_data() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -199,7 +195,6 @@ public class RequestHomeOfficeDataHandlerTest {
     @Test
     void handler_should_throw_error_for_empty_ho_search_response_data() throws Exception {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -233,7 +228,6 @@ public class RequestHomeOfficeDataHandlerTest {
     @Test
     void it_can_handle_callback() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         for (Event event : Event.values()) {
 
             when(callback.getCaseDetails()).thenReturn(caseDetails);

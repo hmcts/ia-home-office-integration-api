@@ -74,7 +74,6 @@ class GetAppellantDataHandlerTest {
         MockitoAnnotations.openMocks(this);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
     }
 
     @Test
@@ -195,7 +194,6 @@ class GetAppellantDataHandlerTest {
 
     @Test
     void handle_throwsException_whenCannotHandle() {
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(false);
 
         assertThrows(IllegalStateException.class,
             () -> handler.handle(PreSubmitCallbackStage.MID_EVENT, callback));

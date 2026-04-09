@@ -140,7 +140,6 @@ public class RequestHomeOfficeDataPreparerTest {
     @Test
     void handler_should_return_error_for_out_of_country_appeals() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -164,7 +163,6 @@ public class RequestHomeOfficeDataPreparerTest {
         values.add(new Value("NoMatch", "No Match"));
         DynamicList appellantsList = new DynamicList(values.get(0), values);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -197,7 +195,6 @@ public class RequestHomeOfficeDataPreparerTest {
     @Test
     void check_handler_returns_case_data_with_error_status_for_null_fields() throws Exception {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -231,7 +228,6 @@ public class RequestHomeOfficeDataPreparerTest {
         values.add(new Value("NoMatch", "No Match"));
         DynamicList appellantsList = new DynamicList(values.get(0), values);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -269,7 +265,6 @@ public class RequestHomeOfficeDataPreparerTest {
                 new Value("NoMatch", "No Match"));
         DynamicList appellantsList = new DynamicList(values.get(0), values);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -310,7 +305,6 @@ public class RequestHomeOfficeDataPreparerTest {
                 new Value("NoMatch", "No Match"));
         DynamicList appellantsList = new DynamicList(values.get(0), values);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -346,7 +340,6 @@ public class RequestHomeOfficeDataPreparerTest {
         HomeOfficeSearchResponse hoSearchResponse = new HomeOfficeSearchResponse(
                 messageHeader, "someMsgType", Arrays.asList(caseStatus), hoError);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -387,7 +380,6 @@ public class RequestHomeOfficeDataPreparerTest {
     @Test
     void it_can_handle_callback() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         for (Event event : Event.values()) {
 
             when(callback.getCaseDetails()).thenReturn(caseDetails);

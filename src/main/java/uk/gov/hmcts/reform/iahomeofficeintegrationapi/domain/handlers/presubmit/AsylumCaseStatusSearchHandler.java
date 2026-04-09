@@ -109,8 +109,8 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && Arrays.asList(
                 SUBMIT_APPEAL, PAY_AND_SUBMIT_APPEAL, MARK_APPEAL_PAID, REQUEST_HOME_OFFICE_DATA)
-                .contains(callback.getEvent())
-                && !featureToggler.getValue("home-office-uan-feature", false);
+                .contains(callback.getEvent());
+                //&& !featureToggler.getValue("home-office-uan-feature", false);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

@@ -1,6 +1,5 @@
 {
   "description": "RIA-4557 Show only No match if no matching appellants found in the HO response",
-  "launchDarklyKey": "home-office-uan-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",

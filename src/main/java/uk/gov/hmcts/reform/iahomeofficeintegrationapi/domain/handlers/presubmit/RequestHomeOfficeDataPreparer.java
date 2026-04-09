@@ -83,8 +83,7 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-                && callback.getEvent() == REQUEST_HOME_OFFICE_DATA
-                && featureToggler.getValue("home-office-uan-feature", false);
+                && callback.getEvent() == REQUEST_HOME_OFFICE_DATA;
     }
 
 

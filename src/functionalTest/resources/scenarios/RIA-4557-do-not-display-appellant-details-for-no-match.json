@@ -1,6 +1,5 @@
 {
   "description": "RIA-4557 Should display No match if NoMatch is selected",
-  "launchDarklyKey": "home-office-uan-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

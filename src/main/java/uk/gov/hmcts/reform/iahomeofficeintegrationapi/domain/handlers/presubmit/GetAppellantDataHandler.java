@@ -54,7 +54,6 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && featureToggler.getValue("home-office-uan-feature", false)
                 && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL)
                 && (callback.getPageId().equals("homeOfficeReferenceNumber") || 
                     callback.getPageId().equals("oocHomeOfficeReferenceNumber") ||
