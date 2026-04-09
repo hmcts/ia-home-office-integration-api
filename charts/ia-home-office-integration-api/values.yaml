@@ -37,4 +37,9 @@ java:
           alias: IA_SYSTEM_USERNAME
         - name: system-password
           alias: IA_SYSTEM_PASSWORD  
-
+        - name: ia-redis-connection-string
+          alias: IA_REDIS_CONNECTION_STRING
+        - name: ia-redis-access-key
+          alias: IA_REDIS_ACCESS_KEY
+        - name: ia-redis-encryption-key
+          alias: IA_REDIS_ENCRYPTION_KEY
