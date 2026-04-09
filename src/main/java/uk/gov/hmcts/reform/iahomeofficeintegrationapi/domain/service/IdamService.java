@@ -48,7 +48,7 @@ public class IdamService {
         this.roleAssignmentService = roleAssignmentService;
     }
 
-    @Cacheable(value = "userInfoCache", key = "#accessToken")
+    @Cacheable(value = "userInfoCache")
     public UserInfo getUserInfo(String accessToken) {
         UserInfo userInfo = idamApi.userInfo(accessToken);
         List<String> amRoles = Collections.emptyList();
@@ -67,7 +67,7 @@ public class IdamService {
         return userInfo;
     }
 
-    @Cacheable(value = "systemUserTokenCache", key = "'systemUserTokenCache'")
+    @Cacheable(value = "accessTokenCache")
     public String getServiceUserToken() {
         Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
 
@@ -78,7 +78,7 @@ public class IdamService {
         idamAuthDetails.put("username", systemUserName);
         idamAuthDetails.put("password", systemUserPass);
         idamAuthDetails.put("scope", systemUserScope);
-        log.info("System user token expired. Getting a new token in ia-home-offcie-integration-api");
+
         return idamApi.token(idamAuthDetails).getAccessToken();
     }
 

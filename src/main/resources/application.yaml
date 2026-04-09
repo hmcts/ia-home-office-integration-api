@@ -9,17 +9,11 @@ management:
     web:
       base-path: /
       exposure:
-        include: health, info, prometheus, ping
+        include: health, info, prometheus
+
   health:
-    redis:
-      enabled: false  # don't let Redis affect pod health
     probes:
       enabled: true
-    group:
-      readiness:
-        include: ping
-      liveness:
-        include: ping
 
 spring:
   config:
@@ -42,14 +36,10 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
-  data:
-    redis:
-      url: ${IA_REDIS_CONNECTION_STRING:}
-      secret: ${IA_REDIS_ACCESS_KEY:}
-      encryption:
-        key: ${IA_REDIS_ENCRYPTION_KEY:}
-      ssl:
-        enabled: true
+  cache:
+    cache-names: userInfoCache, accessTokenCache
+    caffeine:
+      spec: expireAfterAccess=3600s
 
 security:
   anonymousPaths: ${ANONYMOUS_PATHS:/,/health,/health/liveness,/health/readiness,/loggers/**,/swagger-ui.html,/swagger-resources/**,/v2/api-docs,/webjars/springfox-swagger-ui/**,/favicon.ico}
