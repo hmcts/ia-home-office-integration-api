@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerRe
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeCaseStatus;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeErrorResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHeader;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
@@ -186,9 +186,9 @@ abstract class AbstractNotificationsHandlerTestBase {
         return consumerMap;
     }
 
-    protected HomeOfficeInstructResponse getResponse() {
+    protected HomeOfficeErrorResponse getResponse() {
 
-        return new HomeOfficeInstructResponse(
+        return new HomeOfficeErrorResponse(
             new MessageHeader(
                 new CodeWithDescription("HMCTS", "HM Courts and Tribunal Service"),
                 someCaseReference,

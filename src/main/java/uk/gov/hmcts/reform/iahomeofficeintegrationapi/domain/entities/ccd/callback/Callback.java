@@ -2,16 +2,18 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callb
 
 import static java.util.Objects.requireNonNull;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.util.Optional;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Callback<T extends CaseData> {
 
     @JsonProperty("event_id")
@@ -19,6 +21,8 @@ public class Callback<T extends CaseData> {
 
     private CaseDetails<T> caseDetails;
     private Optional<CaseDetails<T>> caseDetailsBefore = Optional.empty();
+
+    private String pageId = "";
 
     private Callback() {
         // noop -- for deserializer
@@ -56,4 +60,13 @@ public class Callback<T extends CaseData> {
         return caseDetailsBefore;
 
     }
+
+    public String getPageId() {
+        return pageId;
+    }
+
+    public void setPageId(String pageId) {
+        this.pageId = pageId;
+    }
+
 }

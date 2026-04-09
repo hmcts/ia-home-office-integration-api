@@ -8,22 +8,17 @@ import static java.util.Objects.requireNonNull;
 
 @EqualsAndHashCode
 @ToString
-public class StatutoryTimeFrame24WeeksFieldValue {
+public class StatutoryTimeframe24WeeksHistory {
 
     private YesOrNo status;
     private String reason;
     private String user;
     private String dateTimeAdded;
 
-    /**
-     * Creates a new StatutoryTimeFrame24WeeksFieldValue.
-     *
-     * @param status the status
-     * @param reason the reason
-     * @param user the user
-     * @param dateTimeAdded the date and time added in ISO 8601 format (e.g., "2020-06-15T17:35:38Z")
-     */
-    public StatutoryTimeFrame24WeeksFieldValue(
+    private StatutoryTimeframe24WeeksHistory() {
+    }
+
+    public StatutoryTimeframe24WeeksHistory(
         YesOrNo status,
         String reason,
         String user,
@@ -42,6 +37,7 @@ public class StatutoryTimeFrame24WeeksFieldValue {
     public String getReason() {
         return requireNonNull(reason);
     }
+
 
     public String getUser() {
         return requireNonNull(user);

@@ -1,12 +1,10 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeErrorResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeInstructApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.RetriesExceededException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AccessTokenProvider;
@@ -18,22 +16,19 @@ public class HomeOfficeInstructService {
 
     private final HomeOfficeInstructApi homeOfficeInstructApi;
     private final AccessTokenProvider accessTokenProvider;
-    private final ObjectMapper objectMapper;
 
     public HomeOfficeInstructService(
         HomeOfficeInstructApi homeOfficeInstructApi,
-        @Qualifier("homeOffice") AccessTokenProvider accessTokenProvider,
-        ObjectMapper objectMapper) {
+        @Qualifier("homeOffice") AccessTokenProvider accessTokenProvider) {
         this.homeOfficeInstructApi = homeOfficeInstructApi;
         this.accessTokenProvider = accessTokenProvider;
-        this.objectMapper = objectMapper;
     }
 
     public String sendNotification(
         HomeOfficeInstruct request
     ) {
 
-        HomeOfficeInstructResponse instructResponse;
+        HomeOfficeErrorResponse instructResponse;
         String status;
         final String correlationId = request.getMessageHeader().getCorrelationId();
         final String caseId = request.getConsumerReference().getValue();
@@ -42,7 +37,6 @@ public class HomeOfficeInstructService {
         final String logMessage = "message type: {} and correlation ID: {}";
         try {
             final String accessToken = accessTokenProvider.getAccessToken();
-            ObjectWriter objectWriter = this.objectMapper.writer().withDefaultPrettyPrinter();
             log.info(
                 "HomeOffice-Notification request is to be sent for caseId: {},  reference number: {}, "
                 + logMessage,
@@ -80,8 +74,7 @@ public class HomeOfficeInstructService {
                 homeOfficeReferenceNumber,
                 messageType,
                 correlationId,
-                e.getMessage(),
-                e);
+                e.getMessage());
             status = "FAIL";
 
         } catch (Exception e) {
@@ -91,8 +84,7 @@ public class HomeOfficeInstructService {
                 homeOfficeReferenceNumber,
                 messageType,
                 correlationId,
-                e.getMessage(),
-                e);
+                e.getMessage());
 
             status = "FAIL";
         }

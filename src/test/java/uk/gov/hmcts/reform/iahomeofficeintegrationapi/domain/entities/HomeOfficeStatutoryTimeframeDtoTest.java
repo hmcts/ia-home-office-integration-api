@@ -1,25 +1,38 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class HomeOfficeStatutoryTimeframeDtoTest {
 
-    private final String id = "id";
-    private final String ccdCaseNumber = "1627506765384548";
-    private final String uan = "1234-2345-3456-4567";
-    private final String familyName = "Goode";
-    private final String givenNames = "Ebeneezer Alan";
-    private final LocalDate dateOfBirth = LocalDate.parse("1954-06-07");
-    private final boolean hoStatutoryTimeframeStatus = true;
-    private final LocalDate timeStamp = LocalDate.parse("2023-01-01");
+    private String ccdCaseId;
+    private String uan;
+    private String familyName;
+    private String givenNames;
+    private LocalDate dateOfBirth;
+    private boolean hoStatutoryTimeframeStatus;
+    private LocalDateTime timeStamp;
 
     private HomeOfficeStatutoryTimeframeDto homeOfficeStatutoryTimeframeDtoDto;
+
+    @BeforeEach
+    void setUp() {
+        ccdCaseId = "1234567890123456L";
+        uan = "UAN123456";
+        familyName = "Smith";
+        givenNames = "John";
+        dateOfBirth = LocalDate.of(1990, 1, 1);
+        hoStatutoryTimeframeStatus = true;
+        timeStamp = LocalDateTime.of(2023, 12, 1, 14, 30, 0);
+    }
 
     @Test
     void should_test_equals_contract() {
@@ -33,23 +46,25 @@ class HomeOfficeStatutoryTimeframeDtoTest {
     void should_hold_onto_values() {
 
         homeOfficeStatutoryTimeframeDtoDto = HomeOfficeStatutoryTimeframeDto.builder()
-            .id(id)
-            .ccdCaseNumber(ccdCaseNumber)
+            .ccdCaseId(ccdCaseId)
             .uan(uan)
             .familyName(familyName)
             .givenNames(givenNames)
             .dateOfBirth(dateOfBirth)
-            .hoStatutoryTimeframeStatus(hoStatutoryTimeframeStatus)
+            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
+                .status(hoStatutoryTimeframeStatus ? "Yes" : "No")
+                .cohorts(new String[]{"HU"})
+                .build())
             .timeStamp(timeStamp)
             .build();
 
-        assertEquals(id, homeOfficeStatutoryTimeframeDtoDto.getId());
-        assertEquals(ccdCaseNumber, homeOfficeStatutoryTimeframeDtoDto.getCcdCaseNumber());
+        assertEquals(ccdCaseId, homeOfficeStatutoryTimeframeDtoDto.getCcdCaseId());
         assertEquals(uan, homeOfficeStatutoryTimeframeDtoDto.getUan());
         assertEquals(familyName, homeOfficeStatutoryTimeframeDtoDto.getFamilyName());
         assertEquals(givenNames, homeOfficeStatutoryTimeframeDtoDto.getGivenNames());
         assertEquals(dateOfBirth, homeOfficeStatutoryTimeframeDtoDto.getDateOfBirth());
-        assertEquals(hoStatutoryTimeframeStatus, homeOfficeStatutoryTimeframeDtoDto.isHoStatutoryTimeframeStatus());
+        assertEquals(hoStatutoryTimeframeStatus ? "Yes" : "No", homeOfficeStatutoryTimeframeDtoDto.getStf24weeks().getStatus());
+        assertArrayEquals(new String[]{"HU"}, homeOfficeStatutoryTimeframeDtoDto.getStf24weeks().getCohorts());
         assertEquals(timeStamp, homeOfficeStatutoryTimeframeDtoDto.getTimeStamp());
     }
 

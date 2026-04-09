@@ -8,6 +8,9 @@ class EventTest {
 
     @Test
     void has_correct_values() {
+
+        assertEquals("startAppeal", Event.START_APPEAL.toString());
+        assertEquals("editAppeal", Event.EDIT_APPEAL.toString());
         assertEquals("submitAppeal", Event.SUBMIT_APPEAL.toString());
         assertEquals("payAndSubmitAppeal", Event.PAY_AND_SUBMIT_APPEAL.toString());
         assertEquals("markAppealPaid", Event.MARK_APPEAL_PAID.toString());
@@ -28,12 +31,12 @@ class EventTest {
         assertEquals("requestResponseAmend", Event.REQUEST_RESPONSE_AMEND.toString());
         assertEquals("changeDirectionDueDate", Event.CHANGE_DIRECTION_DUE_DATE.toString());
         assertEquals("decideFtpaApplication", Event.DECIDE_FTPA_APPLICATION.toString());
-        assertEquals("setHomeOfficeStatutoryTimeframeStatus", Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString());
+        assertEquals("addStatutoryTimeframe24Weeks", Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(22, Event.values().length);
+        assertEquals(25, Event.values().length);
     }
 }

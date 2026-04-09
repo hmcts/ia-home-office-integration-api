@@ -27,6 +27,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 class FeignErrorDecoderTest {
@@ -159,6 +160,46 @@ class FeignErrorDecoderTest {
             + "}";
 
         return errorResponse.getBytes();
+    }
+
+    @Test
+    void should_decode_for_404_ccd_api_case_not_found() {
+        String ccdErrorResponse = "{\"exception\":\"uk.gov.hmcts.ccd.endpoint.exceptions.BadRequestException\","
+            + "\"status\":400,\"error\":\"Bad Request\",\"message\":\"Case ID is not valid\","
+            + "\"path\":\"/cases/123/event-triggers/addStatutoryTimeframe24Weeks\"}";
+
+        response = builder()
+            .status(400)
+            .reason("Bad request")
+            .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
+                    Request.Body.empty(), null))
+            .body(ccdErrorResponse.getBytes())
+            .build();
+
+        Exception exception = feignErrorDecoder.decode("CcdDataApi#startEventByCase", response);
+        // CCD returns 400 "Case ID is not valid" when case not found - should be treated as 404
+        assertEquals(ResponseStatusException.class, exception.getClass());
+        ResponseStatusException responseStatusException = (ResponseStatusException) exception;
+        assertEquals(HttpStatus.NOT_FOUND, responseStatusException.getStatus());
+        assertTrue(exception.getMessage().contains("Case ID is not valid"));
+    }
+
+    @Test
+    void should_decode_for_400_ccd_api_other_error() {
+        String ccdErrorResponse = "{\"exception\":\"some.Exception\","
+            + "\"status\":400,\"error\":\"Bad Request\",\"message\":\"Some other CCD error\"}";
+
+        response = builder()
+            .status(400)
+            .reason("Bad request")
+            .request(create(HttpMethod.GET, "/api", Collections.emptyMap(),
+                    Request.Body.empty(), null))
+            .body(ccdErrorResponse.getBytes())
+            .build();
+
+        Exception exception = feignErrorDecoder.decode("CcdDataApi#submitEvent", response);
+        assertEquals(HomeOfficeResponseException.class, exception.getClass());
+        assertTrue(exception.getMessage().contains("Some other CCD error"));
     }
 
     @ParameterizedTest

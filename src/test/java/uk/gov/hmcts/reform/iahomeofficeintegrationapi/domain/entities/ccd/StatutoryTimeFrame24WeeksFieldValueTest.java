@@ -2,115 +2,65 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 class StatutoryTimeFrame24WeeksFieldValueTest {
 
-    private StatutoryTimeFrame24WeeksFieldValue statutoryTimeFrame24WeeksFieldValue;
+    private StatutoryTimeframe24Weeks statutoryTimeFrame24WeeksFieldValue;
 
     @Test
     void has_correct_values() {
-
-        statutoryTimeFrame24WeeksFieldValue = new StatutoryTimeFrame24WeeksFieldValue(
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList = new ArrayList<>();
+        historyList.add(new IdValue<>("1", new StatutoryTimeframe24WeeksHistory(
             YesOrNo.YES,
             "Test reason",
             "Test user",
             "2024-01-01T10:00:00Z"
+        )));
+
+        statutoryTimeFrame24WeeksFieldValue = new StatutoryTimeframe24Weeks(
+            historyList
         );
         
-        assertEquals(YesOrNo.YES, statutoryTimeFrame24WeeksFieldValue.getStatus());
-        assertEquals("Test reason", statutoryTimeFrame24WeeksFieldValue.getReason());
-        assertEquals("Test user", statutoryTimeFrame24WeeksFieldValue.getUser());
-        assertEquals("2024-01-01T10:00:00Z", statutoryTimeFrame24WeeksFieldValue.getDateTimeAdded());
+        assertNotNull(statutoryTimeFrame24WeeksFieldValue.getHistory());
+        assertEquals(1, statutoryTimeFrame24WeeksFieldValue.getHistory().size());
+        
+        StatutoryTimeframe24WeeksHistory history = statutoryTimeFrame24WeeksFieldValue.getHistory().get(0).getValue();
+        assertEquals("Test reason", history.getReason());
+        assertEquals("Test user", history.getUser());
+        assertEquals("2024-01-01T10:00:00Z", history.getDateTimeAdded());
     }
 
     @Test
     void should_create_object_with_all_fields() {
         YesOrNo status = YesOrNo.YES;
         String reason = "Test reason";
+
         String user = "Test user";
         String dateAdded = "2023-01-01T10:00:00Z";
 
-        StatutoryTimeFrame24WeeksFieldValue fieldValue = new StatutoryTimeFrame24WeeksFieldValue(
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList = new ArrayList<>();
+        historyList.add(new IdValue<>("1", new StatutoryTimeframe24WeeksHistory(
             status, reason, user, dateAdded
+        )));
+
+        StatutoryTimeframe24Weeks fieldValue = new StatutoryTimeframe24Weeks(historyList
         );
 
-        assertEquals(status, fieldValue.getStatus());
-        assertEquals(reason, fieldValue.getReason());
-        assertEquals(user, fieldValue.getUser());
-        assertEquals(dateAdded, fieldValue.getDateTimeAdded());
-    }
-
-    @Test
-    void equals_should_return_true_for_same_values() {
-        StatutoryTimeFrame24WeeksFieldValue fieldValue1 = new StatutoryTimeFrame24WeeksFieldValue(
-            YesOrNo.YES,
-            "Test reason",
-            "Test user",
-            "2024-01-01T10:00:00Z"
-        );
-
-        StatutoryTimeFrame24WeeksFieldValue fieldValue2 = new StatutoryTimeFrame24WeeksFieldValue(
-            YesOrNo.YES,
-            "Test reason",
-            "Test user",
-            "2024-01-01T10:00:00Z"
-        );
-
-        assertTrue(fieldValue1.equals(fieldValue2));
-    }
-
-    @Test
-    void toString_should_return_string_representation() {
-        statutoryTimeFrame24WeeksFieldValue = new StatutoryTimeFrame24WeeksFieldValue(
-            YesOrNo.YES,
-            "Test reason",
-            "Test user",
-            "2024-01-01T10:00:00Z"
-        );
-
-        String result = statutoryTimeFrame24WeeksFieldValue.toString();
-
-        assertNotNull(result);
-    }
-
-    @Test
-    void should_be_equal_when_all_fields_are_same() {
-        StatutoryTimeFrame24WeeksFieldValue value1 = new StatutoryTimeFrame24WeeksFieldValue(
-            YesOrNo.YES, "reason1", "user1", "2020-06-15T17:35:38Z"
-        );
-        StatutoryTimeFrame24WeeksFieldValue value2 = new StatutoryTimeFrame24WeeksFieldValue(
-            YesOrNo.YES, "reason1", "user1", "2020-06-15T17:35:38Z"
-        );
-
-        assertEquals(value1, value2);
-        assertEquals(value1.hashCode(), value2.hashCode());
-    }
-
-    @Test
-    void should_not_be_equal_when_fields_differ() {
-        StatutoryTimeFrame24WeeksFieldValue value1 = new StatutoryTimeFrame24WeeksFieldValue(
-            YesOrNo.YES, "reason1", "user1", "2020-06-15T17:35:38Z"
-        );
-        StatutoryTimeFrame24WeeksFieldValue value2 = new StatutoryTimeFrame24WeeksFieldValue(
-            YesOrNo.NO, "reason1", "user1", "2020-06-15T17:35:38Z"
-        );
-
-        assertNotEquals(value1, value2);
-    }
-
-    @Test
-    void should_not_be_equal_to_null_or_different_class() {
-        StatutoryTimeFrame24WeeksFieldValue value = new StatutoryTimeFrame24WeeksFieldValue(
-            YesOrNo.YES, "reason1", "user1", "2020-06-15T17:35:38Z"
-        );
-
-        assertNotEquals(value, null);
-        assertNotEquals(value, "string");
+        assertNotNull(fieldValue.getHistory());
+        assertEquals(1, fieldValue.getHistory().size());
+        
+        StatutoryTimeframe24WeeksHistory history = fieldValue.getHistory().get(0).getValue();
+        assertEquals(status, history.getStatus());
+        assertEquals(reason, history.getReason());
+        assertEquals(user, history.getUser());
+        assertEquals(dateAdded, history.getDateTimeAdded());
     }
 }

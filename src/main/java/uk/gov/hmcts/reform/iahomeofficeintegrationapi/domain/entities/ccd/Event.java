@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Event {
+
+    START_APPEAL("startAppeal"),
+    EDIT_APPEAL("editAppeal"),
     SUBMIT_APPEAL("submitAppeal"),
     PAY_AND_SUBMIT_APPEAL("payAndSubmitAppeal"),
     MARK_APPEAL_PAID("markAppealPaid"),
@@ -24,7 +27,8 @@ public enum Event {
     REQUEST_RESPONSE_AMEND("requestResponseAmend"),
     CHANGE_DIRECTION_DUE_DATE("changeDirectionDueDate"),
     DECIDE_FTPA_APPLICATION("decideFtpaApplication"),
-    SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS("setHomeOfficeStatutoryTimeframeStatus"),
+    SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS("addStatutoryTimeframe24Weeks"), 
+    REMOVE_STATUTORY_TIMEFRAME_24_WEEKS("removeStatutoryTimeframe24Weeks"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 

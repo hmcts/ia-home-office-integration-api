@@ -57,13 +57,13 @@ public class FeignErrorDecoder implements ErrorDecoder {
                             }
                         } else {
                             HomeOfficeErrorResponse homeOfficeError = objectMapper.readValue(
-                                    rawResponse, HomeOfficeErrorResponse.class);
+                                rawResponse, HomeOfficeErrorResponse.class);
 
                             if (homeOfficeError != null) {
                                 if (homeOfficeError.getErrorDetail() != null) {
                                     errorCode = homeOfficeError.getErrorDetail().getErrorCode();
                                     errMessage = String.format("Home office error code: %s, message: %s",
-                                            errorCode, homeOfficeError.getErrorDetail().getMessageText());
+                                        errorCode, homeOfficeError.getErrorDetail().getMessageText());
                                 } else {
                                     errMessage = "Home office error detail is null";
                                 }
@@ -72,7 +72,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                     }
 
                     log.info("Error StatusCode: {}, methodKey: {}, reason: {}, message: {}",
-                            response.status(), methodKey, response.reason(), errMessage);
+                        response.status(), methodKey, response.reason(), errMessage);
 
                 } catch (IOException ex) {
                     errMessage = String.format(ERROR_LOG, ex.getMessage());
@@ -89,10 +89,10 @@ public class FeignErrorDecoder implements ErrorDecoder {
                 try {
 
                     log.info("StatusCode: {}, methodKey: {}, reason: {}, message: {}",
-                            response.status(),
-                            methodKey,
-                            response.reason(),
-                            IOUtils.toString(response.body().asReader(Charset.defaultCharset())));
+                        response.status(),
+                        methodKey,
+                        response.reason(),
+                        IOUtils.toString(response.body().asReader(Charset.defaultCharset())));
                 } catch (IOException ex) {
                     log.error(ERROR_LOG, ex.getMessage());
                 }
