@@ -1,19 +1,20 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+
+import org.apache.commons.io.IOUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import feign.Response;
 import feign.RetryableException;
 import feign.codec.ErrorDecoder;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeErrorResponse;
 
-@Component
 @Slf4j
 public class FeignErrorDecoder implements ErrorDecoder {
 
@@ -27,84 +28,91 @@ public class FeignErrorDecoder implements ErrorDecoder {
     @Override
     public Exception decode(String methodKey, Response response) {
         if (methodKey.contains("RoleAssignmentApi")) {
+            // Let the default error decoder handle it
             return new ErrorDecoder.Default().decode(methodKey, response);
         }
-
         switch (response.status()) {
             case 400:
-                return handle400Error(methodKey, response);
-            case 404:
-                return handle404Error(methodKey, response);
-            case 500:
-                return handle500Error(methodKey, response);
-            default:
-                return handleDefaultError(methodKey, response);
-        }
-    }
+                String errMessage = "";
+                String errorCode = "";
+                try {
+                    if (response.body() != null && response.body().asInputStream() != null) {
 
-    private Exception handle400Error(String methodKey, Response response) {
-        String errMessage = "";
-        String errorCode = "";
-        try {
-            if (response.body() != null && response.body().asInputStream() != null) {
-                String rawResponse = IOUtils.toString(response.body().asReader(Charset.defaultCharset()));
-                log.error("Raw 400 response from {}: {}", methodKey, rawResponse);
+                        String rawResponse = IOUtils.toString(response.body().asReader(Charset.defaultCharset()));
+                        log.debug("Raw 400 response from {}: {}", methodKey, rawResponse);
 
-                HomeOfficeInstructResponse homeOfficeError = objectMapper.readValue(rawResponse, HomeOfficeInstructResponse.class);
+                        // Check if this is a CCD API error response
+                        if (methodKey.contains("CcdDataApi")) {
+                            // CCD returns {"message": "Case ID is not valid", ...}
+                            var jsonNode = objectMapper.readTree(rawResponse);
+                            if (jsonNode.has("message")) {
+                                errMessage = jsonNode.get("message").asText();
+                                // CCD returns 400 "Case ID is not valid" when case not found - treat as 404
+                                if (errMessage.contains("Case ID is not valid")) {
+                                    log.info("CCD returned 400 for case not found, treating as 404: {}", errMessage);
+                                    return new ResponseStatusException(HttpStatus.NOT_FOUND, errMessage);
+                                }
+                            } else {
+                                errMessage = rawResponse;
+                            }
+                        } else {
+                            HomeOfficeErrorResponse homeOfficeError = objectMapper.readValue(
+                                    rawResponse, HomeOfficeErrorResponse.class);
 
-                if (homeOfficeError != null) {
-                    if (homeOfficeError.getErrorDetail() != null) {
-                        errorCode = homeOfficeError.getErrorDetail().getErrorCode();
-                        errMessage = String.format("Home office error code: %s, message: %s",
-                                errorCode, homeOfficeError.getErrorDetail().getMessageText());
+                            if (homeOfficeError != null) {
+                                if (homeOfficeError.getErrorDetail() != null) {
+                                    errorCode = homeOfficeError.getErrorDetail().getErrorCode();
+                                    errMessage = String.format("Home office error code: %s, message: %s",
+                                            errorCode, homeOfficeError.getErrorDetail().getMessageText());
+                                } else {
+                                    errMessage = "Home office error detail is null";
+                                }
+                            }
+                        }
                     }
-                } else {
-                    errMessage = "Home office error detail is null";
+
+                    log.info("Error StatusCode: {}, methodKey: {}, reason: {}, message: {}",
+                            response.status(), methodKey, response.reason(), errMessage);
+
+                } catch (IOException ex) {
+                    errMessage = String.format(ERROR_LOG, ex.getMessage());
+                    log.error(ERROR_LOG, ex.getMessage());
                 }
-            }
-        } catch (IOException ex) {
-            errMessage = String.format(ERROR_LOG, ex.getMessage());
-            log.error(ERROR_LOG, ex.getMessage());
+                return new HomeOfficeResponseException(errorCode, String.format(
+                        "StatusCode: %d, methodKey: %s, reason: %s, message: %s",
+                        response.status(),
+                        methodKey,
+                        response.reason(),
+                        errMessage));
+
+            case 404:
+                try {
+
+                    log.info("StatusCode: {}, methodKey: {}, reason: {}, message: {}",
+                            response.status(),
+                            methodKey,
+                            response.reason(),
+                            IOUtils.toString(response.body().asReader(Charset.defaultCharset())));
+                } catch (IOException ex) {
+                    log.error(ERROR_LOG, ex.getMessage());
+                }
+                return new ResponseStatusException(HttpStatus.valueOf(response.status()), response.reason());
+
+            case 500:
+                log.error("StatusCode: {}, methodKey: {}, reason: {}",
+                        response.status(),
+                        methodKey,
+                        response.reason());
+                throw new RetryableException(response.status(), response.reason(), response.request().httpMethod(), null, response.request());
+
+            default:
+                log.error("StatusCode: {}, methodKey: {}, reason: {}",
+                        response.status(),
+                        methodKey,
+                        response.reason()
+                );
+                return new HomeOfficeResponseException(response.reason());
+
         }
-
-        log.error("StatusCode: {}, methodKey: {}, reason: {}, message: {}",
-                response.status(), methodKey, response.reason(), errMessage);
-
-        return new HomeOfficeResponseException(errorCode, String.format(
-                "StatusCode: %d, methodKey: %s, reason: %s, message: %s",
-                response.status(),
-                methodKey,
-                response.reason(),
-                errMessage));
     }
-
-    private Exception handle404Error(String methodKey, Response response) {
-        try {
-            log.error("StatusCode: {}, methodKey: {}, reason: {}, message: {}",
-                    response.status(),
-                    methodKey,
-                    response.reason(),
-                    IOUtils.toString(response.body().asReader(Charset.defaultCharset())));
-        } catch (IOException ex) {
-            log.error(ERROR_LOG, ex.getMessage());
-        }
-        return new ResponseStatusException(HttpStatus.valueOf(response.status()), response.reason());
-    }
-
-    private Exception handle500Error(String methodKey, Response response) {
-        log.error("StatusCode: {}, methodKey: {}, reason: {}",
-                response.status(),
-                methodKey,
-                response.reason());
-        throw new RetryableException(response.status(), response.reason(), response.request().httpMethod(), null, response.request());
-    }
-
-    private Exception handleDefaultError(String methodKey, Response response) {
-        log.error("StatusCode: {}, methodKey: {}, reason: {}",
-                response.status(),
-                methodKey,
-                response.reason());
-        return new HomeOfficeResponseException(response.reason());
-    }
-
 }
