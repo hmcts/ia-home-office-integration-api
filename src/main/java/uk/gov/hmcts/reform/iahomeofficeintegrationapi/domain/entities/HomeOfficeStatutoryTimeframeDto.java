@@ -10,6 +10,10 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,29 +30,56 @@ import lombok.NoArgsConstructor;
 @Data
 public class HomeOfficeStatutoryTimeframeDto {
 
-    private String id;
+    @JsonProperty(value = "ccdCaseId", required = true)
+    @NotNull
+    @Pattern(regexp = "^[0-9]{16}$",  message = "CCD Case ID must be a 16-digit number")
+    private String ccdCaseId;
 
-    @JsonProperty("ccdCaseNumber")
-    private String ccdCaseNumber;
-
-    @JsonProperty("uan")
+    @JsonProperty(value = "uan", required = true)
+    @NotNull
+    @Pattern(regexp = "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$", 
+             message = "UAN must be in format XXXX-XXXX-XXXX-XXXX where X is a digit")
     private String uan;
 
-    @JsonProperty("familyName")
+    @JsonProperty(value = "familyName", required = true)
+    @NotNull
     private String familyName;
 
-    @JsonProperty("givenNames")
+    @JsonProperty(value = "givenNames", required = true)
+    @NotNull
     private String givenNames;
 
-    @JsonProperty("dateOfBirth")
+    @JsonProperty(value = "dateOfBirth", required = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT")
+    @NotNull
     private LocalDate dateOfBirth;
 
-    @JsonProperty("hoStatutoryTimeframeStatus")
-    private boolean hoStatutoryTimeframeStatus;
+    @JsonProperty(value = "stf24weeks", required = true)
+    @NotNull
+    @Valid
+    private Stf24Weeks stf24weeks;
 
-    @JsonProperty("timeStamp")
+    @JsonProperty(value = "timeStamp", required = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "GMT")
-    private LocalDate timeStamp;
+    @NotNull
+    private LocalDateTime timeStamp;
 
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(NON_NULL)
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode
+    @Data
+    public static class Stf24Weeks {
+        @JsonProperty(value = "status", required = true)
+        @NotNull
+        @Pattern(regexp = "^(([Yy][Ee][Ss])|([Nn][Oo]))$", message = "Status must be 'Yes', 'No', 'YES', 'NO', 'yes', or 'no'")
+        private String status;
+
+        @JsonProperty(value = "cohorts", required = true)
+        @NotNull
+        private String[] cohorts;
+    }
 }

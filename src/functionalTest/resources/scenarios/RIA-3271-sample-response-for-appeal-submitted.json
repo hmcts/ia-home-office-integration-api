@@ -9,8 +9,9 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
-          "appellantDateOfBirth": "1995-4-4"
+          "appellantGivenNames": "Capability",
+          "appellantFamilyName": "Smith",
+          "appellantDateOfBirth": "1970-4-21"
         }
       }
     }
@@ -21,8 +22,9 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
-        "appellantDateOfBirth": "1995-4-4",
+        "appellantGivenNames": "Capability",
+        "appellantFamilyName": "Smith",
+        "appellantDateOfBirth": "1970-4-21",
         "homeOfficeSearchStatus": "SUCCESS"
       }
     }

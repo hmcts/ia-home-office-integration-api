@@ -6,15 +6,21 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service.CcdDataService;
 
 @Tag(name = "Set Home Office statutory timeframe status controller")
@@ -52,6 +58,14 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
                     description = "Calling service is not authorised to use this endpoint",
                     content = @Content(schema = @Schema(implementation = String.class))),
                 @ApiResponse(
+                    responseCode = "404",
+                    description = "Case not found",
+                    content = @Content(schema = @Schema(implementation = String.class))),
+                @ApiResponse(
+                    responseCode = "409",
+                    description = "Statutory timeframe status has already been set for this case",
+                    content = @Content(schema = @Schema(implementation = String.class))),
+                @ApiResponse(
                     responseCode = "500",
                     description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = String.class)))
@@ -63,11 +77,44 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SubmitEventDetails> updateHomeOfficeStatutoryTimeframeStatus(
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
-        @RequestBody HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto
+        @Valid @RequestBody HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto
     ) {
         log.info("HTTP POST /home-office-statutory-timeframe-status endpoint called with payload: {}", hoStatutoryTimeframeDto);
         SubmitEventDetails response = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
         return ResponseEntity.status(response.getCallbackResponseStatusCode()).body(response);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
+        log.info("Conflict error: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CaseNotFoundException.class)
+    public ResponseEntity<String> handleCaseNotFoundException(CaseNotFoundException ex) {
+        log.info("Case not found: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"" + ex.getMessage() + "\"}");
+    }
+
+    @ExceptionHandler(HomeOfficeResponseException.class)
+    public ResponseEntity<String> handleHomeOfficeResponseException(HomeOfficeResponseException ex) {
+        String message = ex.getMessage();
+        if (message != null && message.contains("Case ID is not valid")) {
+            log.info("Case not found: {}", message);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Case not found\"}");
+        }
+        log.info("Home Office response error: {}", message);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"" + message + "\"}");
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
+        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+            .map(error -> error.getField() + ": " + error.getDefaultMessage())
+            .reduce((a, b) -> a + ", " + b)
+            .orElse("Validation failed");
+        log.info("Validation error: {}", errorMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"" + errorMessage + "\"}");
     }
 
 }

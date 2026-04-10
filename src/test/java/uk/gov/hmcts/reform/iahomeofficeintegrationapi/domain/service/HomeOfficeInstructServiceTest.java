@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerReference;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstructResponse;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeErrorResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHeader;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceBundleInstructMessage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeInstructApi;
@@ -24,8 +23,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.Ac
 
 @ExtendWith(MockitoExtension.class)
 class HomeOfficeInstructServiceTest {
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
     private HomeOfficeInstructApi homeOfficeInstructApi;
@@ -39,7 +36,7 @@ class HomeOfficeInstructServiceTest {
     public void setUp() {
 
         homeOfficeInstructService = new HomeOfficeInstructService(
-            homeOfficeInstructApi, accessTokenProvider, objectMapper);
+            homeOfficeInstructApi, accessTokenProvider);
     }
 
     @Test
@@ -85,10 +82,10 @@ class HomeOfficeInstructServiceTest {
         return new ConsumerReference("hmcts", new CodeWithDescription("", ""), "HMCTS API", "HMCTS REF");
     }
 
-    private HomeOfficeInstructResponse getResponse() {
+    private HomeOfficeErrorResponse getResponse() {
 
         String someCorrelationId = "some-id";
-        return new HomeOfficeInstructResponse(
+        return new HomeOfficeErrorResponse(
             new MessageHeader(
                 new CodeWithDescription("HMCTS", "HM Courts and Tribunal Service"),
                 someCorrelationId,
