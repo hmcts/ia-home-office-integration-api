@@ -29,7 +29,6 @@ public class IdamAuthoritiesConverter implements Converter<Jwt, Collection<Grant
         this.idamService = idamService;
     }
 
-    @Nullable
     @Override
     public Collection<GrantedAuthority> convert(Jwt jwt) {
 
