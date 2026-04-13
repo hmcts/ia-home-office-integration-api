@@ -28,6 +28,8 @@ def secrets = [
         secret('s2s-microservice', 'IA_S2S_MICROSERVICE'),
         secret('homeoffice-client-id', 'IA_HOMEOFFICE_CLIENT_ID'),
         secret('homeoffice-secret', 'IA_HOMEOFFICE_SECRET'),
+        secret('ia-redis-access-key', 'IA_REDIS_ACCESS_KEY'),
+        secret('ia-redis-connection-string', 'IA_REDIS_CONNECTION_STRING'),
 
         secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
         secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
