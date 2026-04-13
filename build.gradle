@@ -17,7 +17,7 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.7'
-  id 'org.springframework.boot' version '3.2.12'
+  id 'org.springframework.boot' version '3.3.13'
   id 'uk.gov.hmcts.java' version '0.12.50'
   id 'org.owasp.dependencycheck' version '10.0.3'
   id 'com.github.ben-manes.versions' version '0.50.0'
@@ -335,7 +335,7 @@ dependencies {
 
   implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '3.1.1'
 
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.5.0'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
 
   implementation group: 'org.apiguardian', name:'apiguardian-api', version: '1.1.2'
 
@@ -367,7 +367,7 @@ dependencies {
 
   implementation group: 'org.springframework.retry', name: 'spring-retry', version: '2.0.12'
 
-  testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '3.2.12'
+  testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '3.3.13'
 
   testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.23.0'
   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '5.23.0'
