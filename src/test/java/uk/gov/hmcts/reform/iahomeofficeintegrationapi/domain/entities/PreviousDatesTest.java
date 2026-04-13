@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
-import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 

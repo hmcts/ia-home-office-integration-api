@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealDecidedInstructMessage.AppealDecidedInstructMessageBuilder.appealDecidedInstructMessage;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.FTPA_APPLICANT_TYPE;
@@ -9,7 +8,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Mes
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealDecidedInstructMessage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CourtOutcome;
@@ -66,14 +65,14 @@ public class FtpaDecidedNotificationsHelper {
 
 
             if (ftpaApplicantType.equals("appellant")) {
-                ftpaAppealDecision = asylumCase.read(valueOf(format("FTPA_APPELLANT_%sDECISION_OUTCOME_TYPE",
-                    judgePrefix.toUpperCase())), String.class)
+                ftpaAppealDecision = asylumCase.read(valueOf("FTPA_APPELLANT_%sDECISION_OUTCOME_TYPE".formatted(
+                        judgePrefix.toUpperCase())), String.class)
                     .orElse("");
 
             } else if (ftpaApplicantType.equals("respondent")) {
 
-                ftpaAppealDecision = asylumCase.read(valueOf(format("FTPA_RESPONDENT_%sDECISION_OUTCOME_TYPE",
-                    judgePrefix.toUpperCase())), String.class)
+                ftpaAppealDecision = asylumCase.read(valueOf("FTPA_RESPONDENT_%sDECISION_OUTCOME_TYPE".formatted(
+                        judgePrefix.toUpperCase())), String.class)
                     .orElse("");
 
             } else {
@@ -91,7 +90,7 @@ public class FtpaDecidedNotificationsHelper {
                     : getResidentJudgeFtpaOutcome(ftpaAppealDecision);
             }
 
-            if (StringUtils.isEmpty(notificationStatus)) {
+            if (ObjectUtils.isEmpty(notificationStatus)) {
 
                 String note = judgePrefix.isEmpty()
                     ? FtpaAppealDecidedNote.valueOf(
@@ -128,7 +127,7 @@ public class FtpaDecidedNotificationsHelper {
             notificationStatus = "FAIL";
         }
 
-        asylumCase.write(valueOf(format("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS",
+        asylumCase.write(valueOf("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS".formatted(
             ftpaApplicantType.toUpperCase())), notificationStatus);
 
         return notificationStatus;
@@ -171,7 +170,7 @@ public class FtpaDecidedNotificationsHelper {
                 noteId = "REHEARD_" + ftpaApplicantType.toUpperCase();
                 break;
             case "remadeRule32":
-                String remadeDecision = asylumCase.read(valueOf(format("FTPA_%s_DECISION_REMADE_RULE_32",
+                String remadeDecision = asylumCase.read(valueOf("FTPA_%s_DECISION_REMADE_RULE_32".formatted(
                     ftpaApplicantType.toUpperCase())), String.class).orElse("");
                 noteId = "REMADE_" + remadeDecision.toUpperCase();
                 break;

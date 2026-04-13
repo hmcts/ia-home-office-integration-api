@@ -1,12 +1,11 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
-import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 
@@ -57,15 +56,15 @@ class DirectionTest {
     @Test
     void should_hold_onto_values_for_clarifying_questions() {
 
-        Assertions.assertEquals(explanation, directionWithQuestions.getExplanation());
-        Assertions.assertEquals(parties, directionWithQuestions.getParties());
-        Assertions.assertEquals(dateDue, directionWithQuestions.getDateDue());
-        Assertions.assertEquals(dateSent, directionWithQuestions.getDateSent());
-        Assertions.assertEquals(tag, directionWithQuestions.getTag());
-        Assertions.assertEquals(previousDates, directionWithQuestions.getPreviousDates());
-        Assertions.assertEquals(clarifyingQuestions, directionWithQuestions.getClarifyingQuestions());
-        Assertions.assertEquals(uniqueId, directionWithQuestions.getUniqueId());
-        Assertions.assertEquals(directionType, directionWithQuestions.getDirectionType());
+        assertEquals(explanation, directionWithQuestions.getExplanation());
+        assertEquals(parties, directionWithQuestions.getParties());
+        assertEquals(dateDue, directionWithQuestions.getDateDue());
+        assertEquals(dateSent, directionWithQuestions.getDateSent());
+        assertEquals(tag, directionWithQuestions.getTag());
+        assertEquals(previousDates, directionWithQuestions.getPreviousDates());
+        assertEquals(clarifyingQuestions, directionWithQuestions.getClarifyingQuestions());
+        assertEquals(uniqueId, directionWithQuestions.getUniqueId());
+        assertEquals(directionType, directionWithQuestions.getDirectionType());
     }
 
     @Test

@@ -150,9 +150,9 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
             }
 
             if (searchResponse.getErrorDetail() != null) {
-                final String errMessage = String.format("Error code: %s, message: %s",
-                        searchResponse.getErrorDetail().getErrorCode(),
-                        searchResponse.getErrorDetail().getMessageText());
+                final String errMessage = "Error code: %s, message: %s".formatted(
+                    searchResponse.getErrorDetail().getErrorCode(),
+                    searchResponse.getErrorDetail().getMessageText());
                 homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(
                         caseId,
                         asylumCase,
@@ -184,8 +184,8 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
 
                 matchedApplicants.stream().forEach(a -> {
                     Person person = a.getPerson();
-                    String applicantDob = String.format("%02d", person.getDayOfBirth())
-                            + String.format("%02d", person.getMonthOfBirth())
+                    String applicantDob = "%02d".formatted(person.getDayOfBirth())
+                            + "%02d".formatted(person.getMonthOfBirth())
                             + String.valueOf(person.getYearOfBirth()).substring(2);
 
                     values.add(new Value(a.getPerson().getFullName(),

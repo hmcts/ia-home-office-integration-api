@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config;
 
+import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 import java.util.ArrayList;
@@ -12,16 +13,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
-
+import org.springframework.security.web.SecurityFilterChain;
 import com.google.common.collect.ImmutableMap;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +35,8 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.Sp
 @Configuration
 @ConfigurationProperties(prefix = "security")
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+@EnableMethodSecurity(securedEnabled = true)
+public class SecurityConfiguration {
 
     private final List<String> anonymousPaths = new ArrayList<>();
 
@@ -55,61 +55,59 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return anonymousPaths;
     }
 
-    @Override
-    public void configure(WebSecurity web) {
-        web.ignoring().mvcMatchers(
-            anonymousPaths
+    @Bean
+    WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> {
+            web.ignoring().requestMatchers(anonymousPaths
                 .stream()
                 .toArray(String[]::new)
-        );
+            );
+        };
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(idamAuthoritiesConverter);
 
         http
             .addFilterAfter(s2SEndpointAuthorizationFilter, BearerTokenAuthenticationFilter.class)
-            .sessionManagement().sessionCreationPolicy(STATELESS)
-            .and()
-            .exceptionHandling()
-            .authenticationEntryPoint((request, response, authException) -> {
-                String authHeader = request.getHeader("Authorization");
-                String message;
-                if (authHeader == null || authHeader.isEmpty()) {
-                    message = "Missing Authorization header (Bearer token required)";
-                } else if (!authHeader.startsWith("Bearer ")) {
-                    message = "Invalid Authorization header format (Bearer token required)";
-                } else {
-                    message = "Invalid or expired Authorization token";
-                }
-                log.info("JWT authentication failed for {} {}: {}",
-                    request.getMethod(), request.getRequestURI(), message);
-                response.setStatus(401);
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\":\"" + message + "\"}");
-                response.getWriter().flush();
-            })
-            .accessDeniedHandler((request, response, accessDeniedException) -> {
-                log.info("Access denied for request to {}: {}",
-                    request.getRequestURI(), accessDeniedException.getMessage());
-                response.sendError(403, accessDeniedException.getMessage());
-            })
-            .and()
-            .csrf().disable()
-            .formLogin().disable()
-            .logout().disable()
-            .authorizeRequests()
-            .anyRequest().authenticated()
-            .and()
-            .oauth2ResourceServer()
-            .jwt()
-            .jwtAuthenticationConverter(jwtAuthenticationConverter)
-            .and()
-            .and()
-            .oauth2Client();
+            .sessionManagement(management -> management.sessionCreationPolicy(STATELESS))
+            .exceptionHandling(handling -> handling
+                .authenticationEntryPoint((request, response, authException) -> {
+                    String authHeader = request.getHeader("Authorization");
+                    String message;
+                    if (authHeader == null || authHeader.isEmpty()) {
+                        message = "Missing Authorization header (Bearer token required)";
+                    } else if (!authHeader.startsWith("Bearer ")) {
+                        message = "Invalid Authorization header format (Bearer token required)";
+                    } else {
+                        message = "Invalid or expired Authorization token";
+                    }
+                    log.info("JWT authentication failed for {} {}: {}",
+                        request.getMethod(), request.getRequestURI(), message);
+                    response.setStatus(401);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"error\":\"" + message + "\"}");
+                    response.getWriter().flush();
+                })
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    log.info("Access denied for request to {}: {}",
+                        request.getRequestURI(), accessDeniedException.getMessage());
+                    response.sendError(403, accessDeniedException.getMessage());
+                }))
+            .csrf(csrf -> csrf.disable())
+            .formLogin(login -> login.disable())
+            .logout(logout -> logout.disable())
+            .authorizeHttpRequests(requests -> requests
+                .anyRequest().authenticated())
+            .oauth2ResourceServer(server -> server
+                .jwt()
+                .jwtAuthenticationConverter(jwtAuthenticationConverter)
+                .and())
+            .oauth2Client(withDefaults());
+        return http.build();
     }
 
     @Bean

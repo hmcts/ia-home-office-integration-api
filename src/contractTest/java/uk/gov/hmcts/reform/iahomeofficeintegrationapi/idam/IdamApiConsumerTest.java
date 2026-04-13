@@ -9,8 +9,8 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpStatus;
 import org.json.JSONException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,9 +19,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.IdamApi;
@@ -29,11 +28,10 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.mode
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.RestTemplateConfiguration;
 
-@ExtendWith(SpringExtension.class)
 @ExtendWith(PactConsumerTestExt.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactTestFor(providerName = "idamApi_oidc", port = "5000")
-@ContextConfiguration(classes = IdamApiConsumerApplication.class)
+@SpringJUnitConfig(classes = IdamApiConsumerApplication.class)
 @TestPropertySource(
         properties = {"idam.baseUrl=localhost:5000"}
 )

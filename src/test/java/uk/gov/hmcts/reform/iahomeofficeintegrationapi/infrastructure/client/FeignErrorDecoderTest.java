@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,22 +16,21 @@ import feign.Request.HttpMethod;
 import feign.Response;
 import feign.RetryableException;
 import feign.Util;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+@ExtendWith(MockitoExtension.class)
 class FeignErrorDecoderTest {
 
-    @Mock
     private Response response;
 
     private FeignErrorDecoder feignErrorDecoder;
@@ -109,11 +107,9 @@ class FeignErrorDecoderTest {
     }
 
     @Test
-    void handle_sneaky_exception() throws IOException {
+    void handle_sneaky_exception() {
 
         Body body = mock(Body.class);
-        when(body.asReader(Charset.forName("UTF-8")))
-            .thenThrow(new IOException("Error in reading response body"));
 
         response = builder()
             .status(400)
@@ -150,14 +146,16 @@ class FeignErrorDecoderTest {
     }
 
     private byte[] getErrorDetail() {
-        String errorResponse = "{\n"
-            + "  \"errorDetail\": {\n"
-            + "    \"errorCode\": \"1100\",\n"
-            + "    \"messageText\": \"Invalid reference format. "
-            + "Format should be either nnnn-nnnn-nnnn-nnnn or 0(0) followed by digits (total length 9 or 10)\",\n"
-            + "    \"success\": true\n"
-            + "  }"
-            + "}";
+        String errorResponse = """
+            {
+              "errorDetail": {
+                "errorCode": "1100",
+                "messageText": "Invalid reference format. \
+            Format should be either nnnn-nnnn-nnnn-nnnn or 0(0) followed by digits (total length 9 or 10)",
+                "success": true
+              }\
+            }\
+            """;
 
         return errorResponse.getBytes();
     }
@@ -180,7 +178,7 @@ class FeignErrorDecoderTest {
         // CCD returns 400 "Case ID is not valid" when case not found - should be treated as 404
         assertEquals(ResponseStatusException.class, exception.getClass());
         ResponseStatusException responseStatusException = (ResponseStatusException) exception;
-        assertEquals(HttpStatus.NOT_FOUND, responseStatusException.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND, responseStatusException.getStatusCode());
         assertTrue(exception.getMessage().contains("Case ID is not valid"));
     }
 

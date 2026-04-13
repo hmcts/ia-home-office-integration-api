@@ -83,8 +83,8 @@ public class HomeOfficeMissingApplicationDecoder implements ErrorDecoder {
             try {
                 HomeOfficeErrorResponse homeOfficeError = objectMapper.readValue(responseBody,HomeOfficeErrorResponse.class);
                 if (homeOfficeError != null && homeOfficeError.getErrorDetail() != null) {
-                    message += "\n\n" + String.format("Home Office details:\n  Error code: %s\n  Message: %s",
-                                homeOfficeError.getErrorDetail().getErrorCode(), homeOfficeError.getErrorDetail().getMessageText());
+                    message += "\n\n" + "Home Office details:\n  Error code: %s\n  Message: %s".formatted(
+                        homeOfficeError.getErrorDetail().getErrorCode(), homeOfficeError.getErrorDetail().getMessageText());
                 }
             } catch (Exception ex) {
                 // Log this

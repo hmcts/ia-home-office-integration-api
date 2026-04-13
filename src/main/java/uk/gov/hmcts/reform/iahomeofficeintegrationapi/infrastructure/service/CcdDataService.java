@@ -231,8 +231,7 @@ public class CcdDataService {
         if (!newHistoryId.equals("1")) {
 
             
-            String errorMessage = String.format(
-                "Statutory timeframe status has already been set for caseId: %s",
+            String errorMessage = "Statutory timeframe status has already been set for caseId: %s".formatted(
                 caseId
             );
             log.info(errorMessage);
