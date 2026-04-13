@@ -21,10 +21,10 @@ public class OAuth2TestConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ClientRegistrationRepository clientRegistrationRepository(
-        OAuth2ClientProperties oAuth2ClientProperties) {
+        OAuth2ClientProperties testOAuthClientProperties) {
         var clientRegistrations =
             List.copyOf(
-                new OAuth2ClientPropertiesMapper(oAuth2ClientProperties)
+                new OAuth2ClientPropertiesMapper(testOAuthClientProperties)
                     .asClientRegistrations()
                     .values());
         return new InMemoryClientRegistrationRepository(clientRegistrations);
