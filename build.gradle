@@ -35,9 +35,9 @@ rewrite {
 //  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2')
 //  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3')
 //  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_4')
-  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5')
-//  activeRecipe('org.openrewrite.java.migrate.UpgradeToJava21')
-//  setExportDatatables(true)
+//  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5')
+  activeRecipe('org.openrewrite.java.migrate.UpgradeToJava21')
+  setExportDatatables(true)
 }
 
 apply plugin: 'java'
@@ -51,7 +51,7 @@ version = '0.0.1'
 
 java {
   toolchain {
-    languageVersion = JavaLanguageVersion.of(17)
+    languageVersion = JavaLanguageVersion.of(21)
   }
 }
 
@@ -243,7 +243,7 @@ dependencyManagement {
   dependencies {
 
     dependency group: 'commons-fileupload', name: 'commons-fileupload', version: '1.6.0'
-    dependency group: 'com.google.guava', name: 'guava', version: '32.1.2-jre'
+    dependency group: 'com.google.guava', name: 'guava', version: '29.0-jre'
     dependency group: 'org.yaml', name: 'snakeyaml', version: '2.2'
 
     dependencySet(group: 'com.fasterxml.jackson.core', version: '2.16.0') {

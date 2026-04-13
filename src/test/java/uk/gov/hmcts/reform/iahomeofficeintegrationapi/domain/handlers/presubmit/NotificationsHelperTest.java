@@ -175,7 +175,7 @@ class NotificationsHelperTest extends AbstractNotificationsHandlerTestBase {
 
         final List<Person> applicants = challenge.getApplicants();
         assertThat(applicants).hasSize(1);
-        assertPerson(applicants.get(0));
+        assertPerson(applicants.getFirst());
     }
 
     @Test

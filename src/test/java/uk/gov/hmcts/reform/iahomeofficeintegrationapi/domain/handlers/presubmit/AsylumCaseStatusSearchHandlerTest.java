@@ -565,7 +565,7 @@ public class AsylumCaseStatusSearchHandlerTest {
         Person appellant = Person.PersonBuilder.person().withFamilyName("Fenn").withGivenName("Stephen").build();
 
         List<HomeOfficeCaseStatus> invalidList = new ArrayList<>();
-        invalidList.add(getSampleResponse().getStatus().get(0));
+        invalidList.add(getSampleResponse().getStatus().getFirst());
         Optional<HomeOfficeCaseStatus> searchStatus =
                 asylumCaseStatusSearchHandler.selectMainApplicant(
                         caseId,
@@ -636,7 +636,7 @@ public class AsylumCaseStatusSearchHandlerTest {
     void metadata_returned_empty_from_invalid_set_of_values() throws Exception {
         Optional<HomeOfficeMetadata> metadata = asylumCaseStatusSearchHandler.selectMetadata(
                 caseId,
-                getSampleResponse().getStatus().get(0).getApplicationStatus().getHomeOfficeMetadata()
+                getSampleResponse().getStatus().getFirst().getApplicationStatus().getHomeOfficeMetadata()
         );
 
         assertNotNull(metadata);

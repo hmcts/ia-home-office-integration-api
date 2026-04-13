@@ -8,5 +8,5 @@ public enum MessageType {
     HEARING_BUNDLE_READY,
     COURT_OUTCOME,
     PERMISSION_TO_APPEAL,
-    DEFAULT;
+    DEFAULT
 }

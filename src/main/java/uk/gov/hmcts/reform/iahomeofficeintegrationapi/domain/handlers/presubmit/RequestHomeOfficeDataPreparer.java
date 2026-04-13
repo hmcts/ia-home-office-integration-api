@@ -216,7 +216,7 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
         } finally {
 
             values.add(new Value("NoMatch", "No Match"));
-            dynamicList = new DynamicList(values.get(0), values);
+            dynamicList = new DynamicList(values.getFirst(), values);
             asylumCase.write(HOME_OFFICE_APPELLANTS_LIST, dynamicList);
         }
 

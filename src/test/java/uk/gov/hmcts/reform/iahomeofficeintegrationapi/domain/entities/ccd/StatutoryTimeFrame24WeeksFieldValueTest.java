@@ -32,7 +32,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         assertNotNull(statutoryTimeFrame24WeeksFieldValue.getHistory());
         assertEquals(1, statutoryTimeFrame24WeeksFieldValue.getHistory().size());
         
-        StatutoryTimeframe24WeeksHistory history = statutoryTimeFrame24WeeksFieldValue.getHistory().get(0).getValue();
+        StatutoryTimeframe24WeeksHistory history = statutoryTimeFrame24WeeksFieldValue.getHistory().getFirst().getValue();
         assertEquals("Test reason", history.getReason());
         assertEquals("Test user", history.getUser());
         assertEquals("2024-01-01T10:00:00Z", history.getDateTimeAdded());
@@ -57,7 +57,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         assertNotNull(fieldValue.getHistory());
         assertEquals(1, fieldValue.getHistory().size());
         
-        StatutoryTimeframe24WeeksHistory history = fieldValue.getHistory().get(0).getValue();
+        StatutoryTimeframe24WeeksHistory history = fieldValue.getHistory().getFirst().getValue();
         assertEquals(status, history.getStatus());
         assertEquals(reason, history.getReason());
         assertEquals(user, history.getUser());

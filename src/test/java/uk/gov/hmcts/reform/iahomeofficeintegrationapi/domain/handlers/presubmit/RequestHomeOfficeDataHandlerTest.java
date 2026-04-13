@@ -290,7 +290,7 @@ public class RequestHomeOfficeDataHandlerTest {
 
         List<Value> values = new ArrayList<>();
         values.add(new Value("Capability Smith", "Capability Smith-210170"));
-        return new DynamicList(values.get(0), values);
+        return new DynamicList(values.getFirst(), values);
     }
 
     private DynamicList getNoMatch() {
@@ -298,7 +298,7 @@ public class RequestHomeOfficeDataHandlerTest {
         List<Value> values = new ArrayList<>();
         values.add(new Value("NoMatch", "No Match"));
 
-        return new DynamicList(values.get(0), values);
+        return new DynamicList(values.getFirst(), values);
     }
 
     private HomeOfficeCaseStatus getNoMatchResponse() {

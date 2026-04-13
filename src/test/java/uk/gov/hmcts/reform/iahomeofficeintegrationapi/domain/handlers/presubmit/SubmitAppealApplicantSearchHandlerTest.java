@@ -694,7 +694,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
             "1970-01-21"
         );
 
-        Person person = searchStatus.get(0).getPerson();
+        Person person = searchStatus.getFirst().getPerson();
 
         assertNotNull(searchStatus);
         assertTrue(!searchStatus.isEmpty());
@@ -734,7 +734,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
         Person appellant = Person.PersonBuilder.person().withFamilyName("Fenn").withGivenName("Stephen").build();
 
         List<HomeOfficeCaseStatus> invalidList = new ArrayList<>();
-        invalidList.add(getSampleResponse().getStatus().get(0));
+        invalidList.add(getSampleResponse().getStatus().getFirst());
         List<HomeOfficeCaseStatus> searchStatus =
             submitAppealApplicantSearchHandler.selectMainApplicant(
                 caseId,
@@ -810,7 +810,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
     void metadata_returned_empty_from_invalid_set_of_values() throws Exception {
         Optional<HomeOfficeMetadata> metadata = submitAppealApplicantSearchHandler.selectMetadata(
             caseId,
-            getSampleResponse().getStatus().get(0).getApplicationStatus().getHomeOfficeMetadata()
+            getSampleResponse().getStatus().getFirst().getApplicationStatus().getHomeOfficeMetadata()
         );
 
         assertNotNull(metadata);
