@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client;
 
+import feign.FeignException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
@@ -10,7 +11,6 @@ import org.springframework.web.server.ResponseStatusException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import feign.Response;
-import feign.RetryableException;
 import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeErrorResponse;
@@ -102,7 +102,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                     response.status(),
                     methodKey,
                     response.reason());
-                throw new RetryableException(response.status(), response.reason(), response.request().httpMethod(), null, response.request());
+                throw FeignException.errorStatus(methodKey, response);
 
             default:
                 log.error("StatusCode: {}, methodKey: {}, reason: {}",

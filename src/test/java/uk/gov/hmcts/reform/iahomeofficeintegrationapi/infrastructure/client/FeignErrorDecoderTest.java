@@ -14,7 +14,6 @@ import feign.FeignException;
 import feign.Request;
 import feign.Request.HttpMethod;
 import feign.Response;
-import feign.RetryableException;
 import feign.Util;
 import java.util.Collections;
 import java.util.stream.Stream;
@@ -53,7 +52,7 @@ class FeignErrorDecoderTest {
             .body("Internal server error", Util.UTF_8)
             .build();
 
-        assertThrows(RetryableException.class,
+        assertThrows(FeignException.class,
             () -> feignErrorDecoder.decode("someMethod", response));
     }
 
