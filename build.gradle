@@ -32,8 +32,8 @@ plugins {
 rewrite {
 //  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_0')
 //  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_1')
-  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2')
-//  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3')
+//  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2')
+  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3')
 //  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_4')
 //  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5')
 //  activeRecipe('org.openrewrite.java.migrate.UpgradeToJava21')
