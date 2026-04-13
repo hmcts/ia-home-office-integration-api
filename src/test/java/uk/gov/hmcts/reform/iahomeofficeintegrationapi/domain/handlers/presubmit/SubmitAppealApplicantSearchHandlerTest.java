@@ -61,7 +61,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeSearchService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 
@@ -112,8 +111,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
     private static HomeOfficeSearchResponse homeOfficeMultipleApplicantsResponse;
     private final String someHomeOfficeReference = "some-reference";
     @Mock
-    private FeatureToggler featureToggler;
-    @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
@@ -145,7 +142,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
     void setUp() {
         submitAppealApplicantSearchHandler =
                 new SubmitAppealApplicantSearchHandler(
-                        homeOfficeSearchService, homeOfficeDataErrorsHelper, homeOfficeDataMatchHelper, featureToggler);
+                        homeOfficeSearchService, homeOfficeDataErrorsHelper, homeOfficeDataMatchHelper);
     }
 
     @ParameterizedTest

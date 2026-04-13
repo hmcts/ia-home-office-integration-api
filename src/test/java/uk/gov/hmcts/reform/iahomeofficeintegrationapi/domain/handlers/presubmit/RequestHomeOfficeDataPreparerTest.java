@@ -59,7 +59,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeSearchService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 
@@ -81,8 +80,6 @@ public class RequestHomeOfficeDataPreparerTest {
 
     private static HomeOfficeSearchResponse homeOfficeSearchResponse;
     private final String someHomeOfficeReference = "some-reference";
-    @Mock
-    private FeatureToggler featureToggler;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -114,7 +111,7 @@ public class RequestHomeOfficeDataPreparerTest {
 
         requestHomeOfficeDataPreparer =
                 new RequestHomeOfficeDataPreparer(
-                        homeOfficeSearchService, homeOfficeDataErrorsHelper, homeOfficeDataMatchHelper, featureToggler);
+                        homeOfficeSearchService, homeOfficeDataErrorsHelper, homeOfficeDataMatchHelper);
     }
 
     @Test

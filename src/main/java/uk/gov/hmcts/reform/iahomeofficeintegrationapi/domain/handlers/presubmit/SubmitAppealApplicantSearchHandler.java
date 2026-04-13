@@ -92,16 +92,12 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
 
     private HomeOfficeDataMatchHelper homeOfficeDataMatchHelper;
 
-    private final FeatureToggler featureToggler;
-
     public SubmitAppealApplicantSearchHandler(HomeOfficeSearchService homeOfficeSearchService,
                                               HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper,
-                                              HomeOfficeDataMatchHelper homeOfficeDataMatchHelper,
-                                              FeatureToggler featureToggler) {
+                                              HomeOfficeDataMatchHelper homeOfficeDataMatchHelper) {
         this.homeOfficeSearchService = homeOfficeSearchService;
         this.homeOfficeDataErrorsHelper = homeOfficeDataErrorsHelper;
         this.homeOfficeDataMatchHelper = homeOfficeDataMatchHelper;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(

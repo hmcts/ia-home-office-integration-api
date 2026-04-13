@@ -55,7 +55,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeSearchService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 
@@ -94,8 +93,6 @@ public class AsylumCaseStatusSearchHandlerTest {
     private static HomeOfficeSearchResponse homeOfficeNullFieldResponse;
     private final String someHomeOfficeReference = "some-reference";
     @Mock
-    private FeatureToggler featureToggler;
-    @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
@@ -119,7 +116,7 @@ public class AsylumCaseStatusSearchHandlerTest {
 
     @BeforeEach
     void setUp() {
-        asylumCaseStatusSearchHandler = new AsylumCaseStatusSearchHandler(homeOfficeSearchService, featureToggler);
+        asylumCaseStatusSearchHandler = new AsylumCaseStatusSearchHandler(homeOfficeSearchService);
     }
 
     @Test

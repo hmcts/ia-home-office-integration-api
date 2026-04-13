@@ -44,15 +44,11 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
             + "[Request the Home Office information](/case/IA/Asylum/${[CASE_REFERENCE]}/"
             + "trigger/requestHomeOfficeData) to try again. This may take a few minutes.";
 
-    private final FeatureToggler featureToggler;
-
     private HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper;
 
-    public RequestHomeOfficeDataHandler(HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper,
-                                        FeatureToggler featureToggler) {
+    public RequestHomeOfficeDataHandler(HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper) {
 
         this.homeOfficeDataErrorsHelper = homeOfficeDataErrorsHelper;
-        this.featureToggler = featureToggler;
     }
 
     @Override

@@ -37,13 +37,11 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Retr
 public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private HomeOfficeApplicationService homeOfficeApplicationService;
-    private final FeatureToggler featureToggler;
 
     public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|(GWF[0-9]{9}))$");
 
-    public GetAppellantDataHandler(HomeOfficeApplicationService homeOfficeApplicationService, FeatureToggler featureToggler) {
+    public GetAppellantDataHandler(HomeOfficeApplicationService homeOfficeApplicationService) {
         this.homeOfficeApplicationService = homeOfficeApplicationService;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(

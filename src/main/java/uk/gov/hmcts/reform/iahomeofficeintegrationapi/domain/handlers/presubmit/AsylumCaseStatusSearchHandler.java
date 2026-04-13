@@ -91,12 +91,8 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
 
     private HomeOfficeSearchService homeOfficeSearchService;
 
-    private final FeatureToggler featureToggler;
-
-    public AsylumCaseStatusSearchHandler(HomeOfficeSearchService homeOfficeSearchService,
-                                         FeatureToggler featureToggler) {
+    public AsylumCaseStatusSearchHandler(HomeOfficeSearchService homeOfficeSearchService) {
         this.homeOfficeSearchService = homeOfficeSearchService;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(
@@ -110,7 +106,6 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
                 && Arrays.asList(
                 SUBMIT_APPEAL, PAY_AND_SUBMIT_APPEAL, MARK_APPEAL_PAID, REQUEST_HOME_OFFICE_DATA)
                 .contains(callback.getEvent());
-        //&& !featureToggler.getValue("home-office-uan-feature", false);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

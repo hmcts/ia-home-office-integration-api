@@ -50,7 +50,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Value;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 
 @SpringJUnitConfig
 @ExtendWith(MockitoExtension.class)
@@ -66,8 +65,6 @@ public class RequestHomeOfficeDataHandlerTest {
             + "trigger/requestHomeOfficeData) to try again. This may take a few minutes.";
 
     private static HomeOfficeSearchResponse homeOfficeSearchResponse;
-    @Mock
-    private FeatureToggler featureToggler;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -88,7 +85,7 @@ public class RequestHomeOfficeDataHandlerTest {
     void setUp() {
 
         requestHomeOfficeDataHandler =
-                new RequestHomeOfficeDataHandler(homeOfficeDataErrorsHelper, featureToggler);
+                new RequestHomeOfficeDataHandler(homeOfficeDataErrorsHelper);
     }
 
     @Test

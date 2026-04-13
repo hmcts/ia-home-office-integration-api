@@ -55,8 +55,6 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
     private static final String INVALID_HOME_OFFICE_REFERENCE = "The Home office does not recognise the submitted "
             + "appellant reference";
 
-    private final FeatureToggler featureToggler;
-
     private HomeOfficeSearchService homeOfficeSearchService;
 
     private HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper;
@@ -65,13 +63,11 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
 
     public RequestHomeOfficeDataPreparer(HomeOfficeSearchService homeOfficeSearchService,
                                          HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper,
-                                         HomeOfficeDataMatchHelper homeOfficeDataMatchHelper,
-                                         FeatureToggler featureToggler) {
+                                         HomeOfficeDataMatchHelper homeOfficeDataMatchHelper) {
 
         this.homeOfficeSearchService = homeOfficeSearchService;
         this.homeOfficeDataErrorsHelper = homeOfficeDataErrorsHelper;
         this.homeOfficeDataMatchHelper = homeOfficeDataMatchHelper;
-        this.featureToggler = featureToggler;
     }
 
     @Override
