@@ -28,11 +28,18 @@ plugins {
   id 'com.adarshr.test-logger' version '3.2.0'
   id 'org.openrewrite.rewrite' version '7.30.0'
 }
+
 rewrite {
   activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_0')
+//  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_1')
+//  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2')
+//  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3')
+//  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_4')
+//  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5')
 //  activeRecipe('org.openrewrite.java.migrate.UpgradeToJava21')
 //  setExportDatatables(true)
 }
+
 apply plugin: 'java'
 apply plugin: "net.serenity-bdd.serenity-gradle-plugin"
 apply plugin: 'project-report'
