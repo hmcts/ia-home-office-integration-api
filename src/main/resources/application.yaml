@@ -9,11 +9,17 @@ management:
     web:
       base-path: /
       exposure:
-        include: health, info, prometheus
-
+        include: health, info, prometheus, ping
   health:
+    redis:
+      enabled: false  # don't let Redis affect pod health
     probes:
       enabled: true
+    group:
+      readiness:
+        include: ping
+      liveness:
+        include: ping
 
 spring:
   config:
@@ -63,6 +69,14 @@ spring:
       remove-abandoned-timeout: 60
       log-abandoned: true
       abandon-when-percentage-full: 0
+  data:
+    redis:
+      url: ${IA_REDIS_CONNECTION_STRING:}
+      secret: ${IA_REDIS_ACCESS_KEY:}
+      encryption:
+        key: ${IA_REDIS_ENCRYPTION_KEY:}
+      ssl:
+        enabled: true
 
 security:
   anonymousPaths: ${ANONYMOUS_PATHS:/,/health,/health/liveness,/health/readiness,/loggers/**,/swagger-ui.html,/swagger-resources/**,/v2/api-docs,/webjars/springfox-swagger-ui/**,/favicon.ico}
