@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 
@@ -22,7 +23,7 @@ public class OAuth2TestConfiguration {
     @ConditionalOnMissingBean
     public ClientRegistrationRepository clientRegistrationRepository(
         OAuth2ClientProperties testOAuthClientProperties) {
-        var clientRegistrations =
+        List<ClientRegistration> clientRegistrations =
             List.copyOf(
                 new OAuth2ClientPropertiesMapper(testOAuthClientProperties)
                     .asClientRegistrations()
