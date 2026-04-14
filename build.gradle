@@ -353,7 +353,7 @@ dependencies {
 
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.23.0'
     testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '5.23.0'
-    testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '4.3.3'
+    testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
     testImplementation 'org.springframework.security:spring-security-test'
 
     testImplementation group: 'org.pitest', name: 'pitest', version: '1.15.3'
