@@ -229,6 +229,20 @@ dependencyManagement {
         dependency group: 'commons-fileupload', name: 'commons-fileupload', version: '1.6.0'
         dependency group: 'org.yaml', name: 'snakeyaml', version: '2.4'
 
+
+        dependencySet(group: 'org.junit.jupiter', version: '5.13.4') {
+            entry 'junit-jupiter'
+            entry 'junit-jupiter-api'
+            entry 'junit-jupiter-engine'
+            entry 'junit-jupiter-params'
+        }
+
+        dependencySet(group: 'org.junit.platform', version: '1.13.4') {
+            entry 'junit-platform-commons'
+            entry 'junit-platform-engine'
+            entry 'junit-platform-launcher'
+        }
+
         dependencySet(group: 'com.fasterxml.jackson.core', version: '2.19.1') {
             entry 'jackson-databind'
             entry 'jackson-core'
@@ -259,17 +273,6 @@ repositories {
         url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1'
     }
 }
-
-ext.libraries = [
-        junit5: [
-                "org.junit.jupiter:junit-jupiter-api:5.13.3",
-                "org.junit.jupiter:junit-jupiter-engine:5.13.3",
-                "org.junit.jupiter:junit-jupiter-params:5.13.3",
-                "org.junit.platform:junit-platform-commons:1.13.3",
-                "org.junit.platform:junit-platform-engine:1.13.3",
-                'org.junit.platform:junit-platform-launcher:1.13.3'
-        ]
-]
 
 configurations {
     integrationTestImplementation.extendsFrom testImplementation
