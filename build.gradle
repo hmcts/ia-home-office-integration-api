@@ -412,8 +412,6 @@ tasks.register('runAndPublishConsumerPactTests', Test) {
     systemProperty 'pact.rootDir', "pacts"
 }
 
-runAndPublishConsumerPactTests.finalizedBy pactPublish
-
 pact {
     broker {
         pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
@@ -424,6 +422,12 @@ pact {
         version = project.pacticipantVersion
     }
 }
+
+pactPublish {
+    pactPublish = project.pact.publish
+}
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
 
 static def getCheckedOutGitCommitHash() {
     'git rev-parse --verify --short HEAD'.execute().text.trim()
