@@ -100,6 +100,13 @@ public class CacheConfiguration {
         @Value("${spring.data.redis.url}") String redisUrl,
         @Value("${spring.data.redis.secret}") String accessKey) {
         try {
+
+            if (redisUrl == null || redisUrl.isBlank()) {
+                log.warn("No Redis URL configured");
+                // return a dummy factory - cacheManager will catch the ping failure and fall back
+                return new LettuceConnectionFactory();
+            }
+
             RedisURI redisUri = RedisURI.create(redisUrl);
 
             boolean useSsl = redisUrl.contains("tls=true") || redisUrl.startsWith("rediss://");
