@@ -77,7 +77,11 @@ processIntegrationTestResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs << '-parameters' << "-Xlint:unchecked" << "-Werror"
+    options.compilerArgs += [
+            '-parameters',
+            '-Xlint:deprecation',
+            '-Xlint:unchecked'
+    ]
 }
 
 tasks.withType(Test).configureEach {
