@@ -67,9 +67,10 @@ public class CcdScenarioRunnerTest {
     private LaunchDarklyFunctionalTestClient launchDarklyFunctionalTestClient;
 
     private Map<String, Object> actualResponse = null;
+    private Collection<String> scenarioSources;
 
     @BeforeAll
-    public void beforeAll() {
+    public void beforeAll() throws IOException {
         MapSerializer.setObjectMapper(objectMapper);
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
@@ -78,18 +79,14 @@ public class CcdScenarioRunnerTest {
             verifiers.isEmpty(),
             "Verifiers are configured"
         );
-    }
-
-    private Stream<Arguments> scenarioSources() throws IOException {
         String scenarioPattern = System.getProperty("scenario");
-        System.out.println("scenarioPattern:" + scenarioPattern);
         if (scenarioPattern == null) {
             scenarioPattern = "*.json";
         } else {
             scenarioPattern = "*" + scenarioPattern + "*.json";
         }
 
-        Collection<String> scenarioSources =
+        scenarioSources =
             StringResourceLoader
                 .load("/scenarios/" + scenarioPattern)
                 .values();
@@ -97,6 +94,9 @@ public class CcdScenarioRunnerTest {
         System.out.println((char) 27 + "[36m" + "-------------------------------------------------------------------");
         System.out.println((char) 27 + "[33m" + "RUNNING " + scenarioSources.size() + " SCENARIOS");
         System.out.println((char) 27 + "[36m" + "-------------------------------------------------------------------");
+    }
+
+    private Stream<Arguments> scenarioSources() {
         return scenarioSources.stream().map(scenarioSource -> {
             try {
                 Map<String, Object> scenario = deserializeWithExpandedValues(scenarioSource);
@@ -117,8 +117,6 @@ public class CcdScenarioRunnerTest {
                 if (isDisabled) {
                     return Arguments.of("Disabled: " + description, null, null, null, null, 0, 0, null);
                 }
-
-                System.out.println((char) 27 + "[33m" + "SCENARIO: " + description);
 
                 Map<String, String> templatesByFilename = StringResourceLoader.load("/templates/*.json");
 
