@@ -335,12 +335,9 @@ dependencies {
     implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.32'
     implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '9.0'
 
-//  implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.18.8'
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '4.0.7'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.13.2'
-
-    implementation 'com.github.ben-manes.caffeine:caffeine'
 
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '10.1.54'
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '10.1.54'
