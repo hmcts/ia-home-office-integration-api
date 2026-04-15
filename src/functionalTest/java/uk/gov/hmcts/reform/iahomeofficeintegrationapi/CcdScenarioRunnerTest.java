@@ -120,11 +120,15 @@ public class CcdScenarioRunnerTest {
 
                 Map<String, String> templatesByFilename = StringResourceLoader.load("/templates/*.json");
 
-                final long testCaseId = MapValueExtractor.extractOrDefault(
+                final long scenarioTestCaseId = MapValueExtractor.extractOrDefault(
                     scenario,
                     "request.input.id",
-                    ThreadLocalRandom.current().nextInt(1, 9999999 + 1)
+                    -1
                 );
+
+                final long testCaseId = (scenarioTestCaseId == -1)
+                    ? ThreadLocalRandom.current().nextLong(1111111111111111L, 1999999999999999L)
+                    : scenarioTestCaseId;
 
                 final String requestBody = buildCallbackBody(
                     testCaseId,
@@ -146,7 +150,6 @@ public class CcdScenarioRunnerTest {
                     requestBody,
                     requestUri,
                     expectedStatus,
-                    templatesByFilename,
                     testCaseId,
                     expectedResponse
                 );
