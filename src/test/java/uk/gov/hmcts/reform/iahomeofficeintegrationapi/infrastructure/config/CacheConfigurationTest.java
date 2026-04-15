@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -173,19 +172,5 @@ class CacheConfigurationTest {
         );
 
         assertThat(result).isInstanceOf(LettuceConnectionFactory.class);
-    }
-
-    // ───────────────────────────────────────────────
-    // cacheManagerCustomizer tests
-    // ───────────────────────────────────────────────
-
-    @Test
-    void cacheManagerCustomizer_shouldDisableNullValues() {
-        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
-        caffeineCacheManager.setAllowNullValues(true); // set to true first
-
-        cacheConfiguration.cacheManagerCustomizer().customize(caffeineCacheManager);
-
-        assertThat(caffeineCacheManager.isAllowNullValues()).isFalse();
     }
 }

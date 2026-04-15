@@ -5,3 +5,4 @@ java:
   environment:
     HOME_OFFICE_ENDPOINT: "http://ia-home-office-mock-api-aat.service.core-compute-aat.internal"
     APP_PUBLIC_IP_ENABLED: "true"
+    LOGGING_LEVEL_IO_LETTUCE_CORE_PROTOCOL_CONNECTIONWATCHDOG: "WARN" # Suppress the Redis reconnection INFO messages every ten minutes due to no traffic

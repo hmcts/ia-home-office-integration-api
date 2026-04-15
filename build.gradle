@@ -364,8 +364,6 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.3.0'
 
-  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine'
-
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.115'
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.115'
 
