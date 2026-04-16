@@ -129,12 +129,15 @@ public class CacheConfiguration {
             }
 
             ClientOptions clientOptions = ClientOptions.builder()
-                    .socketOptions(SocketOptions.builder()
-                            .keepAlive(true)
-                            .connectTimeout(Duration.ofSeconds(10))
-                            .build())
-                    .pingBeforeActivateConnection(true)
-                    .disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
+                    .socketOptions(
+                        SocketOptions.builder()
+                            .keepAlive(SocketOptions.KeepAliveOptions.builder()
+                                .enable(true)
+                                .idle(Duration.ofMinutes(1))      // start probing after 1 min idle
+                                .interval(Duration.ofSeconds(30)) // probe every 30s
+                                .count(3)
+                                .build())
+                        .build())
                     .build();
 
             LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
