@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config;
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.SocketOptions;
+import io.lettuce.core.api.StatefulRedisConnection;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,8 +19,8 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -43,7 +45,7 @@ public class CacheConfiguration {
             redisConnectionFactory.getConnection().ping();
             log.info("Redis connection successful - using Redis for systemTokenCache");
 
-            // Idam user info config
+            // IDam user info config
             AesEncryptingRedisSerializer<UserInfo> userInfoSerializer =
                 new AesEncryptingRedisSerializer<>(
                     new Jackson2JsonRedisSerializer<>(UserInfo.class),
@@ -116,7 +118,7 @@ public class CacheConfiguration {
             // checked azure portal,
             if (useSsl) {
                 redisUri.setSsl(true);
-                redisUri.setVerifyPeer(false); // for Azure (self signed certs)
+                redisUri.setVerifyPeer(false); // for Azure (self-signed certs)
             }
 
             redisUri.setTimeout(Duration.ofSeconds(10)); // 64seconds is default, so fail quicker
@@ -128,21 +130,28 @@ public class CacheConfiguration {
                 config.setPassword(RedisPassword.of(accessKey));
             }
 
+// Sends a PING every 3 minutes at the application level
             ClientOptions clientOptions = ClientOptions.builder()
+                    .pingBeforeActivateConnection(true)
                     .socketOptions(
-                        SocketOptions.builder()
-                            .keepAlive(SocketOptions.KeepAliveOptions.builder()
-                                .enable(true)
-                                .idle(Duration.ofMinutes(1))      // start probing after 1 min idle
-                                .interval(Duration.ofSeconds(30)) // probe every 30s
-                                .count(3)
-                                .build())
-                        .build())
+                            SocketOptions.builder()
+                                    .keepAlive(true)
+                                    .connectTimeout(Duration.ofSeconds(5))
+                                    .build())
                     .build();
 
-            LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+            GenericObjectPoolConfig<StatefulRedisConnection<String, String>> poolConfig =
+                    new GenericObjectPoolConfig<>();
+            poolConfig.setMinIdle(1);
+            poolConfig.setMaxIdle(8);
+            poolConfig.setMaxTotal(8);
+            poolConfig.setTimeBetweenEvictionRuns(Duration.ofMinutes(3));
+            poolConfig.setMinEvictableIdleDuration(Duration.ofMinutes(9)); // just under Azure's 10 min limit
+
+            LettucePoolingClientConfiguration clientConfig = LettucePoolingClientConfiguration.builder()
                     .commandTimeout(Duration.ofSeconds(5))
                     .clientOptions(clientOptions)
+                    .poolConfig(poolConfig)
                     .useSsl()
                     .disablePeerVerification()
                     .build();
