@@ -130,7 +130,6 @@ public class CacheConfiguration {
                 config.setPassword(RedisPassword.of(accessKey));
             }
 
-// Sends a PING every 3 minutes at the application level
             ClientOptions clientOptions = ClientOptions.builder()
                     .pingBeforeActivateConnection(true)
                     .socketOptions(
