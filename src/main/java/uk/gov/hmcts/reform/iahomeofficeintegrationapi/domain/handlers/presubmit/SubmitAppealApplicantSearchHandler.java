@@ -144,41 +144,41 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                     caseId,
                     homeOfficeSearchResponseJsonStr)) {
 
-                matchedApplicants.stream().forEach(a -> {
+                matchedApplicants.stream().forEach(applicant -> {
 
-                    ApplicationStatus applicationStatus = a.getApplicationStatus();
+                    ApplicationStatus applicationStatus = applicant.getApplicationStatus();
 
-                    a = updateDateOfBirth(a, caseId);
+                    applicant = updateDateOfBirth(applicant, caseId);
 
-                    a.setDisplayDecisionDate(
+                    applicant.setDisplayDecisionDate(
                             HomeOfficeDateFormatter.getIacDateTime(applicationStatus.getDecisionDate()));
 
-                    a = updateDecisionCommunication(a, applicationStatus);
+                    applicant = updateDecisionCommunication(applicant, applicationStatus);
 
                     Optional<HomeOfficeMetadata> metadata = selectMetadata(
                             caseId,
                             applicationStatus.getHomeOfficeMetadata()
                     );
                     if (metadata.isPresent()) {
-                        a.setDisplayMetadataValueBoolean(
+                        applicant.setDisplayMetadataValueBoolean(
                                 ("true".equals(metadata.get().getValueBoolean())) ? "Yes" : "No"
                         );
 
-                        a.setDisplayMetadataValueDateTime(
+                        applicant.setDisplayMetadataValueDateTime(
                                 HomeOfficeDateFormatter.getIacDateTime(metadata.get().getValueDateTime()));
                     }
-                    a.setDisplayRejectionReasons(
+                    applicant.setDisplayRejectionReasons(
                             getRejectionReasonString(applicationStatus.getRejectionReasons()));
-                    asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_CASE_STATUS_DATA, a);
+                    asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_CASE_STATUS_DATA, applicant);
                 });
             }
 
         }
     }
 
-    private HomeOfficeCaseStatus updateDateOfBirth(HomeOfficeCaseStatus a,
+    private HomeOfficeCaseStatus updateDateOfBirth(HomeOfficeCaseStatus applicant,
                                    long caseId) {
-        Person person = a.getPerson();
+        Person person = applicant.getPerson();
 
         if (isNull(person)) {
             log.warn(
@@ -187,25 +187,25 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                     caseId
             );
         } else {
-            a.setDisplayDateOfBirth(
+            applicant.setDisplayDateOfBirth(
                     HomeOfficeDateFormatter.getPersonDateOfBirth(person.getDayOfBirth(),
                             person.getMonthOfBirth(), person.getYearOfBirth()));
         }
 
-        return a;
+        return applicant;
     }
 
-    private HomeOfficeCaseStatus updateDecisionCommunication(HomeOfficeCaseStatus a,
+    private HomeOfficeCaseStatus updateDecisionCommunication(HomeOfficeCaseStatus applicant,
                                                              ApplicationStatus applicationStatus) {
         if (applicationStatus.getDecisionCommunication() != null) {
-            a.setDisplayDecisionSentDate(
+            applicant.setDisplayDecisionSentDate(
                     HomeOfficeDateFormatter.getIacDateTime(
                             applicationStatus.getDecisionCommunication().getSentDate()
                     )
             );
         }
 
-        return a;
+        return applicant;
     }
 
     private boolean validMatchedApplicants(List<HomeOfficeCaseStatus> matchedApplicants,
@@ -364,7 +364,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
         if (statuses != null && !statuses.isEmpty()) {
             try {
                 searchStatus = statuses.stream()
-                        .filter(a -> "APPLICANT".equalsIgnoreCase(a.getApplicationStatus().getRoleType().getCode()))
+                        .filter(applicant -> "APPLICANT".equalsIgnoreCase(applicant.getApplicationStatus().getRoleType().getCode()))
                         .findAny();
 
             } catch (Exception e) {
