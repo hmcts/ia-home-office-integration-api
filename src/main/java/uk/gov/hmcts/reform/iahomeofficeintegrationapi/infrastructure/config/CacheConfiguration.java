@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config;
 
+import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisURI;
+import io.lettuce.core.SocketOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -126,11 +128,21 @@ public class CacheConfiguration {
                 config.setPassword(RedisPassword.of(accessKey));
             }
 
+            ClientOptions clientOptions = ClientOptions.builder()
+                    .socketOptions(SocketOptions.builder()
+                            .keepAlive(true)
+                            .connectTimeout(Duration.ofSeconds(10))
+                            .build())
+                    .pingBeforeActivateConnection(true)
+                    .disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
+                    .build();
+
             LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-                .commandTimeout(Duration.ofSeconds(5))
-                .useSsl()
-                .disablePeerVerification()
-                .build();
+                    .commandTimeout(Duration.ofSeconds(5))
+                    .clientOptions(clientOptions)
+                    .useSsl()
+                    .disablePeerVerification()
+                    .build();
 
             LettuceConnectionFactory factory = new LettuceConnectionFactory(
                 config,
