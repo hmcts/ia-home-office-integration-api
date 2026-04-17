@@ -15,8 +15,8 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -126,11 +126,11 @@ public class CacheConfiguration {
                 config.setPassword(RedisPassword.of(accessKey));
             }
 
-            LettucePoolingClientConfiguration clientConfig = LettucePoolingClientConfiguration.builder()
-                    .commandTimeout(Duration.ofSeconds(5))
-                    .useSsl()
-                    .disablePeerVerification()
-                    .build();
+            LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+                .commandTimeout(Duration.ofSeconds(5))
+                .useSsl()
+                .disablePeerVerification()
+                .build();
 
             LettuceConnectionFactory factory = new LettuceConnectionFactory(
                 config,
