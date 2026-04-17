@@ -1,10 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config;
 
-import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisURI;
-import io.lettuce.core.SocketOptions;
-import io.lettuce.core.api.StatefulRedisConnection;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -130,27 +126,8 @@ public class CacheConfiguration {
                 config.setPassword(RedisPassword.of(accessKey));
             }
 
-            ClientOptions clientOptions = ClientOptions.builder()
-                    .pingBeforeActivateConnection(true)
-                    .socketOptions(
-                            SocketOptions.builder()
-                                    .keepAlive(true)
-                                    .connectTimeout(Duration.ofSeconds(5))
-                                    .build())
-                    .build();
-
-            GenericObjectPoolConfig<StatefulRedisConnection<String, String>> poolConfig =
-                    new GenericObjectPoolConfig<>();
-            poolConfig.setMinIdle(1);
-            poolConfig.setMaxIdle(8);
-            poolConfig.setMaxTotal(8);
-            poolConfig.setTimeBetweenEvictionRuns(Duration.ofMinutes(3));
-            poolConfig.setMinEvictableIdleDuration(Duration.ofMinutes(9)); // just under Azure's 10 min limit
-
             LettucePoolingClientConfiguration clientConfig = LettucePoolingClientConfiguration.builder()
                     .commandTimeout(Duration.ofSeconds(5))
-                    .clientOptions(clientOptions)
-                    .poolConfig(poolConfig)
                     .useSsl()
                     .disablePeerVerification()
                     .build();
