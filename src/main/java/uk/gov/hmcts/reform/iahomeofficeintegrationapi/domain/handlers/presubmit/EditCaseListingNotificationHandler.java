@@ -52,7 +52,7 @@ public class EditCaseListingNotificationHandler implements PreSubmitCallbackHand
         }
 
         log.info("Preparing to send {} notification to HomeOffice for event {}",
-            HEARING.toString(), callback.getEvent());
+            HEARING, callback.getEvent());
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         final String homeOfficeReferenceNumber = notificationsHelper.getHomeOfficeReference(asylumCase);
@@ -62,15 +62,15 @@ public class EditCaseListingNotificationHandler implements PreSubmitCallbackHand
         final HearingInstructMessage hearingInstructMessage
             = listingNotificationHelper.getHearingInstructMessage(
                 asylumCase, notificationsHelper.getConsumerReference(caseId),
-                notificationsHelper.getMessageHeader(), homeOfficeReferenceNumber);
+                notificationsHelper.getMessageHeader(), homeOfficeReferenceNumber, callback.getCaseDetails().getId());
 
         log.info("Finished constructing {} notification request for caseId: {}, HomeOffice reference: {}",
-            HEARING.toString(), caseId, homeOfficeReferenceNumber);
+            HEARING, caseId, homeOfficeReferenceNumber);
 
         String notificationStatus = homeOfficeInstructService.sendNotification(hearingInstructMessage);
 
         log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
-            HEARING.toString(), caseId, homeOfficeReferenceNumber, notificationStatus, callback.getEvent());
+            HEARING, caseId, homeOfficeReferenceNumber, notificationStatus, callback.getEvent());
 
         asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_EDIT_LISTING_INSTRUCT_STATUS, notificationStatus);
 
