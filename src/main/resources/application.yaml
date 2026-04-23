@@ -42,11 +42,6 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
-  datasource:
-    driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5050}/${POSTGRES_NAME:ia_case_api}${POSTGRES_CONNECTION_OPTIONS:}
-    username: ${POSTGRES_USERNAME:postgres}
-    password: ${POSTGRES_PASSWORD:}
   data:
     redis:
       url: ${IA_REDIS_CONNECTION_STRING:}
