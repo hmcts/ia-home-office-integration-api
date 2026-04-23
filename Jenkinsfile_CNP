@@ -31,6 +31,7 @@ def secrets = [
         secret('ia-redis-access-key', 'IA_REDIS_ACCESS_KEY'),
         secret('ia-redis-connection-string', 'IA_REDIS_CONNECTION_STRING'),
         secret('generic-values-preview-password', 'GENERIC_VALUES_PREVIEW_YAML_PASS'),
+        secret('case-api-POSTGRES-PASS-15', 'CASE-API-POSTGRES-PASS-15'),
 
         secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
         secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
