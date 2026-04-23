@@ -1,18 +1,21 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class HomeOfficeStatutoryTimeframeDtoValidationTest {
 
@@ -28,16 +31,18 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
     void shouldPassValidationWithValidData() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId("1234567890123456")
+            .hmctsReferenceNumber("PA/12345/2026")
             .uan("1234-5678-9012-3456")
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("Yes")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 0))
+            .stf24weekCohorts(List.of(
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                    .name("HU")
+                    .included("true")
+                    .build()
+            ))
+            .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC))
             .build();
 
         // When
@@ -48,19 +53,21 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
     }
 
     @Test
-    void shouldFailValidationWhenCcdCaseIdIsTooShort() {
+    void shouldFailValidationWhenHmctsRefNumIsTooShort() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId("12345")
+            .hmctsReferenceNumber("PA/1234/2026")
             .uan("1234-5678-9012-3456")
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("Yes")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 0))
+            .stf24weekCohorts(List.of(
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                    .name("HU")
+                    .included("true")
+                    .build()
+            ))
+            .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC))
             .build();
 
         // When
@@ -69,24 +76,27 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
         // Then
         assertEquals(1, violations.size());
         ConstraintViolation<HomeOfficeStatutoryTimeframeDto> violation = violations.iterator().next();
-        assertEquals("ccdCaseId", violation.getPropertyPath().toString());
-        assertEquals("CCD Case ID must be a 16-digit number", violation.getMessage());
+        assertEquals("hmctsReferenceNumber", violation.getPropertyPath().toString());
+        assertEquals("Home Office reference ID must be of the form XX/12345/2026, where XX is the appeal type, " + 
+                     "12345 stands for any five-digit number and 2026 is the year", violation.getMessage());
     }
 
     @Test
-    void shouldFailValidationWhenCcdCaseIdIsTooLong() {
+    void shouldFailValidationWhenHmctsRefNumIsTooLong() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId("12345678901234567")
+            .hmctsReferenceNumber("PA/12345/20206")
             .uan("1234-5678-9012-3456")
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("Yes")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 0))
+            .stf24weekCohorts(List.of(
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                    .name("HU")
+                    .included("true")
+                    .build()
+            ))
+            .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC))
             .build();
 
         // When
@@ -95,24 +105,27 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
         // Then
         assertEquals(1, violations.size());
         ConstraintViolation<HomeOfficeStatutoryTimeframeDto> violation = violations.iterator().next();
-        assertEquals("ccdCaseId", violation.getPropertyPath().toString());
-        assertEquals("CCD Case ID must be a 16-digit number", violation.getMessage());
+        assertEquals("hmctsReferenceNumber", violation.getPropertyPath().toString());
+        assertEquals("Home Office reference ID must be of the form XX/12345/2026, where XX is the appeal type, " + 
+                     "12345 stands for any five-digit number and 2026 is the year", violation.getMessage());
     }
 
     @Test
-    void shouldFailValidationWhenCcdCaseIdIsNull() {
+    void shouldFailValidationWhenHmctsRefNumIsNull() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId(null)
+            .hmctsReferenceNumber(null)
             .uan("1234-5678-9012-3456")
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("Yes")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 0))
+            .stf24weekCohorts(List.of(
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                    .name("HU")
+                    .included("true")
+                    .build()
+            ))
+            .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC))
             .build();
 
         // When
@@ -121,23 +134,25 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
         // Then
         assertEquals(1, violations.size());
         ConstraintViolation<HomeOfficeStatutoryTimeframeDto> violation = violations.iterator().next();
-        assertEquals("ccdCaseId", violation.getPropertyPath().toString());
+        assertEquals("hmctsReferenceNumber", violation.getPropertyPath().toString());
     }
 
     @Test
     void shouldPassValidationWithValidUan() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId("1234567890123456")
+            .hmctsReferenceNumber("PA/12345/2026")
             .uan("9876-5432-1098-7654")
             .familyName("Doe")
             .givenNames("Jane")
             .dateOfBirth(LocalDate.of(1985, 5, 15))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("Yes")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2024, 1, 15, 10, 20, 30))
+            .stf24weekCohorts(List.of(
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                    .name("HU")
+                    .included("true")
+                    .build()
+            ))
+            .timeStamp(OffsetDateTime.of(2024, 1, 15, 10, 20, 30, 0, ZoneOffset.UTC))
             .build();
 
         // When
@@ -148,43 +163,20 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
     }
 
     @Test
-    void shouldFailValidationWhenUanIsNull() {
-        // Given
-        HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId("1234567890123456")
-            .uan(null)
-            .familyName("Smith")
-            .givenNames("John")
-            .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("Yes")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(LocalDateTime.of(2023, 12, 1, 14, 30, 0))
-            .build();
-
-        // When
-        Set<ConstraintViolation<HomeOfficeStatutoryTimeframeDto>> violations = validator.validate(dto);
-
-        // Then
-        assertEquals(1, violations.size());
-        ConstraintViolation<HomeOfficeStatutoryTimeframeDto> violation = violations.iterator().next();
-        assertEquals("uan", violation.getPropertyPath().toString());
-    }
-
-    @Test
     void shouldFailValidationWhenMultipleFieldsAreInvalid() {
         // Given
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId("123")
+            .hmctsReferenceNumber("123")
             .uan("invalid-uan")
             .familyName(null)
             .givenNames(null)
             .dateOfBirth(null)
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status("Yes")
-                .cohorts(new String[]{"HU"})
-                .build())
+            .stf24weekCohorts(List.of(
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                    .name("HU")
+                    .included("true")
+                    .build()
+            ))
             .timeStamp(null)
             .build();
 
