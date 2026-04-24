@@ -1,6 +1,5 @@
 {
   "description": "RIA-4557 Should display the selected appellant details",
-  "launchDarklyKey": "home-office-uan-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

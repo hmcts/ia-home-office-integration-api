@@ -36,7 +36,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeSearchService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 
@@ -55,8 +54,6 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
     private static final String INVALID_HOME_OFFICE_REFERENCE = "The Home office does not recognise the submitted "
             + "appellant reference";
 
-    private final FeatureToggler featureToggler;
-
     private HomeOfficeSearchService homeOfficeSearchService;
 
     private HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper;
@@ -65,13 +62,11 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
 
     public RequestHomeOfficeDataPreparer(HomeOfficeSearchService homeOfficeSearchService,
                                          HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper,
-                                         HomeOfficeDataMatchHelper homeOfficeDataMatchHelper,
-                                         FeatureToggler featureToggler) {
+                                         HomeOfficeDataMatchHelper homeOfficeDataMatchHelper) {
 
         this.homeOfficeSearchService = homeOfficeSearchService;
         this.homeOfficeDataErrorsHelper = homeOfficeDataErrorsHelper;
         this.homeOfficeDataMatchHelper = homeOfficeDataMatchHelper;
-        this.featureToggler = featureToggler;
     }
 
     @Override
@@ -83,8 +78,7 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-                && callback.getEvent() == REQUEST_HOME_OFFICE_DATA
-                && featureToggler.getValue("home-office-uan-feature", false);
+                && callback.getEvent() == REQUEST_HOME_OFFICE_DATA;
     }
 
 

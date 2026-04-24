@@ -1,6 +1,5 @@
 {
   "description": "RIA-3314 Sends appeal decided notification to Home office API - Case Officer",
-  "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

@@ -61,7 +61,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeSearchService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 
@@ -112,8 +111,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
     private static HomeOfficeSearchResponse homeOfficeMultipleApplicantsResponse;
     private final String someHomeOfficeReference = "some-reference";
     @Mock
-    private FeatureToggler featureToggler;
-    @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
@@ -145,7 +142,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
     void setUp() {
         submitAppealApplicantSearchHandler =
                 new SubmitAppealApplicantSearchHandler(
-                        homeOfficeSearchService, homeOfficeDataErrorsHelper, homeOfficeDataMatchHelper, featureToggler);
+                        homeOfficeSearchService, homeOfficeDataErrorsHelper, homeOfficeDataMatchHelper);
     }
 
     @ParameterizedTest
@@ -155,7 +152,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
 
         final String jsonStr = new ObjectMapper().writeValueAsString(getSampleResponse());
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -186,7 +182,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
     @Test
     void check_handler_returns_case_data_with_errors_data() throws Exception {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -217,7 +212,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
 
         String jsonStr = new ObjectMapper().writeValueAsString(getMultipleApplicantsResponse());
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -250,7 +244,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
 
         String jsonStr = new ObjectMapper().writeValueAsString(getMultipleApplicantsResponse());
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -284,7 +277,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
 
         String jsonStr = new ObjectMapper().writeValueAsString(getMultipleApplicantsResponse());
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -337,7 +329,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
     @Test
     void check_handler_returns_case_data_with_error_status_for_null_fields() throws Exception {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -366,7 +357,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
     @Test
     void handle_should_return_error_for_invalid_home_office_reference() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(PAY_AND_SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -394,7 +384,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
     @Test
     void check_handler_validates_person_null_value_from_home_office_data() throws Exception {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(PAY_AND_SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -418,7 +407,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
     @Test
     void check_handler_validates_error_detail_from_home_office_data_returns_fail() throws Exception {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(MARK_APPEAL_PAID);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -452,7 +440,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
     @Test
     void check_handler_validates_no_appellant_error_from_home_office_data_returns_fail() throws Exception {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -486,7 +473,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
     @Test
     void check_handler_validates_ho_not_found_from_home_office_data_returns_fail() throws Exception {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -520,7 +506,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
     @Test
     void check_handler_validates_main_applicant_not_found_from_home_office_data_returns_fail() throws Exception {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -546,7 +531,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
     @Test
     void handle_should_return_failure_for_null_ho_response() throws Exception {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -590,7 +574,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
     @Test
     void it_can_handle_callback_uan_feature_on() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         for (Event event : Event.values()) {
 
             when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -639,7 +622,6 @@ public class SubmitAppealApplicantSearchHandlerTest {
     @Test
     void should_not_allow_empty_home_office_reference() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);

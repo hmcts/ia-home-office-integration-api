@@ -37,7 +37,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeSearchService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeDateFormatter;
@@ -92,16 +91,12 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
 
     private HomeOfficeDataMatchHelper homeOfficeDataMatchHelper;
 
-    private final FeatureToggler featureToggler;
-
     public SubmitAppealApplicantSearchHandler(HomeOfficeSearchService homeOfficeSearchService,
                                               HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper,
-                                              HomeOfficeDataMatchHelper homeOfficeDataMatchHelper,
-                                              FeatureToggler featureToggler) {
+                                              HomeOfficeDataMatchHelper homeOfficeDataMatchHelper) {
         this.homeOfficeSearchService = homeOfficeSearchService;
         this.homeOfficeDataErrorsHelper = homeOfficeDataErrorsHelper;
         this.homeOfficeDataMatchHelper = homeOfficeDataMatchHelper;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(
@@ -112,8 +107,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && Arrays.asList(SUBMIT_APPEAL, PAY_AND_SUBMIT_APPEAL, MARK_APPEAL_PAID).contains(callback.getEvent())
-                && featureToggler.getValue("home-office-uan-feature", false);
+                && Arrays.asList(SUBMIT_APPEAL, PAY_AND_SUBMIT_APPEAL, MARK_APPEAL_PAID).contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

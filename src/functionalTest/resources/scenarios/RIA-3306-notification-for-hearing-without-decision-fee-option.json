@@ -1,6 +1,5 @@
 {
   "description": "RIA-3306 Sends case listed notification to Home office API - without fee options",
-  "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

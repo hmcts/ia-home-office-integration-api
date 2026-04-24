@@ -42,7 +42,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeApplicationService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeMissingApplicationException;
 
@@ -50,9 +49,6 @@ class GetAppellantDataHandlerTest {
 
     @Mock
     private HomeOfficeApplicationService homeOfficeApplicationService;
-
-    @Mock
-    private FeatureToggler featureToggler;
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -74,7 +70,6 @@ class GetAppellantDataHandlerTest {
         MockitoAnnotations.openMocks(this);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
     }
 
     @Test
@@ -195,7 +190,6 @@ class GetAppellantDataHandlerTest {
 
     @Test
     void handle_throwsException_whenCannotHandle() {
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(false);
 
         assertThrows(IllegalStateException.class,
             () -> handler.handle(PreSubmitCallbackStage.MID_EVENT, callback));
