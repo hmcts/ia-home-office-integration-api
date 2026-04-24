@@ -3,11 +3,11 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
@@ -70,31 +70,42 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Home
 @SuppressWarnings("unchecked")
 public class SubmitAppealApplicantSearchHandlerTest {
 
-    private static final String HOME_OFFICE_CALL_ERROR_MESSAGE = "### There is a problem\n\n"
-        + "The service has been unable t"
-        + "o retrieve the Home Office information about this appeal.\n\n"
-        + "[Request the Home Office information](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/requestHomeOfficeData) to"
-        + " try again. This may take a few minutes.";
+    private static final String HOME_OFFICE_CALL_ERROR_MESSAGE = """
+        ### There is a problem
+        
+        The service has been unable t\
+        o retrieve the Home Office information about this appeal.
+        
+        [Request the Home Office information](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/requestHomeOfficeData) to\
+         try again. This may take a few minutes.""";
 
-    private static final String HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE = "### There is a problem\n\n"
-        + "The appellant entered the "
-        + "Home Office reference number incorrectly. You can contact the appellant to check the reference number"
-        + " if you need this information to validate the appeal";
+    private static final String HOME_OFFICE_INVALID_REFERENCE_ERROR_MESSAGE = """
+        ### There is a problem
+        
+        The appellant entered the \
+        Home Office reference number incorrectly. You can contact the appellant to check the reference number\
+         if you need this information to validate the appeal""";
 
-    private static final String HOME_OFFICE_REFERENCE_NOT_FOUND_ERROR_MESSAGE = "### There is a problem\n\n"
-        + "The appellant’s Home Office reference"
-        + " number could not be found. You can contact the Home Office to check the reference"
-        + " if you need this information to validate the appeal";
+    private static final String HOME_OFFICE_REFERENCE_NOT_FOUND_ERROR_MESSAGE = """
+        ### There is a problem
+        
+        The appellant’s Home Office reference\
+         number could not be found. You can contact the Home Office to check the reference\
+         if you need this information to validate the appeal""";
 
-    private static final String HOME_OFFICE_APPELLANT_NOT_FOUND_ERROR_MESSAGE = "### There is a problem\n\n"
-        + "The service has been unable to retrieve the Home Office information about this appeal "
-        + "because the Home Office reference number does not have any matching appellant data in the system. "
-        + "You can contact the Home Office if you need more information to validate the appeal.";
+    private static final String HOME_OFFICE_APPELLANT_NOT_FOUND_ERROR_MESSAGE = """
+        ### There is a problem
+        
+        The service has been unable to retrieve the Home Office information about this appeal \
+        because the Home Office reference number does not have any matching appellant data in the system. \
+        You can contact the Home Office if you need more information to validate the appeal.""";
 
-    private static final String HOME_OFFICE_WRONG_APPLICANT_NOT_FOUND_ERROR_MESSAGE = "**Note:** "
-            + "The service has been unable to retrieve the Home Office information about this appeal "
-            + "because the Home Office Reference/Case ID, data of birth or name submitted by the appellant do not "
-            + "match the details stored by the Home Office\n## Do this next"
+    private static final String HOME_OFFICE_WRONG_APPLICANT_NOT_FOUND_ERROR_MESSAGE = """
+            **Note:** \
+            The service has been unable to retrieve the Home Office information about this appeal \
+            because the Home Office Reference/Case ID, data of birth or name submitted by the appellant do not \
+            match the details stored by the Home Office
+            ## Do this next"""
             + "\r\n- Contact the Home Office to get the correct details"
             + "\r\n- Use [Edit appeal](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/editAppealAfterSubmit) to update "
             + "the details as required"
@@ -683,7 +694,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
             "1970-01-21"
         );
 
-        Person person = searchStatus.get(0).getPerson();
+        Person person = searchStatus.getFirst().getPerson();
 
         assertNotNull(searchStatus);
         assertTrue(!searchStatus.isEmpty());
@@ -723,7 +734,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
         Person appellant = Person.PersonBuilder.person().withFamilyName("Fenn").withGivenName("Stephen").build();
 
         List<HomeOfficeCaseStatus> invalidList = new ArrayList<>();
-        invalidList.add(getSampleResponse().getStatus().get(0));
+        invalidList.add(getSampleResponse().getStatus().getFirst());
         List<HomeOfficeCaseStatus> searchStatus =
             submitAppealApplicantSearchHandler.selectMainApplicant(
                 caseId,
@@ -799,7 +810,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
     void metadata_returned_empty_from_invalid_set_of_values() throws Exception {
         Optional<HomeOfficeMetadata> metadata = submitAppealApplicantSearchHandler.selectMetadata(
             caseId,
-            getSampleResponse().getStatus().get(0).getApplicationStatus().getHomeOfficeMetadata()
+            getSampleResponse().getStatus().getFirst().getApplicationStatus().getHomeOfficeMetadata()
         );
 
         assertNotNull(metadata);

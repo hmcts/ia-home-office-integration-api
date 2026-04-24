@@ -6,6 +6,6 @@ public enum Outcome {
     GRANTED,
     REFUSED,
     REHEARD,
-    REMADE;
+    REMADE
 
 }

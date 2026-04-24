@@ -69,14 +69,14 @@ class HomeOfficeSearchServiceTest {
         assertNotNull(response.getMessageHeader());
         assertNotNull(response.getMessageType());
         assertThat(response.getMessageType()).isEqualTo("RESPONSE_RIGHT_OF_APPEAL_DETAILS");
-        assertNotNull(response.getStatus().get(0).getPerson());
-        assertNotNull(response.getStatus().get(0).getApplicationStatus());
-        assertNotNull(response.getStatus().get(0).getPerson().getGivenName());
-        assertNotNull(response.getStatus().get(0).getPerson().getFamilyName());
-        assertNotNull(response.getStatus().get(0).getPerson().getFullName());
-        assertNotNull(response.getStatus().get(0).getPerson().getNationality());
-        assertNotNull(response.getStatus().get(0).getApplicationStatus().getDecisionDate());
-        assertNotNull(response.getStatus().get(0).getApplicationStatus().getDecisionType());
+        assertNotNull(response.getStatus().getFirst().getPerson());
+        assertNotNull(response.getStatus().getFirst().getApplicationStatus());
+        assertNotNull(response.getStatus().getFirst().getPerson().getGivenName());
+        assertNotNull(response.getStatus().getFirst().getPerson().getFamilyName());
+        assertNotNull(response.getStatus().getFirst().getPerson().getFullName());
+        assertNotNull(response.getStatus().getFirst().getPerson().getNationality());
+        assertNotNull(response.getStatus().getFirst().getApplicationStatus().getDecisionDate());
+        assertNotNull(response.getStatus().getFirst().getApplicationStatus().getDecisionType());
     }
 
     @Test
@@ -87,8 +87,8 @@ class HomeOfficeSearchServiceTest {
         HomeOfficeSearch request = homeOfficeSearchService.makeRequestBody(someHoReference);
 
         assertNotNull(request);
-        assertEquals("DOCUMENT_REFERENCE", request.getSearchParams().get(0).getSpType());
-        assertEquals(someHoReference, request.getSearchParams().get(0).getSpValue());
+        assertEquals("DOCUMENT_REFERENCE", request.getSearchParams().getFirst().getSpType());
+        assertEquals(someHoReference, request.getSearchParams().getFirst().getSpValue());
         assertEquals("HMCTS", request.getMessageHeader().getConsumer().getCode());
         assertEquals("HM Courts and Tribunal Service",
             request.getMessageHeader().getConsumer().getDescription());

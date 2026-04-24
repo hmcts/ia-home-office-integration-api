@@ -131,7 +131,7 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
                         findApplicantByNameAndDob(
                                 searchResponse.getStatus(), selectedApplicantName, selectedApplicantDob);
 
-                if (!optMatchedApplicant.isEmpty()) {
+                if (optMatchedApplicant.isPresent()) {
 
                     HomeOfficeCaseStatus matchedApplicant = optMatchedApplicant.get();
                     Person person = matchedApplicant.getPerson();
@@ -231,8 +231,8 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
 
         Person person = status.getPerson();
 
-        String applicantDob = String.format("%02d", person.getDayOfBirth())
-                + String.format("%02d", person.getMonthOfBirth())
+        String applicantDob = "%02d".formatted(person.getDayOfBirth())
+                + "%02d".formatted(person.getMonthOfBirth())
                 + String.valueOf(person.getYearOfBirth()).substring(2);
 
         return applicantDob.equals(appellantDateOfBirth);

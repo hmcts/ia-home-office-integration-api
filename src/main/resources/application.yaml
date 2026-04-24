@@ -12,14 +12,13 @@ management:
         include: health, info, prometheus, ping
   health:
     redis:
-      enabled: false  # don't let Redis affect pod health
-    probes:
-      enabled: true
+      enabled: false
     group:
       readiness:
         include: ping
       liveness:
         include: ping
+  endpoint.health.probes.enabled: true
 
 spring:
   config:

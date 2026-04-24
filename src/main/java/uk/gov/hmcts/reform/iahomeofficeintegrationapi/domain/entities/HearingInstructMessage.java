@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
-import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class HearingInstructMessage extends HomeOfficeInstruct {
 

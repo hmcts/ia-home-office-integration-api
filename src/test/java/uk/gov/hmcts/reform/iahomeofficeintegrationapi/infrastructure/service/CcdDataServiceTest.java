@@ -142,7 +142,7 @@ class CcdDataServiceTest {
         assertNotNull(result.getHistory());
         assertEquals(1, result.getHistory().size());
         
-        StatutoryTimeframe24WeeksHistory historyEntry = result.getHistory().get(0).getValue();
+        StatutoryTimeframe24WeeksHistory historyEntry = result.getHistory().getFirst().getValue();
         assertEquals(YesOrNo.YES, historyEntry.getStatus());
         assertEquals("Home Office initial determination", historyEntry.getReason());
         assertEquals("Home Office Integration API", historyEntry.getUser());
@@ -167,7 +167,7 @@ class CcdDataServiceTest {
         assertNotNull(result.getHistory());
         assertEquals(1, result.getHistory().size());
         
-        StatutoryTimeframe24WeeksHistory historyEntry = result.getHistory().get(0).getValue();
+        StatutoryTimeframe24WeeksHistory historyEntry = result.getHistory().getFirst().getValue();
         assertEquals(YesOrNo.NO, historyEntry.getStatus());
         assertEquals("Home Office initial determination", historyEntry.getReason());
         assertEquals("Home Office Integration API", historyEntry.getUser());
@@ -428,7 +428,7 @@ class CcdDataServiceTest {
         assertNotNull(result);
         
         // Verify the datetime format preserves the time information (not just 00:00:00)
-        StatutoryTimeframe24WeeksHistory historyEntry = result.getHistory().get(0).getValue();
+        StatutoryTimeframe24WeeksHistory historyEntry = result.getHistory().getFirst().getValue();
         assertEquals("2024-06-15T14:28:18", historyEntry.getDateTimeAdded());
     }
 

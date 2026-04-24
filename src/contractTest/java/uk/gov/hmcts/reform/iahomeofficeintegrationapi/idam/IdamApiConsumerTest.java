@@ -1,16 +1,16 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.idam;
 
+import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpStatus;
 import org.json.JSONException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,9 +19,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.IdamApi;
@@ -29,11 +28,10 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.mode
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.RestTemplateConfiguration;
 
-@ExtendWith(SpringExtension.class)
 @ExtendWith(PactConsumerTestExt.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactTestFor(providerName = "idamApi_oidc", port = "5000")
-@ContextConfiguration(classes = IdamApiConsumerApplication.class)
+@SpringJUnitConfig(classes = IdamApiConsumerApplication.class)
 @TestPropertySource(
         properties = {"idam.baseUrl=localhost:5000"}
 )
@@ -47,7 +45,7 @@ public class IdamApiConsumerTest {
             .build();
 
     @Pact(provider = "idamApi_oidc", consumer = "ia_homeOfficeIntegrationApi")
-    public RequestResponsePact generatePactFragmentUser(PactDslWithProvider builder) {
+    public V4Pact generatePactFragmentUser(PactDslWithProvider builder) {
         return builder
                 .given("userinfo is requested")
                 .uponReceiving("a request for a user")
@@ -58,12 +56,12 @@ public class IdamApiConsumerTest {
                 .status(HttpStatus.SC_OK)
                 .headers(responseheaders)
                 .body(createUserDetailsResponse())
-                .toPact();
+                .toPact(V4Pact.class);
 
     }
 
     @Pact(provider = "idamApi_oidc", consumer = "ia_homeOfficeIntegrationApi")
-    public RequestResponsePact generatePactFragmentToken(PactDslWithProvider builder) throws JSONException {
+    public V4Pact generatePactFragmentToken(PactDslWithProvider builder) throws JSONException {
 
         return builder
                 .given("a token is requested")
@@ -81,7 +79,7 @@ public class IdamApiConsumerTest {
                 .status(org.springframework.http.HttpStatus.OK.value())
                 .headers(responseheaders)
                 .body(createAuthResponse())
-                .toPact();
+                .toPact(V4Pact.class);
     }
 
     private PactDslJsonBody createUserDetailsResponse() {

@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
@@ -162,7 +162,7 @@ public class RequestHomeOfficeDataPreparerTest {
 
         final List<Value> values = new ArrayList<>();
         values.add(new Value("NoMatch", "No Match"));
-        DynamicList appellantsList = new DynamicList(values.get(0), values);
+        DynamicList appellantsList = new DynamicList(values.getFirst(), values);
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
@@ -229,7 +229,7 @@ public class RequestHomeOfficeDataPreparerTest {
 
         final List<Value> values = new ArrayList<>();
         values.add(new Value("NoMatch", "No Match"));
-        DynamicList appellantsList = new DynamicList(values.get(0), values);
+        DynamicList appellantsList = new DynamicList(values.getFirst(), values);
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
@@ -267,7 +267,7 @@ public class RequestHomeOfficeDataPreparerTest {
                 new Value("John Smith", "John Smith-290268"),
                 new Value("Capability Smith", "Capability Smith-210170"),
                 new Value("NoMatch", "No Match"));
-        DynamicList appellantsList = new DynamicList(values.get(0), values);
+        DynamicList appellantsList = new DynamicList(values.getFirst(), values);
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
@@ -308,7 +308,7 @@ public class RequestHomeOfficeDataPreparerTest {
                 new Value("John Smith", "John Smith-290268"),
                 new Value("Capability Smith", "Capability Smith-210170"),
                 new Value("NoMatch", "No Match"));
-        DynamicList appellantsList = new DynamicList(values.get(0), values);
+        DynamicList appellantsList = new DynamicList(values.getFirst(), values);
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);

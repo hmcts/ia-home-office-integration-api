@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -290,7 +290,7 @@ public class RequestHomeOfficeDataHandlerTest {
 
         List<Value> values = new ArrayList<>();
         values.add(new Value("Capability Smith", "Capability Smith-210170"));
-        return new DynamicList(values.get(0), values);
+        return new DynamicList(values.getFirst(), values);
     }
 
     private DynamicList getNoMatch() {
@@ -298,7 +298,7 @@ public class RequestHomeOfficeDataHandlerTest {
         List<Value> values = new ArrayList<>();
         values.add(new Value("NoMatch", "No Match"));
 
-        return new DynamicList(values.get(0), values);
+        return new DynamicList(values.getFirst(), values);
     }
 
     private HomeOfficeCaseStatus getNoMatchResponse() {

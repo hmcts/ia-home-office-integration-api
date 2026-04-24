@@ -8,7 +8,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.V4Pact;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import io.restassured.RestAssured;
@@ -43,7 +43,7 @@ public class HomeOfficeConsumerTest {
     }
 
     @Pact(provider = "homeoffice_api", consumer = "hmcts")
-    public RequestResponsePact executeSearchByParametersAndGet200(PactDslWithProvider builder) {
+    public V4Pact executeSearchByParametersAndGet200(PactDslWithProvider builder) {
 
         Map<String, String> headers = Maps.newHashMap();
         headers.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -127,11 +127,11 @@ public class HomeOfficeConsumerTest {
             .willRespondWith()
             .status(HttpStatus.OK.value())
             .body(validateResponseBody)
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Pact(provider = "homeoffice_api", consumer = "hmcts")
-    public RequestResponsePact executeSearchByParametersAndGet400(PactDslWithProvider builder) {
+    public V4Pact executeSearchByParametersAndGet400(PactDslWithProvider builder) {
 
         Map<String, String> headers = Maps.newHashMap();
         headers.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -164,11 +164,11 @@ public class HomeOfficeConsumerTest {
             .willRespondWith()
             .status(HttpStatus.BAD_REQUEST.value())
             .body(searchErrorResponseBody)
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Pact(provider = "homeoffice_api", consumer = "hmcts")
-    public RequestResponsePact executeSetInstructAndGet200(PactDslWithProvider builder) {
+    public V4Pact executeSetInstructAndGet200(PactDslWithProvider builder) {
 
         Map<String, String> headers = Maps.newHashMap();
         headers.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -194,11 +194,11 @@ public class HomeOfficeConsumerTest {
             .willRespondWith()
             .status(HttpStatus.OK.value())
             .body(instructResponseBody)
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Pact(provider = "homeoffice_api", consumer = "hmcts")
-    public RequestResponsePact executeSetInstructAndGet400(PactDslWithProvider builder) {
+    public V4Pact executeSetInstructAndGet400(PactDslWithProvider builder) {
 
         Map<String, String> headers = Maps.newHashMap();
         headers.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -231,7 +231,7 @@ public class HomeOfficeConsumerTest {
             .willRespondWith()
             .status(HttpStatus.BAD_REQUEST.value())
             .body(errorInstructResponseBody)
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Test

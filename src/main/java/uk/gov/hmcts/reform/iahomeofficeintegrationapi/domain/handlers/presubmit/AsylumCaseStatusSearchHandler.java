@@ -21,7 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataErrorsHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ApplicationStatus;
@@ -149,9 +149,9 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
             searchResponse = homeOfficeSearchService.getCaseStatus(caseId, homeOfficeReferenceNumber);
 
             if (searchResponse.getErrorDetail() != null) {
-                final String errMessage = String.format("Error code: %s, message: %s",
-                        searchResponse.getErrorDetail().getErrorCode(),
-                        searchResponse.getErrorDetail().getMessageText());
+                final String errMessage = "Error code: %s, message: %s".formatted(
+                    searchResponse.getErrorDetail().getErrorCode(),
+                    searchResponse.getErrorDetail().getMessageText());
                 setErrorMessageForErrorCode(
                         caseId,
                         asylumCase,
@@ -170,7 +170,7 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
             Optional<HomeOfficeCaseStatus> selectedApplicant =
                     selectAnyApplicant(caseId, searchResponse.getStatus());
 
-            if (!selectedApplicant.isPresent()) {
+            if (selectedApplicant.isEmpty()) {
                 log.warn("Unable to find Any APPLICANT in Home office response, caseId: {}", caseId);
                 asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
                 asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE, HOME_OFFICE_MAIN_APPLICANT_NOT_FOUND_ERROR_MESSAGE);
@@ -184,7 +184,7 @@ public class AsylumCaseStatusSearchHandler implements PreSubmitCallbackHandler<A
                                 appellantDateOfBirth
                         );
 
-                if (!selectedApplicant.isPresent()) {
+                if (selectedApplicant.isEmpty()) {
                     log.warn("Unable to find MAIN APPLICANT in Home office response, caseId: {}", caseId);
                     asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
                     asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE,
