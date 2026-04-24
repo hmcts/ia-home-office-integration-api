@@ -41,7 +41,7 @@ public class CacheConfiguration {
             redisConnectionFactory.getConnection().ping();
             log.info("Redis connection successful - using Redis for systemTokenCache");
 
-            // Idam user info config
+            // IDam user info config
             AesEncryptingRedisSerializer<UserInfo> userInfoSerializer =
                 new AesEncryptingRedisSerializer<>(
                     new Jackson2JsonRedisSerializer<>(UserInfo.class),
@@ -114,7 +114,7 @@ public class CacheConfiguration {
             // checked azure portal,
             if (useSsl) {
                 redisUri.setSsl(true);
-                redisUri.setVerifyPeer(false); // for Azure (self signed certs)
+                redisUri.setVerifyPeer(false); // for Azure (self-signed certs)
             }
 
             redisUri.setTimeout(Duration.ofSeconds(10)); // 64seconds is default, so fail quicker
