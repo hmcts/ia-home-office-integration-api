@@ -52,7 +52,7 @@ spring:
         enabled: true
 
 security:
-  anonymousPaths: ${ANONYMOUS_PATHS:/,/health,/health/liveness,/health/readiness,/loggers/**,/swagger-ui.html,/swagger-resources/**,/v2/api-docs,/webjars/springfox-swagger-ui/**,/favicon.ico}
+  anonymousPaths: ${ANONYMOUS_PATHS:/,/health,/health/liveness,/health/readiness,/loggers/**,/swagger-ui.html,/swagger-resources/**,/v2/api-docs,/webjars/springfox-swagger-ui/**,/favicon.ico,/home-office-statutory-timeframe-status}
   authorisedRoles:
     - "caseworker-ia"
     - "citizen"
