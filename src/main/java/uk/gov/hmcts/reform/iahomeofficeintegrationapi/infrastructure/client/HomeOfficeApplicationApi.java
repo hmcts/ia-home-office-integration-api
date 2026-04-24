@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOffice
 @FeignClient(name = "home-office-application-api", url = "${home-office.api.url}", configuration = HomeOfficeMissingApplicationDecoderConfig.class)
 public interface HomeOfficeApplicationApi {
 
-    @GetMapping("/applications/v1/{id}")
+    @GetMapping("/ichallenge/applications/v1/{id}")
     ResponseEntity<HomeOfficeApplicationDto> getApplication(@PathVariable(name = "id") final String uanOrGwf,
         @RequestHeader(AUTHORIZATION) String bearerToken,
         @RequestHeader("Home-Office-Correlation-ID") final String correlationID,
