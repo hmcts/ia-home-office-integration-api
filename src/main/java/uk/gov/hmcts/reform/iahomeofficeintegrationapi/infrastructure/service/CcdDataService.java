@@ -76,10 +76,11 @@ public class CcdDataService {
         String userToken;
         String s2sToken;
         try {
-            userToken = "Bearer " + idamService.getServiceUserToken();
+            String rawToken = idamService.getServiceUserToken();
+            userToken = validateAndNormaliseBearerToken("user token", rawToken);
             log.debug("A System user token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
-            s2sToken = serviceAuthorization.generate();
+            s2sToken = validateAndNormaliseBearerToken("S2S token", serviceAuthorization.generate());
             log.debug("S2S token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
         } catch (IdentityManagerResponseException ex) {
@@ -238,6 +239,30 @@ public class CcdDataService {
             log.info(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
+    }
+
+    private String validateAndNormaliseBearerToken(String tokenName, String token) {
+        if (token == null || token.isBlank()) {
+            throw new IllegalStateException(tokenName + " is null or blank");
+        }
+        long bearerCount = java.util.Arrays.stream(token.split(" "))
+            .filter(part -> part.equalsIgnoreCase("Bearer"))
+            .count();
+        if (bearerCount == 0) {
+            throw new IllegalStateException(tokenName + " is missing 'Bearer' prefix: " + token);
+        }
+        if (bearerCount > 1) {
+            throw new IllegalStateException(tokenName + " has multiple 'Bearer' prefixes: " + token);
+        }
+        return token;
+    }
+
+    private String decodeJwtPayload(String jwt) {
+        String[] parts = jwt.split("\\.");
+        if (parts.length < 2) {
+            throw new IllegalStateException("Invalid JWT format — expected 3 parts separated by '.'");
+        }
+        return new String(java.util.Base64.getUrlDecoder().decode(parts[1]));
     }
 
     public String generateS2SToken() {
