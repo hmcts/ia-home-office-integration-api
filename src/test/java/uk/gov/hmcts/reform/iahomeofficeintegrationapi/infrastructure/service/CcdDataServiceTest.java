@@ -781,4 +781,58 @@ class CcdDataServiceTest {
         assertEquals("Some other error", exception.getMessage());
     }
 
+    @Test
+    void shouldThrowWhenUserTokenIsMissingBearerPrefix() {
+        when(idamService.getServiceUserToken()).thenReturn("no-bearer-token");
+
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+
+        assertEquals("user token is missing 'Bearer' prefix: no-bearer-token", exception.getMessage());
+        verifyNoInteractions(ccdDataApi);
+    }
+
+    @Test
+    void shouldThrowWhenUserTokenHasMultipleBearerPrefixes() {
+        when(idamService.getServiceUserToken()).thenReturn("Bearer Bearer test-user-token");
+
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+
+        assertEquals("user token has multiple 'Bearer' prefixes: Bearer Bearer test-user-token", exception.getMessage());
+        verifyNoInteractions(ccdDataApi);
+    }
+
+    @Test
+    void shouldThrowWhenS2STokenIsMissingBearerPrefix() {
+        when(idamService.getServiceUserToken()).thenReturn("Bearer test-user-token");
+        when(serviceAuthorization.generate()).thenReturn("no-bearer-s2s-token");
+
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+
+        assertEquals("S2S token is missing 'Bearer' prefix: no-bearer-s2s-token", exception.getMessage());
+        verifyNoInteractions(ccdDataApi);
+    }
+
+    @Test
+    void shouldThrowWhenS2STokenHasMultipleBearerPrefixes() {
+        when(idamService.getServiceUserToken()).thenReturn("Bearer test-user-token");
+        when(serviceAuthorization.generate()).thenReturn("Bearer Bearer test-s2s-token");
+
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+
+        assertEquals("S2S token has multiple 'Bearer' prefixes: Bearer Bearer test-s2s-token", exception.getMessage());
+        verifyNoInteractions(ccdDataApi);
+    }
+
 }
