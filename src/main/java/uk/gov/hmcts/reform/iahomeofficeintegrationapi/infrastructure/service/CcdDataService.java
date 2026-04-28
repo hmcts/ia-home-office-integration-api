@@ -77,10 +77,10 @@ public class CcdDataService {
         String s2sToken;
         try {
             String rawToken = idamService.getServiceUserToken();
-            userToken = validateAndNormaliseBearerToken("user token", rawToken);
+            userToken = normaliseBearerToken(rawToken);
             log.debug("A System user token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
-            s2sToken = validateAndNormaliseBearerToken("S2S token", serviceAuthorization.generate());
+            s2sToken = normaliseBearerToken(serviceAuthorization.generate());
             log.debug("S2S token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
         } catch (IdentityManagerResponseException ex) {
@@ -241,20 +241,12 @@ public class CcdDataService {
         }
     }
 
-    private String validateAndNormaliseBearerToken(String tokenName, String token) {
+    private String normaliseBearerToken(String token) {
         if (token == null || token.isBlank()) {
-            throw new IllegalStateException(tokenName + " is null or blank");
+            throw new IllegalStateException("Token is null or blank");
         }
-        long bearerCount = java.util.Arrays.stream(token.split(" "))
-            .filter(part -> part.equalsIgnoreCase("Bearer"))
-            .count();
-        if (bearerCount == 0) {
-            throw new IllegalStateException(tokenName + " is missing 'Bearer' prefix: " + token);
-        }
-        if (bearerCount > 1) {
-            throw new IllegalStateException(tokenName + " has multiple 'Bearer' prefixes: " + token);
-        }
-        return token;
+        String stripped = token.trim().replaceAll("(?i)^(Bearer\\s+)+", "");
+        return "Bearer " + stripped;
     }
 
     private String decodeJwtPayload(String jwt) {

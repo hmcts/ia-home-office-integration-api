@@ -782,57 +782,92 @@ class CcdDataServiceTest {
     }
 
     @Test
-    void shouldThrowWhenUserTokenIsMissingBearerPrefix() {
-        when(idamService.getServiceUserToken()).thenReturn("no-bearer-token");
+    void shouldNormaliseUserTokenWhenBearerPrefixIsMissing() {
+        when(idamService.getServiceUserToken()).thenReturn("test-user-token");
+        when(serviceAuthorization.generate()).thenReturn("Bearer test-s2s-token");
 
-        IllegalStateException exception = assertThrows(
-            IllegalStateException.class,
-            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        stubHappyPath("Bearer test-user-token", "Bearer test-s2s-token");
+
+        ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto);
+
+        verify(ccdDataApi).startEventByCase(
+            eq("Bearer test-user-token"),
+            eq("Bearer test-s2s-token"),
+            eq(CCD_CASE_ID),
+            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
         );
-
-        assertEquals("user token is missing 'Bearer' prefix: no-bearer-token", exception.getMessage());
-        verifyNoInteractions(ccdDataApi);
     }
 
     @Test
-    void shouldThrowWhenUserTokenHasMultipleBearerPrefixes() {
+    void shouldNormaliseUserTokenWhenBearerPrefixIsDuplicated() {
         when(idamService.getServiceUserToken()).thenReturn("Bearer Bearer test-user-token");
+        when(serviceAuthorization.generate()).thenReturn("Bearer test-s2s-token");
 
-        IllegalStateException exception = assertThrows(
-            IllegalStateException.class,
-            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        stubHappyPath("Bearer test-user-token", "Bearer test-s2s-token");
+
+        ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto);
+
+        verify(ccdDataApi).startEventByCase(
+            eq("Bearer test-user-token"),
+            eq("Bearer test-s2s-token"),
+            eq(CCD_CASE_ID),
+            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
         );
-
-        assertEquals("user token has multiple 'Bearer' prefixes: Bearer Bearer test-user-token", exception.getMessage());
-        verifyNoInteractions(ccdDataApi);
     }
 
     @Test
-    void shouldThrowWhenS2STokenIsMissingBearerPrefix() {
+    void shouldNormaliseS2STokenWhenBearerPrefixIsMissing() {
         when(idamService.getServiceUserToken()).thenReturn("Bearer test-user-token");
-        when(serviceAuthorization.generate()).thenReturn("no-bearer-s2s-token");
+        when(serviceAuthorization.generate()).thenReturn("test-s2s-token");
 
-        IllegalStateException exception = assertThrows(
-            IllegalStateException.class,
-            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        stubHappyPath("Bearer test-user-token", "Bearer test-s2s-token");
+
+        ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto);
+
+        verify(ccdDataApi).startEventByCase(
+            eq("Bearer test-user-token"),
+            eq("Bearer test-s2s-token"),
+            eq(CCD_CASE_ID),
+            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
         );
-
-        assertEquals("S2S token is missing 'Bearer' prefix: no-bearer-s2s-token", exception.getMessage());
-        verifyNoInteractions(ccdDataApi);
     }
 
     @Test
-    void shouldThrowWhenS2STokenHasMultipleBearerPrefixes() {
+    void shouldNormaliseS2STokenWhenBearerPrefixIsDuplicated() {
         when(idamService.getServiceUserToken()).thenReturn("Bearer test-user-token");
         when(serviceAuthorization.generate()).thenReturn("Bearer Bearer test-s2s-token");
 
-        IllegalStateException exception = assertThrows(
-            IllegalStateException.class,
-            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
-        );
+        stubHappyPath("Bearer test-user-token", "Bearer test-s2s-token");
 
-        assertEquals("S2S token has multiple 'Bearer' prefixes: Bearer Bearer test-s2s-token", exception.getMessage());
-        verifyNoInteractions(ccdDataApi);
+        ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto);
+
+        verify(ccdDataApi).startEventByCase(
+            eq("Bearer test-user-token"),
+            eq("Bearer test-s2s-token"),
+            eq(CCD_CASE_ID),
+            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
+        );
+    }
+
+    private void stubHappyPath(String userToken, String s2sToken) {
+        StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
+        @SuppressWarnings("unchecked")
+        CaseDetails<AsylumCase> mockCaseDetails = mock(CaseDetails.class);
+        when(mockCaseDetails.getCaseData()).thenReturn(mock(AsylumCase.class));
+        when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
+        when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
+        when(mockStartEventDetails.getEventId()).thenReturn(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS);
+
+        when(ccdDataApi.startEventByCase(
+            eq(userToken), eq(s2sToken), eq(CCD_CASE_ID),
+            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
+        )).thenReturn(mockStartEventDetails);
+
+        SubmitEventDetails mockSubmitEventDetails = mock(SubmitEventDetails.class);
+        when(mockSubmitEventDetails.getCallbackResponseStatusCode()).thenReturn(201);
+        when(ccdDataApi.submitEventByCase(
+            eq(userToken), eq(s2sToken), eq(CCD_CASE_ID), any(CaseDataContent.class)
+        )).thenReturn(mockSubmitEventDetails);
     }
 
 }
