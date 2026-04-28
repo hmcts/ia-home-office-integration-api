@@ -79,10 +79,10 @@ public class CcdDataService {
         String userToken;
         String s2sToken;
         try {
-            userToken = "Bearer " + idamService.getServiceUserToken();
+            userToken = normaliseBearerToken(idamService.getServiceUserToken());
             log.debug("A System user token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
-            s2sToken = serviceAuthorization.generate();
+            s2sToken = normaliseBearerToken(serviceAuthorization.generate());
             log.debug("S2S token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
         } catch (IdentityManagerResponseException ex) {
@@ -247,6 +247,14 @@ public class CcdDataService {
             log.info(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
+    }
+
+    private String normaliseBearerToken(String token) {
+        if (token == null || token.isBlank()) {
+            throw new IllegalStateException("Token is null or blank");
+        }
+        String stripped = token.trim().replaceAll("(?i)^(Bearer\\s+)+", "");
+        return "Bearer " + stripped;
     }
 
     public String generateS2SToken() {
