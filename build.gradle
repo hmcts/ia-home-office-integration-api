@@ -4,7 +4,7 @@ plugins {
     id 'pmd'
     id 'jacoco'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.springframework.boot' version '3.5.13'
+    id 'org.springframework.boot' version '3.5.14'
     id 'uk.gov.hmcts.java' version '0.12.68'
     id 'org.owasp.dependencycheck' version '10.0.3'
     id 'com.github.ben-manes.versions' version '0.51.0'
@@ -231,42 +231,48 @@ dependencyManagement {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:2025.0.2"
     }
     dependencies {
-        dependency group: 'commons-fileupload', name: 'commons-fileupload', version: '1.6.0'
-        dependency group: 'org.yaml', name: 'snakeyaml', version: '2.4'
-
-
-        dependencySet(group: 'org.junit.jupiter', version: '5.13.4') {
+        dependencySet(group: 'org.junit.jupiter', version: '5.14.4') {
             entry 'junit-jupiter'
             entry 'junit-jupiter-api'
             entry 'junit-jupiter-engine'
             entry 'junit-jupiter-params'
         }
 
-        dependencySet(group: 'org.junit.platform', version: '1.13.4') {
+        dependencySet(group: 'org.junit.platform', version: '1.14.4') {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
             entry 'junit-platform-launcher'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.19.1') {
+        dependency group: 'io.rest-assured', name: 'rest-assured', version: '5.5.7'
+
+        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.21.2') {
             entry 'jackson-databind'
             entry 'jackson-core'
+        }
+
+        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.21') {
             entry 'jackson-annotations'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.dataformat', version: '2.19.1') {
+        dependencySet(group: 'com.fasterxml.jackson.dataformat', version: '2.21.2') {
             entry 'jackson-dataformat-yaml'
             entry 'jackson-dataformat-cbor'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.19.1') {
+        dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.21.2') {
             entry 'jackson-datatype-jsr310'
             entry 'jackson-datatype-jdk8'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.module', version: '2.19.1') {
+        dependencySet(group: 'com.fasterxml.jackson.module', version: '2.21.2') {
             entry 'jackson-module-parameter-names'
             entry 'jackson-module-afterburner'
+        }
+
+        dependencySet(group: 'org.mockito', version: '5.23.0') {
+            entry 'mockito-core'
+            entry 'mockito-junit-jupiter'
         }
     }
 }
@@ -313,57 +319,36 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.3'
-
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
 
+    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.3'
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
 
     implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '3.2.0'
 
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.17'
 
-    implementation group: 'org.apiguardian', name: 'apiguardian-api', version: '1.1.2'
-
-    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '10.9'
-
-    implementation group: 'net.minidev', name: 'json-smart', version: '2.6.0'
-
     implementation 'com.fasterxml.jackson.core:jackson-databind'
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
     implementation group: 'commons-io', name: 'commons-io', version: '2.21.0'
 
-    implementation group: "jakarta.servlet", name: "jakarta.servlet-api", version: "6.1.0"
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.32'
-    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.32'
-    implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '9.0'
+    implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.1'
 
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '4.0.7'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.13.2'
 
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '10.1.54'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '10.1.54'
-
     implementation group: 'org.springframework.retry', name: 'spring-retry', version: '2.0.12'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.23.0'
-    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '5.23.0'
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
     testImplementation 'org.springframework.security:spring-security-test'
 
-    testImplementation group: 'org.pitest', name: 'pitest', version: '1.15.3'
+    testImplementation group: 'org.pitest', name: 'pitest', version: '1.15.8'
     testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.5.0'
 
     testImplementation group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '4.4.2'
-
-    testImplementation group: 'io.rest-assured', name: 'rest-assured-all', version: '5.5.7'
-    testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '5.5.7'
-    testImplementation group: 'io.rest-assured', name: 'json-path', version: '5.5.7'
-    testImplementation group: 'io.rest-assured', name: 'xml-path', version: '5.5.7'
 
     testImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: '5.3.9'
     testImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: '5.3.9'
