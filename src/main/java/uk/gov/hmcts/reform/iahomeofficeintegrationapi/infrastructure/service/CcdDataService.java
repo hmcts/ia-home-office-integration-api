@@ -76,8 +76,7 @@ public class CcdDataService {
         String userToken;
         String s2sToken;
         try {
-            String rawToken = idamService.getServiceUserToken();
-            userToken = normaliseBearerToken(rawToken);
+            userToken = normaliseBearerToken(idamService.getServiceUserToken());
             log.debug("A System user token has been generated for event: {}, caseId: {}.", eventId, caseId);
 
             s2sToken = normaliseBearerToken(serviceAuthorization.generate());
