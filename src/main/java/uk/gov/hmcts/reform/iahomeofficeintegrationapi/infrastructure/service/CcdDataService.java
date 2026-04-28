@@ -248,14 +248,6 @@ public class CcdDataService {
         return "Bearer " + stripped;
     }
 
-    private String decodeJwtPayload(String jwt) {
-        String[] parts = jwt.split("\\.");
-        if (parts.length < 2) {
-            throw new IllegalStateException("Invalid JWT format — expected 3 parts separated by '.'");
-        }
-        return new String(java.util.Base64.getUrlDecoder().decode(parts[1]));
-    }
-
     public String generateS2SToken() {
         log.debug("Generating S2S token");
         String s2sToken = serviceAuthorization.generate();

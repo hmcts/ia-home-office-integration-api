@@ -849,6 +849,43 @@ class CcdDataServiceTest {
         );
     }
 
+    @Test
+    void shouldThrowWhenUserTokenIsNull() {
+        when(idamService.getServiceUserToken()).thenReturn(null);
+
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+
+        assertEquals("Token is null or blank", exception.getMessage());
+        verifyNoInteractions(ccdDataApi);
+    }
+
+    @Test
+    void shouldThrowWhenUserTokenIsBlank() {
+        when(idamService.getServiceUserToken()).thenReturn("   ");
+
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+
+        assertEquals("Token is null or blank", exception.getMessage());
+        verifyNoInteractions(ccdDataApi);
+    }
+
+    @Test
+    void shouldReturnServiceUserToken() {
+        String expectedToken = "Bearer test-user-token";
+        when(idamService.getServiceUserToken()).thenReturn(expectedToken);
+
+        String actualToken = ccdDataService.getServiceUserToken();
+
+        assertEquals(expectedToken, actualToken);
+        verify(idamService).getServiceUserToken();
+    }
+
     private void stubHappyPath(String userToken, String s2sToken) {
         StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
         @SuppressWarnings("unchecked")
