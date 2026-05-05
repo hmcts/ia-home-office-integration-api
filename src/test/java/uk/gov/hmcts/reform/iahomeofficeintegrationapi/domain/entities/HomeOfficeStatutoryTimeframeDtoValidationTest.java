@@ -17,8 +17,6 @@ import javax.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
-
 public class HomeOfficeStatutoryTimeframeDtoValidationTest {
 
     private Validator validator;
@@ -38,12 +36,12 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(List.of(new IdValue<>("1",
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
                     .included("true")
                     .build()
-            )))
+            ))
             .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC))
             .build();
 
@@ -63,12 +61,12 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(List.of(new IdValue<>("1",
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
                     .included("true")
                     .build()
-            )))
+            ))
             .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC))
             .build();
 
@@ -92,12 +90,12 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(List.of(new IdValue<>("1",
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
                     .included("true")
                     .build()
-            )))
+            ))
             .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC))
             .build();
 
@@ -121,12 +119,12 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(List.of(new IdValue<>("1",
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
                     .included("true")
                     .build()
-            )))
+            ))
             .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC))
             .build();
 
@@ -148,12 +146,12 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName("Doe")
             .givenNames("Jane")
             .dateOfBirth(LocalDate.of(1985, 5, 15))
-            .stf24weekCohorts(List.of(new IdValue<>("1",
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
                     .included("true")
                     .build()
-            )))
+            ))
             .timeStamp(OffsetDateTime.of(2024, 1, 15, 10, 20, 30, 0, ZoneOffset.UTC))
             .build();
 
@@ -173,12 +171,12 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName(null)
             .givenNames(null)
             .dateOfBirth(null)
-            .stf24weekCohorts(List.of(new IdValue<>("1",
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
                     .included("true")
                     .build()
-            )))
+            ))
             .timeStamp(null)
             .build();
 

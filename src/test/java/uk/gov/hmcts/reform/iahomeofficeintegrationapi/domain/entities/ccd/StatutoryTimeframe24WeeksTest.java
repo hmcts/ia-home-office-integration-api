@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframe;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,11 +23,11 @@ public class StatutoryTimeframe24WeeksTest {
         // Given
         List<IdValue<StatutoryTimeframe24WeeksHistory>> history = createHistory("1", YesOrNo.YES);
 
-        HomeOfficeStatutoryTimeframeDto homeOfficeDto = createHomeOfficeDto();        
+        HomeOfficeStatutoryTimeframe homeOfficeTimeframe = new HomeOfficeStatutoryTimeframe(createHomeOfficeDto());        
         // When
         StatutoryTimeframe24Weeks stf = new StatutoryTimeframe24Weeks(
             history,
-            homeOfficeDto
+            homeOfficeTimeframe
         );
 
         // Then
@@ -41,22 +42,23 @@ public class StatutoryTimeframe24WeeksTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(List.of(new IdValue<>("1",
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
                     .included("true")
                     .build()
                 )
-            ))
+            )
             .timeStamp(OffsetDateTime.parse("2024-01-01T10:00:00Z"))
             .build();
         return homeOfficeDto;
     }
 
+
     @Test
     void shouldThrowNullPointerExceptionWhenHistoryIsNull() {
         // When & Then
-        assertThrows(NullPointerException.class, () -> new StatutoryTimeframe24Weeks(null, createHomeOfficeDto()));
+        assertThrows(NullPointerException.class, () -> new StatutoryTimeframe24Weeks(null, new HomeOfficeStatutoryTimeframe(createHomeOfficeDto())));
     }
 
     @Test

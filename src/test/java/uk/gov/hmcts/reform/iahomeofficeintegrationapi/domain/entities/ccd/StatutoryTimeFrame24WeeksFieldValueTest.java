@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframe;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
@@ -35,18 +36,18 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(List.of(new IdValue<>("1", 
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
                     .included("true")
                     .build()
-            )))
+            ))
             .timeStamp(OffsetDateTime.parse("2024-01-01T10:00:00Z"))
             .build();
        
         statutoryTimeFrame24WeeksFieldValue = new StatutoryTimeframe24Weeks(
             historyList,
-            homeOfficeDto
+            new HomeOfficeStatutoryTimeframe(homeOfficeDto)
         );
         
         assertNotNull(statutoryTimeFrame24WeeksFieldValue.getHistory());
@@ -82,18 +83,18 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(List.of(new IdValue<>("1",
+            .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
                     .included("true")
                     .build()
-            )))
+            ))
             .timeStamp(OffsetDateTime.parse("2024-01-01T10:00:00Z"))
             .build();
 
         StatutoryTimeframe24Weeks fieldValue = new StatutoryTimeframe24Weeks(
             historyList,
-            homeOfficeDto
+            new HomeOfficeStatutoryTimeframe(homeOfficeDto)
         );
 
         assertNotNull(fieldValue.getHistory());
@@ -105,7 +106,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         assertEquals(user, history.getUser());
         assertEquals(dateAdded, history.getDateTimeAdded());
 
-        HomeOfficeStatutoryTimeframeDto homeOfficeResponse = fieldValue.getHomeOfficeResponse();
+        HomeOfficeStatutoryTimeframe homeOfficeResponse = fieldValue.getHomeOfficeResponse();
         assertNotNull(homeOfficeResponse);
         assertEquals(homeOfficeResponse.getHmctsReferenceNumber(), "PA/12345/2026");
         assertEquals(homeOfficeResponse.getUan(), "1234-5678-9012-3456");

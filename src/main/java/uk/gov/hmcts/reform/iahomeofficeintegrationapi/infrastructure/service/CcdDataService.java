@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframe;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDataContent;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
@@ -69,7 +70,7 @@ public class CcdDataService {
 
     public SubmitEventDetails setHomeOfficeStatutoryTimeframeStatus(HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
         // This caters for cases where no cohort information is returned (which we interpret as "No")
-        boolean isYes = hoStatutoryTimeframeDto.getStf24weekCohorts().stream().anyMatch(cohort -> Boolean.parseBoolean(cohort.getValue().getIncluded()));
+        boolean isYes = hoStatutoryTimeframeDto.getStf24weekCohorts().stream().anyMatch(cohort -> Boolean.parseBoolean(cohort.getIncluded()));
         Event event = isYes 
             ? Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS
             : Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS;
@@ -110,16 +111,20 @@ public class CcdDataService {
             checkStatusNotAlreadySet(newHistoryId, existingData, caseId);
 
             Map<String, Object> eventData = new HashMap<>();
+            eventData.put(STF_24W_HOME_OFFICE_COHORT.value(), 
+                          hoStatutoryTimeframeDto.getStf24weekCohorts().stream()
+                          .filter(cohort -> cohort.getIncluded() == "true")
+                          .map(cohort -> cohort.getName()).collect(Collectors.joining(",")));
             // Ugly hack to work around a CCD bug where event data properties with collection values are not being written to the case record
             // Reinstate this code if the CCD bug is ever fixed (yeah, I know) and make the corresponding change in ia-case-api
             // eventData.put(STF_24W_HOME_OFFICE_COHORT.value(), 
             //               hoStatutoryTimeframeDto.getStf24WeekCohorts().stream()
             //               .filter(cohort -> cohort.isIncluded())
             //               .map(cohort -> cohort.getName()).collect(Collectors.joining(",")));
-            // Remove this code if the CCD bug is ever fixed and make the corresponding change in ia-case-api
-            eventData.put(STF_24W_HOME_OFFICE_COHORT.value(), 
-                          hoStatutoryTimeframeDto.getStf24weekCohorts().stream()
-                          .map(cohort -> cohort.getValue().getName() + "=" + cohort.getValue().getIncluded()).collect(Collectors.joining(",")));
+            // // Remove this code if the CCD bug is ever fixed and make the corresponding change in ia-case-api
+            // eventData.put(STF_24W_HOME_OFFICE_COHORT.value(), 
+            //               hoStatutoryTimeframeDto.getStf24weekCohorts().stream()
+            //               .map(cohort -> cohort.getName() + "=" + cohort.getIncluded()).collect(Collectors.joining(",")));
             YesOrNo status = isYes ? YesOrNo.YES : YesOrNo.NO;
             eventData.put(STF_24W_CURRENT_STATUS_AUTO_GENERATED.value(), status);
             eventData.put(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value(), status);
@@ -202,7 +207,7 @@ public class CcdDataService {
 
         return new StatutoryTimeframe24Weeks(
             historyList,
-            hoStatutoryTimeframeDto
+            new HomeOfficeStatutoryTimeframe(hoStatutoryTimeframeDto)
         );
         
     }

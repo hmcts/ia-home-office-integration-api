@@ -21,8 +21,6 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
 
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
-
 class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
 
     private ObjectMapper objectMapper;
@@ -52,14 +50,14 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
                 .name("HU")
                 .included("true")
                 .build();
-        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
+
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("PA/12345/2026")
             .uan("1234-5678-9012-3456")
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 5, 15))
-            .stf24weekCohorts(List.of(idValCohort))
+            .stf24weekCohorts(List.of(cohort))
             .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 45, 0, ZoneOffset.UTC))
             .build();
 
@@ -80,14 +78,13 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
                 .name("HU")
                 .included("true")
                 .build();
-        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("HU/54321/2021")
             .uan("9876-5432-1098-7654")
             .familyName("Doe")
             .givenNames("Jane")
             .dateOfBirth(LocalDate.of(1985, 3, 20))
-            .stf24weekCohorts(List.of(idValCohort))
+            .stf24weekCohorts(List.of(cohort))
             .timeStamp(OffsetDateTime.of(2024, 1, 15, 10, 20, 30, 0, ZoneOffset.UTC))
             .build();
 
@@ -108,14 +105,13 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
                 .name("HU")
                 .included("true")
                 .build();
-        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("RP/23432/2006")
             .uan("1111-2222-3333-4444")
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(2000, 12, 31))
-            .stf24weekCohorts(List.of(idValCohort))
+            .stf24weekCohorts(List.of(cohort))
             .timeStamp(OffsetDateTime.of(2024, 6, 15, 23, 59, 59, 0, ZoneOffset.UTC))
             .build();
 
@@ -136,14 +132,13 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
                 .name("HU")
                 .included("true")
                 .build();
-        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("EA/98765/1976")
             .uan("5555-6666-7777-8888")
             .familyName("Midnight")
             .givenNames("Test")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
-            .stf24weekCohorts(List.of(idValCohort))
+            .stf24weekCohorts(List.of(cohort))
             .timeStamp(OffsetDateTime.of(2023, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
             .build();
 
@@ -164,13 +159,12 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
                 .name("HU")
                 .included("true")
                 .build();
-        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("EU/66666/1842")
             .familyName("Doe")
             .givenNames("Jane")
             .dateOfBirth(LocalDate.of(1985, 3, 20))
-            .stf24weekCohorts(List.of(idValCohort))
+            .stf24weekCohorts(List.of(cohort))
             .timeStamp(OffsetDateTime.of(2024, 1, 15, 10, 20, 30, 0, ZoneOffset.UTC))
             .build();
 
@@ -191,14 +185,13 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
                 .name("HU")
                 .included("true")
                 .build();
-        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("EU/66666/1842")
             .uan("1122-3344-5566-7788")
             .familyName("Doe")
             .givenNames("Jane")
             .dateOfBirth(LocalDate.of(1985, 3, 20))
-            .stf24weekCohorts(List.of(idValCohort))
+            .stf24weekCohorts(List.of(cohort))
             .timeStamp(OffsetDateTime.of(2024, 1, 15, 10, 20, 30, 0, ZoneOffset.UTC))
             .build();
 
@@ -219,14 +212,13 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
                 .name("HU")
                 .included("true")
                 .build();
-        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("PA/12345/2026")
             .uan("1234567890123456")
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
-            .stf24weekCohorts(List.of(idValCohort))
+            .stf24weekCohorts(List.of(cohort))
             .timeStamp(OffsetDateTime.of(2023, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
             .build();
 
@@ -272,14 +264,13 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
                 .name("HU")
                 .included("true")
                 .build();
-        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("PA/12345/2026")
             .uan("ABCD-5678-9012-3456")
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
-            .stf24weekCohorts(List.of(idValCohort))
+            .stf24weekCohorts(List.of(cohort))
             .timeStamp(OffsetDateTime.of(2023, 1, 1, 12, 30, 45, 0, ZoneOffset.UTC))
             .build();
 
@@ -302,14 +293,13 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
                 .name("HU")
                 .included("true")
                 .build();
-        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("PA/12345/2026")
             .uan("123-456-789-012")
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
-            .stf24weekCohorts(List.of(idValCohort))
+            .stf24weekCohorts(List.of(cohort))
             .timeStamp(OffsetDateTime.of(2023, 1, 1, 12, 30, 45, 0, ZoneOffset.UTC))
             .build();
 
@@ -332,14 +322,14 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
                 .name("HU")
                 .included("true")
                 .build();
-        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
+
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("1234567890123456")
             .uan("1233-4456-7899-0012")
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
-            .stf24weekCohorts(List.of(idValCohort))
+            .stf24weekCohorts(List.of(cohort))
             .timeStamp(OffsetDateTime.of(2023, 1, 1, 12, 30, 45, 0, ZoneOffset.UTC))
             .build();
 
@@ -362,13 +352,12 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
                 .name("HU")
                 .included("true")
                 .build();
-        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .uan("1233-4456-7899-0012")
             .familyName("Test")
             .givenNames("User")
             .dateOfBirth(LocalDate.of(1995, 6, 10))
-            .stf24weekCohorts(List.of(idValCohort))
+            .stf24weekCohorts(List.of(cohort))
             .timeStamp(OffsetDateTime.of(2023, 1, 1, 12, 30, 45, 0, ZoneOffset.UTC))
             .build();
 
