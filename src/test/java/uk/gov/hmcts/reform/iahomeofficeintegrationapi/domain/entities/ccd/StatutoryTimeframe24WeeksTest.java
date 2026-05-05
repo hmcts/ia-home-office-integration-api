@@ -41,13 +41,13 @@ public class StatutoryTimeframe24WeeksTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(List.of(
+            .stf24weekCohorts(List.of(new IdValue<>("1",
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
                     .included("true")
                     .build()
                 )
-            )
+            ))
             .timeStamp(OffsetDateTime.parse("2024-01-01T10:00:00Z"))
             .build();
         return homeOfficeDto;

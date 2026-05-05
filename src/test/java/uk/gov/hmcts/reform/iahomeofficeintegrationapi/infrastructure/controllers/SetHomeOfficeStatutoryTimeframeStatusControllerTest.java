@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundExcepti
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service.CcdDataService;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,12 +80,12 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
                 .familyName("Smith")
                 .givenNames("John")
                 .dateOfBirth(LocalDate.of(1990, 1, 15))
-                .stf24weekCohorts(List.of(
+                .stf24weekCohorts(List.of(new IdValue<>("1",
                     HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                         .name("cohortA")
                         .included("true")
                         .build()
-                ))
+                )))
                 .timeStamp(OffsetDateTime.now())
                 .build();
 
