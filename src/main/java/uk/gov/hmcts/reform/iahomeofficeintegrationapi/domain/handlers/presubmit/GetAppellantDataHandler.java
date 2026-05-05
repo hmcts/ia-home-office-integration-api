@@ -56,9 +56,10 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && featureToggler.getValue("home-office-uan-feature", false)
                 && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL)
-                && (callback.getPageId().equals("homeOfficeReferenceNumber") || 
-                    callback.getPageId().equals("oocHomeOfficeReferenceNumber") ||
-                    callback.getPageId().equals("appellantBasicDetails"));
+                && List.of(
+                    "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "appellantBasicDetails", // ExUI pages
+                    "cuiHomeOfficeReferenceNumber", "cuiAppellantName", "cuiAppellantDob") // CUI pages
+                    .contains(callback.getPageId());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
