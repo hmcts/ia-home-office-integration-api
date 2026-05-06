@@ -42,8 +42,8 @@ public class StatutoryTimeframe24WeeksTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(List.of(
-                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+            .stf24weekCohortDtos(List.of(
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                     .name("HU")
                     .included(true)
                     .build()

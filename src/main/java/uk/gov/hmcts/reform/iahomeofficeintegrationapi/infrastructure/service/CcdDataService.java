@@ -70,7 +70,7 @@ public class CcdDataService {
 
     public SubmitEventDetails setHomeOfficeStatutoryTimeframeStatus(HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
         // This caters for cases where no cohort information is returned (which we interpret as "No")
-        boolean isYes = hoStatutoryTimeframeDto.getStf24weekCohorts().stream().anyMatch(cohort -> cohort.isIncluded());
+        boolean isYes = hoStatutoryTimeframeDto.getStf24weekCohortDtos().stream().anyMatch(cohort -> cohort.isIncluded());
         Event event = isYes 
             ? Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS
             : Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS;
@@ -112,7 +112,7 @@ public class CcdDataService {
 
             Map<String, Object> eventData = new HashMap<>();
             eventData.put(STF_24W_HOME_OFFICE_COHORT.value(), 
-                          hoStatutoryTimeframeDto.getStf24weekCohorts().stream()
+                          hoStatutoryTimeframeDto.getStf24weekCohortDtos().stream()
                           .filter(cohort -> cohort.isIncluded())
                           .map(cohort -> cohort.getName()).collect(Collectors.joining(",")));
             YesOrNo status = isYes ? YesOrNo.YES : YesOrNo.NO;

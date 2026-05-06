@@ -36,8 +36,8 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(List.of(
-                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+            .stf24weekCohortDtos(List.of(
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                     .name("HU")
                     .included(true)
                     .build()
@@ -61,8 +61,8 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(List.of(
-                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+            .stf24weekCohortDtos(List.of(
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                     .name("HU")
                     .included(true)
                     .build()
@@ -90,8 +90,8 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(List.of(
-                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+            .stf24weekCohortDtos(List.of(
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                     .name("HU")
                     .included(true)
                     .build()
@@ -119,8 +119,8 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(List.of(
-                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+            .stf24weekCohortDtos(List.of(
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                     .name("HU")
                     .included(true)
                     .build()
@@ -146,8 +146,8 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName("Doe")
             .givenNames("Jane")
             .dateOfBirth(LocalDate.of(1985, 5, 15))
-            .stf24weekCohorts(List.of(
-                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+            .stf24weekCohortDtos(List.of(
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                     .name("HU")
                     .included(true)
                     .build()
@@ -171,8 +171,8 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .familyName(null)
             .givenNames(null)
             .dateOfBirth(null)
-            .stf24weekCohorts(List.of(
-                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+            .stf24weekCohortDtos(List.of(
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                     .name("HU")
                     .included(true)
                     .build()

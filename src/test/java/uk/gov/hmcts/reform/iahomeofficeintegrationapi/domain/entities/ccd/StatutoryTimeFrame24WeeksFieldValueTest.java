@@ -36,8 +36,8 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(List.of(
-                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+            .stf24weekCohortDtos(List.of(
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                     .name("HU")
                     .included(true)
                     .build()
@@ -83,8 +83,8 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
             .familyName("Smith")
             .givenNames("John")
             .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .stf24weekCohorts(List.of(
-                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+            .stf24weekCohortDtos(List.of(
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                     .name("HU")
                     .included(true)
                     .build()
@@ -117,7 +117,7 @@ class StatutoryTimeFrame24WeeksFieldValueTest {
         assertEquals(1, homeOfficeResponse.getStf24weekCohorts().size());
         var cohort = homeOfficeResponse.getStf24weekCohorts().get(0);
         assertEquals(cohort.getValue().getName(), "HU");
-        assertEquals(cohort.getValue().isIncluded(), true);
+        assertEquals(cohort.getValue().getIncluded(), "true");
         assertEquals(homeOfficeResponse.getHmctsReferenceNumber(), "PA/12345/2026");
         assertEquals(homeOfficeResponse.getTimeStamp(), OffsetDateTime.parse("2024-01-01T10:00:00Z"));
 

@@ -14,10 +14,12 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -38,7 +40,27 @@ public class HomeOfficeStatutoryTimeframe extends HomeOfficeStatutoryTimeframeBa
     public HomeOfficeStatutoryTimeframe(HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
         super(hoStatutoryTimeframeDto);
         // Set the cohorts field separately as it is different
-        this.stf24weekCohorts = hoStatutoryTimeframeDto.getStf24weekCohorts().stream()
-                                .map(cohort -> new IdValue<Stf24WeekCohort>(String.valueOf(cohort.getName().hashCode()), cohort)).toList();
+        this.stf24weekCohorts = hoStatutoryTimeframeDto.getStf24weekCohortDtos().stream()
+                                .map(cohort -> new IdValue<Stf24WeekCohort>(
+                                    String.valueOf(cohort.getName().hashCode()), 
+                                    new Stf24WeekCohort(cohort.getName(), cohort.isIncluded() ? "true" : "false")
+                                )).toList();
     }
-}
+
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(NON_NULL)
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode
+    @Data
+    public static class Stf24WeekCohort {
+        @JsonProperty(value = "name", required = true)
+        @NotNull
+        private String name;
+
+        @JsonProperty(value = "included", required = true)
+        @NotNull
+        private String included;
+    }}

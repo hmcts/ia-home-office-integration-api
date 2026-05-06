@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -34,5 +35,22 @@ public class HomeOfficeStatutoryTimeframeDto extends HomeOfficeStatutoryTimefram
     @JsonProperty(value = "stf24weekCohorts", required = true)
     @NotNull
     @Valid
-    private List<Stf24WeekCohort> stf24weekCohorts;
-}
+    private List<Stf24WeekCohortDto> stf24weekCohortDtos;
+
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(NON_NULL)
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode
+    @Data
+    public static class Stf24WeekCohortDto {
+        @JsonProperty(value = "name", required = true)
+        @NotNull
+        private String name;
+
+        @JsonProperty(value = "included", required = true)
+        @NotNull
+        private boolean included;
+    }}

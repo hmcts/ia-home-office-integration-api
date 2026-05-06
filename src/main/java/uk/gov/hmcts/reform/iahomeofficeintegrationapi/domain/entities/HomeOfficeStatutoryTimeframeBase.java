@@ -71,22 +71,4 @@ public abstract class HomeOfficeStatutoryTimeframeBase {
         this.timeStamp = other.timeStamp;
         this.uan = other.uan;
     }
-
-    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonInclude(NON_NULL)
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @EqualsAndHashCode
-    @Data
-    public static class Stf24WeekCohort {
-        @JsonProperty(value = "name", required = true)
-        @NotNull
-        private String name;
-
-        @JsonProperty(value = "included", required = true)
-        @NotNull
-        private boolean included;
-    }
 }
