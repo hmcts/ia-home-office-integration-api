@@ -79,11 +79,11 @@ public class FeignErrorDecoder implements ErrorDecoder {
                     log.error(ERROR_LOG, ex.getMessage());
                 }
                 return new HomeOfficeResponseException(errorCode, String.format(
-                    "StatusCode: %d, methodKey: %s, reason: %s, message: %s",
-                    response.status(),
-                    methodKey,
-                    response.reason(),
-                    errMessage));
+                        "StatusCode: %d, methodKey: %s, reason: %s, message: %s",
+                        response.status(),
+                        methodKey,
+                        response.reason(),
+                        errMessage));
 
             case 404:
                 try {
@@ -100,16 +100,16 @@ public class FeignErrorDecoder implements ErrorDecoder {
 
             case 500:
                 log.error("StatusCode: {}, methodKey: {}, reason: {}",
-                    response.status(),
-                    methodKey,
-                    response.reason());
+                        response.status(),
+                        methodKey,
+                        response.reason());
                 throw new RetryableException(response.status(), response.reason(), response.request().httpMethod(), null, response.request());
 
             default:
                 log.error("StatusCode: {}, methodKey: {}, reason: {}",
-                    response.status(),
-                    methodKey,
-                    response.reason()
+                        response.status(),
+                        methodKey,
+                        response.reason()
                 );
                 return new HomeOfficeResponseException(response.reason());
 

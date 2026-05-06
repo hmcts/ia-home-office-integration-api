@@ -10,19 +10,23 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Retr
 @Slf4j
 @Service
 public class CustomFeignRetryer  implements Retryer {
+    @Value("${home-office.feign.retry.count}")
+    private int retryMaxAttempt;
 
-    private final int retryMaxAttempt;
-
-    private final long retryInterval;
+    @Value("${home-office.feign.retry.wait-in-millis}")
+    private long retryInterval;
 
     private int attempt = 1;
 
-    public CustomFeignRetryer(
-        @Value("${home-office.feign.retry.count}")  int numberOfRetries,
-        @Value("${home-office.feign.retry.wait-in-millis}") long timeToWait) {
+    public CustomFeignRetryer() {
+        // nothing needed
+    }
 
-        this.retryMaxAttempt = numberOfRetries;
-        this.retryInterval = timeToWait;
+    private CustomFeignRetryer(CustomFeignRetryer other) {
+
+        this.retryMaxAttempt = other.retryMaxAttempt;
+        this.retryInterval = other.retryInterval;
+        this.attempt = 1;
     }
 
     @Override
@@ -31,8 +35,8 @@ public class CustomFeignRetryer  implements Retryer {
 
         if (attempt++ == retryMaxAttempt) {
             throw new RetriesExceededException("Retry Failed: Total " + (attempt - 1)
-                                               + " attempts made at interval " + retryInterval
-                                               + "ms", e);
+                    + " attempts made at interval " + retryInterval
+                    + "ms", e);
         }
         try {
             Thread.sleep(retryInterval);
@@ -43,6 +47,6 @@ public class CustomFeignRetryer  implements Retryer {
 
     @Override
     public Retryer clone() {
-        return new CustomFeignRetryer(retryMaxAttempt, retryInterval);
+        return new CustomFeignRetryer(this);
     }
 }
