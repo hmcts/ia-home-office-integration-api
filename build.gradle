@@ -320,10 +320,8 @@ dependencies {
 
     testImplementation group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '4.4.2'
 
-    testImplementation 'net.serenity-bdd:net.serenity-core'
-    testImplementation 'net.serenity-bdd:net.serenity-junit'
-    testImplementation 'net.serenity-bdd:net.serenity-rest-assured'
-    testImplementation 'net.serenity-bdd:net.serenity-spring'
+    testImplementation 'net.serenity-bdd:serenity-rest-assured'
+    testImplementation 'net.serenity-bdd:serenity-spring'
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all', {
         exclude group: 'commons-io', module: 'commons-io'
