@@ -144,7 +144,7 @@ public class CcdDataService {
         } catch (Exception ex) {
             if (ex.getMessage() != null && ex.getMessage().contains("Case ID is not valid")) {
                 log.info("Case not found for caseId: {}", caseId);
-                throw new CaseNotFoundException("Case not found for caseId: " + caseId);
+                throw new CaseNotFoundException("Case not found for case ID " + caseId + ".");
             }
             throw ex;
         }
@@ -164,12 +164,12 @@ public class CcdDataService {
         CaseDataContent requestBody =
             new CaseDataContent(caseId, eventData, eventMetadata, eventToken, ignoreWarning);
 
-        log.debug("CaseDataContent Request - caseReference: {}", requestBody.getCaseReference());
-        log.debug("CaseDataContent Request - data: {}", requestBody.getData());
-        log.debug("CaseDataContent Request - event: {}", requestBody.getEvent());
-        log.debug("CaseDataContent Request - ignoreWarning: {}", requestBody.isIgnoreWarning());
+        log.info("CaseDataContent Request - caseReference: {}", requestBody.getCaseReference());
+        log.info("CaseDataContent Request - data: {}", requestBody.getData());
+        log.info("CaseDataContent Request - event: {}", requestBody.getEvent());
+        log.info("CaseDataContent Request - ignoreWarning: {}", requestBody.isIgnoreWarning());
         
-        log.debug("Submitting case with caseId: {}, eventData: {}, ignoreWarning: {}",
+        log.info("Submitting case with caseId: {}, eventData: {}, ignoreWarning: {}",
                  caseId, eventData, ignoreWarning);
         
         return ccdDataApi.submitEventByCase(userToken, s2sToken, caseId, requestBody);
