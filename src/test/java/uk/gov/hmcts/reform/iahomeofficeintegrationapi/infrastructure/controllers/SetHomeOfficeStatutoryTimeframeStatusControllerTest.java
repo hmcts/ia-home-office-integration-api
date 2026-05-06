@@ -82,7 +82,7 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
                 .stf24weekCohorts(List.of(
                     HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                         .name("cohortA")
-                        .included("true")
+                        .included(true)
                         .build()
                 ))
                 .timeStamp(OffsetDateTime.now())

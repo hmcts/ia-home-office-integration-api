@@ -87,11 +87,6 @@ public abstract class HomeOfficeStatutoryTimeframeBase {
 
         @JsonProperty(value = "included", required = true)
         @NotNull
-        private String included;
-
-        public Stf24WeekCohort(String name, boolean included) {
-            this.name = name;
-            this.included = included ? "true" : "false";
-        }
+        private boolean included;
     }
 }

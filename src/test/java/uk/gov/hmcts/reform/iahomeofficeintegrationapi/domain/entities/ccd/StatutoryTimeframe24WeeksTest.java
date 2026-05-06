@@ -45,7 +45,7 @@ public class StatutoryTimeframe24WeeksTest {
             .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
-                    .included("true")
+                    .included(true)
                     .build()
                 )
             )

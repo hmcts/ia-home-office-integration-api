@@ -47,7 +47,7 @@ class HomeOfficeStatutoryTimeframeDtoTest {
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included("true")
+                .included(true)
                 .build();
 
         homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframeDto.builder()
@@ -67,7 +67,7 @@ class HomeOfficeStatutoryTimeframeDtoTest {
         assertEquals(dateOfBirth, homeOfficeStatutoryTimeframeDto.getDateOfBirth());
         assertEquals(1, homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().size());
         assertEquals("HU", homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).getName());
-        assertTrue(Boolean.parseBoolean(homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).getIncluded()));
+        assertTrue(homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).isIncluded());
         assertEquals(timeStamp, homeOfficeStatutoryTimeframeDto.getTimeStamp());
     }
 
@@ -77,13 +77,13 @@ class HomeOfficeStatutoryTimeframeDtoTest {
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort1 = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included("true")
+                .included(true)
                 .build();
 
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort2 = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("PA")
-                .included("false")
+                .included(false)
                 .build();
 
         homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframeDto.builder()
@@ -99,10 +99,10 @@ class HomeOfficeStatutoryTimeframeDtoTest {
         assertEquals(2, homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().size());
 
         assertEquals("HU", homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).getName());
-        assertTrue(Boolean.parseBoolean(homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).getIncluded()));
+        assertTrue(homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).isIncluded());
 
         assertEquals("PA", homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(1).getName());
-        assertTrue(!Boolean.parseBoolean(homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(1).getIncluded()));
+        assertTrue(!homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(1).isIncluded());
     }
 
     @Test

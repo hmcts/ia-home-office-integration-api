@@ -15,12 +15,14 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(NON_NULL)
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Data
 public class HomeOfficeStatutoryTimeframe extends HomeOfficeStatutoryTimeframeBase {
     // This is the class to use for the event data, as CCD needs all collections to be of type IdValue<...>

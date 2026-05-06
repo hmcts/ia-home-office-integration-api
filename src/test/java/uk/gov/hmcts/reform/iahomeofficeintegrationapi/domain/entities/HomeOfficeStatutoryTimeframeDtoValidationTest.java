@@ -39,7 +39,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
-                    .included("true")
+                    .included(true)
                     .build()
             ))
             .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC))
@@ -64,7 +64,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
-                    .included("true")
+                    .included(true)
                     .build()
             ))
             .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC))
@@ -93,7 +93,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
-                    .included("true")
+                    .included(true)
                     .build()
             ))
             .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC))
@@ -122,7 +122,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
-                    .included("true")
+                    .included(true)
                     .build()
             ))
             .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC))
@@ -149,7 +149,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
-                    .included("true")
+                    .included(true)
                     .build()
             ))
             .timeStamp(OffsetDateTime.of(2024, 1, 15, 10, 20, 30, 0, ZoneOffset.UTC))
@@ -174,7 +174,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
             .stf24weekCohorts(List.of(
                 HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                     .name("HU")
-                    .included("true")
+                    .included(true)
                     .build()
             ))
             .timeStamp(null)

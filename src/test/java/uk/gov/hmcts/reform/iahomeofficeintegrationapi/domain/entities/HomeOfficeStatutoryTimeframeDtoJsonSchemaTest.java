@@ -48,7 +48,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included("true")
+                .included(true)
                 .build();
 
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
@@ -76,7 +76,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included("true")
+                .included(true)
                 .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("HU/54321/2021")
@@ -103,7 +103,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included("true")
+                .included(true)
                 .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("RP/23432/2006")
@@ -130,7 +130,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included("true")
+                .included(true)
                 .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("EA/98765/1976")
@@ -157,7 +157,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included("true")
+                .included(true)
                 .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("EU/66666/1842")
@@ -183,7 +183,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included("true")
+                .included(true)
                 .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("EU/66666/1842")
@@ -210,7 +210,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included("true")
+                .included(true)
                 .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("PA/12345/2026")
@@ -262,7 +262,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included("true")
+                .included(true)
                 .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("PA/12345/2026")
@@ -291,7 +291,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included("true")
+                .included(true)
                 .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("PA/12345/2026")
@@ -320,7 +320,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included("true")
+                .included(true)
                 .build();
 
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
@@ -350,7 +350,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included("true")
+                .included(true)
                 .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .uan("1233-4456-7899-0012")

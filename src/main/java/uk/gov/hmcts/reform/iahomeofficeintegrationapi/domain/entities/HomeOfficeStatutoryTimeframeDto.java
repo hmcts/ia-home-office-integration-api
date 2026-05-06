@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -26,6 +27,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Data
 public class HomeOfficeStatutoryTimeframeDto extends HomeOfficeStatutoryTimeframeBase {
     // This is the class to use for receiving the data from the Home Office initially
