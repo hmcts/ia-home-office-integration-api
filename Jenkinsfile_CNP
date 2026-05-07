@@ -21,6 +21,8 @@ def secrets = [
         secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
 
         secret('app-insights-connection-string', 'app-insights-connection-string'),
+        secret('system-username', 'IA_SYSTEM_USERNAME'),
+        secret('system-password', 'IA_SYSTEM_PASSWORD'),
 
         secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
         secret('idam-secret', 'IA_IDAM_SECRET'),
@@ -30,6 +32,7 @@ def secrets = [
         secret('homeoffice-secret', 'IA_HOMEOFFICE_SECRET'),
         secret('ia-redis-access-key', 'IA_REDIS_ACCESS_KEY'),
         secret('ia-redis-connection-string', 'IA_REDIS_CONNECTION_STRING'),
+        secret('ia-redis-encryption-key', 'IA_REDIS_ENCRYPTION_KEY'),
 
         secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
         secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
@@ -62,7 +65,7 @@ withPipeline(type, product, component) {
     env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
     env.OPEN_ID_IDAM_URL = "https://idam-web-public.aat.platform.hmcts.net"
     env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-    env.HOME_OFFICE_ENDPOINT = "http://ia-home-office-mock-api-aat.service.core-compute-aat.internal"
+    env.HOME_OFFICE_ENDPOINT = "http://ia-home-office-mock-api-aat.service.core-compute-aat.internal/ichallenge"
     env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
     env.ROLE_ASSIGNMENT_URL = "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
 
