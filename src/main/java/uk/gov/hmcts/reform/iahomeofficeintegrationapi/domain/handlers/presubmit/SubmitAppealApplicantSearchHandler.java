@@ -130,7 +130,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
         Optional<HomeOfficeCaseStatus> selectedApplicant =
                 selectAnyApplicant(caseId, searchResponse.getStatus());
 
-        if (!selectedApplicant.isPresent()) {
+        if (selectedApplicant.isEmpty()) {
             log.warn("Unable to find Any APPLICANT in Home office response, caseId: {}", caseId);
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE,
@@ -152,12 +152,12 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
 
                     ApplicationStatus applicationStatus = applicant.getApplicationStatus();
 
-                    applicant = updateDateOfBirth(applicant, caseId);
+                    updateDateOfBirth(applicant, caseId);
 
                     applicant.setDisplayDecisionDate(
                             HomeOfficeDateFormatter.getIacDateTime(applicationStatus.getDecisionDate()));
 
-                    applicant = updateDecisionCommunication(applicant, applicationStatus);
+                    updateDecisionCommunication(applicant, applicationStatus);
 
                     Optional<HomeOfficeMetadata> metadata = selectMetadata(
                             caseId,
@@ -180,7 +180,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
         }
     }
 
-    private HomeOfficeCaseStatus updateDateOfBirth(HomeOfficeCaseStatus applicant,
+    private void updateDateOfBirth(HomeOfficeCaseStatus applicant,
                                    long caseId) {
         Person person = applicant.getPerson();
 
@@ -196,11 +196,10 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                             person.getMonthOfBirth(), person.getYearOfBirth()));
         }
 
-        return applicant;
     }
 
-    private HomeOfficeCaseStatus updateDecisionCommunication(HomeOfficeCaseStatus applicant,
-                                                             ApplicationStatus applicationStatus) {
+    private void updateDecisionCommunication(HomeOfficeCaseStatus applicant,
+                                             ApplicationStatus applicationStatus) {
         if (applicationStatus.getDecisionCommunication() != null) {
             applicant.setDisplayDecisionSentDate(
                     HomeOfficeDateFormatter.getIacDateTime(
@@ -208,8 +207,6 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                     )
             );
         }
-
-        return applicant;
     }
 
     private boolean validMatchedApplicants(List<HomeOfficeCaseStatus> matchedApplicants,
@@ -217,7 +214,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                                            long caseId,
                                            String homeOfficeSearchResponseJsonStr) {
 
-        if (matchedApplicants.isEmpty() || isNull(matchedApplicants)) {
+        if (matchedApplicants.isEmpty()) {
 
             log.warn("Unable to find MAIN APPLICANT in Home office response, caseId: {}", caseId);
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
@@ -331,7 +328,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
     }
 
     String getRejectionReasonString(List<RejectionReason> rejectionReasons) {
-        StringBuilder sb = new StringBuilder("");
+        StringBuilder sb = new StringBuilder();
         if (rejectionReasons != null && !rejectionReasons.isEmpty()) {
             rejectionReasons.forEach(
                 rejectionReason -> sb.append(rejectionReason.getReason()).append("<br />")
