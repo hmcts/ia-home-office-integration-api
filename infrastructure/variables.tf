@@ -39,20 +39,9 @@ variable "log_level_ia" {
   default = "INFO"
 }
 
-# thumbprint of the SSL certificate for API gateway tests
-variable "api_gateway_test_certificate_thumbprints" {
-  type    = list(any)
-  default = [] # TODO: remove default and provide environment-specific values
-}
-
-variable "aks_subscription_id" {
-}
-
 variable "apim_suffix" {
   default = ""
 }
 
-variable "product_name" {
-  type    = string
-  default = "payments"
-}
+
+

@@ -3,16 +3,16 @@ provider "azurerm" {
 }
 
 locals {
+  aseName = "core-compute-${var.env}"
+
+  local_env = (var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "aat" : "saat" : var.env
+  local_ase = (var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "core-compute-aat" : "core-compute-saat" : local.aseName
+
   preview_vault_name           = "${var.raw_product}-aat"
   non_preview_vault_name       = "${var.raw_product}-${var.env}"
   key_vault_name               = var.env == "preview" || var.env == "spreview" ? local.preview_vault_name : local.non_preview_vault_name
 
-  ia_api_url  = join("", ["http://ia-api-", var.env, ".service.core-compute-", var.env, ".internal"])
-  s2sUrl            = join("", ["http://rpe-service-auth-provider-", var.env, ".service.core-compute-", var.env, ".internal"])
-
-  # list of the thumbprints of the SSL certificates that should be accepted by the API (gateway)
-  thumbprints_in_quotes     = formatlist("\"%s\"", var.api_gateway_test_certificate_thumbprints)
-  thumbprints_in_quotes_str = join(",", local.thumbprints_in_quotes)
+  s2sUrl              = "http://rpe-service-auth-provider-${local.local_env}.service.${local.local_ase}.internal"
 }
 
 
@@ -27,6 +27,16 @@ data "azurerm_key_vault" "ia_key_vault" {
   resource_group_name = local.key_vault_name
 }
 
+data "azurerm_key_vault_secret" "apim_client_id" {
+  name         = "apim-ia-home-office-client-id"
+  key_vault_id = data.azurerm_key_vault.ia_key_vault.id
+}
+
+data "azurerm_key_vault_secret" "tenant_id" {
+  name         = "apim-ia-home-office-tenant-id"
+  key_vault_id = data.azurerm_key_vault.ia_key_vault.id
+}
+# region API (gateway)
 data "azurerm_key_vault_secret" "s2s_client_secret" {
   name         = "gateway-s2s-client-secret"
   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
