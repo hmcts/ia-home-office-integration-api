@@ -34,11 +34,12 @@ public class HomeOfficeInstructService {
         final String caseId = request.getConsumerReference().getValue();
         final String homeOfficeReferenceNumber = request.getHoReference();
         final String messageType = request.getMessageType();
+        final String logMessage = "message type: {} and correlation ID: {}";
         try {
             final String accessToken = accessTokenProvider.getAccessToken();
             log.info(
                 "HomeOffice-Notification request is to be sent for caseId: {},  reference number: {}, "
-                + "message type: {} and correlation ID: {}",
+                + logMessage,
                 caseId,
                 homeOfficeReferenceNumber,
                 messageType,
@@ -48,7 +49,7 @@ public class HomeOfficeInstructService {
 
             if (instructResponse == null || instructResponse.getMessageHeader() == null) {
                 log.error("Error sending notification to Home Office for caseId: {},  reference number: {}, "
-                          + "message type: {} and correlation ID: {}",
+                    + logMessage,
                     caseId,
                     homeOfficeReferenceNumber,
                     messageType,
@@ -58,7 +59,7 @@ public class HomeOfficeInstructService {
             } else {
                 log.info(
                     "HomeOffice-Notification request response received for caseId: {},  reference number: {}, "
-                    + "message type: {} and correlation ID: {}",
+                    + logMessage,
                     caseId,
                     homeOfficeReferenceNumber,
                     messageType,
@@ -68,7 +69,7 @@ public class HomeOfficeInstructService {
             }
         } catch (RetriesExceededException e) {
             log.error("Server error sending notification to Home office for caseId: {},  reference number: {}, "
-                      + "message type: {} and correlation ID: {}, Message: {}: ",
+                + logMessage + ", Message: {}: ",
                 caseId,
                 homeOfficeReferenceNumber,
                 messageType,
@@ -78,7 +79,7 @@ public class HomeOfficeInstructService {
 
         } catch (Exception e) {
             log.error("Error sending notification to Home office for caseId: {},  reference number: {}, "
-                      + "message type: {} and correlation ID: {}, Message: {}: ",
+                + logMessage + ", Message: {}: ",
                 caseId,
                 homeOfficeReferenceNumber,
                 messageType,

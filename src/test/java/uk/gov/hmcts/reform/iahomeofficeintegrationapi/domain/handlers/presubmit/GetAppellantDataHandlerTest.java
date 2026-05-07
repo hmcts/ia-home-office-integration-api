@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -114,17 +115,20 @@ class GetAppellantDataHandlerTest {
     @Test
     void canHandle_returnsFalse_WrongStage() {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+        when(callback.getPageId()).thenReturn("cuiHomeOfficeReferenceNumber");
 
         boolean result = handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertFalse(result);
     }
 
-    @Test
-    void handle_writesData_whenServiceReturnsApplication() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "appellantBasicDetails", "cuiAppellantName", "cuiAppellantDob"
+    })
+    void handle_writesData_whenServiceReturnsApplication(String pageId) throws Exception {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(callback.getPageId()).thenReturn("appellantBasicDetails");
+        when(callback.getPageId()).thenReturn(pageId);
         when(caseDetails.getId()).thenReturn(12345L);
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("UAN123"));
 

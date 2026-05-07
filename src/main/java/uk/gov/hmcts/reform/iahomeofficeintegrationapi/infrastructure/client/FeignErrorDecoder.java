@@ -106,9 +106,9 @@ public class FeignErrorDecoder implements ErrorDecoder {
 
             default:
                 log.error("StatusCode: {}, methodKey: {}, reason: {}",
-                    response.status(),
-                    methodKey,
-                    response.reason()
+                        response.status(),
+                        methodKey,
+                        response.reason()
                 );
                 return new HomeOfficeResponseException(response.reason());
 
