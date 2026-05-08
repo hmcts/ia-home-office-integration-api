@@ -156,9 +156,7 @@ class HomeOfficeStatutoryTimeframeBaseTest {
         assertEquals(null, instance.getUan());
     }
 
-    /**
-     * Concrete implementation for testing abstract base class
-     */
+    // Concrete implementation for testing abstract base class
     @lombok.experimental.SuperBuilder
     @lombok.Data
     @lombok.EqualsAndHashCode(callSuper = true)
