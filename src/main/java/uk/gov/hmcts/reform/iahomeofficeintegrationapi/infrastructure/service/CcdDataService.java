@@ -233,7 +233,10 @@ public class CcdDataService {
         Optional<StatutoryTimeframe24Weeks> existingData,
         String caseId) {
         
-        if (!newHistoryId.equals("1")) {
+        if (existingData
+                .map(StatutoryTimeframe24Weeks::getHistory)
+                .filter(history -> !history.isEmpty())
+                .isPresent()) {
             String errorMessage = String.format(
                 "Statutory timeframe status has already been set for caseId: %s",
                 caseId

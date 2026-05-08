@@ -53,4 +53,5 @@ public class HomeOfficeStatutoryTimeframeDto extends HomeOfficeStatutoryTimefram
         @JsonProperty(value = "included", required = true)
         @NotNull
         private boolean included;
-    }}
+    }
+}

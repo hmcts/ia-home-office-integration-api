@@ -30,7 +30,7 @@
           },
           "included":
           {
-            "type": "string"
+            "type": "boolean"
           }
         },
         "required": [

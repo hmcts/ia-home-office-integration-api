@@ -1,60 +1,72 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDataContent;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StartEventDetails;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeframe24Weeks;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeframe24WeeksHistory;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.DbUtils;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 
-import java.util.HashMap;
-import java.util.Optional;
-
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
+
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CcdDataServiceTest {
-/*
-    private static final String CCD_CASE_ID = "1773047655725509";
+
     private static final String HMCTS_REF_NUM = "PA/12345/2026";
+    private static final String CCD_CASE_ID = "1773833350220320";
+
+    private static final String USER_TOKEN = "Bearer test-user-token";
+    private static final String S2S_TOKEN = "Bearer test-s2s-token";
+
+    private static final String COHORT_NAME = "HU";    
+
     @Mock
     private CcdDataApi ccdDataApi;
 
@@ -71,810 +83,329 @@ class CcdDataServiceTest {
     private CcdDataService ccdDataService;
 
     private HomeOfficeStatutoryTimeframeDto testDto;
-    private UserInfo userInfo;
-    private StartEventDetails startEventDetails;
-    private SubmitEventDetails submitEventDetails;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
 
         testDto = new HomeOfficeStatutoryTimeframeDto();
         testDto.setHmctsReferenceNumber(HMCTS_REF_NUM);
-
-        testDto.setStf24weekCohorts(List.of(
-            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
-                .name("HU")
-                .included("true")
-                .build()
-        ));
-
         testDto.setTimeStamp(
-            OffsetDateTime.of(2024,1,1,12,0,0,0, ZoneOffset.UTC)
+            OffsetDateTime.of(2024, 1, 1, 12, 0, 0, 0, ZoneOffset.UTC)
         );
+
+        setIncluded(true);
     }
-    // void setUp() {
-    //     testDto = new HomeOfficeStatutoryTimeframeDto();
-    //     testDto.setCcdCaseId(CCD_CASE_ID);
-    //     testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-    //         .status("Yes")
-    //         .cohorts(new String[]{"HU"})
-    //         .build());
-    //     testDto.setTimeStamp(LocalDateTime.of(2023, 12, 1, 0, 0, 0));
-
-    //     userInfo = new UserInfo("test@example.com", "test-uid", null, "Test User", "Test", "User");
-
-    //     // Mock SubmitEventDetails with lenient stubbing to avoid unnecessary stubbing exceptions
-    //     submitEventDetails = mock(SubmitEventDetails.class);
-    //     lenient().when(submitEventDetails.getCallbackResponseStatusCode()).thenReturn(200);
-    //     lenient().when(submitEventDetails.getCallbackResponseStatus()).thenReturn("Success");
-    // }
 
     @Test
-    void shouldThrowIdentityManagerResponseExceptionWhenGetServiceUserTokenFails() throws Exception {
-        // Given
-        IdentityManagerResponseException expectedException = new IdentityManagerResponseException("Token generation failed", new RuntimeException());
-        when(idamService.getServiceUserToken()).thenThrow(expectedException);
+    void shouldThrowIdentityManagerResponseExceptionWhenGetServiceUserTokenFails() {
 
-        // When & Then
+        when(idamService.getServiceUserToken())
+            .thenThrow(
+                new IdentityManagerResponseException(
+                    "Token generation failed",
+                    new RuntimeException()
+                )
+            );
+
         IdentityManagerResponseException exception = assertThrows(
             IdentityManagerResponseException.class,
             () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
         );
 
         assertEquals("Token generation failed", exception.getMessage());
-        verify(idamService).getServiceUserToken();
+
         verifyNoInteractions(serviceAuthorization);
         verifyNoInteractions(ccdDataApi);
     }
 
     @Test
-    void shouldThrowIdentityManagerResponseExceptionWhenS2STokenGenerationFails() throws Exception {
-        // Given
-        when(idamService.getServiceUserToken()).thenReturn("Bearer test-user-token");
-        RuntimeException s2sException = new RuntimeException("S2S token generation failed");
-        when(serviceAuthorization.generate()).thenThrow(s2sException);
+    void shouldThrowWhenS2STokenGenerationFails() {
 
-        // When & Then
+        when(idamService.getServiceUserToken())
+            .thenReturn(USER_TOKEN);
+
+        when(serviceAuthorization.generate())
+            .thenThrow(new RuntimeException("S2S token generation failed"));
+
         RuntimeException exception = assertThrows(
             RuntimeException.class,
             () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
         );
 
         assertEquals("S2S token generation failed", exception.getMessage());
-        verify(idamService).getServiceUserToken();
-        verify(serviceAuthorization).generate();
-        verifyNoInteractions(ccdDataApi);
     }
 
-    @Test
-    void shouldTestToStf4wMethodWithTrueStatus() {
-        // Given
-        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-            .status("Yes")
-            .cohorts(new String[]{"HU"})
-            .build());
-        testDto.setTimeStamp(LocalDateTime.of(2023, 12, 1, 10, 15, 30));
+    @ParameterizedTest
+    @CsvSource({
+        "YES,1,2024-01-01T12:13:14Z",
+        "NO,2,2024-01-01T12:00:00Z"
+    })
+    void shouldBuildStf24w(
+        YesOrNo status,
+        String historyId,
+        String expectedDate
+    ) {
 
-        // When
-        StatutoryTimeframe24Weeks result = ccdDataService.toStf4w("1", testDto);
+        testDto.setTimeStamp(
+            OffsetDateTime.parse(expectedDate)
+        );
 
-        // Then
+        StatutoryTimeframe24Weeks result =
+            ccdDataService.toStf24w(historyId, status, testDto);
+
         assertNotNull(result);
-        
-        // Verify history
-        assertNotNull(result.getHistory());
         assertEquals(1, result.getHistory().size());
-        
-        StatutoryTimeframe24WeeksHistory historyEntry = result.getHistory().get(0).getValue();
-        assertEquals(YesOrNo.YES, historyEntry.getStatus());
-        assertEquals("Home Office initial determination", historyEntry.getReason());
-        assertEquals("Home Office Integration API", historyEntry.getUser());
-        assertEquals("2023-12-01T10:15:30", historyEntry.getDateTimeAdded());
-    }
+        assertEquals(historyId, result.getHistory().get(0).getId());
 
-    @Test
-    void shouldTestToStf4wMethodWithFalseStatus() {
-        // Given
-        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-            .status("No")
-            .cohorts(new String[]{"HU"})
-            .build());
+        StatutoryTimeframe24WeeksHistory history =
+            result.getHistory().get(0).getValue();
 
-        // When
-        StatutoryTimeframe24Weeks result = ccdDataService.toStf4w("2", testDto);
-
-        // Then
-        assertNotNull(result);
-        
-        // Verify history
-        assertNotNull(result.getHistory());
-        assertEquals(1, result.getHistory().size());
-        
-        StatutoryTimeframe24WeeksHistory historyEntry = result.getHistory().get(0).getValue();
-        assertEquals(YesOrNo.NO, historyEntry.getStatus());
-        assertEquals("Home Office initial determination", historyEntry.getReason());
-        assertEquals("Home Office Integration API", historyEntry.getUser());
-        assertEquals("2023-12-01T00:00:00", historyEntry.getDateTimeAdded());
-    }
-
-    @Test
-    void shouldThrowIllegalStateExceptionWhenCaseDetailsIsNull() {
-        // Given
-        String userToken = "test-user-token";
-        String s2sToken = "Bearer test-s2s-token";
-
-        when(idamService.getServiceUserToken()).thenReturn("Bearer " + userToken);
-        when(serviceAuthorization.generate()).thenReturn(s2sToken);
-
-        StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
-        when(mockStartEventDetails.getCaseDetails()).thenReturn(null);
-
-        when(ccdDataApi.startEventByCase(
-            eq("Bearer test-user-token"),
-            eq("Bearer test-s2s-token"),
-            eq(CCD_CASE_ID),
-            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
-        )).thenReturn(mockStartEventDetails);
-
-        // When & Then
-        IllegalStateException exception = assertThrows(
-            IllegalStateException.class,
-            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        assertEquals(status, history.getStatus());
+        assertEquals(expectedDate, history.getDateTimeAdded());
+        assertEquals(
+            "Home Office initial determination",
+            history.getReason()
         );
-
-        assertEquals("Case details is null for caseId: 12345", exception.getMessage());
-        
-        verify(idamService).getServiceUserToken();
-        verify(serviceAuthorization).generate();
-        verify(ccdDataApi).startEventByCase(
-            "Bearer " + userToken,
-            s2sToken,
-                CCD_CASE_ID,
-            Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
+        assertEquals(
+            "Home Office Integration API",
+            history.getUser()
         );
-    }
-
-    @Test
-    void shouldSuccessfullySetHomeOfficeStatutoryTimeframeStatusWithYesStatus() {
-        // Given
-        String userToken = "test-user-token";
-        String s2sToken = "Bearer test-s2s-token";
-        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-            .status("Yes")
-            .cohorts(new String[]{"HU"})
-            .build());
-
-        when(idamService.getServiceUserToken()).thenReturn("Bearer " + userToken);
-        when(serviceAuthorization.generate()).thenReturn(s2sToken);
-
-        StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
-        @SuppressWarnings("unchecked")
-        CaseDetails<AsylumCase> mockCaseDetails = mock(CaseDetails.class);
-        when(mockCaseDetails.getId()).thenReturn(12345L);
-        when(mockCaseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
-        when(mockCaseDetails.getCreatedDate()).thenReturn(java.time.LocalDateTime.now());
-        when(mockCaseDetails.getCaseData()).thenReturn(mock(AsylumCase.class));
-        
-        when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
-        when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
-        when(mockStartEventDetails.getEventId()).thenReturn(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS);
-
-        when(ccdDataApi.startEventByCase(
-            eq("Bearer test-user-token"),
-            eq("Bearer test-s2s-token"),
-            eq(CCD_CASE_ID),
-            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
-        )).thenReturn(mockStartEventDetails);
-
-        SubmitEventDetails mockSubmitEventDetails = mock(SubmitEventDetails.class);
-        when(mockSubmitEventDetails.getCallbackResponseStatusCode()).thenReturn(200);
-        when(mockSubmitEventDetails.getCallbackResponseStatus()).thenReturn("Success");
-
-        HashMap<String, Object> data = new HashMap<>();
-        data.put(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value(), YesOrNo.YES);
-        when(mockSubmitEventDetails.getData()).thenReturn(data);
-
-        when(ccdDataApi.submitEventByCase(
-            eq("Bearer test-user-token"),
-            eq("Bearer test-s2s-token"),
-            eq(CCD_CASE_ID),
-            any(CaseDataContent.class)
-        )).thenReturn(mockSubmitEventDetails);
-
-        // When
-        SubmitEventDetails result = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(200, result.getCallbackResponseStatusCode());
-        assertEquals("Success", result.getCallbackResponseStatus());
-        assertEquals(YesOrNo.YES, result.getData().get(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value()));
-
-        verify(idamService).getServiceUserToken();
-        verify(serviceAuthorization).generate();
-        verify(ccdDataApi).startEventByCase(
-            "Bearer " + userToken,
-            s2sToken,
-                CCD_CASE_ID,
-            Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
-        );
-        verify(ccdDataApi).submitEventByCase(
-            eq("Bearer " + userToken),
-            eq(s2sToken),
-            eq(CCD_CASE_ID),
-            any(CaseDataContent.class)
-        );
-    }
-
-    @Test
-    void shouldSuccessfullySetHomeOfficeStatutoryTimeframeStatusWithNoStatus() {
-        // Given
-        String userToken = "test-user-token";
-        String s2sToken = "Bearer test-s2s-token";
-        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-            .status("No")
-            .cohorts(new String[]{"HU"})
-            .build());
-
-        when(idamService.getServiceUserToken()).thenReturn("Bearer " + userToken);
-        when(serviceAuthorization.generate()).thenReturn(s2sToken);
-
-        StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
-        @SuppressWarnings("unchecked")
-        CaseDetails<AsylumCase> mockCaseDetails = mock(CaseDetails.class);
-        when(mockCaseDetails.getId()).thenReturn(12345L);
-        when(mockCaseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
-        when(mockCaseDetails.getCreatedDate()).thenReturn(java.time.LocalDateTime.now());
-        when(mockCaseDetails.getCaseData()).thenReturn(mock(AsylumCase.class));
-        
-        when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
-        when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
-        when(mockStartEventDetails.getEventId()).thenReturn(Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS);
-
-        when(ccdDataApi.startEventByCase(
-            eq("Bearer test-user-token"),
-            eq("Bearer test-s2s-token"),
-            eq(CCD_CASE_ID),
-            eq(Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS.toString())
-        )).thenReturn(mockStartEventDetails);
-
-        SubmitEventDetails mockSubmitEventDetails = mock(SubmitEventDetails.class);
-        when(mockSubmitEventDetails.getCallbackResponseStatusCode()).thenReturn(200);
-        when(mockSubmitEventDetails.getCallbackResponseStatus()).thenReturn("Success");
-
-        HashMap<String, Object> data = new HashMap<>();
-        data.put(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value(), YesOrNo.NO);
-        when(mockSubmitEventDetails.getData()).thenReturn(data);
-
-        when(ccdDataApi.submitEventByCase(
-            eq("Bearer test-user-token"),
-            eq("Bearer test-s2s-token"),
-            eq(CCD_CASE_ID),
-            any(CaseDataContent.class)
-        )).thenReturn(mockSubmitEventDetails);
-
-        // When
-        SubmitEventDetails result = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(200, result.getCallbackResponseStatusCode());
-        assertEquals("Success", result.getCallbackResponseStatus());
-        assertEquals(YesOrNo.NO, result.getData().get(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value()));
-        
-        verify(idamService).getServiceUserToken();
-        verify(serviceAuthorization).generate();
-        verify(ccdDataApi).startEventByCase(
-            "Bearer " + userToken,
-            s2sToken,
-                CCD_CASE_ID,
-            Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS.toString()
-        );
-        verify(ccdDataApi).submitEventByCase(
-            eq("Bearer " + userToken),
-            eq(s2sToken),
-            eq(CCD_CASE_ID),
-            any(CaseDataContent.class)
-        );
-    }
-
-    @Test
-    void shouldLogCaseDetailsWhenPresent() {
-        // Given
-        String userToken = "test-user-token";
-        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-            .status("Yes")
-            .cohorts(new String[]{"HU"})
-            .build());
-        testDto.setTimeStamp(LocalDateTime.of(2024, 1, 15, 0, 0, 0));
-
-        String s2sToken = "Bearer test-s2s-token";
-        when(idamService.getServiceUserToken()).thenReturn("Bearer " + userToken);
-        when(serviceAuthorization.generate()).thenReturn(s2sToken);
-
-        StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
-        @SuppressWarnings("unchecked")
-        CaseDetails<AsylumCase> mockCaseDetails = mock(CaseDetails.class);
-        java.time.LocalDateTime createdDate = java.time.LocalDateTime.of(2024, 1, 1, 10, 0);
-        
-        when(mockCaseDetails.getId()).thenReturn(67890L);
-        when(mockCaseDetails.getState()).thenReturn(State.APPEAL_STARTED);
-        when(mockCaseDetails.getCreatedDate()).thenReturn(createdDate);
-        when(mockCaseDetails.getCaseData()).thenReturn(mock(AsylumCase.class));
-        
-        when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
-        when(mockStartEventDetails.getToken()).thenReturn("test-event-token-2");
-        when(mockStartEventDetails.getEventId()).thenReturn(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS);
-
-        when(ccdDataApi.startEventByCase(
-            eq("Bearer test-user-token"),
-            eq("Bearer test-s2s-token"),
-            eq(CCD_CASE_ID),
-            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
-        )).thenReturn(mockStartEventDetails);
-
-        SubmitEventDetails mockSubmitEventDetails = mock(SubmitEventDetails.class);
-        when(mockSubmitEventDetails.getCallbackResponseStatusCode()).thenReturn(201);
-        when(mockSubmitEventDetails.getCallbackResponseStatus()).thenReturn("Created");
-
-        when(ccdDataApi.submitEventByCase(
-            eq("Bearer test-user-token"),
-            eq("Bearer test-s2s-token"),
-            eq(CCD_CASE_ID),
-            any(CaseDataContent.class)
-        )).thenReturn(mockSubmitEventDetails);
-
-        // When
-        SubmitEventDetails result = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(201, result.getCallbackResponseStatusCode());
-        assertEquals("Created", result.getCallbackResponseStatus());
-        
-        verify(mockCaseDetails).getId();
-        verify(mockCaseDetails).getState();
-        verify(mockCaseDetails).getCreatedDate();
-        verify(mockCaseDetails).getCaseData(); // Now called only once
-    }
-
-    @Test
-    void shouldFormatDateTimeCorrectlyInToStf4wMethod() {
-        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-            .status("Yes")
-            .cohorts(new String[]{"HU"})
-            .build());
-        testDto.setTimeStamp(LocalDateTime.of(2024, 6, 15, 14, 28, 18));
-
-        StatutoryTimeframe24Weeks result = ccdDataService.toStf4w("3", testDto);
-
-        assertNotNull(result);
-        
-        // Verify the datetime format preserves the time information (not just 00:00:00)
-        StatutoryTimeframe24WeeksHistory historyEntry = result.getHistory().get(0).getValue();
-        assertEquals("2024-06-15T14:28:18", historyEntry.getDateTimeAdded());
     }
 
     @Test
     void shouldReturnTypeCompatibleWithStatutoryTimeframe24WeeksDefinition() {
-        // Given
-        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-            .status("Yes")
-            .cohorts(new String[]{"HU"})
-            .build());
-        testDto.setTimeStamp(LocalDateTime.of(2024, 1, 1, 12, 0, 0));
 
-        // When
-        StatutoryTimeframe24Weeks result = ccdDataService.toStf4w("1", testDto);
+        StatutoryTimeframe24Weeks result =
+            ccdDataService.toStf24w("1", YesOrNo.YES, testDto);
 
-        // Then
-        assertNotNull(result);
-        
-        // Verify the return type matches the TypeReference in AsylumCaseDefinition
         @SuppressWarnings("unchecked")
-        TypeReference<StatutoryTimeframe24Weeks> expectedType = 
-            (TypeReference<StatutoryTimeframe24Weeks>) AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS.getTypeReference();
-        
+        TypeReference<StatutoryTimeframe24Weeks> expectedType =
+            (TypeReference<StatutoryTimeframe24Weeks>)
+                AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS
+                    .getTypeReference();
+
         assertNotNull(expectedType);
-        assertEquals(StatutoryTimeframe24Weeks.class, result.getClass(),
-            "CCD def has probably changed but the method toStf4w has not been updated accordingly.");
-        
-        // Verify the structure has the expected properties
+        assertNotNull(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS.getTypeReference());
         assertNotNull(result.getHistory());
     }
 
     @Test
-    void nextHistoryId_shouldReturn1WhenNoExistingData() {
-        // Given
-        Optional<StatutoryTimeframe24Weeks> existingData = Optional.empty();
+    void shouldThrowWhenCaseDetailsIsNull() {
 
-        // When
-        String result = ccdDataService.nextHistoryId(existingData);
+        stubCaseId();
+        stubTokens();
 
-        // Then
-        assertEquals("1", result);
-    }
+        StartEventDetails start = mock(StartEventDetails.class);
 
-    @Test
-    void nextHistoryId_shouldReturn1WhenHistoryIsNull() {
-        // Given
-        StatutoryTimeframe24Weeks data = mock(StatutoryTimeframe24Weeks.class);
-        when(data.getHistory()).thenReturn(null);
-
-        // When
-        String result = ccdDataService.nextHistoryId(Optional.of(data));
-
-        // Then
-        assertEquals("1", result);
-        verify(data).getHistory();
-    }
-
-    @Test
-    void nextHistoryId_shouldReturn1WhenHistoryIsEmpty() {
-        // Given
-        StatutoryTimeframe24Weeks data = mock(StatutoryTimeframe24Weeks.class);
-        when(data.getHistory()).thenReturn(new ArrayList<>());
-
-        // When
-        String result = ccdDataService.nextHistoryId(Optional.of(data));
-
-        // Then
-        assertEquals("1", result);
-        verify(data).getHistory();
-    }
-
-    @Test
-    void nextHistoryId_shouldReturn2WhenHistoryHasOneEntry() {
-        // Given
-        StatutoryTimeframe24Weeks data = mock(StatutoryTimeframe24Weeks.class);
-        
-        StatutoryTimeframe24WeeksHistory historyEntry = mock(StatutoryTimeframe24WeeksHistory.class);
-        List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList = new ArrayList<>();
-        historyList.add(new IdValue<>("1", historyEntry));
-        
-        when(data.getHistory()).thenReturn(historyList);
-
-        // When
-        String result = ccdDataService.nextHistoryId(Optional.of(data));
-
-        // Then
-        assertEquals("2", result);
-        verify(data).getHistory();
-    }
-
-    @Test
-    void nextHistoryId_shouldReturn6WhenHistoryHasMultipleEntries() {
-        // Given
-        List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList = new ArrayList<>();
-        historyList.add(new IdValue<>("1", mock(StatutoryTimeframe24WeeksHistory.class)));
-        historyList.add(new IdValue<>("3", mock(StatutoryTimeframe24WeeksHistory.class)));
-        historyList.add(new IdValue<>("5", mock(StatutoryTimeframe24WeeksHistory.class)));
-        
-        StatutoryTimeframe24Weeks data = mock(StatutoryTimeframe24Weeks.class);
-        when(data.getHistory()).thenReturn(historyList);
-
-        // When
-        String result = ccdDataService.nextHistoryId(Optional.of(data));
-
-        // Then
-        assertEquals("6", result);
-        verify(data).getHistory();
-    }
-
-    @Test
-    void nextHistoryId_shouldHandleNonSequentialIds() {
-        // Given
-        List<IdValue<StatutoryTimeframe24WeeksHistory>> historyList = new ArrayList<>();
-        historyList.add(new IdValue<>("10", mock(StatutoryTimeframe24WeeksHistory.class)));
-        historyList.add(new IdValue<>("2", mock(StatutoryTimeframe24WeeksHistory.class)));
-        historyList.add(new IdValue<>("15", mock(StatutoryTimeframe24WeeksHistory.class)));
-        
-        StatutoryTimeframe24Weeks data = mock(StatutoryTimeframe24Weeks.class);
-        when(data.getHistory()).thenReturn(historyList);
-
-        // When
-        String result = ccdDataService.nextHistoryId(Optional.of(data));
-
-        // Then
-        assertEquals("16", result);
-        verify(data).getHistory();
-    }
-
-    @Test
-    void shouldThrowExceptionWhenStatutoryTimeframeStatusAlreadySet() {
-        // Given
-        String userToken = "test-user-token";
-        String s2sToken = "Bearer test-s2s-token";
-        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-            .status("Yes")
-            .cohorts(new String[]{"HU"})
-            .build());
-
-        when(idamService.getServiceUserToken()).thenReturn("Bearer " + userToken);
-        when(serviceAuthorization.generate()).thenReturn(s2sToken);
-
-        // Create existing data with history
-        StatutoryTimeframe24WeeksHistory existingHistoryEntry = mock(StatutoryTimeframe24WeeksHistory.class);
-        List<IdValue<StatutoryTimeframe24WeeksHistory>> existingHistoryList = new ArrayList<>();
-        existingHistoryList.add(new IdValue<>("1", existingHistoryEntry));
-
-        StatutoryTimeframe24Weeks existingData = mock(StatutoryTimeframe24Weeks.class);
-        when(existingData.getHistory()).thenReturn(existingHistoryList);
-
-
-        AsylumCase mockAsylumCase = mock(AsylumCase.class);
-        when(mockAsylumCase.read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS))
-            .thenReturn(Optional.of(existingData));
-
-        StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
-        @SuppressWarnings("unchecked")
-        CaseDetails<AsylumCase> mockCaseDetails = mock(CaseDetails.class);
-        when(mockCaseDetails.getId()).thenReturn(12345L);
-        when(mockCaseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
-        when(mockCaseDetails.getCreatedDate()).thenReturn(java.time.LocalDateTime.now());
-        when(mockCaseDetails.getCaseData()).thenReturn(mockAsylumCase);
-
-        when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
-        lenient().when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
-        lenient().when(mockStartEventDetails.getEventId()).thenReturn(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS);
+        when(start.getCaseDetails()).thenReturn(null);
 
         when(ccdDataApi.startEventByCase(
-            eq("Bearer test-user-token"),
-            eq("Bearer test-s2s-token"),
+            eq(USER_TOKEN),
+            eq(S2S_TOKEN),
             eq(CCD_CASE_ID),
-            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
-        )).thenReturn(mockStartEventDetails);
+            anyString()
+        )).thenReturn(start);
 
-        // When & Then
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+
+        assertTrue(
+            exception.getMessage().startsWith("Case details is null")
+        );
+    }
+
+    @Test
+    void shouldSuccessfullySetStatusYes() {
+
+        stubCaseId();
+        stubTokens();
+        stubHappyPath();
+
+        SubmitEventDetails result =
+            ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto);
+
+        assertNotNull(result);
+        assertEquals(200, result.getCallbackResponseStatusCode());
+
+        verify(ccdDataApi).submitEventByCase(
+            eq(USER_TOKEN),
+            eq(S2S_TOKEN),
+            eq(CCD_CASE_ID),
+            any(CaseDataContent.class)
+        );
+    }
+
+    @Test
+    void shouldSuccessfullySetStatusNo() {
+
+        setIncluded(false);
+
+        stubCaseId();
+        stubTokens();
+        stubHappyPath();
+
+        SubmitEventDetails result =
+            ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto);
+
+        assertNotNull(result);
+        assertEquals(200, result.getCallbackResponseStatusCode());
+
+        verify(ccdDataApi).submitEventByCase(
+            eq(USER_TOKEN),
+            eq(S2S_TOKEN),
+            eq(CCD_CASE_ID),
+            any(CaseDataContent.class)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("historyIds")
+    void nextHistoryId_shouldReturnExpectedValue(
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> history,
+        String expected
+    ) {
+
+        StatutoryTimeframe24Weeks data =
+            mock(StatutoryTimeframe24Weeks.class);
+
+        when(data.getHistory()).thenReturn(history);
+
+        assertEquals(
+            expected,
+            ccdDataService.nextHistoryId(Optional.of(data))
+        );
+    }
+
+    static Stream<Arguments> historyIds() {
+
+        return Stream.of(
+            Arguments.of(null, "1"),
+            Arguments.of(List.of(), "1"),
+            Arguments.of(history("1"), "2"),
+            Arguments.of(history("1", "3", "5"), "6"),
+            Arguments.of(history("10", "2", "15"), "16")
+        );
+    }
+
+    @Test
+    void shouldThrowWhenStatusAlreadySet() {
+
+        stubCaseId();
+        stubTokens();
+
+        AsylumCase asylumCase = mock(AsylumCase.class);
+
+        StatutoryTimeframe24Weeks existing =
+            mock(StatutoryTimeframe24Weeks.class);
+
+        when(existing.getHistory()).thenReturn(history("1"));
+
+        when(asylumCase.read(any()))
+            .thenReturn(Optional.of(existing));
+
+        stubStartEvent(asylumCase);
+
         IllegalStateException exception = assertThrows(
             IllegalStateException.class,
             () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
         );
 
         assertEquals(
-            "Statutory timeframe status has already been set for caseId: 12345",
+            "Statutory timeframe status has already been set for caseId: " + CCD_CASE_ID,
             exception.getMessage()
         );
-
-        verify(idamService).getServiceUserToken();
-        verify(serviceAuthorization).generate();
-        verify(ccdDataApi).startEventByCase(
-            "Bearer " + userToken,
-            s2sToken,
-                CCD_CASE_ID,
-            Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
-        );
-        verify(mockAsylumCase).read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS);
-        verify(existingData).getHistory();
-
     }
 
     @Test
-    void shouldThrowExceptionWhenStatusAlreadySetToYes() {
-        // Given
-        String userToken = "test-user-token";
-        testDto.setCcdCaseId("99999");
-        testDto.setStf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-            .status("No")
-            .cohorts(new String[]{"HU"})
-            .build());
+    void shouldThrowCaseNotFoundException() {
 
-        String s2sToken = "Bearer test-s2s-token";
-        when(idamService.getServiceUserToken()).thenReturn("Bearer " + userToken);
-        when(serviceAuthorization.generate()).thenReturn(s2sToken);
-
-        // Create existing data with multiple history entries
-        List<IdValue<StatutoryTimeframe24WeeksHistory>> existingHistoryList = new ArrayList<>();
-        existingHistoryList.add(new IdValue<>("1", mock(StatutoryTimeframe24WeeksHistory.class)));
-        existingHistoryList.add(new IdValue<>("2", mock(StatutoryTimeframe24WeeksHistory.class)));
-
-        StatutoryTimeframe24Weeks existingData = mock(StatutoryTimeframe24Weeks.class);
-        when(existingData.getHistory()).thenReturn(existingHistoryList);
-
-        AsylumCase mockAsylumCase = mock(AsylumCase.class);
-        when(mockAsylumCase.read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS))
-            .thenReturn(Optional.of(existingData));
-
-        StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
-        @SuppressWarnings("unchecked")
-        CaseDetails<AsylumCase> mockCaseDetails = mock(CaseDetails.class);
-        when(mockCaseDetails.getId()).thenReturn(99999L);
-        when(mockCaseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
-        when(mockCaseDetails.getCreatedDate()).thenReturn(java.time.LocalDateTime.now());
-        when(mockCaseDetails.getCaseData()).thenReturn(mockAsylumCase);
-
-        when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
-        lenient().when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
-        lenient().when(mockStartEventDetails.getEventId()).thenReturn(Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS);
+        stubDefaultDependencies();
 
         when(ccdDataApi.startEventByCase(
-            eq("Bearer test-user-token"),
-            eq("Bearer test-s2s-token"),
-            eq("99999"),
-            eq(Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS.toString())
-        )).thenReturn(mockStartEventDetails);
-
-        // When & Then
-        IllegalStateException exception = assertThrows(
-            IllegalStateException.class,
-            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+            eq(USER_TOKEN),
+            eq(S2S_TOKEN),
+            eq(CCD_CASE_ID),
+            anyString()
+        )).thenThrow(
+            new HomeOfficeResponseException("Case ID is not valid")
         );
 
-        assertEquals(
-            "Statutory timeframe status has already been set for caseId: 99999",
-            exception.getMessage()
-        );
-        
-        verify(idamService).getServiceUserToken();
-        verify(serviceAuthorization).generate();
-        verify(ccdDataApi).startEventByCase(
-            "Bearer " + userToken,
-            s2sToken,
-            "99999",
-            Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS.toString()
-        );
-        verify(mockAsylumCase).read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS);
-        verify(existingData).getHistory();
-    }
-
-    @Test
-    void should_generate_s2s_token_successfully() {
-        // Given
-        String expectedToken = "test-s2s-token";
-        when(serviceAuthorization.generate()).thenReturn(expectedToken);
-
-        // When
-        String actualToken = ccdDataService.generateS2SToken();
-
-        // Then
-        assertEquals(expectedToken, actualToken);
-        verify(serviceAuthorization).generate();
-    }
-
-    @Test
-    void should_call_auth_token_generator_when_generating_s2s_token() {
-        // Given
-        String token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test";
-        when(serviceAuthorization.generate()).thenReturn(token);
-
-        // When
-        ccdDataService.generateS2SToken();
-
-        // Then
-        verify(serviceAuthorization).generate();
-    }
-
-    @Test
-    void shouldThrowCaseNotFoundExceptionWhenCaseIdIsNotValid() {
-        // Given
-        String userToken = "test-user-token";
-        String s2sToken = "Bearer test-s2s-token";
-
-        when(idamService.getServiceUserToken()).thenReturn("Bearer " + userToken);
-        when(serviceAuthorization.generate()).thenReturn(s2sToken);
-
-        when(ccdDataApi.startEventByCase(
-            eq("Bearer test-user-token"),
-            eq("Bearer test-s2s-token"),
-            eq("12345"),
-            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
-        )).thenThrow(new HomeOfficeResponseException("StatusCode: 400, methodKey: CcdDataApi#startEventByCase, reason: null, message: Case ID is not valid"));
-
-        // When & Then
-        CaseNotFoundException exception = assertThrows(
+        assertThrows(
             CaseNotFoundException.class,
             () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
         );
-
-        assertEquals("Case not found for caseId: 12345", exception.getMessage());
-
-        verify(idamService).getServiceUserToken();
-        verify(serviceAuthorization).generate();
-        verify(ccdDataApi).startEventByCase(
-            "Bearer " + userToken,
-            s2sToken,
-            "12345",
-            Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()
-        );
     }
 
     @Test
-    void shouldRethrowOtherExceptionsFromStartEventByCase() {
-        // Given
-        String userToken = "test-user-token";
-        String s2sToken = "Bearer test-s2s-token";
+    void shouldRethrowOtherExceptions() {
 
-        when(idamService.getServiceUserToken()).thenReturn("Bearer " + userToken);
-        when(serviceAuthorization.generate()).thenReturn(s2sToken);
+        when(idamService.getServiceUserToken())
+            .thenReturn(USER_TOKEN);
 
-        RuntimeException originalException = new RuntimeException("Some other error");
+        when(serviceAuthorization.generate())
+            .thenReturn(S2S_TOKEN);
+
         when(ccdDataApi.startEventByCase(
-            eq("Bearer test-user-token"),
-            eq("Bearer test-s2s-token"),
-            eq("12345"),
+            eq(USER_TOKEN),
+            eq(S2S_TOKEN),
+            nullable(String.class),
             eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
-        )).thenThrow(originalException);
+        )).thenThrow(new RuntimeException("Some other error"));
 
-        // When & Then
         RuntimeException exception = assertThrows(
             RuntimeException.class,
             () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
         );
 
         assertEquals("Some other error", exception.getMessage());
-    }
-
-    @Test
-    void shouldNormaliseUserTokenWhenBearerPrefixIsMissing() {
-        when(idamService.getServiceUserToken()).thenReturn("test-user-token");
-        when(serviceAuthorization.generate()).thenReturn("Bearer test-s2s-token");
-
-        stubHappyPath("Bearer test-user-token", "Bearer test-s2s-token");
-
-        ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto);
 
         verify(ccdDataApi).startEventByCase(
-            eq("Bearer test-user-token"),
-            eq("Bearer test-s2s-token"),
-            eq(CCD_CASE_ID),
+            eq(USER_TOKEN),
+            eq(S2S_TOKEN),
+            nullable(String.class),
             eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
         );
     }
 
-    @Test
-    void shouldNormaliseUserTokenWhenBearerPrefixIsDuplicated() {
-        when(idamService.getServiceUserToken()).thenReturn("Bearer Bearer test-user-token");
-        when(serviceAuthorization.generate()).thenReturn("Bearer test-s2s-token");
+    @ParameterizedTest
+    @CsvSource({
+        "test-user-token,Bearer test-s2s-token",
+        "'Bearer Bearer test-user-token',Bearer test-s2s-token",
+        "Bearer test-user-token,test-s2s-token",
+        "Bearer test-user-token,'Bearer Bearer test-s2s-token'"
+    })
+    void shouldNormaliseTokens(
+        String userToken,
+        String s2sToken
+    ) {
 
-        stubHappyPath("Bearer test-user-token", "Bearer test-s2s-token");
+        stubCaseId();
 
-        ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto);
+        when(idamService.getServiceUserToken()).thenReturn(userToken);
+        when(serviceAuthorization.generate()).thenReturn(s2sToken);
 
-        verify(ccdDataApi).startEventByCase(
-            eq("Bearer test-user-token"),
-            eq("Bearer test-s2s-token"),
-            eq(CCD_CASE_ID),
-            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
-        );
-    }
-
-    @Test
-    void shouldNormaliseS2STokenWhenBearerPrefixIsMissing() {
-        when(idamService.getServiceUserToken()).thenReturn("Bearer test-user-token");
-        when(serviceAuthorization.generate()).thenReturn("test-s2s-token");
-
-        stubHappyPath("Bearer test-user-token", "Bearer test-s2s-token");
+        stubHappyPath();
 
         ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto);
 
         verify(ccdDataApi).startEventByCase(
-            eq("Bearer test-user-token"),
-            eq("Bearer test-s2s-token"),
-            eq(CCD_CASE_ID),
-            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
+            eq(USER_TOKEN),
+            eq(S2S_TOKEN),
+            anyString(),
+            anyString()
         );
     }
 
-    @Test
-    void shouldNormaliseS2STokenWhenBearerPrefixIsDuplicated() {
-        when(idamService.getServiceUserToken()).thenReturn("Bearer test-user-token");
-        when(serviceAuthorization.generate()).thenReturn("Bearer Bearer test-s2s-token");
+    @ParameterizedTest
+    @CsvSource({
+        "' '",
+        "''"
+    })
+    void shouldThrowWhenUserTokenInvalid(String token) {
 
-        stubHappyPath("Bearer test-user-token", "Bearer test-s2s-token");
-
-        ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto);
-
-        verify(ccdDataApi).startEventByCase(
-            eq("Bearer test-user-token"),
-            eq("Bearer test-s2s-token"),
-            eq(CCD_CASE_ID),
-            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
-        );
-    }
-
-    @Test
-    void shouldThrowWhenUserTokenIsNull() {
-        when(idamService.getServiceUserToken()).thenReturn(null);
+        when(idamService.getServiceUserToken()).thenReturn(token);
 
         IllegalStateException exception = assertThrows(
             IllegalStateException.class,
@@ -882,52 +413,129 @@ class CcdDataServiceTest {
         );
 
         assertEquals("Token is null or blank", exception.getMessage());
+
         verifyNoInteractions(ccdDataApi);
     }
 
     @Test
-    void shouldThrowWhenUserTokenIsBlank() {
-        when(idamService.getServiceUserToken()).thenReturn("   ");
+    void shouldGenerateS2SToken() {
 
-        IllegalStateException exception = assertThrows(
-            IllegalStateException.class,
-            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        when(serviceAuthorization.generate())
+            .thenReturn("test-s2s-token");
+
+        assertEquals(
+            "test-s2s-token",
+            ccdDataService.generateS2SToken()
         );
 
-        assertEquals("Token is null or blank", exception.getMessage());
-        verifyNoInteractions(ccdDataApi);
+        verify(serviceAuthorization).generate();
     }
 
     @Test
     void shouldReturnServiceUserToken() {
-        String expectedToken = "Bearer test-user-token";
-        when(idamService.getServiceUserToken()).thenReturn(expectedToken);
 
-        String actualToken = ccdDataService.getServiceUserToken();
+        when(idamService.getServiceUserToken())
+            .thenReturn(USER_TOKEN);
 
-        assertEquals(expectedToken, actualToken);
+        assertEquals(
+            USER_TOKEN,
+            ccdDataService.getServiceUserToken()
+        );
+
         verify(idamService).getServiceUserToken();
     }
 
-    private void stubHappyPath(String userToken, String s2sToken) {
-        StartEventDetails mockStartEventDetails = mock(StartEventDetails.class);
+    private void setIncluded(boolean included) {
+
+        testDto.setStf24weekCohortDtos(
+            List.of(
+                HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
+                    .name(COHORT_NAME)
+                    .included(included)
+                    .build()
+            )
+        );
+    }
+
+    private void stubCaseId() {
+
+        when(dbUtils.getCaseId(HMCTS_REF_NUM))
+            .thenReturn(CCD_CASE_ID);
+    }
+
+    private void stubTokens() {
+
+        when(idamService.getServiceUserToken())
+            .thenReturn(USER_TOKEN);
+
+        when(serviceAuthorization.generate())
+            .thenReturn(S2S_TOKEN);
+    }
+
+    private void stubHappyPath() {
+
+        AsylumCase asylumCase = mock(AsylumCase.class);
+
+        when(asylumCase.read(any()))
+            .thenReturn(Optional.empty());
+
+        stubStartEvent(asylumCase);
+
+        SubmitEventDetails submit = mock(SubmitEventDetails.class);
+
+        when(submit.getCallbackResponseStatusCode())
+            .thenReturn(200);
+
+        when(ccdDataApi.submitEventByCase(
+            anyString(),
+            anyString(),
+            nullable(String.class),
+            any(CaseDataContent.class)
+        )).thenReturn(submit);
+    }
+
+    private void stubStartEvent(AsylumCase asylumCase) {
+
         @SuppressWarnings("unchecked")
-        CaseDetails<AsylumCase> mockCaseDetails = mock(CaseDetails.class);
-        when(mockCaseDetails.getCaseData()).thenReturn(mock(AsylumCase.class));
-        when(mockStartEventDetails.getCaseDetails()).thenReturn(mockCaseDetails);
-        when(mockStartEventDetails.getToken()).thenReturn("test-event-token");
-        when(mockStartEventDetails.getEventId()).thenReturn(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS);
+        CaseDetails<AsylumCase> caseDetails = mock(CaseDetails.class);
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        StartEventDetails start = mock(StartEventDetails.class);
+
+        when(start.getCaseDetails()).thenReturn(caseDetails);
 
         when(ccdDataApi.startEventByCase(
-            eq(userToken), eq(s2sToken), eq(CCD_CASE_ID),
-            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
-        )).thenReturn(mockStartEventDetails);
-
-        SubmitEventDetails mockSubmitEventDetails = mock(SubmitEventDetails.class);
-        when(mockSubmitEventDetails.getCallbackResponseStatusCode()).thenReturn(201);
-        when(ccdDataApi.submitEventByCase(
-            eq(userToken), eq(s2sToken), eq(CCD_CASE_ID), any(CaseDataContent.class)
-        )).thenReturn(mockSubmitEventDetails);
+            anyString(),
+            anyString(),
+            nullable(String.class),
+            anyString()
+        )).thenReturn(start);
     }
-*/
+
+    private static List<IdValue<StatutoryTimeframe24WeeksHistory>> history(
+        String... ids
+    ) {
+
+        return Arrays.stream(ids)
+            .map(id ->
+                new IdValue<>(
+                    id,
+                    mock(StatutoryTimeframe24WeeksHistory.class)
+                )
+            )
+            .toList();
+    }
+
+    private void stubDefaultDependencies() {
+
+        when(dbUtils.getCaseId(HMCTS_REF_NUM))
+            .thenReturn(CCD_CASE_ID);
+
+        when(idamService.getServiceUserToken())
+            .thenReturn(USER_TOKEN);
+
+        when(serviceAuthorization.generate())
+            .thenReturn(S2S_TOKEN);
+    }
 }

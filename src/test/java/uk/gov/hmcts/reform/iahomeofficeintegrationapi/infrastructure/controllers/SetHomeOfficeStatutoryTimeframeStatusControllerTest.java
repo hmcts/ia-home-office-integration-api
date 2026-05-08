@@ -139,7 +139,6 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).contains("stf24weeks");
-        assertThat(response.getBody()).contains("must not be null");
+        assertThat(response.getBody()).contains("The 24-week status could not be set.  Please check the format of the HTTP headers and message body.");
     }
 }

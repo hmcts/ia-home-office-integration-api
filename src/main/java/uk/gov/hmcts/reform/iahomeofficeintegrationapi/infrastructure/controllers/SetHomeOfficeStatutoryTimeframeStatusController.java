@@ -110,10 +110,14 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         String message = ex.getMessage();
         if (message != null && message.contains("Case ID is not valid")) {
             log.info("Case not found: {}", message);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"The 24-week status could not be set.  The HMCTS appeal reference number does not correspond to any records in HMCTS systems.\"}");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                "{\"error\":\"The 24-week status could not be set.  The HMCTS appeal reference number does not correspond to any records in HMCTS systems.\"}"
+            );
         }
         log.info("Home Office response error: {}", message);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"The 24-week status could not be set.  Please check the format of the HTTP headers and message body.\"}");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            "{\"error\":\"The 24-week status could not be set.  Please check the format of the HTTP headers and message body.\"}"
+        );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -123,14 +127,18 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
             .reduce((a, b) -> a + ", " + b)
             .orElse("Validation failed");
         log.info("Validation error: {}", errorMessage);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"The 24-week status could not be set.  Please check the format of the HTTP headers and message body.\"}");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            "{\"error\":\"The 24-week status could not be set.  Please check the format of the HTTP headers and message body.\"}"
+        );
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleUnreadableMessageException(HttpMessageNotReadableException ex) {
         String errorMessage = ex.getMessage();
         log.info("Unreadable HTTP message error: {}", errorMessage);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"The 24-week status could not be set.  Please check the format of the HTTP headers and message body.\"}");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            "{\"error\":\"The 24-week status could not be set.  Please check the format of the HTTP headers and message body.\"}"
+        );
     }
 
     @ExceptionHandler(Exception.class)

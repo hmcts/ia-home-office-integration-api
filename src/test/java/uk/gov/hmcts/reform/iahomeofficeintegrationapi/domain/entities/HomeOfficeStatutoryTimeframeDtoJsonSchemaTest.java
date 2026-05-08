@@ -76,7 +76,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                 .name("HU")
-                .included(true)
+                .included(false)
                 .build();
         HomeOfficeStatutoryTimeframeDto dto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber("HU/54321/2021")

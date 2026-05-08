@@ -19,7 +19,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -63,4 +62,5 @@ public class HomeOfficeStatutoryTimeframe extends HomeOfficeStatutoryTimeframeBa
         @JsonProperty(value = "included", required = true)
         @NotNull
         private String included;
-    }}
+    }
+}
