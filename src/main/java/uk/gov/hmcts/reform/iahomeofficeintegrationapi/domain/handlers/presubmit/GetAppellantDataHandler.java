@@ -86,7 +86,7 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
             // Error checking even though we received a 2xx status code (things could still be wrong)
             if (applicationDto == null || applicationDto.getAppellants() == null || applicationDto.getAppellants().isEmpty()) {
                 throw new HomeOfficeMissingApplicationException(-2, 
-                            "Biographic information from Home Office asylum (etc.) application with HMCTS reference " +
+                            "Biographic information from Home Office asylum (etc.) application with reference " +
                              homeOfficeReferenceNumber +
                              " could not be retrieved.\n\nThe Home Office validation API responded but the response contained no data.");
             }
@@ -99,7 +99,7 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                 } else if (!uan.equals(homeOfficeReferenceNumber)) {
                     // The Home Office returned a *different* UAN: very bad
                     throw new HomeOfficeMissingApplicationException(-3, 
-                                "Biographic information from Home Office asylum (etc.) application with HMCTS reference " +
+                                "Biographic information from Home Office asylum (etc.) application with reference " +
                                 homeOfficeReferenceNumber +
                                 " could not be retrieved.\n\nThe Home Office validation API responded but the information " + 
                                 "appears to be from an application with reference " + uan + ".");                    
@@ -113,18 +113,25 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
             List<IdValue<HomeOfficeAppellant>> appellants = new ArrayList<>();
             for (HomeOfficeAppellantDto appellantDto : applicationDto.getAppellants()) {
                 String pp = appellantDto.getPp();
-                HomeOfficeAppellant appellant = new HomeOfficeAppellant(pp,
-                                                                        appellantDto.getFamilyName(), 
-                                                                        appellantDto.getGivenNames(), 
-                                                                        appellantDto.getDateOfBirth().toString(), 
-                                                                        appellantDto.getNationality(), 
-                                                                        yesOrNoFromBoolean(appellantDto.getRoa()), 
-                                                                        yesOrNoFromBoolean(appellantDto.getAsylumSupport()), 
-                                                                        yesOrNoFromBoolean(appellantDto.getHoFeeWaiver()), 
-                                                                        appellantDto.getLanguage(), 
-                                                                        yesOrNoFromBoolean(appellantDto.getInterpreterNeeded()));
-                String id = pp == null ? homeOfficeReferenceNumber : homeOfficeReferenceNumber + "/" + pp; 
-                appellants.add(new IdValue<HomeOfficeAppellant>(id, appellant));
+                String id = pp == null ? homeOfficeReferenceNumber : homeOfficeReferenceNumber + "/" + pp;
+                try {
+                    HomeOfficeAppellant appellant = new HomeOfficeAppellant(pp,
+                                                                            appellantDto.getFamilyName(), 
+                                                                            appellantDto.getGivenNames(), 
+                                                                            appellantDto.getDateOfBirth().toString(), 
+                                                                            appellantDto.getNationality(), 
+                                                                            yesOrNoFromBoolean(appellantDto.getRoa()), 
+                                                                            yesOrNoFromBoolean(appellantDto.getAsylumSupport()), 
+                                                                            yesOrNoFromBoolean(appellantDto.getHoFeeWaiver()), 
+                                                                            appellantDto.getLanguage(), 
+                                                                            yesOrNoFromBoolean(appellantDto.getInterpreterNeeded()));
+                    appellants.add(new IdValue<HomeOfficeAppellant>(id, appellant));
+                } catch (Exception e) {
+                    String message = "Biographic information from Home Office asylum (etc.) application with reference " + homeOfficeReferenceNumber
+                                   + " was retrieved but did not match the expected format " + (pp == null ? "" : " for appellant " + pp)
+                                   + ": " + e.getMessage();
+                    throw new HomeOfficeMissingApplicationException(-4, message);
+                } 
             }
             asylumCase.write(HOME_OFFICE_APPELLANTS, appellants);
             asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, String.valueOf(homeOfficeResponse.getStatusCodeValue()));
@@ -133,8 +140,8 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
             // Log as an error if the return status indicates a problem somewhere in our code (which may be a result of something changing at the Home Office's end)
             switch (exception.getHttpStatus()) {
                 // These negative numbers are obviously not real HTTP response codes; but they nonetheless convey useful information
-                case -3, -2, -1:
-                    // This means we didn't get a valid response from the Home Office (wrong response, empty response or time-out)
+                case -4, -3, -2, -1:
+                    // This means we didn't get a valid response from the Home Office (badly formatted response, wrong response, empty response or time-out)
                     log.warn(message);
                     break;
                 case 400, 401, 403:
