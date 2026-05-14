@@ -110,7 +110,7 @@ public class CcdScenarioRunnerTest {
                     String[] keys = string.split(":");
                     isDisabled = launchDarklyFunctionalTestClient
                         .getKey(keys[0], authorizationHeaders.getValue("Authorization"))
-                        && !Boolean.parseBoolean(keys[1]);
+                        && Boolean.parseBoolean(keys[1]);
                 }
                 if (isDisabled) {
                     return Arguments.of("Disabled: " + fileName, description, null, null, null, null, 0, 0, null);
