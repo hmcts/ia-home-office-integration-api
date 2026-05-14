@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.Rest
         properties = {"idam.baseUrl=localhost:5000"}
 )
 @Import(RestTemplateConfiguration.class)
+
 public class IdamApiConsumerTest {
     @Autowired
     IdamApi idamApi;
