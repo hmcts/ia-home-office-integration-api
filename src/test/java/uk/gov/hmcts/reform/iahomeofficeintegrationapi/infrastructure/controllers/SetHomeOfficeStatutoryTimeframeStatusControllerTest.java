@@ -23,6 +23,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseGoneException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
@@ -120,6 +121,19 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).contains("Case not found for caseId: 12345");
+    }
+
+    @Test
+    void handleCaseGoneException_shouldReturn410Gone() {
+        // Given
+        CaseGoneException exception = new CaseGoneException("Case no longer exists for caseId: 12345");
+
+        // When
+        ResponseEntity<String> response = controller.handleCaseGoneException(exception);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.GONE);
+        assertThat(response.getBody()).contains("Case no longer exists for caseId: 12345");
     }
 
     @Test

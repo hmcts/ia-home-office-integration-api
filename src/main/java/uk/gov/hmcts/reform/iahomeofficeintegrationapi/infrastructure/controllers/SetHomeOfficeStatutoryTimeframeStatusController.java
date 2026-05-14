@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseGoneException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
@@ -68,6 +69,10 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
                     description = "Statutory timeframe status has already been set for this case",
                     content = @Content(schema = @Schema(implementation = String.class))),
                 @ApiResponse(
+                    responseCode = "410",
+                    description = "Case gone",
+                    content = @Content(schema = @Schema(implementation = String.class))),
+                @ApiResponse(
                     responseCode = "500",
                     description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = String.class)))
@@ -103,6 +108,12 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
     public ResponseEntity<String> handleCaseNotFoundException(CaseNotFoundException ex) {
         log.info("Case not found: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"The 24-week status could not be set.  " + ex.getMessage() + "\"}");
+    }
+
+    @ExceptionHandler(CaseGoneException.class)
+    public ResponseEntity<String> handleCaseGoneException(CaseGoneException ex) {
+        log.info("Case gone: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.GONE).body("{\"error\":\"The 24-week status could not be set.  " + ex.getMessage() + "\"}");
     }
 
     @ExceptionHandler(HomeOfficeResponseException.class)

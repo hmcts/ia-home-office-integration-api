@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseGoneException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
@@ -321,6 +322,21 @@ class CcdDataServiceTest {
     @Test
     void shouldThrowCaseNotFoundException() {
 
+        when(dbUtils.getCaseId(
+            HMCTS_REF_NUM
+        )).thenThrow(
+            new IllegalStateException("Case ID could not be found from appeal reference number " + HMCTS_REF_NUM + ".")
+        );
+
+        assertThrows(
+            CaseNotFoundException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+    }
+
+    @Test
+    void shouldThrowCaseGoneException() {
+
         stubDefaultDependencies();
 
         when(ccdDataApi.startEventByCase(
@@ -333,7 +349,7 @@ class CcdDataServiceTest {
         );
 
         assertThrows(
-            CaseNotFoundException.class,
+            CaseGoneException.class,
             () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
         );
     }

@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Statut
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.StatutoryTimeframe24WeeksHistory;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseGoneException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.DbUtils;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
@@ -133,7 +134,14 @@ public class CcdDataService {
     }
 
     private String getCaseIdFromHmctsRefNum(String hmctsRefNum) {
-        return dbUtils.getCaseId(hmctsRefNum);
+        try {
+            return dbUtils.getCaseId(hmctsRefNum);
+        } catch (IllegalStateException ex) {
+            String message = ex.getMessage();
+            log.warn(message);
+            // Change the type of exception to ensure that a 404 is returned to the Home Office here rather than a 409.
+            throw new CaseNotFoundException(message);
+        }
     }
 
     private StartEventDetails getStartEventByCase(
@@ -143,8 +151,11 @@ public class CcdDataService {
             return ccdDataApi.startEventByCase(userToken, s2sToken, caseId, eventId);
         } catch (Exception ex) {
             if (ex.getMessage() != null && ex.getMessage().contains("Case ID is not valid")) {
-                log.info("Case not found for caseId: {}", caseId);
-                throw new CaseNotFoundException("Case not found for case ID " + caseId + ".");
+                String message = "Case no longer exists for case ID " + caseId + ".";
+                log.warn(message);
+                // This exception will result in a 410 (Gone) code being returned to the Home Office.  This is
+                // more descriptive than a 404, which is what CaseNotFoundException() would cause to be returned.
+                throw new CaseGoneException(message);
             }
             throw ex;
         }
