@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import feign.FeignException;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframe;
@@ -92,7 +93,16 @@ public class CcdDataService {
             throw new IdentityManagerResponseException(ex.getMessage(), ex);
         }
         
-        final StartEventDetails startEventDetails = getStartEventByCase(userToken, s2sToken, caseId, eventId);
+        final StartEventDetails startEventDetails;
+        try {
+            startEventDetails = getStartEventByCase(userToken, s2sToken, caseId, eventId);
+        } catch (FeignException.NotFound ex) {
+            String message = "Case no longer exists for case ID " + caseId + ".";
+            log.warn(message + "\n\n" + ex.getMessage());
+            // This exception will result in a 410 (Gone) code being returned to the Home Office.  This is
+            // more descriptive than a 404, which is what CaseNotFoundException() would cause to be returned.
+            throw new CaseGoneException(message);            
+        }
         log.debug("Case details found for the caseId: {}", caseId);
         log.debug("Start event id: {}", startEventDetails.getEventId());
         CaseDetails<AsylumCase> caseDetails = startEventDetails.getCaseDetails();
@@ -152,7 +162,7 @@ public class CcdDataService {
         } catch (Exception ex) {
             if (ex.getMessage() != null && ex.getMessage().contains("Case ID is not valid")) {
                 String message = "Case no longer exists for case ID " + caseId + ".";
-                log.warn(message);
+                log.warn(message + "\n\n" + ex.getMessage());
                 // This exception will result in a 410 (Gone) code being returned to the Home Office.  This is
                 // more descriptive than a 404, which is what CaseNotFoundException() would cause to be returned.
                 throw new CaseGoneException(message);
