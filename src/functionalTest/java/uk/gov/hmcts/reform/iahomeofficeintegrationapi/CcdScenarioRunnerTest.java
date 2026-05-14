@@ -109,9 +109,9 @@ public class CcdScenarioRunnerTest {
                 boolean isDisabledByLaunchDarkly = false;
                 if (launchDarklyKey instanceof String string && !string.isBlank()) {
                     String[] keys = string.split(":");
-                    isDisabledByLaunchDarkly = launchDarklyFunctionalTestClient
-                        .getKey(keys[0], authorizationHeaders.getValue("Authorization"))
-                        != Boolean.parseBoolean(keys[1]);
+                    boolean actualLdFlagValue = launchDarklyFunctionalTestClient.getKey(keys[0], authorizationHeaders.getValue("Authorization"));
+                    boolean expectedLdFlagValue = Boolean.parseBoolean(keys[1]);
+                    isDisabledByLaunchDarkly = actualLdFlagValue != expectedLdFlagValue;
                 }
                 if (isDisabled || isDisabledByLaunchDarkly) {
                     return Arguments.of("Disabled: " + fileName, description, null, null, null, null, 0, 0, null);
