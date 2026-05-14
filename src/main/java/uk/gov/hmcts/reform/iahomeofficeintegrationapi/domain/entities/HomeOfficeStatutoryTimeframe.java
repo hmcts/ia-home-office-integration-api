@@ -19,23 +19,32 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(NON_NULL)
-@SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data
-public class HomeOfficeStatutoryTimeframeDto extends HomeOfficeStatutoryTimeframeBase {
-    // This is the class to use for receiving the data from the Home Office initially
+public class HomeOfficeStatutoryTimeframe extends HomeOfficeStatutoryTimeframeBase {
+    // This is the class to use for the event data, as CCD needs all collections to be of type IdValue<...>
     @JsonProperty(value = "stf24weekCohorts", required = true)
     @NotNull
     @Valid
-    private List<Stf24WeekCohortDto> stf24weekCohortDtos;
+    private List<IdValue<Stf24WeekCohort>> stf24weekCohorts;
+
+    // Create instance of this class from the raw DTO instance
+    public HomeOfficeStatutoryTimeframe(HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
+        super(hoStatutoryTimeframeDto);
+        // Set the cohorts field separately as it is different
+        this.stf24weekCohorts = hoStatutoryTimeframeDto.getStf24weekCohortDtos().stream()
+                                .map(cohort -> new IdValue<Stf24WeekCohort>(
+                                    String.valueOf(cohort.getName().hashCode()), 
+                                    new Stf24WeekCohort(cohort.getName(), cohort.isIncluded() ? "true" : "false")
+                                )).toList();
+    }
 
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -45,13 +54,13 @@ public class HomeOfficeStatutoryTimeframeDto extends HomeOfficeStatutoryTimefram
     @NoArgsConstructor
     @EqualsAndHashCode
     @Data
-    public static class Stf24WeekCohortDto {
+    public static class Stf24WeekCohort {
         @JsonProperty(value = "name", required = true)
         @NotNull
         private String name;
 
         @JsonProperty(value = "included", required = true)
         @NotNull
-        private boolean included;
+        private String included;
     }
 }

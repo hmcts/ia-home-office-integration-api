@@ -1,29 +1,34 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.controllers;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.core.MethodParameter;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseGoneException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service.CcdDataService;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
-
-import java.util.HashMap;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
@@ -46,7 +51,7 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
     }
 
     @Test
-    void should_update_statutory_timeframe_status_successfully() {
+    void should_update_statutory_timeframe_status_successfully() throws Exception {
         // Given
         String s2sToken = "Bearer test-token";
         when(submitEventDetails.getCallbackResponseStatusCode()).thenReturn(200);
@@ -54,20 +59,36 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
             .thenReturn(submitEventDetails);
 
         // When
-        ResponseEntity<SubmitEventDetails> response = 
+        ResponseEntity<HomeOfficeStatutoryTimeframeDto> response = 
             controller.updateHomeOfficeStatutoryTimeframeStatus(s2sToken, hoStatutoryTimeframeDto);
 
         // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(submitEventDetails);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody()).isEqualTo(hoStatutoryTimeframeDto);
         verify(ccdDataService).setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
     }
 
     @Test
-    void should_return_success_response_when_update_home_office_statutory_timeframe_status() {
+    void should_return_success_response_when_update_home_office_statutory_timeframe_status() throws Exception {
         // Given
         String s2sAuthToken = "test-token";
-        HomeOfficeStatutoryTimeframeDto dto = new HomeOfficeStatutoryTimeframeDto();
+
+        HomeOfficeStatutoryTimeframeDto dto =
+            HomeOfficeStatutoryTimeframeDto.builder()
+                .hmctsReferenceNumber("PA/12345/2026")
+                .uan("1234-5678-9012-3456")
+                .familyName("Smith")
+                .givenNames("John")
+                .dateOfBirth(LocalDate.of(1990, 1, 15))
+                .stf24weekCohortDtos(List.of(
+                    HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
+                        .name("cohortA")
+                        .included(true)
+                        .build()
+                ))
+                .timeStamp(OffsetDateTime.now())
+                .build();
+
         SubmitEventDetails expectedResponse = new SubmitEventDetails(
             1L,
             "IA",
@@ -81,12 +102,12 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
             .thenReturn(expectedResponse);
 
         // When
-        ResponseEntity<SubmitEventDetails> response = controller
+        ResponseEntity<HomeOfficeStatutoryTimeframeDto> response = controller
             .updateHomeOfficeStatutoryTimeframeStatus(s2sAuthToken, dto);
 
         // Then
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedResponse, response.getBody());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(dto, response.getBody());
     }
 
     @Test
@@ -100,6 +121,19 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).contains("Case not found for caseId: 12345");
+    }
+
+    @Test
+    void handleCaseGoneException_shouldReturn410Gone() {
+        // Given
+        CaseGoneException exception = new CaseGoneException("Case no longer exists for caseId: 12345");
+
+        // When
+        ResponseEntity<String> response = controller.handleCaseGoneException(exception);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.GONE);
+        assertThat(response.getBody()).contains("Case no longer exists for caseId: 12345");
     }
 
     @Test
@@ -119,7 +153,6 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).contains("stf24weeks");
-        assertThat(response.getBody()).contains("must not be null");
+        assertThat(response.getBody()).contains("The 24-week status could not be set.  Please check the format of the HTTP headers and message body.");
     }
 }
