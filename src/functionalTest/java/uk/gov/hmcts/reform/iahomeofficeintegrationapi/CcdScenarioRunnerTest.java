@@ -106,13 +106,14 @@ public class CcdScenarioRunnerTest {
                 final String credentials = MapValueExtractor.extractOrDefault(scenario, "request.credentials", "none");
                 final Headers authorizationHeaders = getAuthorizationHeaders(credentials);
                 boolean isDisabled = Boolean.parseBoolean(scenarioDisabled.toString());
+                boolean isDisabledByLaunchDarkly = false;
                 if (launchDarklyKey instanceof String string && !string.isBlank()) {
                     String[] keys = string.split(":");
-                    isDisabled = launchDarklyFunctionalTestClient
+                    isDisabledByLaunchDarkly = launchDarklyFunctionalTestClient
                         .getKey(keys[0], authorizationHeaders.getValue("Authorization"))
-                        && Boolean.parseBoolean(keys[1]);
+                        != Boolean.parseBoolean(keys[1]);
                 }
-                if (isDisabled) {
+                if (isDisabled || isDisabledByLaunchDarkly) {
                     return Arguments.of("Disabled: " + fileName, description, null, null, null, null, 0, 0, null);
                 }
 
