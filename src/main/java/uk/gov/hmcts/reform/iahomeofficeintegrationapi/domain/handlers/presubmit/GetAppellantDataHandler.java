@@ -106,35 +106,8 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                 }
             }
 
-            asylumCase.write(HOME_OFFICE_APPELLANT_CLAIM_DATE, applicationDto.getHoClaimDate());
-            asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_DATE, applicationDto.getHoDecisionDate());
-            asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, applicationDto.getHoDecisionLetterDate());
+            writeHomeOfficeDataToCase(asylumCase, homeOfficeReferenceNumber, String.valueOf(homeOfficeResponse.getStatusCodeValue()), applicationDto);
 
-            List<IdValue<HomeOfficeAppellant>> appellants = new ArrayList<>();
-            for (HomeOfficeAppellantDto appellantDto : applicationDto.getAppellants()) {
-                String pp = appellantDto.getPp();
-                String id = pp == null ? homeOfficeReferenceNumber : homeOfficeReferenceNumber + "/" + pp;
-                try {
-                    HomeOfficeAppellant appellant = new HomeOfficeAppellant(pp,
-                                                                            appellantDto.getFamilyName(), 
-                                                                            appellantDto.getGivenNames(), 
-                                                                            appellantDto.getDateOfBirth().toString(), 
-                                                                            appellantDto.getNationality(), 
-                                                                            yesOrNoFromBoolean(appellantDto.getRoa()), 
-                                                                            yesOrNoFromBoolean(appellantDto.getAsylumSupport()), 
-                                                                            yesOrNoFromBoolean(appellantDto.getHoFeeWaiver()), 
-                                                                            appellantDto.getLanguage(), 
-                                                                            yesOrNoFromBoolean(appellantDto.getInterpreterNeeded()));
-                    appellants.add(new IdValue<HomeOfficeAppellant>(id, appellant));
-                } catch (Exception e) {
-                    String message = "Biographic information from Home Office asylum (etc.) application with reference " + homeOfficeReferenceNumber
-                                   + " was retrieved but did not match the expected format " + (pp == null ? "" : " for appellant " + pp)
-                                   + ": " + e.getMessage();
-                    throw new HomeOfficeMissingApplicationException(-4, message);
-                } 
-            }
-            asylumCase.write(HOME_OFFICE_APPELLANTS, appellants);
-            asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, String.valueOf(homeOfficeResponse.getStatusCodeValue()));
         } catch (HomeOfficeMissingApplicationException exception) {
             String message = exception.getMessage();
             // Log as an error if the return status indicates a problem somewhere in our code (which may be a result of something changing at the Home Office's end)
@@ -169,6 +142,43 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void writeHomeOfficeDataToCase(
+        final AsylumCase asylumCase, final String homeOfficeReferenceNumber,
+        String homeOfficeResponseStatus, HomeOfficeApplicationDto applicationDto
+    ) {
+        asylumCase.write(HOME_OFFICE_APPELLANT_CLAIM_DATE, applicationDto.getHoClaimDate());
+        asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_DATE, applicationDto.getHoDecisionDate());
+        asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, applicationDto.getHoDecisionLetterDate());
+
+        List<IdValue<HomeOfficeAppellant>> appellants = new ArrayList<>();
+
+        for (HomeOfficeAppellantDto appellantDto : applicationDto.getAppellants()) {
+            String pp = appellantDto.getPp();
+            String id = pp == null ? homeOfficeReferenceNumber : homeOfficeReferenceNumber + "/" + pp;
+            try {
+                HomeOfficeAppellant appellant = new HomeOfficeAppellant(pp,
+                                                                        appellantDto.getFamilyName(), 
+                                                                        appellantDto.getGivenNames(), 
+                                                                        appellantDto.getDateOfBirth().toString(), 
+                                                                        appellantDto.getNationality(), 
+                                                                        yesOrNoFromBoolean(appellantDto.getRoa()), 
+                                                                        yesOrNoFromBoolean(appellantDto.getAsylumSupport()), 
+                                                                        yesOrNoFromBoolean(appellantDto.getHoFeeWaiver()), 
+                                                                        appellantDto.getLanguage(), 
+                                                                        yesOrNoFromBoolean(appellantDto.getInterpreterNeeded()));
+                appellants.add(new IdValue<HomeOfficeAppellant>(id, appellant));
+            } catch (Exception e) {
+                String message = "Biographic information from Home Office asylum (etc.) application with reference " + homeOfficeReferenceNumber
+                               + " was retrieved but did not match the expected format " + (pp == null ? "" : " for appellant " + pp)
+                               + ": " + e.getMessage();
+                throw new HomeOfficeMissingApplicationException(-4, message);
+            } 
+        }
+
+        asylumCase.write(HOME_OFFICE_APPELLANTS, appellants);
+        asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, homeOfficeResponseStatus);
     }
 
     private YesOrNo yesOrNoFromBoolean(Boolean value) {
