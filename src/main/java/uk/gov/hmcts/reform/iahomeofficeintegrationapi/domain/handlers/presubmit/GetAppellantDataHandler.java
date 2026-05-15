@@ -162,7 +162,7 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                 HomeOfficeAppellant appellant = new HomeOfficeAppellant(pp,
                                                                         appellantDto.getFamilyName(), 
                                                                         appellantDto.getGivenNames(), 
-                                                                        getDateStringSafely(appellantDto.getDateOfBirth()), 
+                                                                        appellantDto.getDateOfBirth().toString(), 
                                                                         appellantDto.getNationality(), 
                                                                         yesOrNoFromBoolean(appellantDto.getRoa()), 
                                                                         yesOrNoFromBoolean(appellantDto.getAsylumSupport()), 
