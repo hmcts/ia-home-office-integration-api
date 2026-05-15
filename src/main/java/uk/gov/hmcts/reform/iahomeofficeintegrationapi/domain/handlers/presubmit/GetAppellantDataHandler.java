@@ -8,6 +8,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -148,9 +149,9 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
         final AsylumCase asylumCase, final String homeOfficeReferenceNumber,
         String homeOfficeResponseStatus, HomeOfficeApplicationDto applicationDto
     ) {
-        asylumCase.write(HOME_OFFICE_APPELLANT_CLAIM_DATE, applicationDto.getHoClaimDate());
-        asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_DATE, applicationDto.getHoDecisionDate());
-        asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, applicationDto.getHoDecisionLetterDate());
+        asylumCase.write(HOME_OFFICE_APPELLANT_CLAIM_DATE, getDateStringSafely(applicationDto.getHoClaimDate()));
+        asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_DATE, getDateStringSafely(applicationDto.getHoDecisionDate()));
+        asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, getDateStringSafely(applicationDto.getHoDecisionLetterDate()));
 
         List<IdValue<HomeOfficeAppellant>> appellants = new ArrayList<>();
 
@@ -161,7 +162,7 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                 HomeOfficeAppellant appellant = new HomeOfficeAppellant(pp,
                                                                         appellantDto.getFamilyName(), 
                                                                         appellantDto.getGivenNames(), 
-                                                                        appellantDto.getDateOfBirth().toString(), 
+                                                                        getDateStringSafely(appellantDto.getDateOfBirth()), 
                                                                         appellantDto.getNationality(), 
                                                                         yesOrNoFromBoolean(appellantDto.getRoa()), 
                                                                         yesOrNoFromBoolean(appellantDto.getAsylumSupport()), 
@@ -183,5 +184,9 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
 
     private YesOrNo yesOrNoFromBoolean(Boolean value) {
         return value == null ? null : (value ? YesOrNo.YES : YesOrNo.NO);
+    }
+
+    private String getDateStringSafely(LocalDate value) {
+        return value == null ? null : value.toString();
     }
 }

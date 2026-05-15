@@ -159,9 +159,9 @@ class GetAppellantDataHandlerTest {
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
 
-        verify(asylumCase).write(HOME_OFFICE_APPELLANT_CLAIM_DATE, claimDate);
-        verify(asylumCase).write(HOME_OFFICE_APPELLANT_DECISION_DATE, decisionDate);
-        verify(asylumCase).write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, decisionLetterDate);
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_CLAIM_DATE, claimDate.toString());
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_DECISION_DATE, decisionDate.toString());
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, decisionLetterDate.toString());
         verify(asylumCase).write(eq(HOME_OFFICE_APPELLANTS), anyList());
         verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, "200");
     }
