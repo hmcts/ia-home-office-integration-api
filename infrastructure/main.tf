@@ -28,7 +28,7 @@ data "azurerm_key_vault" "ia_key_vault" {
 }
 
 data "azurerm_key_vault_secret" "apim_app_id" {
-  name         = "apim-bulk-scanning-app-id"
+  name         = "apim-ia-home-office-app-id"
   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
 }
 
