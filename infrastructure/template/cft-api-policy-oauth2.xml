@@ -8,6 +8,9 @@
       <client-application-ids>
         <application-id>${cft_oauth2_client_id}</application-id>
       </client-application-ids>
+      <audiences>
+        <audience>${cft_oauth2_app_id}</audience>
+      </audiences>
     </validate-azure-ad-token>
     <!-- remove OAuth2 Authorization header -->
     <set-header name="Authorization" exists-action="delete" />

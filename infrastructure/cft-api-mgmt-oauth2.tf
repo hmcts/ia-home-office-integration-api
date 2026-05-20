@@ -13,6 +13,7 @@ data "template_file" "cft_oauth2_policy_template" {
   vars = {
     cft_oauth2_tenant_id = data.azurerm_key_vault_secret.tenant_id.value
     cft_oauth2_client_id = data.azurerm_key_vault_secret.apim_client_id.value
+    cft_oauth2_app_id    = data.azurerm_key_vault_secret.apim_app_id.value
     s2s_base_url         = local.s2sUrl
   }
 }

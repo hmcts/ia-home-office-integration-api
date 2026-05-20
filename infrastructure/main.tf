@@ -27,6 +27,11 @@ data "azurerm_key_vault" "ia_key_vault" {
   resource_group_name = local.key_vault_name
 }
 
+data "azurerm_key_vault_secret" "apim_app_id" {
+  name         = "apim-bulk-scanning-app-id"
+  key_vault_id = data.azurerm_key_vault.ia_key_vault.id
+}
+
 data "azurerm_key_vault_secret" "apim_client_id" {
   name         = "apim-ia-home-office-client-id"
   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
