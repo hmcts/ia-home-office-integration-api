@@ -8,15 +8,12 @@
       <client-application-ids>
         <application-id>${cft_oauth2_client_id}</application-id>
       </client-application-ids>
-      <audiences>
-        <audience>${cft_oauth2_app_id}</audience>
-      </audiences>
     </validate-azure-ad-token>
     <!-- remove OAuth2 Authorization header -->
     <set-header name="Authorization" exists-action="delete" />
     <!-- generate totp using mgmt named values -->
-    <set-variable name="client_id" value="{{ccpay-s2s-client-id}}" />
-    <set-variable name="client_secret" value="{{ccpay-s2s-client-secret}}" />
+    <set-variable name="client_id" value="{{ia-s2s-client-id}}" />
+    <set-variable name="client_secret" value="{{ia-s2s-client-secret}}" />
     <set-variable name="one_time_password" value="@{
                 const string Base32AllowedCharacters = &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ234567&quot;;
                 var clientSecret = ((string)context.Variables[&quot;client_secret&quot;]).ToUpper();
