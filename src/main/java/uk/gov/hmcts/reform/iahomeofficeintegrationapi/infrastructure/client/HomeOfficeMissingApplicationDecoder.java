@@ -54,7 +54,7 @@ public class HomeOfficeMissingApplicationDecoder implements ErrorDecoder {
         // Prune the Home Office ID from the end of the URL
         String homeOfficeReferenceNumber = requestUrl.substring(requestUrl.lastIndexOf('/') + 1);
         // Throw new exception to be caught by the event handler
-        String message = "Biographic information from Home Office asylum (etc.) application with HMCTS reference " + homeOfficeReferenceNumber + " could not be retrieved.";
+        String message = "Biographic information from Home Office asylum (etc.) application with reference " + homeOfficeReferenceNumber + " could not be retrieved.";
         switch (statusCode) {
             case -1:
                 message += "\n\nThe Home Office validation API did not respond.";
