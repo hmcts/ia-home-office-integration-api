@@ -43,5 +43,7 @@ variable "apim_suffix" {
   default = ""
 }
 
+variable "aks_subscription_id" {}
+
 
 
