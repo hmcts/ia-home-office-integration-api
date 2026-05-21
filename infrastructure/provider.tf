@@ -1,4 +1,4 @@
 provider "azurerm" {
   features {}
-  alias           = "aks-cftapps"
+  alias = "aks-cftapps"
 }
