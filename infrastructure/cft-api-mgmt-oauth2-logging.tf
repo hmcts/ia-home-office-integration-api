@@ -1,10 +1,10 @@
 resource "azurerm_api_management_api_diagnostic" "apim_ia_home_office_api_logs" {
-  provider                  = azurerm.aks-cftapps
-  identifier                = "applicationinsights"
-  resource_group_name       = local.cft_api_mgmt_oauth2_rg
-  api_management_name       = local.cft_api_mgmt_oauth2_name
-  api_name                  = "ia-home-office-api"
-  api_management_logger_id  = "/subscriptions/${var.aks_subscription_id}/resourceGroups/${local.cft_api_mgmt_oauth2_rg}/providers/Microsoft.ApiManagement/service/${local.cft_api_mgmt_oauth2_name}/loggers/cft-api-mgmt-${local.cft_api_mgmt_oauth2_suffix}-logger"
+  provider                 = azurerm.aks-cftapps
+  identifier               = "applicationinsights"
+  resource_group_name      = local.cft_api_mgmt_oauth2_rg
+  api_management_name      = local.cft_api_mgmt_oauth2_name
+  api_name                 = "ia-home-office-api"
+  api_management_logger_id = "/subscriptions/${var.aks_subscription_id}/resourceGroups/${local.cft_api_mgmt_oauth2_rg}/providers/Microsoft.ApiManagement/service/${local.cft_api_mgmt_oauth2_name}/loggers/cft-api-mgmt-${local.cft_api_mgmt_oauth2_suffix}-logger"
 
   sampling_percentage       = 100.0
   always_log_errors         = true
