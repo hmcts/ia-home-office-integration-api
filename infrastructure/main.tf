@@ -12,18 +12,18 @@ locals {
   local_env = (var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "aat" : "saat" : var.env
   local_ase = (var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "core-compute-aat" : "core-compute-saat" : local.aseName
 
-  preview_vault_name           = "${var.raw_product}-aat"
-  non_preview_vault_name       = "${var.raw_product}-${var.env}"
-  key_vault_name               = var.env == "preview" || var.env == "spreview" ? local.preview_vault_name : local.non_preview_vault_name
+  preview_vault_name     = "${var.raw_product}-aat"
+  non_preview_vault_name = "${var.raw_product}-${var.env}"
+  key_vault_name         = var.env == "preview" || var.env == "spreview" ? local.preview_vault_name : local.non_preview_vault_name
 
-  s2sUrl              = "http://rpe-service-auth-provider-${local.local_env}.service.${local.local_ase}.internal"
+  s2sUrl = "http://rpe-service-auth-provider-${local.local_env}.service.${local.local_ase}.internal"
 }
 
 
 resource "azurerm_resource_group" "rg" {
   name     = "${var.product}-${var.component}-${var.env}"
   location = var.location
-  tags     = merge(var.common_tags, tomap({"lastUpdated" = timestamp()}))
+  tags     = merge(var.common_tags, tomap({ "lastUpdated" = timestamp() }))
 }
 
 data "azurerm_key_vault" "ia_key_vault" {
