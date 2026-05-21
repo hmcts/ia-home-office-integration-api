@@ -4,7 +4,7 @@
 resource "azurerm_api_management_subscription" "home_office_24weeks_subscription" {
   api_management_name = local.cft_api_mgmt_oauth2_name
   resource_group_name = local.cft_api_mgmt_oauth2_rg
-  product_id          = module.cft_api_mgmt_oauth2_product.product_id
+  product_id          = module.cft_api_mgmt_oauth2_product.id
   display_name        = "HO 24 Weeks API - Home Office Subscription"
   state               = "active"
   provider            = azurerm.aks-cftapps
