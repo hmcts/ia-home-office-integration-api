@@ -64,42 +64,6 @@ class HomeOfficeAppellantTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenNationalityIsNull() {
-        assertThrows(NullPointerException.class, () ->
-            new HomeOfficeAppellant(
-                null,
-                "Silver",
-                "Long John",
-                "1990-01-01",
-                null,
-                YesOrNo.YES,
-                YesOrNo.NO,
-                YesOrNo.NO,
-                "English",
-                YesOrNo.NO
-            )
-        );
-    }
-
-    @Test
-    void shouldThrowExceptionWhenLanguageIsNull() {
-        assertThrows(NullPointerException.class, () ->
-            new HomeOfficeAppellant(
-                "99",
-                "Silver",
-                "Long John",
-                "1990-01-01",
-                "British",
-                YesOrNo.YES,
-                YesOrNo.NO,
-                YesOrNo.NO,
-                null,
-                YesOrNo.NO
-            )
-        );
-    }
-
-    @Test
     void shouldAllowOptionalFieldsToBeNull() {
         HomeOfficeAppellant appellant =
             new HomeOfficeAppellant(
@@ -107,11 +71,11 @@ class HomeOfficeAppellantTest {
                 "Silver",
                 "Long John",
                 "1990-01-01",
-                "British",
                 null,
                 null,
                 null,
-                "English",
+                null,
+                null,
                 null
             );
 
