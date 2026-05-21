@@ -1,9 +1,9 @@
 resource "azurerm_api_management_api_diagnostic" "apim_ia_home_office_api_logs" {
-  provider                 = azurerm.aks-cftapps
-  identifier               = "applicationinsights"
-  resource_group_name      = local.cft_api_mgmt_oauth2_rg
-  api_management_name      = local.cft_api_mgmt_oauth2_name
-  api_name                 = "ia-home-office-api"
+  provider            = azurerm.aks-cftapps
+  identifier          = "applicationinsights"
+  resource_group_name = local.cft_api_mgmt_oauth2_rg
+  api_management_name = local.cft_api_mgmt_oauth2_name
+  api_name            = "ia-home-office-api"
 
   sampling_percentage       = 100.0
   always_log_errors         = true
