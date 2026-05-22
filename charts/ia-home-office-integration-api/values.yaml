@@ -15,7 +15,6 @@ java:
     POSTGRES_PORT: 5432
     POSTGRES_NAME: ia_case_api
     POSTGRES_USERNAME: pgadmin
-    POSTGRES_PASSWORD: ${CASE_API_POSTGRES_PASS_15}
     POSTGRES_CONNECTION_OPTIONS: "?sslmode=require"
 
   keyVaults:
@@ -51,4 +50,4 @@ java:
         - name: ia-redis-encryption-key
           alias: IA_REDIS_ENCRYPTION_KEY
         - name: case-api-POSTGRES-PASS-15
-          alias: CASE_API_POSTGRES_PASS_15
+          alias: POSTGRES_PASSWORD
