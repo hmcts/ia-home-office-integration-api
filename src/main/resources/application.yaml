@@ -21,6 +21,10 @@ management:
       liveness:
         include: ping
 
+logging:
+  level:
+    io.lettuce.core: WARN
+    
 spring:
   config:
     import: "optional:configtree:/mnt/secrets/ia/"
