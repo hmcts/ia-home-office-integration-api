@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeDateFormatter;
 
 @Slf4j
@@ -44,15 +43,11 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
             + "[Request the Home Office information](/case/IA/Asylum/${[CASE_REFERENCE]}/"
             + "trigger/requestHomeOfficeData) to try again. This may take a few minutes.";
 
-    private final FeatureToggler featureToggler;
-
     private HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper;
 
-    public RequestHomeOfficeDataHandler(HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper,
-                                        FeatureToggler featureToggler) {
+    public RequestHomeOfficeDataHandler(HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper) {
 
         this.homeOfficeDataErrorsHelper = homeOfficeDataErrorsHelper;
-        this.featureToggler = featureToggler;
     }
 
     @Override
@@ -64,8 +59,7 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == REQUEST_HOME_OFFICE_DATA
-                && featureToggler.getValue("home-office-uan-feature", false);
+                && callback.getEvent() == REQUEST_HOME_OFFICE_DATA;
     }
 
     @Override

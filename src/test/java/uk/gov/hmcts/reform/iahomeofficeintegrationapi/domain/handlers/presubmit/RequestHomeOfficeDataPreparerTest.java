@@ -59,7 +59,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeSearchService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 
@@ -81,8 +80,6 @@ public class RequestHomeOfficeDataPreparerTest {
 
     private static HomeOfficeSearchResponse homeOfficeSearchResponse;
     private final String someHomeOfficeReference = "some-reference";
-    @Mock
-    private FeatureToggler featureToggler;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -114,7 +111,7 @@ public class RequestHomeOfficeDataPreparerTest {
 
         requestHomeOfficeDataPreparer =
                 new RequestHomeOfficeDataPreparer(
-                        homeOfficeSearchService, homeOfficeDataErrorsHelper, homeOfficeDataMatchHelper, featureToggler);
+                        homeOfficeSearchService, homeOfficeDataErrorsHelper, homeOfficeDataMatchHelper);
     }
 
     @Test
@@ -140,7 +137,6 @@ public class RequestHomeOfficeDataPreparerTest {
     @Test
     void handler_should_return_error_for_out_of_country_appeals() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -164,7 +160,6 @@ public class RequestHomeOfficeDataPreparerTest {
         values.add(new Value("NoMatch", "No Match"));
         DynamicList appellantsList = new DynamicList(values.get(0), values);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -197,7 +192,6 @@ public class RequestHomeOfficeDataPreparerTest {
     @Test
     void check_handler_returns_case_data_with_error_status_for_null_fields() throws Exception {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -231,7 +225,6 @@ public class RequestHomeOfficeDataPreparerTest {
         values.add(new Value("NoMatch", "No Match"));
         DynamicList appellantsList = new DynamicList(values.get(0), values);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -269,7 +262,6 @@ public class RequestHomeOfficeDataPreparerTest {
                 new Value("NoMatch", "No Match"));
         DynamicList appellantsList = new DynamicList(values.get(0), values);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -310,7 +302,6 @@ public class RequestHomeOfficeDataPreparerTest {
                 new Value("NoMatch", "No Match"));
         DynamicList appellantsList = new DynamicList(values.get(0), values);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -346,7 +337,6 @@ public class RequestHomeOfficeDataPreparerTest {
         HomeOfficeSearchResponse hoSearchResponse = new HomeOfficeSearchResponse(
                 messageHeader, "someMsgType", Arrays.asList(caseStatus), hoError);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -387,7 +377,6 @@ public class RequestHomeOfficeDataPreparerTest {
     @Test
     void it_can_handle_callback() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         for (Event event : Event.values()) {
 
             when(callback.getCaseDetails()).thenReturn(caseDetails);
