@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
 import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.StringUtils;
+import lombok.Getter;
 
+@Getter
 public class HearingInstructMessage extends HomeOfficeInstruct {
 
     private Hearing hearing;
+    private long ccdCaseId;
 
     private HearingInstructMessage() {
     }
@@ -15,14 +18,12 @@ public class HearingInstructMessage extends HomeOfficeInstruct {
         MessageHeader messageHeader,
         String messageType,
         String note,
-        Hearing hearing) {
+        Hearing hearing,
+        long ccdCaseId) {
 
         super(consumerReference, hoReference, messageHeader, messageType, note);
         this.hearing = hearing;
-    }
-
-    public Hearing getHearing() {
-        return hearing;
+        this.ccdCaseId = ccdCaseId;
     }
 
     public static final class HearingInstructMessageBuilder {
@@ -32,6 +33,7 @@ public class HearingInstructMessage extends HomeOfficeInstruct {
         private String hoReference;
         private MessageHeader messageHeader;
         private String messageType;
+        private long ccdCaseId;
         private String note;
 
         private HearingInstructMessageBuilder() {
@@ -66,6 +68,11 @@ public class HearingInstructMessage extends HomeOfficeInstruct {
             return this;
         }
 
+        public HearingInstructMessageBuilder withCcdCaseId(long ccdCaseId) {
+            this.ccdCaseId = ccdCaseId;
+            return this;
+        }
+
         public HearingInstructMessageBuilder withNote(String note) {
             if (StringUtils.isNotBlank(note)) {
                 this.note = note;
@@ -75,7 +82,7 @@ public class HearingInstructMessage extends HomeOfficeInstruct {
 
         public HearingInstructMessage build() {
             return
-                new HearingInstructMessage(consumerReference, hoReference, messageHeader, messageType, note, hearing);
+                new HearingInstructMessage(consumerReference, hoReference, messageHeader, messageType, note, hearing, ccdCaseId);
         }
     }
 }

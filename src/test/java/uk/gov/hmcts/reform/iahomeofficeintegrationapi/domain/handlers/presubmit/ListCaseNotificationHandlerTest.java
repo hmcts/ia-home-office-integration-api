@@ -2,9 +2,10 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -15,6 +16,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Mes
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -98,8 +100,8 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
         when(homeOfficeInstructService.sendNotification(any(HearingInstructMessage.class))).thenReturn("OK");
 
         when(listingNotificationHelper.getHearingInstructMessage(
-                any(AsylumCase.class), any(),
-                any(), anyString())).thenReturn(hearingInstructMessage);
+            any(AsylumCase.class), any(),
+            any(), anyString(), anyLong())).thenReturn(hearingInstructMessage);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             listCaseNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -126,7 +128,7 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
 
         when(listingNotificationHelper.getHearingInstructMessage(
             any(AsylumCase.class), any(),
-            any(), anyString())).thenReturn(hearingInstructMessageReheard);
+            any(), anyString(), anyLong())).thenReturn(hearingInstructMessageReheard);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             listCaseNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -152,8 +154,8 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
         when(homeOfficeInstructService.sendNotification(any(HearingInstructMessage.class)))
             .thenReturn("FAIL");
         when(listingNotificationHelper.getHearingInstructMessage(
-                any(AsylumCase.class), any(),
-                any(), anyString())).thenReturn(hearingInstructMessage);
+            any(AsylumCase.class), any(),
+            any(), anyString(), anyLong())).thenReturn(hearingInstructMessage);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             listCaseNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -217,7 +219,7 @@ class ListCaseNotificationHandlerTest extends AbstractNotificationsHandlerTestBa
                 if (event == Event.LIST_CASE
                     && callbackStage == ABOUT_TO_SUBMIT) {
 
-                    assertTrue(canHandle);
+                    Assertions.assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
                 }
