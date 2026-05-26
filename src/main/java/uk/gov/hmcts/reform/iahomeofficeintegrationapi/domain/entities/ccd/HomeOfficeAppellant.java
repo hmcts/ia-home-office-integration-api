@@ -20,12 +20,10 @@ public class HomeOfficeAppellant {
     private String givenNames;
     @NonNull
     private String dateOfBirth;
-    @NonNull
     private String nationality;
     private YesOrNo roa;
     private YesOrNo asylumSupport;
     private YesOrNo hoFeeWaiver;
-    @NonNull
     private String language;
     private YesOrNo interpreterNeeded;
 
