@@ -52,7 +52,7 @@ public class HomeOfficeApplicationService {
                                                                                                         homeOfficeCorrelationId, 
                                                                                                         homeOfficeConsumer, 
                                                                                                         homeOfficeEventDateTime);
-            int statusCode = response.getStatusCodeValue();
+            int statusCode = response.getStatusCode().value();
             log.info(
                 "Home Office /applications/v1/{} GET response has been received with HTTP status {}.",
                 homeOfficeReferenceNumber,
