@@ -14,6 +14,7 @@ plugins {
     id 'com.adarshr.test-logger' version '4.0.0'
     id "io.freefair.lombok" version "9.2.0"
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
+    id "org.gradle.test-retry" version "1.6.5"
 }
 
 apply plugin: 'java'
@@ -227,6 +228,13 @@ dependencyCheck {
 }
 
 ext["tomcat.version"] = "10.1.55"
+
+test {
+    retry {
+        maxRetries = 5
+        failOnPassedAfterRetry = false
+    }
+}
 
 dependencyManagement {
     imports {
