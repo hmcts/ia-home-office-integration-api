@@ -11,12 +11,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseGoneException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
@@ -66,6 +69,10 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
                     description = "Statutory timeframe status has already been set for this case",
                     content = @Content(schema = @Schema(implementation = String.class))),
                 @ApiResponse(
+                    responseCode = "410",
+                    description = "Case gone",
+                    content = @Content(schema = @Schema(implementation = String.class))),
+                @ApiResponse(
                     responseCode = "500",
                     description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = String.class)))
@@ -75,25 +82,38 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
     @PostMapping(path = "/home-office-statutory-timeframe-status",
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SubmitEventDetails> updateHomeOfficeStatutoryTimeframeStatus(
+    public ResponseEntity<HomeOfficeStatutoryTimeframeDto> updateHomeOfficeStatutoryTimeframeStatus(
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
         @Valid @RequestBody HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto
-    ) {
-        log.info("HTTP POST /home-office-statutory-timeframe-status endpoint called with payload: {}", hoStatutoryTimeframeDto);
+    ) throws Exception {
+        log.info("HTTP POST to /home-office-statutory-timeframe-status endpoint called with payload: {}", hoStatutoryTimeframeDto);
         SubmitEventDetails response = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
-        return ResponseEntity.status(response.getCallbackResponseStatusCode()).body(response);
+        int httpStatus = response.getCallbackResponseStatusCode();
+        if (httpStatus == HttpStatus.OK.value()) {
+            log.info("HTTP POST to /home-office-statutory-timeframe-status endpoint was successful.");
+            return ResponseEntity.status(HttpStatus.CREATED).body(hoStatutoryTimeframeDto);
+        } else {
+            log.error("HTTP POST to /home-office-statutory-timeframe-status endpoint was unsuccessful.  The return status from CCD was {}.", httpStatus);
+            throw new Exception("The 24-week status could not be set.");
+        }
     }
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
         log.info("Conflict error: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"error\":\"The 24-week status could not be set.  " + ex.getMessage() + "\"}");
     }
 
     @ExceptionHandler(CaseNotFoundException.class)
     public ResponseEntity<String> handleCaseNotFoundException(CaseNotFoundException ex) {
         log.info("Case not found: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"" + ex.getMessage() + "\"}");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"The 24-week status could not be set.  " + ex.getMessage() + "\"}");
+    }
+
+    @ExceptionHandler(CaseGoneException.class)
+    public ResponseEntity<String> handleCaseGoneException(CaseGoneException ex) {
+        log.info("Case gone: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.GONE).body("{\"error\":\"The 24-week status could not be set.  " + ex.getMessage() + "\"}");
     }
 
     @ExceptionHandler(HomeOfficeResponseException.class)
@@ -101,10 +121,14 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         String message = ex.getMessage();
         if (message != null && message.contains("Case ID is not valid")) {
             log.info("Case not found: {}", message);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Case not found\"}");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                "{\"error\":\"The 24-week status could not be set.  The HMCTS appeal reference number does not correspond to any records in HMCTS systems.\"}"
+            );
         }
         log.info("Home Office response error: {}", message);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"" + message + "\"}");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            "{\"error\":\"The 24-week status could not be set.  Please check the format of the HTTP headers and message body.\"}"
+        );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -114,7 +138,25 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
             .reduce((a, b) -> a + ", " + b)
             .orElse("Validation failed");
         log.info("Validation error: {}", errorMessage);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"" + errorMessage + "\"}");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            "{\"error\":\"The 24-week status could not be set.  Please check the format of the HTTP headers and message body.\"}"
+        );
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> handleUnreadableMessageException(HttpMessageNotReadableException ex) {
+        String errorMessage = ex.getMessage();
+        log.info("Unreadable HTTP message error: {}", errorMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            "{\"error\":\"The 24-week status could not be set.  Please check the format of the HTTP headers and message body.\"}"
+        );
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception ex) {
+        String errorMessage = ex.getMessage();
+        log.error("Unspecified server error: {}", errorMessage);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"The 24-week status could not be set.  Please report this to HMCTS.\"}");
     }
 
 }

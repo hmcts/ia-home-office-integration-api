@@ -46,9 +46,9 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeApplicationService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeMissingApplicationException;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.RetriesExceededException;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -56,9 +56,6 @@ class GetAppellantDataHandlerTest {
 
     @Mock
     private HomeOfficeApplicationService homeOfficeApplicationService;
-
-    @Mock
-    private FeatureToggler featureToggler;
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -79,7 +76,6 @@ class GetAppellantDataHandlerTest {
     void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
     }
 
     @Test
@@ -162,9 +158,9 @@ class GetAppellantDataHandlerTest {
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
 
-        verify(asylumCase).write(HOME_OFFICE_APPELLANT_CLAIM_DATE, claimDate);
-        verify(asylumCase).write(HOME_OFFICE_APPELLANT_DECISION_DATE, decisionDate);
-        verify(asylumCase).write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, decisionLetterDate);
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_CLAIM_DATE, claimDate.toString());
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_DECISION_DATE, decisionDate.toString());
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, decisionLetterDate.toString());
         verify(asylumCase).write(eq(HOME_OFFICE_APPELLANTS), anyList());
         verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, "200");
     }
@@ -203,9 +199,175 @@ class GetAppellantDataHandlerTest {
 
     @Test
     void handle_throwsException_whenCannotHandle() {
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(false);
 
         assertThrows(IllegalStateException.class,
             () -> handler.handle(PreSubmitCallbackStage.MID_EVENT, callback));
+    }
+
+    @Test
+    void canHandle_throwsException_whenCallbackStageIsNull() {
+
+        NullPointerException exception = assertThrows(
+            NullPointerException.class,
+            () -> handler.canHandle(null, callback)
+        );
+
+        assertEquals("callbackStage must not be null", exception.getMessage());
+    }
+
+    @Test
+    void canHandle_throwsException_whenCallbackIsNull() {
+
+        NullPointerException exception = assertThrows(
+            NullPointerException.class,
+            () -> handler.canHandle(PreSubmitCallbackStage.MID_EVENT, null)
+        );
+
+        assertEquals("callback must not be null", exception.getMessage());
+    }
+
+    @Test
+    void handle_throwsException_whenHomeOfficeReferenceMissing() {
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+        when(caseDetails.getId()).thenReturn(12345L);
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.empty());
+
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> handler.handle(PreSubmitCallbackStage.MID_EVENT, callback)
+        );
+
+        assertTrue(exception.getMessage().contains("Home office reference number"));
+    }
+
+    @Test
+    void handle_writesStatus_whenApplicationResponseContainsNoAppellants() throws Exception {
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+        when(caseDetails.getId()).thenReturn(12345L);
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of("1234-1234-1234-1234"));
+
+        HomeOfficeApplicationDto applicationDto = new HomeOfficeApplicationDto();
+        applicationDto.setAppellants(List.of());
+
+        when(homeOfficeApplicationService.getApplication("1234-1234-1234-1234"))
+            .thenReturn(new ResponseEntity<>(applicationDto, HttpStatus.OK));
+
+        handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, -2);
+    }
+
+    @Test
+    void handle_writesStatus_whenReturnedUanDoesNotMatch() throws Exception {
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+        when(caseDetails.getId()).thenReturn(12345L);
+
+        String reference = "1234-1234-1234-1234";
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(reference));
+
+        HomeOfficeAppellantDto appellantDto = new HomeOfficeAppellantDto();
+        appellantDto.setDateOfBirth(LocalDate.of(1990, 1, 1));
+
+        HomeOfficeApplicationDto applicationDto = new HomeOfficeApplicationDto();
+        applicationDto.setUan("9999-9999-9999-9999");
+        applicationDto.setAppellants(List.of(appellantDto));
+
+        when(homeOfficeApplicationService.getApplication(reference))
+            .thenReturn(new ResponseEntity<>(applicationDto, HttpStatus.OK));
+
+        handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, -3);
+    }
+
+    @Test
+    void handle_continues_whenReturnedUanIsNull() throws Exception {
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+        when(caseDetails.getId()).thenReturn(12345L);
+
+        String reference = "1234-1234-1234-1234";
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(reference));
+
+        HomeOfficeAppellantDto appellantDto = new HomeOfficeAppellantDto();
+        appellantDto.setFamilyName("Smith");
+        appellantDto.setGivenNames("John");
+        appellantDto.setDateOfBirth(LocalDate.of(1990, 1, 1));
+        appellantDto.setNationality("British");
+        appellantDto.setRoa(true);
+        appellantDto.setAsylumSupport(false);
+        appellantDto.setHoFeeWaiver(false);
+        appellantDto.setLanguage("English");
+        appellantDto.setInterpreterNeeded(false);
+
+        HomeOfficeApplicationDto applicationDto = new HomeOfficeApplicationDto();
+        applicationDto.setUan(null);
+        applicationDto.setAppellants(List.of(appellantDto));
+
+        when(homeOfficeApplicationService.getApplication(reference))
+            .thenReturn(new ResponseEntity<>(applicationDto, HttpStatus.OK));
+
+        handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, "200");
+    }
+
+    @Test
+    void handle_writesMinusOne_whenRetriesExceeded() throws Exception {
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+        when(caseDetails.getId()).thenReturn(12345L);
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of("UAN123"));
+
+        when(homeOfficeApplicationService.getApplication("UAN123"))
+            .thenThrow(new RetriesExceededException("Retries exhausted"));
+
+        handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, -1);
+    }
+
+    @Test
+    void handle_writesMinusFour_whenAppellantFormattingFails() throws Exception {
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+        when(caseDetails.getId()).thenReturn(12345L);
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of("UAN123"));
+
+        HomeOfficeAppellantDto appellantDto = new HomeOfficeAppellantDto();
+
+        // Causes getDateOfBirth().toString() to fail
+        appellantDto.setDateOfBirth(null);
+
+        HomeOfficeApplicationDto applicationDto = new HomeOfficeApplicationDto();
+        applicationDto.setAppellants(List.of(appellantDto));
+
+        when(homeOfficeApplicationService.getApplication("UAN123"))
+            .thenReturn(new ResponseEntity<>(applicationDto, HttpStatus.OK));
+
+        handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, -4);
     }
 }

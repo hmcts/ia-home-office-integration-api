@@ -2,67 +2,39 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(NON_NULL)
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Data
-public class HomeOfficeStatutoryTimeframeDto {
-
-    @JsonProperty(value = "ccdCaseId", required = true)
-    @NotNull
-    @Pattern(regexp = "^[0-9]{16}$",  message = "CCD Case ID must be a 16-digit number")
-    private String ccdCaseId;
-
-    @JsonProperty(value = "uan", required = true)
-    @NotNull
-    @Pattern(regexp = "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$", 
-             message = "UAN must be in format XXXX-XXXX-XXXX-XXXX where X is a digit")
-    private String uan;
-
-    @JsonProperty(value = "familyName", required = true)
-    @NotNull
-    private String familyName;
-
-    @JsonProperty(value = "givenNames", required = true)
-    @NotNull
-    private String givenNames;
-
-    @JsonProperty(value = "dateOfBirth", required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT")
-    @NotNull
-    private LocalDate dateOfBirth;
-
-    @JsonProperty(value = "stf24weeks", required = true)
+public class HomeOfficeStatutoryTimeframeDto extends HomeOfficeStatutoryTimeframeBase {
+    // This is the class to use for receiving the data from the Home Office initially
+    @JsonProperty(value = "stf24weekCohorts", required = true)
     @NotNull
     @Valid
-    private Stf24Weeks stf24weeks;
-
-    @JsonProperty(value = "timeStamp", required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "GMT")
-    @NotNull
-    private LocalDateTime timeStamp;
+    private List<Stf24WeekCohortDto> stf24weekCohortDtos;
 
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -72,14 +44,13 @@ public class HomeOfficeStatutoryTimeframeDto {
     @NoArgsConstructor
     @EqualsAndHashCode
     @Data
-    public static class Stf24Weeks {
-        @JsonProperty(value = "status", required = true)
+    public static class Stf24WeekCohortDto {
+        @JsonProperty(value = "name", required = true)
         @NotNull
-        @Pattern(regexp = "^(([Yy][Ee][Ss])|([Nn][Oo]))$", message = "Status must be 'Yes', 'No', 'YES', 'NO', 'yes', or 'no'")
-        private String status;
+        private String name;
 
-        @JsonProperty(value = "cohorts", required = true)
+        @JsonProperty(value = "included", required = true)
         @NotNull
-        private String[] cohorts;
+        private boolean included;
     }
 }

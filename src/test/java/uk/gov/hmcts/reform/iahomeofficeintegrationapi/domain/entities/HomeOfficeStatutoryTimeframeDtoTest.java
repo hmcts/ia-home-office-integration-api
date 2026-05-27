@@ -1,71 +1,72 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 class HomeOfficeStatutoryTimeframeDtoTest {
 
-    private String ccdCaseId;
-    private String uan;
-    private String familyName;
-    private String givenNames;
-    private LocalDate dateOfBirth;
-    private boolean hoStatutoryTimeframeStatus;
-    private LocalDateTime timeStamp;
-
-    private HomeOfficeStatutoryTimeframeDto homeOfficeStatutoryTimeframeDtoDto;
-
-    @BeforeEach
-    void setUp() {
-        ccdCaseId = "1234567890123456L";
-        uan = "UAN123456";
-        familyName = "Smith";
-        givenNames = "John";
-        dateOfBirth = LocalDate.of(1990, 1, 1);
-        hoStatutoryTimeframeStatus = true;
-        timeStamp = LocalDateTime.of(2023, 12, 1, 14, 30, 0);
-    }
+    private HomeOfficeStatutoryTimeframeDto dto;
 
     @Test
     void should_test_equals_contract() {
-
         EqualsVerifier.simple()
             .forClass(HomeOfficeStatutoryTimeframeDto.class)
             .verify();
     }
 
     @Test
-    void should_hold_onto_values() {
+    void should_hold_onto_single_cohort() {
 
-        homeOfficeStatutoryTimeframeDtoDto = HomeOfficeStatutoryTimeframeDto.builder()
-            .ccdCaseId(ccdCaseId)
-            .uan(uan)
-            .familyName(familyName)
-            .givenNames(givenNames)
-            .dateOfBirth(dateOfBirth)
-            .stf24weeks(HomeOfficeStatutoryTimeframeDto.Stf24Weeks.builder()
-                .status(hoStatutoryTimeframeStatus ? "Yes" : "No")
-                .cohorts(new String[]{"HU"})
-                .build())
-            .timeStamp(timeStamp)
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort =
+            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
+                .name("HU")
+                .included(true)
+                .build();
+
+        dto = HomeOfficeStatutoryTimeframeDto.builder()
+            .stf24weekCohortDtos(List.of(cohort))
             .build();
 
-        assertEquals(ccdCaseId, homeOfficeStatutoryTimeframeDtoDto.getCcdCaseId());
-        assertEquals(uan, homeOfficeStatutoryTimeframeDtoDto.getUan());
-        assertEquals(familyName, homeOfficeStatutoryTimeframeDtoDto.getFamilyName());
-        assertEquals(givenNames, homeOfficeStatutoryTimeframeDtoDto.getGivenNames());
-        assertEquals(dateOfBirth, homeOfficeStatutoryTimeframeDtoDto.getDateOfBirth());
-        assertEquals(hoStatutoryTimeframeStatus ? "Yes" : "No", homeOfficeStatutoryTimeframeDtoDto.getStf24weeks().getStatus());
-        assertArrayEquals(new String[]{"HU"}, homeOfficeStatutoryTimeframeDtoDto.getStf24weeks().getCohorts());
-        assertEquals(timeStamp, homeOfficeStatutoryTimeframeDtoDto.getTimeStamp());
+        assertEquals(1, dto.getStf24weekCohortDtos().size());
+        assertEquals("HU", dto.getStf24weekCohortDtos().get(0).getName());
+        assertTrue(dto.getStf24weekCohortDtos().get(0).isIncluded());
     }
 
+    @Test
+    void should_hold_onto_multiple_cohorts() {
+
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort1 =
+            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
+                .name("HU")
+                .included(true)
+                .build();
+
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort2 =
+            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
+                .name("PA")
+                .included(false)
+                .build();
+
+        dto = HomeOfficeStatutoryTimeframeDto.builder()
+            .stf24weekCohortDtos(List.of(cohort1, cohort2))
+            .build();
+
+        assertEquals(2, dto.getStf24weekCohortDtos().size());
+    }
+
+    @Test
+    void should_handle_empty_cohorts() {
+
+        dto = HomeOfficeStatutoryTimeframeDto.builder()
+            .stf24weekCohortDtos(List.of())
+            .build();
+
+        assertEquals(0, dto.getStf24weekCohortDtos().size());
+    }
 }

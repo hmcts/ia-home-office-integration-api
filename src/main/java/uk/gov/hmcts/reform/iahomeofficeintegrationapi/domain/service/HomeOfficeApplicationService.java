@@ -60,7 +60,7 @@ public class HomeOfficeApplicationService {
             );
             return response;
         } catch (RetriesExceededException e) {
-            String message = "Biographic information from Home Office asylum (etc.) application with HMCTS reference " + homeOfficeReferenceNumber
+            String message = "Biographic information from Home Office asylum (etc.) application with reference " + homeOfficeReferenceNumber
                            + " could not be retrieved.\n\nThe Home Office validation API did not respond.";
             throw new HomeOfficeMissingApplicationException(-1, message);
         }       

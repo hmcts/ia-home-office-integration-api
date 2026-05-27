@@ -50,7 +50,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Value;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 
 @SpringJUnitConfig
 @ExtendWith(MockitoExtension.class)
@@ -66,8 +65,6 @@ public class RequestHomeOfficeDataHandlerTest {
             + "trigger/requestHomeOfficeData) to try again. This may take a few minutes.";
 
     private static HomeOfficeSearchResponse homeOfficeSearchResponse;
-    @Mock
-    private FeatureToggler featureToggler;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -88,13 +85,12 @@ public class RequestHomeOfficeDataHandlerTest {
     void setUp() {
 
         requestHomeOfficeDataHandler =
-                new RequestHomeOfficeDataHandler(homeOfficeDataErrorsHelper, featureToggler);
+                new RequestHomeOfficeDataHandler(homeOfficeDataErrorsHelper);
     }
 
     @Test
     void handler_should_error_if_appellant_not_selected() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -129,7 +125,6 @@ public class RequestHomeOfficeDataHandlerTest {
     @Test
     void handle_should_return_no_match_if_no_appellant_matched() throws Exception {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -151,7 +146,6 @@ public class RequestHomeOfficeDataHandlerTest {
 
         String hoSearchResponseJsonStr = new ObjectMapper().writeValueAsString(getSampleResponse());
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -176,7 +170,6 @@ public class RequestHomeOfficeDataHandlerTest {
     @Test
     void handler_should_throw_error_for_no_search_response_data() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -199,7 +192,6 @@ public class RequestHomeOfficeDataHandlerTest {
     @Test
     void handler_should_throw_error_for_empty_ho_search_response_data() throws Exception {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -233,7 +225,6 @@ public class RequestHomeOfficeDataHandlerTest {
     @Test
     void it_can_handle_callback() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         for (Event event : Event.values()) {
 
             when(callback.getCaseDetails()).thenReturn(caseDetails);
