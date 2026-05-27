@@ -8,8 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.DbUtils;
 
@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.DbUtils;
  */
 class SwaggerPublisher extends SpringBootIntegrationTest {
 
-    @MockBean
+    @MockitoBean
     private DbUtils dbUtils;
 
     @DisplayName("Generate swagger documentation")

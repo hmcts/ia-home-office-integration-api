@@ -46,7 +46,7 @@ class HomeOfficeStatusSearchIntegrationTest
         WithIdamStub, WithServiceAuthStub,
         WithHomeOfficeStatusSearchStub, WithHomeOfficeInstructStub, WithHomeOfficeAuthStub {
 
-    @MockBean
+    @MockitoBean
     private DbUtils dbUtils;
 
     public static final String APPELLANT_FAMILY_NAME = "appellantFamilyName";
