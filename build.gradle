@@ -346,6 +346,8 @@ dependencies {
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.17'
 
     implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
     implementation group: 'commons-io', name: 'commons-io', version: '2.21.0'
 
     implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.1'
