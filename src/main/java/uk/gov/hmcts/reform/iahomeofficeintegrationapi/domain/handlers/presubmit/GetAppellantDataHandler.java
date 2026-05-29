@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.GWF_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_CLAIM_DATE;
@@ -69,12 +70,16 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         final long caseId = callback.getCaseDetails().getId();
-        final String homeOfficeReferenceNumber = asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
-            .orElseThrow(
-                () -> new IllegalStateException(
-                    "Home office reference number (UAN or GWF) is not present; caseId: " + caseId + "."
-                )
-            );
+        // Retrieve the UAN or GWF from the case record
+        String homeOfficeReferenceNumber = asylumCase
+                .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
+                .orElse("");
+        if (homeOfficeReferenceNumber.isEmpty()) {
+            homeOfficeReferenceNumber = asylumCase
+                        .read(GWF_REFERENCE_NUMBER, String.class)
+                        .orElseThrow(() -> new IllegalStateException(
+                            "Home office reference number (UAN or GWF) is not present; caseId: " + caseId + "."));
+        }
 
         try {
             // We want to call the Home Office /applications/{id} endpoint and write all data it returns to the case record
