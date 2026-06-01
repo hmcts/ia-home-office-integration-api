@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
-import static org.springframework.util.StringUtils.isEmpty;
+import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_SUBMISSION_DATE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_TYPE;

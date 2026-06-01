@@ -58,19 +58,23 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
         + "Home Office reference number incorrectly. You can contact the appellant to check the reference number"
         + " if you need this information to validate the appeal";
 
-    private static final String HOME_OFFICE_MAIN_APPLICANT_NOT_FOUND_ERROR_MESSAGE = "**Note:** "
-        + "The service was unable to retrieve any appellant details from the Home Office because the Home Office data "
-        + "does not include a main applicant. You can contact the Home Office if you need this information "
-        + "to validate the appeal.\n## Do this next"
+    private static final String HOME_OFFICE_MAIN_APPLICANT_NOT_FOUND_ERROR_MESSAGE = """
+        **Note:** \
+        The service was unable to retrieve any appellant details from the Home Office because the Home Office data \
+        does not include a main applicant. You can contact the Home Office if you need this information \
+        to validate the appeal.
+        ## Do this next"""
         + "\r\n- Contact the Home Office to get the correct details"
         + "\r\n- Use [Edit appeal](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/editAppealAfterSubmit) to update "
         + "the details as required\r\n- [Request Home Office data](/case/IA/Asylum/${[CASE_REFERENCE]}"
         + "/trigger/requestHomeOfficeData) to match the appellant details with the Home Office details";
 
-    private static final String HOME_OFFICE_WRONG_APPLICANT_NOT_FOUND_ERROR_MESSAGE = "**Note:** "
-            + "The service has been unable to retrieve the Home Office information about this appeal "
-            + "because the Home Office Reference/Case ID, data of birth or name submitted by the appellant do not "
-            + "match the details stored by the Home Office\n## Do this next"
+    private static final String HOME_OFFICE_WRONG_APPLICANT_NOT_FOUND_ERROR_MESSAGE = """
+            **Note:** \
+            The service has been unable to retrieve the Home Office information about this appeal \
+            because the Home Office Reference/Case ID, data of birth or name submitted by the appellant do not \
+            match the details stored by the Home Office
+            ## Do this next"""
             + "\r\n- Contact the Home Office to get the correct details"
             + "\r\n- Use [Edit appeal](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/editAppealAfterSubmit) to update "
             + "the details as required"
@@ -120,7 +124,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
         Optional<HomeOfficeCaseStatus> selectedApplicant =
                 selectAnyApplicant(caseId, searchResponse.getStatus());
 
-        if (!selectedApplicant.isPresent()) {
+        if (selectedApplicant.isEmpty()) {
             log.warn("Unable to find Any APPLICANT in Home office response, caseId: {}", caseId);
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS_MESSAGE,
@@ -142,12 +146,12 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
 
                     ApplicationStatus applicationStatus = applicant.getApplicationStatus();
 
-                    applicant = updateDateOfBirth(applicant, caseId);
+                    updateDateOfBirth(applicant, caseId);
 
                     applicant.setDisplayDecisionDate(
                             HomeOfficeDateFormatter.getIacDateTime(applicationStatus.getDecisionDate()));
 
-                    applicant = updateDecisionCommunication(applicant, applicationStatus);
+                    updateDecisionCommunication(applicant, applicationStatus);
 
                     Optional<HomeOfficeMetadata> metadata = selectMetadata(
                             caseId,
@@ -170,7 +174,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
         }
     }
 
-    private HomeOfficeCaseStatus updateDateOfBirth(HomeOfficeCaseStatus applicant,
+    private void updateDateOfBirth(HomeOfficeCaseStatus applicant,
                                    long caseId) {
         Person person = applicant.getPerson();
 
@@ -186,11 +190,10 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                             person.getMonthOfBirth(), person.getYearOfBirth()));
         }
 
-        return applicant;
     }
 
-    private HomeOfficeCaseStatus updateDecisionCommunication(HomeOfficeCaseStatus applicant,
-                                                             ApplicationStatus applicationStatus) {
+    private void updateDecisionCommunication(HomeOfficeCaseStatus applicant,
+                                             ApplicationStatus applicationStatus) {
         if (applicationStatus.getDecisionCommunication() != null) {
             applicant.setDisplayDecisionSentDate(
                     HomeOfficeDateFormatter.getIacDateTime(
@@ -198,8 +201,6 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                     )
             );
         }
-
-        return applicant;
     }
 
     private boolean validMatchedApplicants(List<HomeOfficeCaseStatus> matchedApplicants,
@@ -207,7 +208,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                                            long caseId,
                                            String homeOfficeSearchResponseJsonStr) {
 
-        if (matchedApplicants.isEmpty() || isNull(matchedApplicants)) {
+        if (matchedApplicants.isEmpty()) {
 
             log.warn("Unable to find MAIN APPLICANT in Home office response, caseId: {}", caseId);
             asylumCase.write(HOME_OFFICE_SEARCH_STATUS, "FAIL");
@@ -270,9 +271,9 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
 
             if (searchResponse != null) {
                 if (searchResponse.getErrorDetail() != null) {
-                    final String errMessage = String.format("Error code: %s, message: %s",
-                            searchResponse.getErrorDetail().getErrorCode(),
-                            searchResponse.getErrorDetail().getMessageText());
+                    final String errMessage = "Error code: %s, message: %s".formatted(
+                        searchResponse.getErrorDetail().getErrorCode(),
+                        searchResponse.getErrorDetail().getMessageText());
                     homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(
                             caseId,
                             asylumCase,
@@ -321,7 +322,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
     }
 
     String getRejectionReasonString(List<RejectionReason> rejectionReasons) {
-        StringBuilder sb = new StringBuilder("");
+        StringBuilder sb = new StringBuilder();
         if (rejectionReasons != null && !rejectionReasons.isEmpty()) {
             rejectionReasons.forEach(
                 rejectionReason -> sb.append(rejectionReason.getReason()).append("<br />")

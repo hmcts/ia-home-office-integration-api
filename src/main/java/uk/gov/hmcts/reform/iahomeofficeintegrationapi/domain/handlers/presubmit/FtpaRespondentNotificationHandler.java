@@ -69,9 +69,10 @@ public class FtpaRespondentNotificationHandler implements PreSubmitCallbackHandl
                 .withMessageType(PERMISSION_TO_APPEAL.name())
                 .withCourtType(CourtType.FIRST_TIER)
                 .withNote(
-                    "You've submitted an application for permission to appeal to the Upper Tribunal.\n"
-                    + "Next steps\n"
-                    + "The First-tier Tribunal will consider your application and make a decision shortly.")
+                    """
+                    You've submitted an application for permission to appeal to the Upper Tribunal.
+                    Next steps
+                    The First-tier Tribunal will consider your application and make a decision shortly.""")
                 .build();
 
         log.info("Finished constructing {} notification request for caseId: {}, HomeOffice reference: {}, Event: {}",

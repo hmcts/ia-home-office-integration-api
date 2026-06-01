@@ -73,7 +73,7 @@ public class CcdDataService {
     public SubmitEventDetails setHomeOfficeStatutoryTimeframeStatus(HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
         // This caters for cases where no cohort information is returned (which we interpret as "No")
         boolean isYes = hoStatutoryTimeframeDto.getStf24weekCohortDtos().stream().anyMatch(cohort -> cohort.isIncluded());
-        Event event = isYes 
+        Event event = isYes
             ? Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS
             : Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS;
         String eventId = event.toString();
@@ -101,7 +101,7 @@ public class CcdDataService {
             log.warn(message + "\n\n" + ex.getMessage());
             // This exception will result in a 410 (Gone) code being returned to the Home Office.  This is
             // more descriptive than a 404, which is what CaseNotFoundException() would cause to be returned.
-            throw new CaseGoneException(message);            
+            throw new CaseGoneException(message);
         }
         log.debug("Case details found for the caseId: {}", caseId);
         log.debug("Start event id: {}", startEventDetails.getEventId());
@@ -122,7 +122,7 @@ public class CcdDataService {
             checkStatusNotAlreadySet(newHistoryId, existingData, caseId);
 
             Map<String, Object> eventData = new HashMap<>();
-            eventData.put(STF_24W_HOME_OFFICE_COHORT.value(), 
+            eventData.put(STF_24W_HOME_OFFICE_COHORT.value(),
                           hoStatutoryTimeframeDto.getStf24weekCohortDtos().stream()
                           .filter(cohort -> cohort.isIncluded())
                           .map(cohort -> cohort.getName()).collect(Collectors.joining(",")));
@@ -258,8 +258,7 @@ public class CcdDataService {
                 .map(StatutoryTimeframe24Weeks::getHistory)
                 .filter(history -> !history.isEmpty())
                 .isPresent()) {
-            String errorMessage = String.format(
-                "Statutory timeframe status has already been set for caseId: %s",
+            String errorMessage = "Statutory timeframe status has already been set for caseId: %s".formatted(
                 caseId
             );
             log.info(errorMessage);

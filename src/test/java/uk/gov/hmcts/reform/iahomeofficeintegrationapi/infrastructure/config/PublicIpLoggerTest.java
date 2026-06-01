@@ -10,8 +10,10 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
 
+@TestPropertySource(properties = "app.public-ip.enabled=true")
 class PublicIpLoggerTest {
 
     private PublicIpLogger publicIpLogger;

@@ -9,10 +9,10 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -77,7 +77,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
         assertEquals(1, violations.size());
         ConstraintViolation<HomeOfficeStatutoryTimeframeDto> violation = violations.iterator().next();
         assertEquals("hmctsReferenceNumber", violation.getPropertyPath().toString());
-        assertEquals("Home Office reference ID must be of the form XX/12345/2026, where XX is the appeal type, " + 
+        assertEquals("Home Office reference ID must be of the form XX/12345/2026, where XX is the appeal type, " +
                      "12345 stands for any five-digit number and 2026 is the year", violation.getMessage());
     }
 
@@ -106,7 +106,7 @@ public class HomeOfficeStatutoryTimeframeDtoValidationTest {
         assertEquals(1, violations.size());
         ConstraintViolation<HomeOfficeStatutoryTimeframeDto> violation = violations.iterator().next();
         assertEquals("hmctsReferenceNumber", violation.getPropertyPath().toString());
-        assertEquals("Home Office reference ID must be of the form XX/12345/2026, where XX is the appeal type, " + 
+        assertEquals("Home Office reference ID must be of the form XX/12345/2026, where XX is the appeal type, " +
                      "12345 stands for any five-digit number and 2026 is the year", violation.getMessage());
     }
 
