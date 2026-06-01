@@ -1,1 +1,5 @@
 auth.homeoffice.client.secret: ${IA_HOMEOFFICE_SECRET:something}
+
+app:
+  cache:
+    enabled: false
