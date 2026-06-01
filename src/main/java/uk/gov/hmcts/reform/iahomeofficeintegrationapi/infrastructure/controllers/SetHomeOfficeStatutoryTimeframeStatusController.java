@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseGoneException;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseIncompatibleException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
@@ -114,6 +115,12 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
     public ResponseEntity<String> handleCaseGoneException(CaseGoneException ex) {
         log.info("Case gone: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.GONE).body("{\"error\":\"The 24-week status could not be set.  " + ex.getMessage() + "\"}");
+    }
+
+    @ExceptionHandler(CaseIncompatibleException.class)
+    public ResponseEntity<String> handleCaseIncompatibleException(CaseIncompatibleException ex) {
+        log.info("Case incompatible with supplied 24-week status: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("{\"error\":\"The 24-week status could not be set.  " + ex.getMessage() + "\"}");
     }
 
     @ExceptionHandler(HomeOfficeResponseException.class)
