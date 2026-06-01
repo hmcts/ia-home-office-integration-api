@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.CallbackForTest.CallbackForTestBuilder;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.IaCaseHomeOfficeIntegrationApiClient;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.PreSubmitCallbackResponseForTest;
@@ -48,7 +48,7 @@ class HomeOfficeInstructIntegrationTest
         WithIdamStub, WithServiceAuthStub,
         WithHomeOfficeStatusSearchStub, WithHomeOfficeInstructStub, WithHomeOfficeAuthStub {
 
-    @MockBean
+    @MockitoBean
     private DbUtils dbUtils;
 
     public static final String APPEAL_REFERENCE_NUMBER = "some-appeal-reference-number";

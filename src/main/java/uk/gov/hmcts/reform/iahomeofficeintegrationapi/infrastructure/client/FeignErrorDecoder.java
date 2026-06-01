@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client;
 
+import feign.FeignException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
@@ -10,7 +11,6 @@ import org.springframework.web.server.ResponseStatusException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import feign.Response;
-import feign.RetryableException;
 import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeErrorResponse;
@@ -62,7 +62,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                             if (homeOfficeError != null) {
                                 if (homeOfficeError.getErrorDetail() != null) {
                                     errorCode = homeOfficeError.getErrorDetail().getErrorCode();
-                                    errMessage = String.format("Home office error code: %s, message: %s",
+                                    errMessage = "Home office error code: %s, message: %s".formatted(
                                         errorCode, homeOfficeError.getErrorDetail().getMessageText());
                                 } else {
                                     errMessage = "Home office error detail is null";
@@ -75,15 +75,14 @@ public class FeignErrorDecoder implements ErrorDecoder {
                         response.status(), methodKey, response.reason(), errMessage);
 
                 } catch (IOException ex) {
-                    errMessage = String.format(ERROR_LOG, ex.getMessage());
+                    errMessage = ERROR_LOG.formatted(ex.getMessage());
                     log.error(ERROR_LOG, ex.getMessage());
                 }
-                return new HomeOfficeResponseException(errorCode, String.format(
-                        "StatusCode: %d, methodKey: %s, reason: %s, message: %s",
-                        response.status(),
-                        methodKey,
-                        response.reason(),
-                        errMessage));
+                return new HomeOfficeResponseException(errorCode, "StatusCode: %d, methodKey: %s, reason: %s, message: %s".formatted(
+                    response.status(),
+                    methodKey,
+                    response.reason(),
+                    errMessage));
 
             case 404:
                 try {
@@ -100,10 +99,10 @@ public class FeignErrorDecoder implements ErrorDecoder {
 
             case 500:
                 log.error("StatusCode: {}, methodKey: {}, reason: {}",
-                        response.status(),
-                        methodKey,
-                        response.reason());
-                throw new RetryableException(response.status(), response.reason(), response.request().httpMethod(), null, response.request());
+                    response.status(),
+                    methodKey,
+                    response.reason());
+                throw FeignException.errorStatus(methodKey, response);
 
             default:
                 log.error("StatusCode: {}, methodKey: {}, reason: {}",

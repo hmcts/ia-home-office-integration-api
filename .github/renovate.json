@@ -1,7 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>hmcts/.github:renovate-config"],
-  "labels": ["dependencies"],
+  "extends": [
+    "local>hmcts/.github:renovate-config"
+  ],
+  "labels": [
+    "dependencies"
+  ],
   "packageRules": [
     {
       "matchPackagePatterns": [
@@ -16,11 +20,21 @@
       "automerge": true
     },
     {
-      "matchPackageNames": ["com.github.hmcts:ccd-case-document-am-client"],
+      "matchPackageNames": [
+        "com.github.hmcts:ccd-case-document-am-client"
+      ],
       "enabled": false
     },
     {
-      "matchUpdateTypes": ["major"],
+      "matchPackageNames": [
+        "org.owasp.dependencycheck"
+      ],
+      "enabled": false
+    },
+    {
+      "matchUpdateTypes": [
+        "major"
+      ],
       "enabled": false
     }
   ],

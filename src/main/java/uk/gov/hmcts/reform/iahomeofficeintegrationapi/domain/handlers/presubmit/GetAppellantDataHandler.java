@@ -108,7 +108,7 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                 }
             }
 
-            writeHomeOfficeDataToCase(asylumCase, homeOfficeReferenceNumber, String.valueOf(homeOfficeResponse.getStatusCodeValue()), applicationDto);
+            writeHomeOfficeDataToCase(asylumCase, homeOfficeReferenceNumber, String.valueOf(homeOfficeResponse.getStatusCode().value()), applicationDto);
 
         } catch (HomeOfficeMissingApplicationException exception) {
             String message = exception.getMessage();

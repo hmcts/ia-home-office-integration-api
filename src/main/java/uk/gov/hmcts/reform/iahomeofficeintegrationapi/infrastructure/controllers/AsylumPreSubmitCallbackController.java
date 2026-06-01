@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.controllers;
 
-import javax.validation.constraints.NotNull;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -72,7 +70,7 @@ public class AsylumPreSubmitCallbackController extends PreSubmitCallbackControll
     )
     @PostMapping(path = "/ccdAboutToStart")
     public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdAboutToStart(
-        @Parameter(name = "Asylum case data", required = true) @NotNull @RequestBody Callback<AsylumCase> callback
+        @Parameter(name = "Asylum case data", required = true) @RequestBody Callback<AsylumCase> callback
     ) {
         return super.ccdAboutToStart(callback);
     }
@@ -111,7 +109,7 @@ public class AsylumPreSubmitCallbackController extends PreSubmitCallbackControll
     )
     @PostMapping(path = "/ccdAboutToSubmit")
     public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdAboutToSubmit(
-        @Parameter(name = "Asylum case data", required = true) @NotNull @RequestBody Callback<AsylumCase> callback
+        @Parameter(name = "Asylum case data", required = true) @RequestBody Callback<AsylumCase> callback
     ) {
         return super.ccdAboutToSubmit(callback);
     }
@@ -143,7 +141,7 @@ public class AsylumPreSubmitCallbackController extends PreSubmitCallbackControll
 
     @PostMapping(path = "/ccdMidEvent")
     public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdMidEvent(
-        @Parameter(name = "Asylum case data", required = true) @NotNull @RequestBody Callback<AsylumCase> callback,
+        @Parameter(name = "Asylum case data", required = true) @RequestBody Callback<AsylumCase> callback,
         @RequestParam(name = "pageId", required = false) String pageId
     ) {
         return super.ccdMidEvent(callback, pageId);
