@@ -33,8 +33,8 @@ module "cft_api_mgmt_oauth2_product" {
 
 module "cft_api_mgmt_oauth2_api" {
   source                = "git@github.com:hmcts/cnp-module-api-mgmt-api?ref=master"
-  name                  = "ia-home-office-24w-api"
-  display_name          = "HO 24 Weeks API"
+  name                  = "ia-home-office-api"
+  display_name          = "IA Home Office API"
   api_mgmt_name         = local.cft_api_mgmt_oauth2_name
   api_mgmt_rg           = local.cft_api_mgmt_oauth2_rg
   product_id            = module.cft_api_mgmt_oauth2_product.id

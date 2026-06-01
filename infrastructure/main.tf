@@ -45,13 +45,3 @@ data "azurerm_key_vault_secret" "tenant_id" {
   name         = "apim-ia-home-office-tenant-id"
   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
 }
-# region API (gateway)
-data "azurerm_key_vault_secret" "s2s_client_secret" {
-  name         = "gateway-s2s-client-secret"
-  key_vault_id = data.azurerm_key_vault.ia_key_vault.id
-}
-
-data "azurerm_key_vault_secret" "s2s_client_id" {
-  name         = "gateway-s2s-client-id"
-  key_vault_id = data.azurerm_key_vault.ia_key_vault.id
-}
