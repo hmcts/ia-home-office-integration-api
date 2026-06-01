@@ -136,14 +136,17 @@ class ListingNotificationHelperTest {
         assertEquals("HEARING", hearingInstructMessage.getMessageType());
         assertEquals(messageHeader, hearingInstructMessage.getMessageHeader());
         assertEquals(consumerReference, hearingInstructMessage.getConsumerReference());
-        assertEquals("Some reasons for adjournment\nHearing requirements:\n"
-                     + "* Remote hearing: No special adjustments are being made to remote video call\n"
-                     + "* Adjustments to accommodate vulnerabilities: "
-                     + "No special adjustments are being made to accommodate vulnerabilities\n"
-                     + "* Multimedia equipment: No multimedia equipment is being provided\n"
-                     + "* Single-sex court: The court will not be single sex\n"
-                     + "* In camera court: The hearing will be held in public court\n"
-                     + "* Other adjustments: No other adjustments are being made\n",
+        assertEquals("""
+                     Some reasons for adjournment
+                     Hearing requirements:
+                     * Remote hearing: No special adjustments are being made to remote video call
+                     * Adjustments to accommodate vulnerabilities: \
+                     No special adjustments are being made to accommodate vulnerabilities
+                     * Multimedia equipment: No multimedia equipment is being provided
+                     * Single-sex court: The court will not be single sex
+                     * In camera court: The hearing will be held in public court
+                     * Other adjustments: No other adjustments are being made
+                     """,
             hearingInstructMessage.getNote());
     }
 
@@ -166,14 +169,18 @@ class ListingNotificationHelperTest {
         assertEquals("HEARING", hearingInstructMessage.getMessageType());
         assertEquals(messageHeader, hearingInstructMessage.getMessageHeader());
         assertEquals(consumerReference, hearingInstructMessage.getConsumerReference());
-        assertEquals("This is a reheard case.\nSome reasons for adjournment\nHearing requirements:\n"
-                     + "* Remote hearing: No special adjustments are being made to remote video call\n"
-                     + "* Adjustments to accommodate vulnerabilities: "
-                     + "No special adjustments are being made to accommodate vulnerabilities\n"
-                     + "* Multimedia equipment: No multimedia equipment is being provided\n"
-                     + "* Single-sex court: The court will not be single sex\n"
-                     + "* In camera court: The hearing will be held in public court\n"
-                     + "* Other adjustments: No other adjustments are being made\n",
+        assertEquals("""
+                     This is a reheard case.
+                     Some reasons for adjournment
+                     Hearing requirements:
+                     * Remote hearing: No special adjustments are being made to remote video call
+                     * Adjustments to accommodate vulnerabilities: \
+                     No special adjustments are being made to accommodate vulnerabilities
+                     * Multimedia equipment: No multimedia equipment is being provided
+                     * Single-sex court: The court will not be single sex
+                     * In camera court: The hearing will be held in public court
+                     * Other adjustments: No other adjustments are being made
+                     """,
             hearingInstructMessage.getNote());
     }
 
@@ -229,14 +236,17 @@ class ListingNotificationHelperTest {
             = listingNotificationHelper.getHearingInstructMessage(asylumCase,
             consumerReference, messageHeader, "1111-2222-3333-4444");
 
-        assertEquals("This is a reheard case.\nHearing requirements:\n"
-                     + "* Remote hearing: No special adjustments are being made to remote video call\n"
-                     + "* Adjustments to accommodate vulnerabilities: "
-                     + "No special adjustments are being made to accommodate vulnerabilities\n"
-                     + "* Multimedia equipment: No multimedia equipment is being provided\n"
-                     + "* Single-sex court: The court will not be single sex\n"
-                     + "* In camera court: The hearing will be held in public court\n"
-                     + "* Other adjustments: No other adjustments are being made\n",
+        assertEquals("""
+                     This is a reheard case.
+                     Hearing requirements:
+                     * Remote hearing: No special adjustments are being made to remote video call
+                     * Adjustments to accommodate vulnerabilities: \
+                     No special adjustments are being made to accommodate vulnerabilities
+                     * Multimedia equipment: No multimedia equipment is being provided
+                     * Single-sex court: The court will not be single sex
+                     * In camera court: The hearing will be held in public court
+                     * Other adjustments: No other adjustments are being made
+                     """,
             hearingInstructMessage.getNote());
     }
 
@@ -247,14 +257,16 @@ class ListingNotificationHelperTest {
         assertEquals("HEARING", hearingInstructMessage.getMessageType());
         assertEquals(messageHeader, hearingInstructMessage.getMessageHeader());
         assertEquals(consumerReference, hearingInstructMessage.getConsumerReference());
-        assertEquals("Hearing requirements:\n"
-                     + "* Remote hearing: No special adjustments are being made to remote video call\n"
-                     + "* Adjustments to accommodate vulnerabilities: "
-                     + "No special adjustments are being made to accommodate vulnerabilities\n"
-                     + "* Multimedia equipment: No multimedia equipment is being provided\n"
-                     + "* Single-sex court: The court will not be single sex\n"
-                     + "* In camera court: The hearing will be held in public court\n"
-                     + "* Other adjustments: No other adjustments are being made\n",
+        assertEquals("""
+                     Hearing requirements:
+                     * Remote hearing: No special adjustments are being made to remote video call
+                     * Adjustments to accommodate vulnerabilities: \
+                     No special adjustments are being made to accommodate vulnerabilities
+                     * Multimedia equipment: No multimedia equipment is being provided
+                     * Single-sex court: The court will not be single sex
+                     * In camera court: The hearing will be held in public court
+                     * Other adjustments: No other adjustments are being made
+                     """,
             hearingInstructMessage.getNote());
     }
 
@@ -407,14 +419,17 @@ class ListingNotificationHelperTest {
         final String adjournHearingNotificationContent
             = listingNotificationHelper.getAdjournHearingNotificationContent(asylumCase);
 
-        assertEquals("Some reasons for adjournment\nHearing requirements:\n"
-                     + "* Remote hearing: No special adjustments are being made to remote video call\n"
-                     + "* Adjustments to accommodate vulnerabilities: "
-                     + "No special adjustments are being made to accommodate vulnerabilities\n"
-                     + "* Multimedia equipment: No multimedia equipment is being provided\n"
-                     + "* Single-sex court: The court will not be single sex\n"
-                     + "* In camera court: The hearing will be held in public court\n"
-                     + "* Other adjustments: No other adjustments are being made\n",
+        assertEquals("""
+                     Some reasons for adjournment
+                     Hearing requirements:
+                     * Remote hearing: No special adjustments are being made to remote video call
+                     * Adjustments to accommodate vulnerabilities: \
+                     No special adjustments are being made to accommodate vulnerabilities
+                     * Multimedia equipment: No multimedia equipment is being provided
+                     * Single-sex court: The court will not be single sex
+                     * In camera court: The hearing will be held in public court
+                     * Other adjustments: No other adjustments are being made
+                     """,
             adjournHearingNotificationContent);
     }
 
@@ -438,13 +453,15 @@ class ListingNotificationHelperTest {
         final String hearingNotificationContent
             = listingNotificationHelper.getHearingRequirementNotificationContent(asylumCase);
 
-        assertEquals("Hearing requirements:\n"
-                     + "* Remote hearing: something around RemoteHearing\n"
-                     + "* Adjustments to accommodate vulnerabilities: something around Vulnerabilities\n"
-                     + "* Multimedia equipment: something around Multimedia\n"
-                     + "* Single-sex court: something around SingleSexCourt\n"
-                     + "* In camera court: something around InCameraCourt\n"
-                     + "* Other adjustments: something around Other\n",
+        assertEquals("""
+                     Hearing requirements:
+                     * Remote hearing: something around RemoteHearing
+                     * Adjustments to accommodate vulnerabilities: something around Vulnerabilities
+                     * Multimedia equipment: something around Multimedia
+                     * Single-sex court: something around SingleSexCourt
+                     * In camera court: something around InCameraCourt
+                     * Other adjustments: something around Other
+                     """,
             hearingNotificationContent);
     }
 

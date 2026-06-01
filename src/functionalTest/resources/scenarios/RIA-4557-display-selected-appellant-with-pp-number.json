@@ -1,6 +1,5 @@
 {
   "description": "RIA-4557 The selected applicant should have the document reference with PP number",
-  "launchDarklyKey": "home-office-uan-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

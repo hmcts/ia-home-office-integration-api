@@ -1,6 +1,5 @@
 {
   "description": "RIA 3302 sends notification for end appeal on state final bundling by Judge",
-  "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",

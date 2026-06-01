@@ -36,7 +36,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeSearchService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 
@@ -55,8 +54,6 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
     private static final String INVALID_HOME_OFFICE_REFERENCE = "The Home office does not recognise the submitted "
             + "appellant reference";
 
-    private final FeatureToggler featureToggler;
-
     private HomeOfficeSearchService homeOfficeSearchService;
 
     private HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper;
@@ -65,13 +62,11 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
 
     public RequestHomeOfficeDataPreparer(HomeOfficeSearchService homeOfficeSearchService,
                                          HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper,
-                                         HomeOfficeDataMatchHelper homeOfficeDataMatchHelper,
-                                         FeatureToggler featureToggler) {
+                                         HomeOfficeDataMatchHelper homeOfficeDataMatchHelper) {
 
         this.homeOfficeSearchService = homeOfficeSearchService;
         this.homeOfficeDataErrorsHelper = homeOfficeDataErrorsHelper;
         this.homeOfficeDataMatchHelper = homeOfficeDataMatchHelper;
-        this.featureToggler = featureToggler;
     }
 
     @Override
@@ -83,8 +78,7 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-                && callback.getEvent() == REQUEST_HOME_OFFICE_DATA
-                && featureToggler.getValue("home-office-uan-feature", false);
+                && callback.getEvent() == REQUEST_HOME_OFFICE_DATA;
     }
 
 
@@ -150,9 +144,9 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
             }
 
             if (searchResponse.getErrorDetail() != null) {
-                final String errMessage = String.format("Error code: %s, message: %s",
-                        searchResponse.getErrorDetail().getErrorCode(),
-                        searchResponse.getErrorDetail().getMessageText());
+                final String errMessage = "Error code: %s, message: %s".formatted(
+                    searchResponse.getErrorDetail().getErrorCode(),
+                    searchResponse.getErrorDetail().getMessageText());
                 homeOfficeDataErrorsHelper.setErrorMessageForErrorCode(
                         caseId,
                         asylumCase,
@@ -184,8 +178,8 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
 
                 matchedApplicants.stream().forEach(a -> {
                     Person person = a.getPerson();
-                    String applicantDob = String.format("%02d", person.getDayOfBirth())
-                            + String.format("%02d", person.getMonthOfBirth())
+                    String applicantDob = "%02d".formatted(person.getDayOfBirth())
+                            + "%02d".formatted(person.getMonthOfBirth())
                             + String.valueOf(person.getYearOfBirth()).substring(2);
 
                     values.add(new Value(a.getPerson().getFullName(),
@@ -216,7 +210,7 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
         } finally {
 
             values.add(new Value("NoMatch", "No Match"));
-            dynamicList = new DynamicList(values.get(0), values);
+            dynamicList = new DynamicList(values.getFirst(), values);
             asylumCase.write(HOME_OFFICE_APPELLANTS_LIST, dynamicList);
         }
 

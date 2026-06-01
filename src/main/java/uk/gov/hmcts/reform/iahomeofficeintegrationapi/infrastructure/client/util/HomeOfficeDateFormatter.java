@@ -49,8 +49,8 @@ public class HomeOfficeDateFormatter {
     }
 
     public static String getPersonDateOfBirth(int dayOfBirth, int monthOfBirth, int yearOfBirth) {
-        String hoDateOfBirth = String.format("%02d", dayOfBirth)
-            + "/" + String.format("%02d", monthOfBirth)
+        String hoDateOfBirth = "%02d".formatted(dayOfBirth)
+            + "/" + "%02d".formatted(monthOfBirth)
             + "/" + yearOfBirth;
         try {
             LocalDate parsedDate = LocalDate.parse(hoDateOfBirth, DD_MM_YYYY_FORMATTER);

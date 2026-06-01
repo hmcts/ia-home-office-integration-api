@@ -1,6 +1,6 @@
 {
   "description": "RIA-3601 Sends request respondent evidence notification to receive 500 response from API (Mock only test)",
-  "disabled":  true,
+  "disabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

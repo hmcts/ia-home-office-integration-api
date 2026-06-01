@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-import com.launchdarkly.sdk.LDUser;
+import com.launchdarkly.sdk.LDContext;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,43 +27,38 @@ class LaunchDarklyFeatureTogglerTest {
     @InjectMocks
     private LaunchDarklyFeatureToggler launchDarklyFeatureToggler;
 
+    private LDContext ldContext;
+
     @Test
     void should_return_default_value_when_key_does_not_exist() {
-        String notExistingKey = "not-existing-key";
         when(userDetails.getId()).thenReturn("id");
         when(userDetails.getForename()).thenReturn("forname");
         when(userDetails.getSurname()).thenReturn("surname");
         when(userDetails.getEmailAddress()).thenReturn("emailAddress");
-
-        when(ldClient.boolVariation(
-                notExistingKey,
-                new LDUser.Builder(userDetails.getId())
-                        .firstName(userDetails.getForename())
-                        .lastName(userDetails.getSurname())
-                        .email(userDetails.getEmailAddress())
-                        .build(),
-                true)
-        ).thenReturn(true);
+        ldContext = LDContext.builder(userDetails.getId())
+            .set("firstName", userDetails.getForename())
+            .set("lastName", userDetails.getSurname())
+            .set("email", userDetails.getEmailAddress())
+            .build();
+        String notExistingKey = "not-existing-key";
+        when(ldClient.boolVariation(notExistingKey, ldContext, true)).thenReturn(true);
 
         assertTrue(launchDarklyFeatureToggler.getValue(notExistingKey, true));
     }
 
     @Test
     void should_return_value_when_key_exists() {
-        String existingKey = "existing-key";
         when(userDetails.getId()).thenReturn("id");
         when(userDetails.getForename()).thenReturn("forname");
         when(userDetails.getSurname()).thenReturn("surname");
         when(userDetails.getEmailAddress()).thenReturn("emailAddress");
-        when(ldClient.boolVariation(
-                existingKey,
-                new LDUser.Builder(userDetails.getId())
-                        .firstName(userDetails.getForename())
-                        .lastName(userDetails.getSurname())
-                        .email(userDetails.getEmailAddress())
-                        .build(),
-                false)
-        ).thenReturn(true);
+        ldContext = LDContext.builder(userDetails.getId())
+            .set("firstName", userDetails.getForename())
+            .set("lastName", userDetails.getSurname())
+            .set("email", userDetails.getEmailAddress())
+            .build();
+        String existingKey = "existing-key";
+        when(ldClient.boolVariation(existingKey, ldContext, false)).thenReturn(true);
 
         assertTrue(launchDarklyFeatureToggler.getValue(existingKey, false));
     }
@@ -73,7 +68,7 @@ class LaunchDarklyFeatureTogglerTest {
         when(userDetails.getId()).thenThrow(IdentityManagerResponseException.class);
 
         assertThatThrownBy(() -> launchDarklyFeatureToggler.getValue("existing-key", true))
-                .isExactlyInstanceOf(IdentityManagerResponseException.class);
+            .isExactlyInstanceOf(IdentityManagerResponseException.class);
     }
 }
 
