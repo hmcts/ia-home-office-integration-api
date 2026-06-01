@@ -16,6 +16,9 @@ public enum AsylumCaseDefinition {
     HOME_OFFICE_REFERENCE_NUMBER(
         "homeOfficeReferenceNumber", new TypeReference<String>() {}),
 
+    GWF_REFERENCE_NUMBER(
+        "gwfReferenceNumber", new TypeReference<String>(){}),
+
     ALLOWED_NOTE(
         "allowedNote", new TypeReference<String>() {}),
 

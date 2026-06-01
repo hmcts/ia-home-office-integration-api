@@ -113,7 +113,10 @@ security:
       - "markAppealPaid"
     hearing-centre-admin:
       - "markAppealPaid"
+      - "startAppeal"
       - "submitAppeal"
+      - "editAppeal"
+      - "editAppealAfterSubmit"
       - "applyForFTPAAppellant"
       - "listCase"
       - "editCaseListing"

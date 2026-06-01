@@ -33,6 +33,7 @@ class EventTest {
             Arguments.of("startAppeal", Event.START_APPEAL.toString()),
             Arguments.of("editAppeal", Event.EDIT_APPEAL.toString()),
             Arguments.of("submitAppeal", Event.SUBMIT_APPEAL.toString()),
+            Arguments.of("editAppealAfterSubmit", Event.EDIT_APPEAL_AFTER_SUBMIT.toString()),       
             Arguments.of("payAndSubmitAppeal", Event.PAY_AND_SUBMIT_APPEAL.toString()),
             Arguments.of("markAppealPaid", Event.MARK_APPEAL_PAID.toString()),
             Arguments.of("requestHomeOfficeData", Event.REQUEST_HOME_OFFICE_DATA.toString()),
