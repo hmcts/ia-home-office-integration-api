@@ -27,7 +27,9 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils.TestCo
     "S2S_URL=http://127.0.0.1:8990/s2s",
     "IA_IDAM_CLIENT_ID=ia",
     "IA_HOMEOFFICE_CLIENT_ID=ho-client-id",
-    "HOME_OFFICE_ENDPOINT=http://127.0.0.1:8990"
+    "HOME_OFFICE_ENDPOINT=http://127.0.0.1:8990",
+    "IA_HOMEOFFICE_CLIENT_ID=ho-client-id",
+    "IA_HOMEOFFICE_SECRET=something"
 })
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("integration")
@@ -37,7 +39,7 @@ public class SpringBootIntegrationTest {
     @Autowired
     protected MockMvc mockMvc;
 
-    protected static WireMockServer server;
+    protected WireMockServer server;
 
     @BeforeAll
     public void spinUp() {
