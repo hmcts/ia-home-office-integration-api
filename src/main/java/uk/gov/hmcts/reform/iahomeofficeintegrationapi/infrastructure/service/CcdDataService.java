@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Statut
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseGoneException;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseIncompatibleException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.DbUtils;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdDataApi;
@@ -95,7 +96,7 @@ public class CcdDataService {
         
         final StartEventDetails startEventDetails;
         try {
-            startEventDetails = getStartEventByCase(userToken, s2sToken, caseId, eventId);
+            startEventDetails = getStartEventByCase(userToken, s2sToken, caseId, eventId, isYes);
         } catch (FeignException.NotFound ex) {
             String message = "Case no longer exists for case ID " + caseId + ".";
             log.warn(message + "\n\n" + ex.getMessage());
@@ -154,18 +155,24 @@ public class CcdDataService {
         }
     }
 
-    private StartEventDetails getStartEventByCase(
-        String userToken, String s2sToken, String caseId, String eventId) {
+    private StartEventDetails getStartEventByCase(String userToken, String s2sToken, String caseId, String eventId, boolean isYes) {
         log.debug("Getting start event by case with caseId: {}, EventId: {}", caseId, eventId);
         try {
             return ccdDataApi.startEventByCase(userToken, s2sToken, caseId, eventId);
         } catch (Exception ex) {
-            if (ex.getMessage() != null && ex.getMessage().contains("Case ID is not valid")) {
+            String exMessage = ex.getMessage();
+            if (exMessage != null && exMessage.contains("Case ID is not valid")) {
                 String message = "Case no longer exists for case ID " + caseId + ".";
-                log.warn(message + "\n\n" + ex.getMessage());
+                log.warn(message + "\n\n" + exMessage);
                 // This exception will result in a 410 (Gone) code being returned to the Home Office.  This is
                 // more descriptive than a 404, which is what CaseNotFoundException() would cause to be returned.
                 throw new CaseGoneException(message);
+            } else if (exMessage != null && exMessage.contains("\"status\":422,\"error\":\"Unprocessable Entity\"")) {
+                String message = "Case incompatible with supplied 24-week status for case ID " + caseId + ".";
+                log.warn(message + "\n\n" + exMessage);
+                // This exception will result in a 422 (Unprocessable Entity) code being returned to the Home Office.  This is
+                // more descriptive than a 409, which at the moment we are using solely to indicate that the status has already been set.
+                throw new CaseIncompatibleException(message, isYes ? YesOrNo.YES : YesOrNo.NO);
             }
             throw ex;
         }
