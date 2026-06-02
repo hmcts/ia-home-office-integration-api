@@ -38,3 +38,12 @@ variable "log_level_spring_web" {
 variable "log_level_ia" {
   default = "INFO"
 }
+
+variable "apim_suffix" {
+  default = ""
+}
+
+variable "aks_subscription_id" {}
+
+
+
