@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -81,7 +80,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
         assertNotificationInstructMessage(instructMessage, applicantType, ftpaDecisionOutcome);
 
         verify(asylumCase, times(1)).write(
-            valueOf(format("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS", applicantType.toUpperCase())), "OK");
+            valueOf("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS".formatted(applicantType.toUpperCase())), "OK");
 
     }
 
@@ -111,7 +110,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
         final AppealDecidedInstructMessage instructMessage = appealDecidedInstructMessageCaptor.getValue();
         assertNotificationInstructMessage(instructMessage, applicantType, ftpaDecisionOutcome);
         verify(asylumCase, times(1)).write(
-            valueOf(format("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS", applicantType.toUpperCase())), "FAIL");
+            valueOf("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS".formatted(applicantType.toUpperCase())), "FAIL");
 
     }
 
@@ -146,7 +145,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
         assertNotificationInstructMessageResidentJudge(instructMessage, applicantType, ftpaDecisionOutcome, null);
 
         verify(asylumCase, times(1)).write(
-            valueOf(format("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS", applicantType.toUpperCase())), "OK");
+            valueOf("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS".formatted(applicantType.toUpperCase())), "OK");
 
     }
 
@@ -169,7 +168,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
         setupFtpaRjDecisionData(applicantType, ftpaDecisionOutcome);
 
         when(asylumCase.read(
-            valueOf(format("FTPA_%s_DECISION_REMADE_RULE_32", applicantType.toUpperCase())), String.class)
+            valueOf("FTPA_%s_DECISION_REMADE_RULE_32".formatted(applicantType.toUpperCase())), String.class)
         ).thenReturn(Optional.of(remadeDecision));
 
         when(homeOfficeInstructService.sendNotification(any(AppealDecidedInstructMessage.class)))
@@ -179,7 +178,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
             asylumCase, notificationsHelper, homeOfficeInstructService, null, "RJ_");
 
         verify(asylumCase).read(
-            valueOf(format("FTPA_%s_DECISION_REMADE_RULE_32", applicantType.toUpperCase())), String.class);
+            valueOf("FTPA_%s_DECISION_REMADE_RULE_32".formatted(applicantType.toUpperCase())), String.class);
 
         verify(homeOfficeInstructService).sendNotification(appealDecidedInstructMessageCaptor.capture());
 
@@ -189,7 +188,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
             instructMessage, applicantType, ftpaDecisionOutcome, remadeDecision);
 
         verify(asylumCase, times(1)).write(
-            valueOf(format("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS", applicantType.toUpperCase())), "OK");
+            valueOf("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS".formatted(applicantType.toUpperCase())), "OK");
 
     }
 
@@ -221,7 +220,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
         assertNotificationInstructMessageResidentJudge(instructMessage, applicantType, ftpaDecisionOutcome, null);
 
         verify(asylumCase, times(1)).write(
-            valueOf(format("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS", applicantType.toUpperCase())), "FAIL");
+            valueOf("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS".formatted(applicantType.toUpperCase())), "FAIL");
 
     }
 
@@ -239,7 +238,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
         assertThat(notificationStatus).isEqualTo("FAIL");
 
         verify(asylumCase, times(1)).write(
-            valueOf(format("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS", applicantType.toUpperCase())), "FAIL");
+            valueOf("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS".formatted(applicantType.toUpperCase())), "FAIL");
 
     }
 
@@ -250,7 +249,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
             .thenReturn(Optional.of(applicantType));
 
         when(asylumCase.read(
-            valueOf(format("FTPA_%s_DECISION_OUTCOME_TYPE", applicantType.toUpperCase())), String.class)
+            valueOf("FTPA_%s_DECISION_OUTCOME_TYPE".formatted(applicantType.toUpperCase())), String.class)
         ).thenReturn(Optional.of(ftpaDecisionOutcome));
     }
 
@@ -275,7 +274,7 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
             .thenReturn(Optional.of(applicantType));
 
         when(asylumCase.read(
-            valueOf(format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", applicantType.toUpperCase())), String.class)
+            valueOf("FTPA_%s_RJ_DECISION_OUTCOME_TYPE".formatted(applicantType.toUpperCase())), String.class)
         ).thenReturn(Optional.of(ftpaDecisionOutcome));
     }
 

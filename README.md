@@ -13,7 +13,7 @@ HMCTS will notify Home Office on certain notifications and directions.
 
 To run the project you will need to have the following installed:
 
-- Java 17
+- Java 21
 - Docker (optional)
 
 For information about the software versions used to build this API and a complete list of it's dependencies see build.gradle
@@ -67,7 +67,7 @@ To successfully interact with the above dependencies a few environment variables
 | IA_S2S_MICROSERVICE       | some-s2s-gateway                     |
 | HOME_OFFICE_ENDPOINT      | http://localhost:8098                |
 
-If you want to run a specific scenario use this command:
+If you want to run a specific scenario, use this command:
 
 ```
 ./gradlew functional --tests CcdScenarioRunnerTest --info -Dscenario=RIA-3271

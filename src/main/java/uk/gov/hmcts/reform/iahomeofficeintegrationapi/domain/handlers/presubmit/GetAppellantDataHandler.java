@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.GWF_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_CLAIM_DATE;
@@ -28,7 +29,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeApplicationService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeMissingApplicationException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.RetriesExceededException;
@@ -38,13 +38,11 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Retr
 public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private HomeOfficeApplicationService homeOfficeApplicationService;
-    private final FeatureToggler featureToggler;
 
     public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|(GWF[0-9]{9}))$");
 
-    public GetAppellantDataHandler(HomeOfficeApplicationService homeOfficeApplicationService, FeatureToggler featureToggler) {
+    public GetAppellantDataHandler(HomeOfficeApplicationService homeOfficeApplicationService) {
         this.homeOfficeApplicationService = homeOfficeApplicationService;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(
@@ -55,7 +53,6 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && featureToggler.getValue("home-office-uan-feature", false)
                 && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL)
                 && List.of(
                     "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "appellantBasicDetails", // ExUI pages
@@ -73,12 +70,16 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         final long caseId = callback.getCaseDetails().getId();
-        final String homeOfficeReferenceNumber = asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
-            .orElseThrow(
-                () -> new IllegalStateException(
-                    "Home office reference number (UAN or GWF) is not present; caseId: " + caseId + "."
-                )
-            );
+        // Retrieve the UAN or GWF from the case record
+        String homeOfficeReferenceNumber = asylumCase
+                .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
+                .orElse("");
+        if (homeOfficeReferenceNumber.isEmpty()) {
+            homeOfficeReferenceNumber = asylumCase
+                        .read(GWF_REFERENCE_NUMBER, String.class)
+                        .orElseThrow(() -> new IllegalStateException(
+                            "Home office reference number (UAN or GWF) is not present; caseId: " + caseId + "."));
+        }
 
         try {
             // We want to call the Home Office /applications/{id} endpoint and write all data it returns to the case record
@@ -107,7 +108,7 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                 }
             }
 
-            writeHomeOfficeDataToCase(asylumCase, homeOfficeReferenceNumber, String.valueOf(homeOfficeResponse.getStatusCodeValue()), applicationDto);
+            writeHomeOfficeDataToCase(asylumCase, homeOfficeReferenceNumber, String.valueOf(homeOfficeResponse.getStatusCode().value()), applicationDto);
 
         } catch (HomeOfficeMissingApplicationException exception) {
             String message = exception.getMessage();

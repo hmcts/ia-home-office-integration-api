@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeDateFormatter;
 
 @Slf4j
@@ -44,15 +43,11 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
             + "[Request the Home Office information](/case/IA/Asylum/${[CASE_REFERENCE]}/"
             + "trigger/requestHomeOfficeData) to try again. This may take a few minutes.";
 
-    private final FeatureToggler featureToggler;
-
     private HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper;
 
-    public RequestHomeOfficeDataHandler(HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper,
-                                        FeatureToggler featureToggler) {
+    public RequestHomeOfficeDataHandler(HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper) {
 
         this.homeOfficeDataErrorsHelper = homeOfficeDataErrorsHelper;
-        this.featureToggler = featureToggler;
     }
 
     @Override
@@ -64,8 +59,7 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == REQUEST_HOME_OFFICE_DATA
-                && featureToggler.getValue("home-office-uan-feature", false);
+                && callback.getEvent() == REQUEST_HOME_OFFICE_DATA;
     }
 
     @Override
@@ -131,7 +125,7 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
                         findApplicantByNameAndDob(
                                 searchResponse.getStatus(), selectedApplicantName, selectedApplicantDob);
 
-                if (!optMatchedApplicant.isEmpty()) {
+                if (optMatchedApplicant.isPresent()) {
 
                     HomeOfficeCaseStatus matchedApplicant = optMatchedApplicant.get();
                     Person person = matchedApplicant.getPerson();
@@ -231,8 +225,8 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
 
         Person person = status.getPerson();
 
-        String applicantDob = String.format("%02d", person.getDayOfBirth())
-                + String.format("%02d", person.getMonthOfBirth())
+        String applicantDob = "%02d".formatted(person.getDayOfBirth())
+                + "%02d".formatted(person.getMonthOfBirth())
                 + String.valueOf(person.getYearOfBirth()).substring(2);
 
         return applicantDob.equals(appellantDateOfBirth);

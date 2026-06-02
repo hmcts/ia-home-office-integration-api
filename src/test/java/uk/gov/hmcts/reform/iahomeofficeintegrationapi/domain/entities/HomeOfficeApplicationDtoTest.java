@@ -27,7 +27,7 @@ class HomeOfficeApplicationDtoTest {
         assertThat(dto.getHoDecisionDate()).isEqualTo(LocalDate.of(2025, 2, 1));
         assertThat(dto.getHoDecisionLetterDate()).isEqualTo(LocalDate.of(2025, 2, 10));
         assertThat(dto.getAppellants()).hasSize(1);
-        assertThat(dto.getAppellants().get(0).getFamilyName()).isEqualTo("Silver");
+        assertThat(dto.getAppellants().getFirst().getFamilyName()).isEqualTo("Silver");
     }
 
     @Test

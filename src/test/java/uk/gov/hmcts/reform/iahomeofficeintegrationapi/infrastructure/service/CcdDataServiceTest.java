@@ -66,7 +66,7 @@ class CcdDataServiceTest {
     private static final String USER_TOKEN = "Bearer test-user-token";
     private static final String S2S_TOKEN = "Bearer test-s2s-token";
 
-    private static final String COHORT_NAME = "HU";    
+    private static final String COHORT_NAME = "HU";
 
     @Mock
     private CcdDataApi ccdDataApi;
@@ -156,10 +156,10 @@ class CcdDataServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.getHistory().size());
-        assertEquals(historyId, result.getHistory().get(0).getId());
+        assertEquals(historyId, result.getHistory().getFirst().getId());
 
         StatutoryTimeframe24WeeksHistory history =
-            result.getHistory().get(0).getValue();
+            result.getHistory().getFirst().getValue();
 
         assertEquals(status, history.getStatus());
         assertEquals(expectedDate, history.getDateTimeAdded());
