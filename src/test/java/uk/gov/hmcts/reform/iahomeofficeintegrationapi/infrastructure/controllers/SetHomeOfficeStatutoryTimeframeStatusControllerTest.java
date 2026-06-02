@@ -24,10 +24,12 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseGoneException;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseIncompatibleException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service.CcdDataService;
 
 @ExtendWith(MockitoExtension.class)
@@ -134,6 +136,20 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.GONE);
         assertThat(response.getBody()).contains("Case no longer exists for caseId: 12345");
+    }
+
+    @Test
+    void handleCaseIncompatibleException_shouldReturn422UnprocessableEntity() {
+        // Given
+        CaseIncompatibleException exception = new CaseIncompatibleException("Case incompatible with supplied 24-week status for caseId: 12345", YesOrNo.YES);
+
+        // When
+        ResponseEntity<String> response = controller.handleCaseIncompatibleException(exception);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+        assertThat(response.getBody()).contains("Case incompatible with supplied 24-week status for caseId: 12345");
+        assertThat(response.getBody()).contains("YES");
     }
 
     @Test
