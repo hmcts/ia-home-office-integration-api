@@ -1,1 +1,1 @@
-apim_suffix                                      = "stg"
+apim_suffix = "stg"

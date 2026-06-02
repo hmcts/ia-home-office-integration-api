@@ -1,1 +1,1 @@
-apim_suffix                                      = "test"
+apim_suffix = "test"
