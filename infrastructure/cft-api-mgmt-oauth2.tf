@@ -37,7 +37,7 @@ module "cft_api_mgmt_oauth2_api" {
   display_name          = "IA Home Office API"
   api_mgmt_name         = local.cft_api_mgmt_oauth2_name
   api_mgmt_rg           = local.cft_api_mgmt_oauth2_rg
-  product_id            = module.cft_api_mgmt_oauth2_product.id
+  product_id            = module.cft_api_mgmt_oauth2_product.product_id
   path                  = local.cft_api_oauth2_base_path
   service_url           = "http://ia-home-office-integration-api-${var.env}.service.core-compute-${var.env}.internal"
   swagger_url           = "https://raw.githubusercontent.com/hmcts/cnp-api-docs/master/docs/specs/ia-home-office-api.json"
