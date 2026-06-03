@@ -16,6 +16,39 @@ data "template_file" "cft_oauth2_policy_template" {
     cft_oauth2_app_id    = data.azurerm_key_vault_secret.apim_app_id.value
     s2s_base_url         = local.s2sUrl
   }
+
+  depends_on = [
+    resource.azurerm_api_management_named_value.ia_s2s_client_secret,
+    resource.azurerm_api_management_named_value.ia_s2s_client_id
+  ]
+}
+
+resource "azurerm_api_management_named_value" "ia_s2s_client_secret" {
+  name                = "ia-s2s-client-secret"
+  resource_group_name = local.cft_api_mgmt_oauth2_rg
+  api_management_name = local.cft_api_mgmt_oauth2_name
+  display_name        = "ia-s2s-client-secret"
+  value               = data.azurerm_key_vault_secret.s2s_client_secret.value
+  secret              = true
+  provider            = azurerm.aks-cftapps
+
+  depends_on = [
+    module.cft_api_mgmt_oauth2_api
+  ]
+}
+
+resource "azurerm_api_management_named_value" "ia_s2s_client_id" {
+  name                = "ia-s2s-client-id"
+  resource_group_name = local.cft_api_mgmt_oauth2_rg
+  api_management_name = local.cft_api_mgmt_oauth2_name
+  display_name        = "ia-s2s-client-id"
+  value               = data.azurerm_key_vault_secret.s2s_client_id.value
+  secret              = false
+  provider            = azurerm.aks-cftapps
+
+  depends_on = [
+    module.cft_api_mgmt_oauth2_api
+  ]
 }
 
 module "cft_api_mgmt_oauth2_product" {
