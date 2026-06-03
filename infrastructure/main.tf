@@ -46,12 +46,12 @@ data "azurerm_key_vault_secret" "tenant_id" {
   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
 }
 
-data "azurerm_key_vault_secret" "s2s_client_secret" {
-  name         = "s2s-client-secret"
+data "azurerm_key_vault_secret" "s2s_client_id" {
+  name         = "s2s-microservice"
   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
 }
 
-data "azurerm_key_vault_secret" "s2s_client_id" {
-  name         = "s2s-client-id"
+data "azurerm_key_vault_secret" "s2s_client_secret" {
+  name         = "s2s-secret"
   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
 }
