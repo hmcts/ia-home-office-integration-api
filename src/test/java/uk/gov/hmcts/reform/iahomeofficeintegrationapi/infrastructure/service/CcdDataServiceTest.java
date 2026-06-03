@@ -2,6 +2,11 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import feign.FeignException;
+import feign.Request;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseGoneException;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseIncompatibleException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
@@ -554,4 +560,90 @@ class CcdDataServiceTest {
         when(serviceAuthorization.generate())
             .thenReturn(S2S_TOKEN);
     }
+
+    @Test
+    void shouldThrowCaseGoneExceptionWhenFeignNotFoundReturned() {
+
+        stubCaseId();
+        stubTokens();
+
+        Request request = Request.create(
+            Request.HttpMethod.GET,
+            "/cases/" + CCD_CASE_ID,
+            Collections.emptyMap(),
+            null,
+            StandardCharsets.UTF_8,
+            null
+        );
+
+        FeignException.NotFound notFound =
+            new FeignException.NotFound(
+                "Case not found",
+                request,
+                null,
+                Collections.emptyMap()
+            );
+
+        when(ccdDataApi.startEventByCase(
+            eq(USER_TOKEN),
+            eq(S2S_TOKEN),
+            eq(CCD_CASE_ID),
+            anyString()
+        )).thenThrow(notFound);
+
+        CaseGoneException exception = assertThrows(
+            CaseGoneException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+
+        assertEquals(
+            "Case no longer exists for case ID " + CCD_CASE_ID + ".",
+            exception.getMessage()
+        );
+    }
+
+    @Test
+    void shouldThrowCaseIncompatibleExceptionFor422Response() {
+
+        stubCaseId();
+        stubTokens();
+
+        when(ccdDataApi.startEventByCase(
+            eq(USER_TOKEN),
+            eq(S2S_TOKEN),
+            eq(CCD_CASE_ID),
+            anyString()
+        )).thenThrow(
+            new RuntimeException(
+                "{\"status\":422,\"error\":\"Unprocessable Entity\"}"
+            )
+        );
+
+        CaseIncompatibleException exception = assertThrows(
+            CaseIncompatibleException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+
+        assertEquals(
+            "Case incompatible with supplied 24-week status for case ID "
+                + CCD_CASE_ID + ".  Intended 24-week status was YES.",
+            exception.getMessage()
+        );
+    }
+
+    @Test
+    void shouldThrowWhenUserTokenIsNull() {
+
+        when(idamService.getServiceUserToken()).thenReturn(null);
+
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> ccdDataService.setHomeOfficeStatutoryTimeframeStatus(testDto)
+        );
+
+        assertEquals("Token is null or blank", exception.getMessage());
+
+        verifyNoInteractions(ccdDataApi);
+    }
+
 }

@@ -30,4 +30,4 @@ target/
 #mirrord
 .mirrord
 
-pacts/
+pacts//reports/pmd/*
