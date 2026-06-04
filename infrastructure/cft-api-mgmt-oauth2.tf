@@ -73,7 +73,7 @@ module "cft_api_mgmt_oauth2_api" {
   product_id            = module.cft_api_mgmt_oauth2_product.product_id
   path                  = local.cft_api_oauth2_base_path
   service_url           = "http://ia-home-office-integration-api-${var.env}.service.core-compute-${var.env}.internal"
-  swagger_url           = "https://raw.githubusercontent.com/hmcts/cnp-api-docs/master/docs/specs/ia-home-office-integration-api.json"
+  swagger_url           = "https://raw.githubusercontent.com/hmcts/cnp-api-docs/1916cdb/docs/specs/ia-home-office-integration-api.json"
   protocols             = ["http", "https"]
   content_format        = "openapi-link"
   subscription_required = "false"
