@@ -53,7 +53,7 @@ class S2SEndpointAuthorizationFilterTest {
 
         // Set anonymous paths - these bypass S2S validation entirely
         ReflectionTestUtils.setField(filter, "anonymousPaths",
-            List.of("/health", "/"));
+            List.of("/health","/health/**", "/"));
 
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
