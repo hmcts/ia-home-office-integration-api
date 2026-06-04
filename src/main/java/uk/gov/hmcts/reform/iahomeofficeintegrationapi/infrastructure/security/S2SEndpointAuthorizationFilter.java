@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
@@ -36,6 +37,7 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
     private List<String> anonymousPaths;
 
     private final AuthTokenValidator authTokenValidator;
+    private final AntPathMatcher matcher = new AntPathMatcher();
 
     public S2SEndpointAuthorizationFilter(AuthTokenValidator authTokenValidator) {
         this.authTokenValidator = authTokenValidator;
@@ -143,9 +145,10 @@ public class S2SEndpointAuthorizationFilter extends OncePerRequestFilter {
         return authTokenValidator.getServiceName(bearerAuthToken);
     }
 
+
     private boolean isAnonymousPath(String requestPath) {
         return anonymousPaths.stream()
-            .filter(path -> path != null && !path.trim().isEmpty())
-            .anyMatch(path -> requestPath.equals(path.trim()) || requestPath.startsWith(path.trim() + "/"));
+                .filter(path -> path != null && !path.trim().isEmpty())
+                .anyMatch(path -> matcher.match(path.trim(), requestPath));
     }
 }
