@@ -88,4 +88,32 @@ class DirectionTest {
         assertThatThrownBy(() -> new Direction(explanation, parties, dateDue, dateSent, tag, null))
             .isExactlyInstanceOf(NullPointerException.class);
     }
+
+    @Test
+    void should_return_unmodifiable_previous_dates_list() {
+        assertThatThrownBy(() -> direction.getPreviousDates().add(null))
+            .isExactlyInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void should_return_unmodifiable_clarifying_questions_list() {
+        assertThatThrownBy(() -> directionWithQuestions.getClarifyingQuestions().add(null))
+            .isExactlyInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void should_return_empty_list_when_clarifying_questions_is_null() {
+        Direction directionWithNullQuestions = new Direction(
+            explanation,
+            parties,
+            dateDue,
+            dateSent,
+            tag,
+            previousDates,
+            null,
+            uniqueId,
+            directionType
+        );
+        assertEquals(Collections.emptyList(), directionWithNullQuestions.getClarifyingQuestions());
+    }
 }
