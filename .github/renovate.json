@@ -26,14 +26,21 @@
       "enabled": false
     },
     {
-      "matchPackageNames": [
-        "org.owasp.dependencycheck"
+      "matchUpdateTypes": [
+        "major"
       ],
       "enabled": false
     },
     {
-      "matchUpdateTypes": [
-        "major"
+      "matchPackageNames": [
+        "au.com.dius.pact.consumer:junit5",
+        "au.com.dius.pact.consumer:java8"
+      ],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": [
+        "org.owasp.dependencycheck"
       ],
       "enabled": false
     }
