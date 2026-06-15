@@ -1,13 +1,16 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
+import java.util.Collections;
 import java.util.List;
 
 public class HomeOfficeSearch {
 
-    private MessageHeader messageHeader;
-    private List<SearchParams> searchParams;
+    private final MessageHeader messageHeader;
+    private final List<SearchParams> searchParams;
 
     private HomeOfficeSearch() {
+        this.messageHeader = null;
+        this.searchParams = Collections.emptyList();
     }
 
     public HomeOfficeSearch(MessageHeader messageHeader, List<SearchParams> searchParams) {
@@ -20,6 +23,6 @@ public class HomeOfficeSearch {
     }
 
     public List<SearchParams> getSearchParams() {
-        return searchParams;
+        return searchParams != null ? Collections.unmodifiableList(searchParams) : Collections.emptyList();
     }
 }

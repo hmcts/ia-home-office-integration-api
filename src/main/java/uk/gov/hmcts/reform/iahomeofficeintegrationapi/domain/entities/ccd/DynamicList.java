@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -24,7 +25,7 @@ public class DynamicList {
     }
 
     public List<Value> getListItems() {
-        return listItems;
+        return listItems != null ? Collections.unmodifiableList(listItems) : Collections.emptyList();
     }
 
     public DynamicList(Value value, List<Value> listItems) {

@@ -5,6 +5,7 @@ import lombok.ToString;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframe;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
@@ -28,7 +29,7 @@ public class StatutoryTimeframe24Weeks {
     }
 
     public List<IdValue<StatutoryTimeframe24WeeksHistory>> getHistory() {
-        return requireNonNull(history);
+        return history != null ? Collections.unmodifiableList(history) : Collections.emptyList();
     }
 
     public HomeOfficeStatutoryTimeframe getHomeOfficeResponse() {

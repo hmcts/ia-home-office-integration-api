@@ -1,15 +1,20 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
+import java.util.Collections;
 import java.util.List;
 
 public class HomeOfficeSearchResponse {
 
-    private MessageHeader messageHeader;
-    private String messageType;
-    private List<HomeOfficeCaseStatus> status;
-    private HomeOfficeError errorDetail;
+    private final MessageHeader messageHeader;
+    private final String messageType;
+    private final List<HomeOfficeCaseStatus> status;
+    private final HomeOfficeError errorDetail;
 
     private HomeOfficeSearchResponse() {
+        this.messageHeader = null;
+        this.messageType = null;
+        this.status = Collections.emptyList();
+        this.errorDetail = null;
     }
 
     public HomeOfficeSearchResponse(MessageHeader messageHeader,
@@ -31,7 +36,7 @@ public class HomeOfficeSearchResponse {
     }
 
     public List<HomeOfficeCaseStatus> getStatus() {
-        return status;
+        return status != null ? Collections.unmodifiableList(status) : Collections.emptyList();
     }
 
     public HomeOfficeError getErrorDetail() {

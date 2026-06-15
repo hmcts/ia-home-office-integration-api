@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 import static java.util.Objects.requireNonNull;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.Collections;
 import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -106,11 +107,11 @@ public class Direction {
     }
 
     public List<IdValue<PreviousDates>> getPreviousDates() {
-        return previousDates;
+        return previousDates != null ? Collections.unmodifiableList(previousDates) : Collections.emptyList();
     }
 
     public List<IdValue<ClarifyingQuestion>> getClarifyingQuestions() {
-        return clarifyingQuestions;
+        return clarifyingQuestions != null ? Collections.unmodifiableList(clarifyingQuestions) : Collections.emptyList();
     }
 
 
