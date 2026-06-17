@@ -61,6 +61,8 @@ security:
     - "caseworker-ia"
     - "citizen"
   roleEventAccess:
+    caseworker-ia:
+      - "editAppealAfterSubmit"
     citizen:
       - "startAppeal"
       - "editAppeal"
