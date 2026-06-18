@@ -31,3 +31,5 @@ target/
 .mirrord
 
 pacts/
+
+reports/pmd/
