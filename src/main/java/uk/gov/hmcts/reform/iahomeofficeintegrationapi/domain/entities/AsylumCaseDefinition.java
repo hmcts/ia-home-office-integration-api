@@ -160,6 +160,9 @@ public enum AsylumCaseDefinition {
     HOME_OFFICE_ADJOURN_WITHOUT_DATE_INSTRUCT_STATUS(
         "homeOfficeAdjournWithoutDateInstructStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_APPEAL_SUBMITTED_INSTRUCT_STATUS(
+        "homeOfficeAppealSubmittedInstructStatus", new TypeReference<String>() {}),
+
     HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_STATUS(
         "homeOfficeAppealDecidedInstructStatus", new TypeReference<String>() {}),
 

@@ -8,6 +8,7 @@ class MessageTypeTest {
 
     @Test
     void has_correct_values() {
+        assertEquals("APPEAL_REQUESTED", MessageType.APPEAL_REQUESTED.name());
         assertEquals("REQUEST_CHALLENGE_END", MessageType.REQUEST_CHALLENGE_END.name());
         assertEquals("REQUEST_EVIDENCE_BUNDLE", MessageType.REQUEST_EVIDENCE_BUNDLE.name());
         assertEquals("REQUEST_REVIEW", MessageType.REQUEST_REVIEW.name());
@@ -21,6 +22,6 @@ class MessageTypeTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(8, MessageType.values().length);
+        assertEquals(9, MessageType.values().length);
     }
 }
