@@ -168,7 +168,7 @@ class GetAppellantDataHandlerTest {
     @ParameterizedTest
     @MethodSource("homeOfficeExceptionSource")
     void handle_writesHttpStatus_whenServiceThrowsException(int status, String message) throws Exception {
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL_AFTER_SUBMIT);
         when(callback.getPageId()).thenReturn("oocHomeOfficeReferenceNumber");
         when(caseDetails.getId()).thenReturn(12345L);
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("UAN123"));
@@ -201,7 +201,7 @@ class GetAppellantDataHandlerTest {
     void handle_throwsException_whenCannotHandle() {
 
         assertThrows(IllegalStateException.class,
-            () -> handler.handle(PreSubmitCallbackStage.MID_EVENT, callback));
+            () -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback));
     }
 
     @Test

@@ -70,6 +70,7 @@ security:
       - "startAppeal"
       - "editAppeal"
       - "submitAppeal"
+      - "editAppealAfterSubmit"
       - "payAndSubmitAppeal"
       - "applyForFTPAAppellant"
     tribunal-caseworker:
@@ -85,6 +86,7 @@ security:
       - "requestResponseAmend"
       - "changeDirectionDueDate"
       - "markAppealPaid"
+      - "editAppealAfterSubmit"
     challenged-access-legal-operations:
       - "requestHomeOfficeData"
       - "requestRespondentEvidence"
@@ -98,6 +100,7 @@ security:
       - "requestResponseAmend"
       - "changeDirectionDueDate"
       - "markAppealPaid"
+      - "editAppealAfterSubmit"
     senior-tribunal-caseworker:
       - "requestHomeOfficeData"
       - "requestRespondentEvidence"
@@ -111,6 +114,7 @@ security:
       - "requestResponseAmend"
       - "changeDirectionDueDate"
       - "markAppealPaid"
+      - "editAppealAfterSubmit"
     hearing-centre-admin:
       - "markAppealPaid"
       - "startAppeal"
@@ -126,6 +130,7 @@ security:
     ctsc:
       - "startAppeal"
       - "editAppeal"
+      - "editAppealAfterSubmit"
       - "markAppealPaid"
       - "submitAppeal"
       - "applyForFTPAAppellant"
@@ -137,6 +142,7 @@ security:
     ctsc-team-leader:
       - "startAppeal"
       - "editAppeal"
+      - "editAppealAfterSubmit"
       - "markAppealPaid"
       - "submitAppeal"
       - "applyForFTPAAppellant"
@@ -154,6 +160,7 @@ security:
       - "adjournHearingWithoutDate"
       - "sendDecisionAndReasons"
       - "endAppeal"
+      - "editAppealAfterSubmit"
     challenged-access-ctsc:
       - "markAppealPaid"
       - "submitAppeal"
@@ -163,6 +170,7 @@ security:
       - "adjournHearingWithoutDate"
       - "sendDecisionAndReasons"
       - "endAppeal"
+      - "editAppealAfterSubmit"
     challenged-access-admin:
       - "markAppealPaid"
       - "submitAppeal"
@@ -172,6 +180,7 @@ security:
       - "adjournHearingWithoutDate"
       - "sendDecisionAndReasons"
       - "endAppeal"
+      - "editAppealAfterSubmit"
     caseworker-ia-homeofficeapc:
     caseworker-ia-homeofficelart:
     caseworker-ia-homeofficepou:
@@ -185,6 +194,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
+      - "editAppealAfterSubmit"
     judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -192,6 +202,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
+      - "editAppealAfterSubmit"
     senior-judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -199,6 +210,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
+      - "editAppealAfterSubmit"
     leadership-judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -206,6 +218,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
+      - "editAppealAfterSubmit"
     fee-paid-judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -213,6 +226,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
+      - "editAppealAfterSubmit"
     lead-judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -220,6 +234,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
+      - "editAppealAfterSubmit"
     hearing-judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -227,6 +242,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
+      - "editAppealAfterSubmit"
     ftpa-judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -234,6 +250,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
+      - "editAppealAfterSubmit"
     hearing-panel-judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -241,6 +258,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
+      - "editAppealAfterSubmit"
     challenged-access-judiciary:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -248,6 +266,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
+      - "editAppealAfterSubmit"
     caseworker-ia-system:
       - "listCase"
       - "editCaseListing"
