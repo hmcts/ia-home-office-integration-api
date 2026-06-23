@@ -10,6 +10,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_NATIONALITIES;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTIONS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.GWF_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_CASE_STATUS_DATA;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
@@ -254,4 +255,60 @@ class NotificationsHelperTest extends AbstractNotificationsHandlerTestBase {
             .hasMessage("Case ID for the appeal is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
+
+    @Test
+    void shouldReturnGwfReferenceWhenHomeOfficeReferenceMissing() {
+
+        String gwfReference = "GWF123456789";
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.empty());
+
+        when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(gwfReference));
+
+        final String homeOfficeReference =
+            notificationsHelper.getHomeOfficeReference(asylumCase);
+
+        assertThat(homeOfficeReference).isEqualTo(gwfReference);
+    }
+
+    @Test
+    void shouldReturnEmptyStringWhenNoReferenceExists() {
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.empty());
+
+        when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.empty());
+
+        final String homeOfficeReference =
+            notificationsHelper.getHomeOfficeReference(asylumCase);
+
+        assertThat(homeOfficeReference).isEmpty();
+    }
+
+    @Test
+    void shouldReturnDocumentReferenceWhenPresentAndHomeOfficeReferenceMissing() {
+
+        String gwfReference = "GWF123456789";
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.empty());
+
+        when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(gwfReference));
+
+        when(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class))
+            .thenReturn(Optional.of(homeOfficeCaseStatus));
+
+        when(homeOfficeCaseStatus.getApplicationStatus()).thenReturn(applicationStatus);
+        when(applicationStatus.getDocumentReference()).thenReturn(someDocumentReference);
+
+        final String homeOfficeReference =
+            notificationsHelper.getHomeOfficeReference(asylumCase);
+
+        assertThat(homeOfficeReference).isEqualTo(someDocumentReference);
+    }
+
 }
