@@ -5,7 +5,9 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.App
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.APPEAL_REQUESTED;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 
+import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealSubmittedInstructMessage;
@@ -40,7 +42,12 @@ public class AppealSubmittedNotificationHandler implements PreSubmitCallbackHand
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == SUBMIT_APPEAL);
+               && (callback.getEvent() == SUBMIT_APPEAL)
+               // ensure this is only called when the appeal is first submitted (rather than when it is subsequently edited)
+               && (Arrays.asList(
+                    State.APPEAL_STARTED,
+                    State.APPEAL_STARTED_BY_ADMIN
+                    ).contains(callback.getCaseDetails().getState()));               
     }
 
     @Override

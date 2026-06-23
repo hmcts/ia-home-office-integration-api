@@ -5,13 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPEAL_SUBMITTED_INSTRUCT_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeI
 
 
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 class AppealSubmittedNotificationHandlerTest extends AbstractNotificationsHandlerTestBase {
 
     @Mock
@@ -61,6 +60,7 @@ class AppealSubmittedNotificationHandlerTest extends AbstractNotificationsHandle
 
         when(homeOfficeInstructService.sendNotification(any(AppealSubmittedInstructMessage.class)))
             .thenReturn("OK");
+        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             appealSubmittedNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -92,6 +92,7 @@ class AppealSubmittedNotificationHandlerTest extends AbstractNotificationsHandle
         setupHelperResponses();
         when(homeOfficeInstructService.sendNotification(any(AppealSubmittedInstructMessage.class)))
             .thenReturn("FAIL");
+        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             appealSubmittedNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -128,6 +129,7 @@ class AppealSubmittedNotificationHandlerTest extends AbstractNotificationsHandle
     }
 
     @Test
+    @MockitoSettings(strictness = Strictness.WARN)
     void it_can_handle_callback() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -137,18 +139,24 @@ class AppealSubmittedNotificationHandlerTest extends AbstractNotificationsHandle
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = appealSubmittedNotificationHandler.canHandle(callbackStage, callback);
+                for (State state : State.values()) {
 
-                if (event == Event.SUBMIT_APPEAL
-                    && callbackStage == ABOUT_TO_SUBMIT) {
+                    when(caseDetails.getState()).thenReturn(state);
 
-                    assertTrue(canHandle);
-                } else {
-                    assertFalse(canHandle);
+                    boolean canHandle =
+                        appealSubmittedNotificationHandler.canHandle(callbackStage, callback);
+
+                    if (event == Event.SUBMIT_APPEAL
+                        && callbackStage == ABOUT_TO_SUBMIT
+                        && (state == State.APPEAL_STARTED
+                            || state == State.APPEAL_STARTED_BY_ADMIN)) {
+
+                        assertTrue(canHandle);
+                    } else {
+                        assertFalse(canHandle);
+                    }
                 }
             }
-
-            reset(callback);
         }
     }
 
@@ -176,10 +184,42 @@ class AppealSubmittedNotificationHandlerTest extends AbstractNotificationsHandle
     void should_throw_error_for_case_reference_null_value() {
 
         setupCase(Event.SUBMIT_APPEAL);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
 
         assertThatThrownBy(() -> appealSubmittedNotificationHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Case ID for the appeal is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
 
     }
+
+    @Test
+    void should_not_handle_if_state_is_not_appeal_started_or_appeal_started_by_admin() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
+
+        assertFalse(
+            appealSubmittedNotificationHandler.canHandle(
+                ABOUT_TO_SUBMIT,
+                callback
+            )
+        );
+    }
+
+    @Test
+    void should_handle_if_state_is_appeal_started() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
+
+        assertTrue(
+            appealSubmittedNotificationHandler.canHandle(
+                ABOUT_TO_SUBMIT,
+                callback
+            )
+        );
+    }
+
 }
