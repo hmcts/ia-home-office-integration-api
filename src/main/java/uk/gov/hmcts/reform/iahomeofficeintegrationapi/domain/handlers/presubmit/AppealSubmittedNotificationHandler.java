@@ -1,13 +1,20 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealSubmittedInstructMessage.AppealSubmittedInstructMessageBuilder.appealSubmittedInstructMessage;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.APPEAL_REQUESTED;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealSubmittedInstructMessage;
@@ -16,6 +23,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.NotificationsHelper;
@@ -57,10 +65,17 @@ public class AppealSubmittedNotificationHandler implements PreSubmitCallbackHand
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
-        log.info("Preparing to send {} notification to HomeOffice for event {}",
-            APPEAL_REQUESTED.name(), callback.getEvent());
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        // Only proceed if the new  applications/v1/{id}  Home Office endpoint has already been called (and the appellant data is present)
+        Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellantsOpt = asylumCase.read(HOME_OFFICE_APPELLANTS);
+        if (homeOfficeAppellantsOpt.orElse(emptyList()).isEmpty()) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
+
+        log.info("Preparing to send {} notification to HomeOffice for event {}",
+            APPEAL_REQUESTED.name(), callback.getEvent());
 
         final String homeOfficeReferenceNumber = notificationsHelper.getHomeOfficeReference(asylumCase);
 

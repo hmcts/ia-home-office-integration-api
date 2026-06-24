@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -12,6 +13,10 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS;
+
+import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,8 +31,10 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealSubm
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 
 
@@ -57,7 +64,14 @@ class AppealSubmittedNotificationHandlerTest extends AbstractNotificationsHandle
         setupCase(Event.SUBMIT_APPEAL);
         setupCaseData();
         setupHelperResponses();
+        
+        List<IdValue<HomeOfficeAppellant>> appellants = List.of(
+            new IdValue<>("1", mock(HomeOfficeAppellant.class))
+        );
 
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.of(appellants));
+    
         when(homeOfficeInstructService.sendNotification(any(AppealSubmittedInstructMessage.class)))
             .thenReturn("OK");
         when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
@@ -93,6 +107,13 @@ class AppealSubmittedNotificationHandlerTest extends AbstractNotificationsHandle
         when(homeOfficeInstructService.sendNotification(any(AppealSubmittedInstructMessage.class)))
             .thenReturn("FAIL");
         when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
+
+        List<IdValue<HomeOfficeAppellant>> appellants = List.of(
+            new IdValue<>("1", mock(HomeOfficeAppellant.class))
+        );
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.of(appellants));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             appealSubmittedNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -186,6 +207,13 @@ class AppealSubmittedNotificationHandlerTest extends AbstractNotificationsHandle
         setupCase(Event.SUBMIT_APPEAL);
         when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
 
+        List<IdValue<HomeOfficeAppellant>> appellants = List.of(
+            new IdValue<>("1", mock(HomeOfficeAppellant.class))
+        );
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.of(appellants));
+
         assertThatThrownBy(() -> appealSubmittedNotificationHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Case ID for the appeal is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -220,6 +248,27 @@ class AppealSubmittedNotificationHandlerTest extends AbstractNotificationsHandle
                 callback
             )
         );
+    }
+
+    @Test
+    void should_return_without_sending_notification_when_home_office_appellants_absent() {
+
+        setupCase(Event.SUBMIT_APPEAL);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            appealSubmittedNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response.getData()).isEqualTo(asylumCase);
+
+        verify(homeOfficeInstructService, times(0))
+            .sendNotification(any());
+
+        verify(asylumCase, times(0))
+            .write(any(), any());
     }
 
 }
