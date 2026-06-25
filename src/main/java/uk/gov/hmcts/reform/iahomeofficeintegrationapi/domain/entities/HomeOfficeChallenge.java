@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
+import java.util.Collections;
 import java.util.List;
 
 public class HomeOfficeChallenge {
@@ -23,7 +24,7 @@ public class HomeOfficeChallenge {
     }
 
     public List<Person> getApplicants() {
-        return applicants;
+        return applicants != null ? Collections.unmodifiableList(applicants) : Collections.emptyList();
     }
 
     public void setApplicants(List<Person> applicants) {
