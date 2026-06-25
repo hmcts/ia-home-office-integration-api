@@ -9,9 +9,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Mes
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HomeOfficeAppellant;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,12 +48,8 @@ public class AppealSubmittedNotificationHandler implements PreSubmitCallbackHand
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == SUBMIT_APPEAL)
-               // ensure this is only called when the appeal is first submitted (rather than when it is subsequently edited)
-               && (Arrays.asList(
-                    State.APPEAL_STARTED,
-                    State.APPEAL_STARTED_BY_ADMIN
-                    ).contains(callback.getCaseDetails().getState()));               
+               // This handler must run once and only once for each appeal, ideally as soon as the appeal is first created (and no longer in DRAFT state)
+               && (callback.getEvent() == SUBMIT_APPEAL); // TODO: include logic to cover  callback.getEvent() == MARK_APPEAL_PAID
     }
 
     @Override

@@ -160,22 +160,15 @@ class AppealSubmittedNotificationHandlerTest extends AbstractNotificationsHandle
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                for (State state : State.values()) {
+                boolean canHandle =
+                    appealSubmittedNotificationHandler.canHandle(callbackStage, callback);
 
-                    when(caseDetails.getState()).thenReturn(state);
+                if (event == Event.SUBMIT_APPEAL
+                    && callbackStage == ABOUT_TO_SUBMIT) {
 
-                    boolean canHandle =
-                        appealSubmittedNotificationHandler.canHandle(callbackStage, callback);
-
-                    if (event == Event.SUBMIT_APPEAL
-                        && callbackStage == ABOUT_TO_SUBMIT
-                        && (state == State.APPEAL_STARTED
-                            || state == State.APPEAL_STARTED_BY_ADMIN)) {
-
-                        assertTrue(canHandle);
-                    } else {
-                        assertFalse(canHandle);
-                    }
+                    assertTrue(canHandle);
+                } else {
+                    assertFalse(canHandle);
                 }
             }
         }
@@ -205,7 +198,6 @@ class AppealSubmittedNotificationHandlerTest extends AbstractNotificationsHandle
     void should_throw_error_for_case_reference_null_value() {
 
         setupCase(Event.SUBMIT_APPEAL);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
 
         List<IdValue<HomeOfficeAppellant>> appellants = List.of(
             new IdValue<>("1", mock(HomeOfficeAppellant.class))
@@ -221,26 +213,9 @@ class AppealSubmittedNotificationHandlerTest extends AbstractNotificationsHandle
     }
 
     @Test
-    void should_not_handle_if_state_is_not_appeal_started_or_appeal_started_by_admin() {
-
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
-
-        assertFalse(
-            appealSubmittedNotificationHandler.canHandle(
-                ABOUT_TO_SUBMIT,
-                callback
-            )
-        );
-    }
-
-    @Test
     void should_handle_if_state_is_appeal_started() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
 
         assertTrue(
             appealSubmittedNotificationHandler.canHandle(
@@ -254,7 +229,6 @@ class AppealSubmittedNotificationHandlerTest extends AbstractNotificationsHandle
     void should_return_without_sending_notification_when_home_office_appellants_absent() {
 
         setupCase(Event.SUBMIT_APPEAL);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
 
         when(asylumCase.read(HOME_OFFICE_APPELLANTS))
             .thenReturn(Optional.empty());
