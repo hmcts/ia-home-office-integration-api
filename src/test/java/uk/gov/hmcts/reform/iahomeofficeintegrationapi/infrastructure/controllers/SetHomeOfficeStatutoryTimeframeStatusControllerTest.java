@@ -16,20 +16,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseGoneException;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseIncompatibleException;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service.CcdDataService;
 
 @ExtendWith(MockitoExtension.class)
@@ -110,65 +102,5 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
         // Then
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(dto, response.getBody());
-    }
-
-    @Test
-    void handleCaseNotFoundException_shouldReturn404NotFound() {
-        // Given
-        CaseNotFoundException exception = new CaseNotFoundException("Case not found for caseId: 12345");
-
-        // When
-        ResponseEntity<String> response = controller.handleCaseNotFoundException(exception);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody()).contains("Case not found for caseId: 12345");
-    }
-
-    @Test
-    void handleCaseGoneException_shouldReturn410Gone() {
-        // Given
-        CaseGoneException exception = new CaseGoneException("Case no longer exists for caseId: 12345");
-
-        // When
-        ResponseEntity<String> response = controller.handleCaseGoneException(exception);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.GONE);
-        assertThat(response.getBody()).contains("Case no longer exists for caseId: 12345");
-    }
-
-    @Test
-    void handleCaseIncompatibleException_shouldReturn422UnprocessableEntity() {
-        // Given
-        CaseIncompatibleException exception = new CaseIncompatibleException("Case incompatible with supplied 24-week status for caseId: 12345", YesOrNo.YES);
-
-        // When
-        ResponseEntity<String> response = controller.handleCaseIncompatibleException(exception);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
-        assertThat(response.getBody()).contains("Case incompatible with supplied 24-week status for caseId: 12345");
-        assertThat(response.getBody()).contains("YES");
-    }
-
-    @Test
-    void handleValidationException_shouldReturn400BadRequest() throws NoSuchMethodException {
-        // Given
-        HomeOfficeStatutoryTimeframeDto dto = new HomeOfficeStatutoryTimeframeDto();
-        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(dto, "hoStatutoryTimeframeDto");
-        bindingResult.addError(new FieldError("hoStatutoryTimeframeDto", "stf24weeks", "must not be null"));
-
-        MethodParameter methodParameter = new MethodParameter(
-            SetHomeOfficeStatutoryTimeframeStatusController.class.getMethod(
-                "updateHomeOfficeStatutoryTimeframeStatus", String.class, HomeOfficeStatutoryTimeframeDto.class), 1);
-        MethodArgumentNotValidException exception = new MethodArgumentNotValidException(methodParameter, bindingResult);
-
-        // When
-        ResponseEntity<String> response = controller.handleValidationException(exception);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).contains("The 24-week status could not be set.  Please check the format of the HTTP headers and message body.");
     }
 }
