@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_DATE_OF_BIRTH;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_FAMILY_NAME;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_SEARCH_RESPONSE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS;
@@ -33,9 +35,11 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOffice
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeSearchResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RejectionReason;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeSearchService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
@@ -241,6 +245,13 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
         }
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        // Don't proceed if the new  applications/v1/{id}  Home Office endpoint has already been called (and data matching has already taken place)
+        Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellantsOpt = asylumCase.read(HOME_OFFICE_APPELLANTS);
+        if (!homeOfficeAppellantsOpt.orElse(emptyList()).isEmpty()) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
+
         final long caseId = callback.getCaseDetails().getId();
         final String homeOfficeReferenceNumber = asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
             .orElseThrow(
