@@ -9,6 +9,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPELLANT_NATIONALITIES;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTIONS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.GWF_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person.PersonBuilder.person;
 
@@ -150,9 +151,15 @@ public class NotificationsHelper {
     }
 
     public String getHomeOfficeReference(AsylumCase asylumCase) {
-
-        String homeOfficeReferenceNumber = asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
-            .orElseThrow(() -> new IllegalStateException("Home office reference for the appeal is not present"));
+        // Retrieve the UAN or GWF from the case record
+        String homeOfficeReferenceNumber = asylumCase
+                .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
+                .orElse("");
+        if (homeOfficeReferenceNumber.isEmpty()) {
+            homeOfficeReferenceNumber = asylumCase
+                    .read(GWF_REFERENCE_NUMBER, String.class)
+                    .orElse("");
+        }
 
         final Optional<HomeOfficeCaseStatus> homeOfficeCaseStatus =
             asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class);

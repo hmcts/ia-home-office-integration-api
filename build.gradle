@@ -4,7 +4,7 @@ plugins {
     id 'pmd'
     id 'jacoco'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.springframework.boot' version '3.5.15'
+    id 'org.springframework.boot' version '3.5.16'
     id 'uk.gov.hmcts.java' version '0.12.70'
     id 'org.owasp.dependencycheck' version '12.2.0'
     id 'com.github.ben-manes.versions' version '0.51.0'
@@ -232,7 +232,7 @@ ext["tomcat.version"] = "10.1.55"
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:2025.0.2"
-        mavenBom 'com.fasterxml.jackson:jackson-bom:2.21.2'
+        mavenBom 'com.fasterxml.jackson:jackson-bom:2.21.4'
 
         // CVE-2026-34478
         // CVE-2026-34479
@@ -328,7 +328,7 @@ dependencies {
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.4'
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
 
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.11'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.12'
 
     implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '3.2.1'
 

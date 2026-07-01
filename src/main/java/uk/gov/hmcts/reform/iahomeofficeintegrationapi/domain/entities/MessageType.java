@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
 public enum MessageType {
+    APPEAL_REQUESTED,
     REQUEST_CHALLENGE_END,
     REQUEST_EVIDENCE_BUNDLE,
     REQUEST_REVIEW,
