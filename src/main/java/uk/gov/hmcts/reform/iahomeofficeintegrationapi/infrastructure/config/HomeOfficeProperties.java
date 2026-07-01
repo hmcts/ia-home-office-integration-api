@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Setter;
@@ -15,7 +16,11 @@ public class HomeOfficeProperties {
     private Map<String, LookupReferenceData> codes = new HashMap<>();
 
     public Map<String, LookupReferenceData> getCodes() {
-        return codes;
+        return Collections.unmodifiableMap(codes);
+    }
+
+    public void setCodes(Map<String, LookupReferenceData> codes) {
+        this.codes = codes != null ? codes : new HashMap<>();
     }
 
     public static class LookupReferenceData {

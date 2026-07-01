@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -120,5 +122,22 @@ class HomeOfficeStatutoryTimeframeTest {
                     || "false".equals(item.getValue().getIncluded())
             );
         }
+    }
+
+    @Test
+    void should_return_unmodifiable_cohorts_list() {
+        HomeOfficeStatutoryTimeframe result = new HomeOfficeStatutoryTimeframe(dto);
+
+        assertThatThrownBy(() -> result.getStf24weekCohorts().add(null))
+            .isExactlyInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void should_return_empty_list_when_cohorts_is_null() {
+        HomeOfficeStatutoryTimeframe result = new HomeOfficeStatutoryTimeframe();
+        result.setStf24weekCohorts(null);
+
+        assertNotNull(result.getStf24weekCohorts());
+        assertThat(result.getStf24weekCohorts()).isEmpty();
     }
 }

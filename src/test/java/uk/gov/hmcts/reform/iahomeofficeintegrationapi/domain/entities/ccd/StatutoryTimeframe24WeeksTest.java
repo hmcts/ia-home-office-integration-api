@@ -67,6 +67,17 @@ public class StatutoryTimeframe24WeeksTest {
         assertThrows(NullPointerException.class, () -> new StatutoryTimeframe24Weeks(createHistory("1", YesOrNo.YES), null));
     }
 
+    @Test
+    void shouldReturnUnmodifiableHistoryList() {
+        // Given
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> history = createHistory("1", YesOrNo.YES);
+        HomeOfficeStatutoryTimeframe homeOfficeTimeframe = new HomeOfficeStatutoryTimeframe(createHomeOfficeDto());
+        StatutoryTimeframe24Weeks stf = new StatutoryTimeframe24Weeks(history, homeOfficeTimeframe);
+
+        // When & Then
+        assertThrows(UnsupportedOperationException.class, () -> stf.getHistory().add(null));
+    }
+
     private List<IdValue<StatutoryTimeframe24WeeksHistory>> createHistory(String id, YesOrNo status) {
         List<IdValue<StatutoryTimeframe24WeeksHistory>> history = new ArrayList<>();
         StatutoryTimeframe24WeeksHistory historyEntry = new StatutoryTimeframe24WeeksHistory(
