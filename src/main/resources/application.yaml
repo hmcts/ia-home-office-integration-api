@@ -267,6 +267,8 @@ security:
       - "endAppeal"
       - "changeDirectionDueDate"
       - "editAppealAfterSubmit"
+    caseworker-ia-admofficer:
+      - "requestRespondentEvidence"
     caseworker-ia-system:
       - "listCase"
       - "editCaseListing"
