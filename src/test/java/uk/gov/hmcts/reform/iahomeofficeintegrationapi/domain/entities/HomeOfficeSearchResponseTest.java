@@ -41,4 +41,21 @@ public class HomeOfficeSearchResponseTest {
         assertEquals("some-message-type", response.getMessageType());
         assertNotNull(response.getErrorDetail());
     }
+
+    @Test
+    public void should_return_empty_list_when_status_is_null() {
+        HomeOfficeSearchResponse responseWithNullStatus = new HomeOfficeSearchResponse(
+            messageHeader,
+            "some-message-type",
+            null,
+            Mockito.mock(HomeOfficeError.class)
+        );
+        assertNotNull(responseWithNullStatus.getStatus());
+        assertThat(responseWithNullStatus.getStatus()).isEmpty();
+    }
+
+    @Test
+    public void should_return_unmodifiable_status_list() {
+        assertThat(response.getStatus()).isUnmodifiable();
+    }
 }

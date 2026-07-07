@@ -11,20 +11,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseGoneException;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseIncompatibleException;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseNotFoundException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service.CcdDataService;
 
 @Tag(name = "Set Home Office statutory timeframe status controller")
@@ -98,72 +91,4 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
             throw new Exception("The 24-week status could not be set.");
         }
     }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
-        log.info("Conflict error: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"error\":\"The 24-week status could not be set.  " + ex.getMessage() + "\"}");
-    }
-
-    @ExceptionHandler(CaseNotFoundException.class)
-    public ResponseEntity<String> handleCaseNotFoundException(CaseNotFoundException ex) {
-        log.info("Case not found: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"The 24-week status could not be set.  " + ex.getMessage() + "\"}");
-    }
-
-    @ExceptionHandler(CaseGoneException.class)
-    public ResponseEntity<String> handleCaseGoneException(CaseGoneException ex) {
-        log.info("Case gone: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.GONE).body("{\"error\":\"The 24-week status could not be set.  " + ex.getMessage() + "\"}");
-    }
-
-    @ExceptionHandler(CaseIncompatibleException.class)
-    public ResponseEntity<String> handleCaseIncompatibleException(CaseIncompatibleException ex) {
-        log.info("Case incompatible with supplied 24-week status: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("{\"error\":\"The 24-week status could not be set.  " + ex.getMessage() + "\"}");
-    }
-
-    @ExceptionHandler(HomeOfficeResponseException.class)
-    public ResponseEntity<String> handleHomeOfficeResponseException(HomeOfficeResponseException ex) {
-        String message = ex.getMessage();
-        if (message != null && message.contains("Case ID is not valid")) {
-            log.info("Case not found: {}", message);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                "{\"error\":\"The 24-week status could not be set.  The HMCTS appeal reference number does not correspond to any records in HMCTS systems.\"}"
-            );
-        }
-        log.info("Home Office response error: {}", message);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-            "{\"error\":\"The 24-week status could not be set.  Please check the format of the HTTP headers and message body.\"}"
-        );
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
-        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
-            .map(error -> error.getField() + ": " + error.getDefaultMessage())
-            .reduce((a, b) -> a + ", " + b)
-            .orElse("Validation failed");
-        log.info("Validation error: {}", errorMessage);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-            "{\"error\":\"The 24-week status could not be set.  Please check the format of the HTTP headers and message body.\"}"
-        );
-    }
-
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleUnreadableMessageException(HttpMessageNotReadableException ex) {
-        String errorMessage = ex.getMessage();
-        log.info("Unreadable HTTP message error: {}", errorMessage);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-            "{\"error\":\"The 24-week status could not be set.  Please check the format of the HTTP headers and message body.\"}"
-        );
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception ex) {
-        String errorMessage = ex.getMessage();
-        log.error("Unspecified server error: {}", errorMessage);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"The 24-week status could not be set.  Please report this to HMCTS.\"}");
-    }
-
 }

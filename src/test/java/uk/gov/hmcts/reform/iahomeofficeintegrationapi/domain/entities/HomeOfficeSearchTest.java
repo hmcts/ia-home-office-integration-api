@@ -35,4 +35,16 @@ public class HomeOfficeSearchTest {
         assertNotNull(homeOfficeSearch.getSearchParams());
         assertThat(homeOfficeSearch.getSearchParams()).isNotEmpty();
     }
+
+    @Test
+    public void should_return_empty_list_when_search_params_is_null() {
+        HomeOfficeSearch searchWithNullParams = new HomeOfficeSearch(messageHeader, null);
+        assertNotNull(searchWithNullParams.getSearchParams());
+        assertThat(searchWithNullParams.getSearchParams()).isEmpty();
+    }
+
+    @Test
+    public void should_return_unmodifiable_search_params_list() {
+        assertThat(homeOfficeSearch.getSearchParams()).isUnmodifiable();
+    }
 }

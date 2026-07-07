@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -14,9 +15,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 
@@ -26,13 +28,13 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-@Data
+@Setter
 public class HomeOfficeStatutoryTimeframe extends HomeOfficeStatutoryTimeframeBase {
     // This is the class to use for the event data, as CCD needs all collections to be of type IdValue<...>
     @JsonProperty(value = "stf24weekCohorts", required = true)
     @NotNull
     @Valid
-    private List<IdValue<Stf24WeekCohort>> stf24weekCohorts;
+    private List<IdValue<Stf24WeekCohort>> stf24weekCohorts = Collections.emptyList();
 
     // Create instance of this class from the raw DTO instance
     public HomeOfficeStatutoryTimeframe(HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
@@ -40,9 +42,13 @@ public class HomeOfficeStatutoryTimeframe extends HomeOfficeStatutoryTimeframeBa
         // Set the cohorts field separately as it is different
         this.stf24weekCohorts = hoStatutoryTimeframeDto.getStf24weekCohortDtos().stream()
                                 .map(cohort -> new IdValue<Stf24WeekCohort>(
-                                    String.valueOf(cohort.getName().hashCode()), 
+                                    String.valueOf(cohort.getName().hashCode()),
                                     new Stf24WeekCohort(cohort.getName(), cohort.isIncluded() ? "true" : "false")
                                 )).toList();
+    }
+
+    public List<IdValue<Stf24WeekCohort>> getStf24weekCohorts() {
+        return stf24weekCohorts != null ? Collections.unmodifiableList(stf24weekCohorts) : Collections.emptyList();
     }
 
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -52,7 +58,8 @@ public class HomeOfficeStatutoryTimeframe extends HomeOfficeStatutoryTimeframeBa
     @AllArgsConstructor
     @NoArgsConstructor
     @EqualsAndHashCode
-    @Data
+    @Getter
+    @Setter
     public static class Stf24WeekCohort {
         @JsonProperty(value = "name", required = true)
         @NotNull
