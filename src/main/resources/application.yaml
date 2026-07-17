@@ -127,6 +127,7 @@ security:
       - "adjournHearingWithoutDate"
       - "sendDecisionAndReasons"
       - "endAppeal"
+      - "requestRespondentEvidence"
     ctsc:
       - "startAppeal"
       - "editAppeal"
@@ -139,6 +140,7 @@ security:
       - "adjournHearingWithoutDate"
       - "sendDecisionAndReasons"
       - "endAppeal"
+      - "requestRespondentEvidence"
     ctsc-team-leader:
       - "startAppeal"
       - "editAppeal"
@@ -151,6 +153,7 @@ security:
       - "adjournHearingWithoutDate"
       - "sendDecisionAndReasons"
       - "endAppeal"
+      - "requestRespondentEvidence"
     national-business-centre:
       - "markAppealPaid"
       - "submitAppeal"
@@ -161,6 +164,7 @@ security:
       - "sendDecisionAndReasons"
       - "endAppeal"
       - "editAppealAfterSubmit"
+      - "requestRespondentEvidence"
     challenged-access-ctsc:
       - "markAppealPaid"
       - "submitAppeal"
@@ -171,6 +175,7 @@ security:
       - "sendDecisionAndReasons"
       - "endAppeal"
       - "editAppealAfterSubmit"
+      - "requestRespondentEvidence"
     challenged-access-admin:
       - "markAppealPaid"
       - "submitAppeal"
@@ -181,6 +186,7 @@ security:
       - "sendDecisionAndReasons"
       - "endAppeal"
       - "editAppealAfterSubmit"
+      - "requestRespondentEvidence"
     caseworker-ia-homeofficeapc:
     caseworker-ia-homeofficelart:
     caseworker-ia-homeofficepou:
