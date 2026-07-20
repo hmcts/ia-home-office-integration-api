@@ -47,10 +47,10 @@ public class HomeOfficeApplicationService {
             homeOfficeEventDateTime
         );
         try {
-            ResponseEntity<HomeOfficeApplicationDto> response = homeOfficeApplicationApi.getApplication(homeOfficeReferenceNumber, 
-                                                                                                        accessToken, 
-                                                                                                        homeOfficeCorrelationId, 
-                                                                                                        homeOfficeConsumer, 
+            ResponseEntity<HomeOfficeApplicationDto> response = homeOfficeApplicationApi.getApplication(homeOfficeReferenceNumber,
+                                                                                                        accessToken,
+                                                                                                        homeOfficeCorrelationId,
+                                                                                                        homeOfficeConsumer,
                                                                                                         homeOfficeEventDateTime);
             int statusCode = response.getStatusCode().value();
             log.info(
@@ -58,11 +58,27 @@ public class HomeOfficeApplicationService {
                 homeOfficeReferenceNumber,
                 statusCode
             );
+
+            HomeOfficeApplicationDto body = response.getBody();
+            if (body == null) {
+                log.warn("Home Office /applications/v1/{} GET response body is null.", homeOfficeReferenceNumber);
+            } else if (body.getAppellants() == null || body.getAppellants().isEmpty()) {
+                log.warn("Home Office /applications/v1/{} GET response contained no appellants. UAN in response: {}",
+                    homeOfficeReferenceNumber, body.getUan());
+            } else {
+                log.info("Home Office /applications/v1/{} GET response contained {} appellant(s). UAN in response: {}",
+                    homeOfficeReferenceNumber, body.getAppellants().size(), body.getUan());
+                body.getAppellants().forEach(appellant ->
+                    log.info("  Appellant: {}", appellant)
+                );
+            }
+
             return response;
         } catch (RetriesExceededException e) {
+            log.warn("Home Office /applications/v1/{} GET failed — retries exhausted: {}", homeOfficeReferenceNumber, e.getMessage());
             String message = "Biographic information from Home Office asylum (etc.) application with reference " + homeOfficeReferenceNumber
                            + " could not be retrieved.\n\nThe Home Office validation API did not respond.";
             throw new HomeOfficeMissingApplicationException(-1, message);
-        }       
+        }
     }
 }
