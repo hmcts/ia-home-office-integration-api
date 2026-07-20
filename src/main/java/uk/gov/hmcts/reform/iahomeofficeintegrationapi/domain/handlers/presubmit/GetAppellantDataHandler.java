@@ -81,18 +81,25 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                             "Home office reference number (UAN or GWF) is not present; caseId: " + caseId + "."));
         }
 
+        log.info("GetAppellantDataHandler triggered for caseId: {}, event: {}, pageId: {}, reference: {}",
+            caseId, callback.getEvent(), callback.getPageId(), homeOfficeReferenceNumber);
+
         try {
             // We want to call the Home Office /applications/{id} endpoint and write all data it returns to the case record
             ResponseEntity<HomeOfficeApplicationDto> homeOfficeResponse = homeOfficeApplicationService.getApplication(homeOfficeReferenceNumber);
             HomeOfficeApplicationDto applicationDto = homeOfficeResponse.getBody();
+            log.info("GetAppellantDataHandler received response with status: {} for caseId: {}",
+                homeOfficeResponse.getStatusCode().value(), caseId);
             // Error checking even though we received a 2xx status code (things could still be wrong)
             if (applicationDto == null || applicationDto.getAppellants() == null || applicationDto.getAppellants().isEmpty()) {
-                throw new HomeOfficeMissingApplicationException(-2, 
+                throw new HomeOfficeMissingApplicationException(-2,
                             "Biographic information from Home Office asylum (etc.) application with reference " +
                              homeOfficeReferenceNumber +
                              " could not be retrieved.\n\nThe Home Office validation API responded but the response contained no data.");
             }
-            // If we supplied a UAN (rather than a GWF) and the Home Office returned one, make sure they match 
+            log.info("GetAppellantDataHandler received {} appellant(s) from Home Office for caseId: {}",
+                applicationDto.getAppellants().size(), caseId);
+            // If we supplied a UAN (rather than a GWF) and the Home Office returned one, make sure they match
             if (HOME_OFFICE_REF_PATTERN.matcher(homeOfficeReferenceNumber).matches()) {
                 String uan = applicationDto.getUan();
                 if (uan == null) {
@@ -100,15 +107,16 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                     log.warn("Home Office response did not contain a UAN despite the fact that the appellant is known to have one: {}.", homeOfficeReferenceNumber);
                 } else if (!uan.equals(homeOfficeReferenceNumber)) {
                     // The Home Office returned a *different* UAN: very bad
-                    throw new HomeOfficeMissingApplicationException(-3, 
+                    throw new HomeOfficeMissingApplicationException(-3,
                                 "Biographic information from Home Office asylum (etc.) application with reference " +
                                 homeOfficeReferenceNumber +
-                                " could not be retrieved.\n\nThe Home Office validation API responded but the information " + 
-                                "appears to be from an application with reference " + uan + ".");                    
+                                " could not be retrieved.\n\nThe Home Office validation API responded but the information " +
+                                "appears to be from an application with reference " + uan + ".");
                 }
             }
 
             writeHomeOfficeDataToCase(asylumCase, homeOfficeReferenceNumber, String.valueOf(homeOfficeResponse.getStatusCode().value()), applicationDto);
+            log.info("GetAppellantDataHandler successfully wrote Home Office appellant data to case: {}", caseId);
 
         } catch (HomeOfficeMissingApplicationException exception) {
             String message = exception.getMessage();
@@ -117,29 +125,29 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                 // These negative numbers are obviously not real HTTP response codes; but they nonetheless convey useful information
                 case -4, -3, -2, -1:
                     // This means we didn't get a valid response from the Home Office (badly formatted response, wrong response, empty response or time-out)
-                    log.warn(message);
+                    log.warn("GetAppellantDataHandler failed (status {}), caseId: {}: {}", exception.getHttpStatus(), caseId, message);
                     break;
                 case 400, 401, 403:
                     // If the request is malformed, unauthenticated or unauthorised, it's a problem in our code
-                    log.error(message);
+                    log.error("GetAppellantDataHandler failed (status {}), caseId: {}: {}", exception.getHttpStatus(), caseId, message);
                     break;
                 case 404:
                     // This will happen regularly due to user error; the code is fine
-                    log.info(message);
+                    log.info("GetAppellantDataHandler: UAN/GWF not found at Home Office (404), caseId: {}, reference: {}", caseId, homeOfficeReferenceNumber);
                     break;
                 case 500, 501, 502, 503, 504:
                     // One of these signifies a problem at the Home Office's end - nothing we can do
-                    log.warn(message);
+                    log.warn("GetAppellantDataHandler failed (status {}), caseId: {}: {}", exception.getHttpStatus(), caseId, message);
                     break;
                 default:
                     // Don't know - safest to assume it's a problem with our own code
-                    log.error(message);
+                    log.error("GetAppellantDataHandler failed (status {}), caseId: {}: {}", exception.getHttpStatus(), caseId, message);
                     break;
             }
             // Send the HTTP status code back to the ia-case-api service by writing it in the case record
             asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, exception.getHttpStatus());
         } catch (RetriesExceededException ex) {
-            log.warn("Retries exhausted calling Home Office: message - {}", ex.getMessage());
+            log.warn("GetAppellantDataHandler retries exhausted for caseId: {}: {}", caseId, ex.getMessage());
             asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, -1);
         }
 
