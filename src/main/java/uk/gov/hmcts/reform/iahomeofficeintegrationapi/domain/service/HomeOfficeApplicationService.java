@@ -61,7 +61,6 @@ public class HomeOfficeApplicationService {
 
             return response;
         } catch (RetriesExceededException e) {
-            log.warn("Home Office /applications/v1/{} GET failed — retries exhausted: {}", homeOfficeReferenceNumber, e.getMessage());
             String message = "Biographic information from Home Office asylum (etc.) application with reference " + homeOfficeReferenceNumber
                            + " could not be retrieved.\n\nThe Home Office validation API did not respond.";
             throw new HomeOfficeMissingApplicationException(-1, message);
