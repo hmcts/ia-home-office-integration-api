@@ -118,29 +118,29 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                 // These negative numbers are obviously not real HTTP response codes; but they nonetheless convey useful information
                 case -4, -3, -2, -1:
                     // This means we didn't get a valid response from the Home Office (badly formatted response, wrong response, empty response or time-out)
-                    log.warn("GetAppellantDataHandler failed (status {}), caseId: {}: {}", exception.getHttpStatus(), caseId, message);
+                    log.warn(message);
                     break;
                 case 400, 401, 403:
                     // If the request is malformed, unauthenticated or unauthorised, it's a problem in our code
-                    log.error("GetAppellantDataHandler failed (status {}), caseId: {}: {}", exception.getHttpStatus(), caseId, message);
+                    log.error(message);
                     break;
                 case 404:
                     // This will happen regularly due to user error; the code is fine
-                    log.info("GetAppellantDataHandler: UAN/GWF not found at Home Office (404), caseId: {}, reference: {}", caseId, homeOfficeReferenceNumber);
+                    log.info(message);
                     break;
                 case 500, 501, 502, 503, 504:
                     // One of these signifies a problem at the Home Office's end - nothing we can do
-                    log.warn("GetAppellantDataHandler failed (status {}), caseId: {}: {}", exception.getHttpStatus(), caseId, message);
+                    log.warn(message);
                     break;
                 default:
                     // Don't know - safest to assume it's a problem with our own code
-                    log.error("GetAppellantDataHandler failed (status {}), caseId: {}: {}", exception.getHttpStatus(), caseId, message);
+                    log.error(message);
                     break;
             }
             // Send the HTTP status code back to the ia-case-api service by writing it in the case record
             asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, exception.getHttpStatus());
         } catch (RetriesExceededException ex) {
-            log.warn("GetAppellantDataHandler retries exhausted for caseId: {}: {}", caseId, ex.getMessage());
+            log.warn("Retries exhausted calling Home Office: message - {}", ex.getMessage());
             asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, -1);
         }
 
