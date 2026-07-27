@@ -81,15 +81,10 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                             "Home office reference number (UAN or GWF) is not present; caseId: " + caseId + "."));
         }
 
-        log.info("GetAppellantDataHandler triggered for caseId: {}, event: {}, pageId: {}, reference: {}",
-            caseId, callback.getEvent(), callback.getPageId(), homeOfficeReferenceNumber);
-
         try {
             // We want to call the Home Office /applications/{id} endpoint and write all data it returns to the case record
             ResponseEntity<HomeOfficeApplicationDto> homeOfficeResponse = homeOfficeApplicationService.getApplication(homeOfficeReferenceNumber);
             HomeOfficeApplicationDto applicationDto = homeOfficeResponse.getBody();
-            log.info("GetAppellantDataHandler received response with status: {} for caseId: {}",
-                homeOfficeResponse.getStatusCode().value(), caseId);
             // Error checking even though we received a 2xx status code (things could still be wrong)
             if (applicationDto == null || applicationDto.getAppellants() == null || applicationDto.getAppellants().isEmpty()) {
                 throw new HomeOfficeMissingApplicationException(-2,
@@ -97,8 +92,6 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                              homeOfficeReferenceNumber +
                              " could not be retrieved.\n\nThe Home Office validation API responded but the response contained no data.");
             }
-            log.info("GetAppellantDataHandler received {} appellant(s) from Home Office for caseId: {}",
-                applicationDto.getAppellants().size(), caseId);
             // If we supplied a UAN (rather than a GWF) and the Home Office returned one, make sure they match
             if (HOME_OFFICE_REF_PATTERN.matcher(homeOfficeReferenceNumber).matches()) {
                 String uan = applicationDto.getUan();

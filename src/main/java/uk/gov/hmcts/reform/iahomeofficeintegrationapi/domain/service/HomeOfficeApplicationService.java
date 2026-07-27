@@ -59,20 +59,6 @@ public class HomeOfficeApplicationService {
                 statusCode
             );
 
-            HomeOfficeApplicationDto body = response.getBody();
-            if (body == null) {
-                log.warn("Home Office /applications/v1/{} GET response body is null.", homeOfficeReferenceNumber);
-            } else if (body.getAppellants() == null || body.getAppellants().isEmpty()) {
-                log.warn("Home Office /applications/v1/{} GET response contained no appellants. UAN in response: {}",
-                    homeOfficeReferenceNumber, body.getUan());
-            } else {
-                log.info("Home Office /applications/v1/{} GET response contained {} appellant(s). UAN in response: {}",
-                    homeOfficeReferenceNumber, body.getAppellants().size(), body.getUan());
-                body.getAppellants().forEach(appellant ->
-                    log.info("  Appellant: {}", appellant)
-                );
-            }
-
             return response;
         } catch (RetriesExceededException e) {
             log.warn("Home Office /applications/v1/{} GET failed — retries exhausted: {}", homeOfficeReferenceNumber, e.getMessage());
