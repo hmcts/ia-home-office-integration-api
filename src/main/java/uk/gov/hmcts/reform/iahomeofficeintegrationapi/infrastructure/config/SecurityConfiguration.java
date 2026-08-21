@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,6 +45,8 @@ public class SecurityConfiguration {
 
     private final Converter<Jwt, Collection<GrantedAuthority>> idamAuthoritiesConverter;
     private final S2SEndpointAuthorizationFilter s2SEndpointAuthorizationFilter;
+    @Value("#{'${idam.s2s-authorised.home-office-immigration.allowed-endpoints}'.split(',')}")
+    private List<String> homeOfficeAllowedEndpoints;
 
     public SecurityConfiguration(Converter<Jwt, Collection<GrantedAuthority>> idamAuthoritiesConverter,
                                  S2SEndpointAuthorizationFilter s2SEndpointAuthorizationFilter) {
@@ -100,7 +103,10 @@ public class SecurityConfiguration {
             .csrf(csrf -> csrf.disable())
             .formLogin(login -> login.disable())
             .logout(logout -> logout.disable())
+
             .authorizeHttpRequests(requests -> requests
+                .requestMatchers(
+                    request -> homeOfficeAllowedEndpoints.contains(request.getRequestURI())).permitAll()
                 .anyRequest().authenticated())
             .oauth2ResourceServer(server -> server
                 .jwt(jwt -> jwt
