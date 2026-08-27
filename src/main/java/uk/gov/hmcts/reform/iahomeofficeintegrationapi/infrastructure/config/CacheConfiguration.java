@@ -84,6 +84,8 @@ public class CacheConfiguration {
             return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(tokenCacheConfig)
                 .withCacheConfiguration("systemUserTokenCache", tokenCacheConfig)
+                // TODO change this config if ho token lasts shorter or longer than 60 mins
+                .withCacheConfiguration("hoTokenCache", tokenCacheConfig)
                 .withCacheConfiguration("userInfoCache", userInfoCacheConfig)
                 // caches for functional tests
                 .withCacheConfiguration("legalRepATokenCache", tokenCacheConfig)
