@@ -1,5 +1,39 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeAppellantDto;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeApplicationDto;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeApplicationService;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeMissingApplicationException;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.RetriesExceededException;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,40 +49,6 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_DECISION_DATE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeAppellantDto;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeApplicationDto;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeApplicationService;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeMissingApplicationException;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.RetriesExceededException;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -79,43 +79,50 @@ class GetAppellantDataHandlerTest {
     }
 
     @Test
-    void canHandle_returnsTrue_whenStageAndEventAndPageIdCorrect() {
+    void canHandle_returnsTrue_whenStageAndEventAndPageIdCorrect_mid_event() {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
 
-        boolean result = handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertTrue(result);
+        assertTrue(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
     }
 
     @Test
-    void canHandle_returnsFalse_WrongPageId() {
+    void canHandle_returnsFalse_WrongPageId_mid_event() {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getPageId()).thenReturn("thisPageDoesNotExist");
 
-        boolean result = handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertFalse(result);
+        assertFalse(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
     }
 
-    @Test
-    void canHandle_returnsFalse_WrongEvent() {
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(callback.getPageId()).thenReturn("thisPageDoesNotExist");
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT", "SUBMIT_APPEAL"}, mode = EnumSource.Mode.EXCLUDE)
+    void canHandle_returnsFalse_WrongEvent_mid_event(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn("oocHomeOfficeReferenceNumber");
 
-        boolean result = handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertFalse(result);
+        assertFalse(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
     }
 
-    @Test
-    void canHandle_returnsFalse_WrongStage() {
+    @ParameterizedTest
+    @EnumSource(value = PreSubmitCallbackStage.class, names = {"MID_EVENT"}, mode = EnumSource.Mode.EXCLUDE)
+    void canHandle_returnsFalse_WrongStage_mid_event(PreSubmitCallbackStage preSubmitCallbackStage) {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getPageId()).thenReturn("cuiHomeOfficeReferenceNumber");
 
-        boolean result = handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertFalse(handler.canHandle(preSubmitCallbackStage, callback));
+    }
 
-        assertFalse(result);
+    @Test
+    void canHandle_returnsTrue_submit() {
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        assertTrue(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = PreSubmitCallbackStage.class, names = {"MID_EVENT"}, mode = EnumSource.Mode.EXCLUDE)
+    void canHandle_returnsFalse_submit_wrongStage(PreSubmitCallbackStage preSubmitCallbackStage) {
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        assertFalse(handler.canHandle(preSubmitCallbackStage, callback));
     }
 
     @ParameterizedTest
