@@ -35,7 +35,7 @@ public class HomeOfficeAuthorizor {
         this.clientSecret = clientSecret;
     }
 
-    @Cacheable(value = "hoTokenCache", key = "#hoApiToken")
+    @Cacheable(value = "hoTokenCache", key = "'hoTokenCache'")
     public String fetchCodeAuthorization() {
 
         Map<String, String> body = new HashMap<>();
