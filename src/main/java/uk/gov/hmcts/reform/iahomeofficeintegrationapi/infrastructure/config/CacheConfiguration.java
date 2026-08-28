@@ -47,45 +47,14 @@ public class CacheConfiguration {
             redisConnectionFactory.getConnection().ping();
             log.info("Redis connection successful - using Redis for systemTokenCache");
 
-            // Idam user info config
-            AesEncryptingRedisSerializer<UserInfo> userInfoSerializer =
-                new AesEncryptingRedisSerializer<>(
-                    new Jackson2JsonRedisSerializer<>(UserInfo.class),
-                    redisEncryptionKey
-                );
-
-            RedisCacheConfiguration userInfoCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(3300))
-                .disableCachingNullValues()
-                .serializeKeysWith(
-                    RedisSerializationContext.SerializationPair
-                        .fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(
-                    RedisSerializationContext.SerializationPair
-                        .fromSerializer(userInfoSerializer));
-
-            // system user token config
-            AesEncryptingRedisSerializer<String> tokenSerializer =
-                new AesEncryptingRedisSerializer<>(
-                    new Jackson2JsonRedisSerializer<>(String.class),
-                    redisEncryptionKey
-                );
-
-            RedisCacheConfiguration tokenCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(3300))  // 55mins (token might expire before cache)
-                .disableCachingNullValues()
-                .serializeKeysWith(
-                    RedisSerializationContext.SerializationPair
-                        .fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(
-                    RedisSerializationContext.SerializationPair
-                        .fromSerializer(tokenSerializer));
+            RedisCacheConfiguration userInfoCacheConfig = getCacheConfig(3300, UserInfo.class);
+            RedisCacheConfiguration tokenCacheConfig = getCacheConfig(3300, String.class);
+            RedisCacheConfiguration hoTokenCacheConfig = getCacheConfig(90, String.class);
 
             return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(tokenCacheConfig)
                 .withCacheConfiguration("systemUserTokenCache", tokenCacheConfig)
-                // TODO change this config if ho token lasts shorter or longer than 60 mins
-                .withCacheConfiguration("hoTokenCache", tokenCacheConfig)
+                .withCacheConfiguration("hoTokenCache", hoTokenCacheConfig)
                 .withCacheConfiguration("userInfoCache", userInfoCacheConfig)
                 // caches for functional tests
                 .withCacheConfiguration("legalRepATokenCache", tokenCacheConfig)
@@ -103,6 +72,22 @@ public class CacheConfiguration {
         }
     }
 
+    private <T> RedisCacheConfiguration getCacheConfig(int time, Class<T> valueType) {
+        AesEncryptingRedisSerializer<T> tokenSerializer =
+            new AesEncryptingRedisSerializer<>(
+                new Jackson2JsonRedisSerializer<>(valueType),
+                redisEncryptionKey
+            );
+        return RedisCacheConfiguration.defaultCacheConfig()
+            .entryTtl(Duration.ofSeconds(time))
+            .disableCachingNullValues()
+            .serializeKeysWith(
+                RedisSerializationContext.SerializationPair
+                    .fromSerializer(new StringRedisSerializer()))
+            .serializeValuesWith(
+                RedisSerializationContext.SerializationPair
+                    .fromSerializer(tokenSerializer));
+    }
     @Bean
     public RedisConnectionFactory redisConnectionFactory(
         @Value("${spring.data.redis.url}") String redisUrl,
