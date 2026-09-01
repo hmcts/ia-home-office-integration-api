@@ -88,6 +88,7 @@ public class CacheConfiguration {
                 RedisSerializationContext.SerializationPair
                     .fromSerializer(tokenSerializer));
     }
+
     @Bean
     public RedisConnectionFactory redisConnectionFactory(
         @Value("${spring.data.redis.url}") String redisUrl,
