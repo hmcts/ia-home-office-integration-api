@@ -1,10 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.REQUEST_REVIEW;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceReviewInstructMessage.RequestEvidenceReviewInstructMessageBuilder.requestEvidenceReviewInstructMessage;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
@@ -18,6 +13,12 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.NotificationsHelper;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.REQUEST_REVIEW;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceReviewInstructMessage.RequestEvidenceReviewInstructMessageBuilder.requestEvidenceReviewInstructMessage;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.ListingNotificationHelper.getPpNumber;
 
 
 @Slf4j
@@ -69,6 +70,7 @@ public class RequestEvidenceReviewNotificationHandler implements PreSubmitCallba
                 .withMessageHeader(notificationsHelper.getMessageHeader())
                 .withMessageType(REQUEST_REVIEW.name())
                 .withNote(notificationsHelper.getDirectionContent(asylumCase, DirectionTag.RESPONDENT_REVIEW))
+                .withPp(getPpNumber(asylumCase))
                 .withDeadlineDate(notificationsHelper.getDirectionDeadline(asylumCase, DirectionTag.RESPONDENT_REVIEW))
                 .build();
 

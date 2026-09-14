@@ -21,7 +21,8 @@ class HomeOfficeInstructTest {
             "some-ho-reference",
             Mockito.mock(MessageHeader.class),
             "some-message-type",
-            "direction explanation"
+            "direction explanation",
+            "pp"
         );
     }
 

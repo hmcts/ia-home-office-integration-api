@@ -13,9 +13,10 @@ public class PermissionToAppealInstructMessage extends HomeOfficeInstruct {
         MessageHeader messageHeader,
         String messageType,
         String note,
-        CourtType courtType) {
+        CourtType courtType,
+        String pp) {
 
-        super(consumerReference, hoReference, messageHeader, messageType, note);
+        super(consumerReference, hoReference, messageHeader, messageType, note, pp);
         this.courtType = courtType;
     }
 
@@ -31,6 +32,7 @@ public class PermissionToAppealInstructMessage extends HomeOfficeInstruct {
         private MessageHeader messageHeader;
         private String messageType;
         private String note;
+        private String pp;
 
         private PermissionToAppealInstructMessageBuilder() {
         }
@@ -69,10 +71,15 @@ public class PermissionToAppealInstructMessage extends HomeOfficeInstruct {
             return this;
         }
 
+        public PermissionToAppealInstructMessageBuilder withPp(String pp) {
+            this.pp = pp;
+            return this;
+        }
+
         public PermissionToAppealInstructMessage build() {
             return
                 new PermissionToAppealInstructMessage(
-                    consumerReference, hoReference, messageHeader, messageType, note, courtType
+                    consumerReference, hoReference, messageHeader, messageType, note, courtType, pp
                 );
         }
     }

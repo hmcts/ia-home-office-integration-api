@@ -276,7 +276,7 @@ class ListingNotificationHelperTest {
 
         HearingInstructMessage.HearingInstructMessageBuilder hearingInstructMessageBuilder
             = listingNotificationHelper.getHearingBuilderWithCoreFields(
-            consumerReference, messageHeader, "1111-2222-3333-4444");
+            consumerReference, messageHeader, "1111-2222-3333-4444", asylumCase);
 
         assertEquals("1111-2222-3333-4444", hearingInstructMessageBuilder.build().getHoReference());
         assertEquals(consumerReference, hearingInstructMessageBuilder.build().getConsumerReference());

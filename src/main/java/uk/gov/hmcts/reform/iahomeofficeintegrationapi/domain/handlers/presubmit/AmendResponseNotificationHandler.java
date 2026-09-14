@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_AMEND_RESPONSE_INSTRUCT_STATUS;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.DEFAULT;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
@@ -16,6 +12,11 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.NotificationsHelper;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_AMEND_RESPONSE_INSTRUCT_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.DEFAULT;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.ListingNotificationHelper.getPpNumber;
 
 @Slf4j
 @Component
@@ -63,7 +64,8 @@ public class AmendResponseNotificationHandler implements PreSubmitCallbackHandle
                 homeOfficeReferenceNumber,
                 notificationsHelper.getMessageHeader(),
                 DEFAULT.name(),
-                notificationsHelper.getDirectionContent(asylumCase, DirectionTag.REQUEST_RESPONSE_AMEND)
+                notificationsHelper.getDirectionContent(asylumCase, DirectionTag.REQUEST_RESPONSE_AMEND),
+                getPpNumber(asylumCase)
             );
 
         log.info("Finished constructing {} notification request for caseId: {}, HomeOffice reference: {}",

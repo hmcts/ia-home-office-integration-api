@@ -13,9 +13,10 @@ public class AppealDecidedInstructMessage extends HomeOfficeInstruct {
         MessageHeader messageHeader,
         String messageType,
         CourtOutcome courtOutcome,
-        String note) {
+        String note,
+        String pp) {
 
-        super(consumerReference, hoReference, messageHeader, messageType, note);
+        super(consumerReference, hoReference, messageHeader, messageType, note, pp);
 
         this.courtOutcome = courtOutcome;
     }
@@ -32,6 +33,7 @@ public class AppealDecidedInstructMessage extends HomeOfficeInstruct {
         private MessageHeader messageHeader;
         private String messageType;
         private String note;
+        private String pp;
 
         private AppealDecidedInstructMessageBuilder() {
         }
@@ -70,9 +72,14 @@ public class AppealDecidedInstructMessage extends HomeOfficeInstruct {
             return this;
         }
 
+        public AppealDecidedInstructMessageBuilder withPp(String pp) {
+            this.pp = pp;
+            return this;
+        }
+
         public AppealDecidedInstructMessage build() {
             return new AppealDecidedInstructMessage(
-                consumerReference, hoReference, messageHeader, messageType, courtOutcome, note);
+                consumerReference, hoReference, messageHeader, messageType, courtOutcome, note, pp);
         }
     }
 }

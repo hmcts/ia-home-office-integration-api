@@ -15,9 +15,10 @@ public class HearingInstructMessage extends HomeOfficeInstruct {
         MessageHeader messageHeader,
         String messageType,
         String note,
-        Hearing hearing) {
+        Hearing hearing,
+        String pp) {
 
-        super(consumerReference, hoReference, messageHeader, messageType, note);
+        super(consumerReference, hoReference, messageHeader, messageType, note, pp);
         this.hearing = hearing;
     }
 
@@ -33,6 +34,7 @@ public class HearingInstructMessage extends HomeOfficeInstruct {
         private MessageHeader messageHeader;
         private String messageType;
         private String note;
+        private String pp;
 
         private HearingInstructMessageBuilder() {
         }
@@ -73,9 +75,14 @@ public class HearingInstructMessage extends HomeOfficeInstruct {
             return this;
         }
 
+        public HearingInstructMessageBuilder withPp(String pp) {
+            this.pp = pp;
+            return this;
+        }
+
         public HearingInstructMessage build() {
             return
-                new HearingInstructMessage(consumerReference, hoReference, messageHeader, messageType, note, hearing);
+                new HearingInstructMessage(consumerReference, hoReference, messageHeader, messageType, note, hearing, pp);
         }
     }
 }
