@@ -70,7 +70,7 @@ class HomeOfficeInstructServiceTest {
         return
             new RequestEvidenceBundleInstructMessage(
                 buildConsumerReference(), someHoReference, buildTestMessageHeader(),
-                "someMessageType", "01-01-2021", null, "direction content", "pp"
+                "someMessageType", "01-01-2021", null, "direction content"
             );
     }
 

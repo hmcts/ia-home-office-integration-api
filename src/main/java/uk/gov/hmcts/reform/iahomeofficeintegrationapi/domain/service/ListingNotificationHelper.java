@@ -1,25 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerReference;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Hearing;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Hearing.HearingBuilder;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HearingInstructMessage;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HearingType;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHeader;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HearingCentre;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.WitnessDetails;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.DateTimeExtractor;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.ADDITIONAL_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.ADJOURN_HEARING_WITHOUT_DATE_REASONS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.ARIA_LISTING_REFERENCE;
@@ -36,6 +16,25 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Hea
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HearingInstructMessage.HearingInstructMessageBuilder.hearingInstructMessage;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.HEARING;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.HEARING_BUNDLE_READY;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ConsumerReference;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Hearing;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Hearing.HearingBuilder;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HearingInstructMessage;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HearingType;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageHeader;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HearingCentre;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.WitnessDetails;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.DateTimeExtractor;
 
 @Slf4j
 @Component
@@ -91,14 +90,12 @@ public class ListingNotificationHelper {
     public HearingInstructMessage.HearingInstructMessageBuilder getHearingBuilderWithCoreFields(
         ConsumerReference consumerReference,
         MessageHeader messageHeader,
-        String homeOfficeReferenceNumber,
-        AsylumCase asylumCase) {
+        String homeOfficeReferenceNumber) {
 
         return hearingInstructMessage()
             .withConsumerReference(consumerReference)
             .withHoReference(homeOfficeReferenceNumber)
             .withMessageHeader(messageHeader)
-            .withPp(getPpNumber(asylumCase))
             .withMessageType(HEARING.name());
     }
 
@@ -111,8 +108,7 @@ public class ListingNotificationHelper {
         return getHearingBuilderWithCoreFields(
             consumerReference,
             messageHeader,
-            homeOfficeReferenceNumber,
-            asylumCase)
+            homeOfficeReferenceNumber)
             .withNote(getAdjournHearingNotificationContent(asylumCase))
             .withHearing(getHearingData(asylumCase))
             .build();
@@ -121,14 +117,12 @@ public class ListingNotificationHelper {
     public HearingInstructMessage.HearingInstructMessageBuilder getHearingBundleReadyWithCoreFields(
         ConsumerReference consumerReference,
         MessageHeader messageHeader,
-        String homeOfficeReferenceNumber,
-        AsylumCase asylumCase) {
+        String homeOfficeReferenceNumber) {
 
         return hearingInstructMessage()
             .withConsumerReference(consumerReference)
             .withHoReference(homeOfficeReferenceNumber)
             .withMessageHeader(messageHeader)
-            .withPp(getPpNumber(asylumCase))
             .withMessageType(HEARING_BUNDLE_READY.name());
     }
 
@@ -141,8 +135,7 @@ public class ListingNotificationHelper {
         return getHearingBundleReadyWithCoreFields(
             consumerReference,
             messageHeader,
-            homeOfficeReferenceNumber,
-            asylumCase)
+            homeOfficeReferenceNumber)
             .withHearing(getHearingBundleReadyBuilderData(asylumCase).build())
             .withNote(getReheardNote(asylumCase))
             .build();
@@ -157,8 +150,7 @@ public class ListingNotificationHelper {
         return getHearingBuilderWithCoreFields(
             consumerReference,
             messageHeader,
-            homeOfficeReferenceNumber,
-            asylumCase)
+            homeOfficeReferenceNumber)
             .withNote(getHearingNotificationContent(asylumCase))
             .withHearing(getHearingDataWithDate(asylumCase))
             .build();
@@ -269,10 +261,5 @@ public class ListingNotificationHelper {
 
     public String getReheardNote(AsylumCase asylumCase) {
         return isReheardCase(asylumCase) ? "This is a reheard case.\n" : "";
-    }
-
-    public static String getPpNumber(AsylumCase asylumCase) {
-        return asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_APPELLANTS_PP_NUMBER, String.class)
-            .orElse("No PP number found");
     }
 }

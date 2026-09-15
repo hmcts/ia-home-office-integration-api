@@ -1,5 +1,11 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealDecidedInstructMessage.AppealDecidedInstructMessageBuilder.appealDecidedInstructMessage;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.FTPA_APPLICANT_TYPE;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.valueOf;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.COURT_OUTCOME;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -12,13 +18,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Decide
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.FtpaDecisionOutcomeType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.FtpaResidentJudgeDecisionOutcomeType;
-
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealDecidedInstructMessage.AppealDecidedInstructMessageBuilder.appealDecidedInstructMessage;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.FTPA_APPLICANT_TYPE;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.valueOf;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.COURT_OUTCOME;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.ListingNotificationHelper.getPpNumber;
 
 
 @Slf4j
@@ -107,7 +106,6 @@ public class FtpaDecidedNotificationsHelper {
                         .withMessageType(COURT_OUTCOME.name())
                         .withCourtOutcome(new CourtOutcome(CourtType.FIRST_TIER, ftpaOutcome))
                         .withNote(note)
-                        .withPp(getPpNumber(asylumCase))
                         .build();
 
                 log.info("Finished constructing {} notification request for caseId: {}, HomeOffice reference: {}",

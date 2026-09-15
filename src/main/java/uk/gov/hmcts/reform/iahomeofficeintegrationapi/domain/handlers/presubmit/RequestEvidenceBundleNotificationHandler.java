@@ -1,5 +1,10 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.REQUEST_EVIDENCE_BUNDLE;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceBundleInstructMessage.RequestEvidenceBundleInstructMessageBuilder.requestEvidenceBundleInstructMessage;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
@@ -13,12 +18,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.NotificationsHelper;
-
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.REQUEST_EVIDENCE_BUNDLE;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceBundleInstructMessage.RequestEvidenceBundleInstructMessageBuilder.requestEvidenceBundleInstructMessage;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.ListingNotificationHelper.getPpNumber;
 
 
 @Slf4j
@@ -70,7 +69,6 @@ public class RequestEvidenceBundleNotificationHandler implements PreSubmitCallba
                 .withMessageType(REQUEST_EVIDENCE_BUNDLE.name())
                 .withChallenge(notificationsHelper.buildHomeOfficeChallenge(asylumCase))
                 .withNote(notificationsHelper.getDirectionContent(asylumCase, DirectionTag.RESPONDENT_EVIDENCE))
-                .withPp(getPpNumber(asylumCase))
                 .withDeadlineDate(
                     notificationsHelper.getDirectionDeadline(asylumCase, DirectionTag.RESPONDENT_EVIDENCE))
                 .build();

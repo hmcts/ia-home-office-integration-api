@@ -1,5 +1,12 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealDecidedInstructMessage.AppealDecidedInstructMessageBuilder.appealDecidedInstructMessage;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.IS_DECISION_ALLOWED;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.COURT_OUTCOME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.SEND_DECISION_AND_REASONS;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealDecidedInstructMessage;
@@ -16,14 +23,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitC
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.AppealDecidedNote;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.NotificationsHelper;
-
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealDecidedInstructMessage.AppealDecidedInstructMessageBuilder.appealDecidedInstructMessage;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.IS_DECISION_ALLOWED;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.COURT_OUTCOME;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.SEND_DECISION_AND_REASONS;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.ListingNotificationHelper.getPpNumber;
 
 
 @Slf4j
@@ -79,7 +78,6 @@ public class AppealDecidedNotificationHandler implements PreSubmitCallbackHandle
                 .withMessageType(COURT_OUTCOME.name())
                 .withCourtOutcome(new CourtOutcome(CourtType.FIRST_TIER, Outcome.valueOf(appealDecision)))
                 .withNote(AppealDecidedNote.valueOf(appealDecision).toString())
-                .withPp(getPpNumber(asylumCase))
                 .build();
 
         log.info("Finished constructing {} notification request for caseId: {}, HomeOffice reference: {}",

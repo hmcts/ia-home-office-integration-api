@@ -47,7 +47,6 @@ public class HomeOfficeInstructService {
                 messageType,
                 correlationId
             );
-            // TODO Start block remove this
             ObjectMapper objectMapper = new ObjectMapper();
 
             try {
@@ -62,7 +61,6 @@ public class HomeOfficeInstructService {
                     correlationId,
                     e.getMessage());
             }
-            // TODO End block
             instructResponse = homeOfficeInstructApi.sendNotification(accessToken, request);
 
             if (instructResponse == null || instructResponse.getMessageHeader() == null) {

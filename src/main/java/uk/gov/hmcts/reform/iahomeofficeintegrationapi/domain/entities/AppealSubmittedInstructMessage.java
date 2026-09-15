@@ -10,10 +10,9 @@ public class AppealSubmittedInstructMessage extends HomeOfficeInstruct {
         String hoReference,
         MessageHeader messageHeader,
         String messageType,
-        String note,
-        String pp) {
+        String note) {
 
-        super(consumerReference, hoReference, messageHeader, messageType, note, pp);
+        super(consumerReference, hoReference, messageHeader, messageType, note);
 
     }
 
@@ -23,7 +22,6 @@ public class AppealSubmittedInstructMessage extends HomeOfficeInstruct {
         private MessageHeader messageHeader;
         private String messageType;
         private String note;
-        private String pp;
 
         private AppealSubmittedInstructMessageBuilder() {
         }
@@ -57,14 +55,9 @@ public class AppealSubmittedInstructMessage extends HomeOfficeInstruct {
             return this;
         }
 
-        public AppealSubmittedInstructMessageBuilder withPp(String pp) {
-            this.pp = pp;
-            return this;
-        }
-
         public AppealSubmittedInstructMessage build() {
             return new AppealSubmittedInstructMessage(
-                consumerReference, hoReference, messageHeader, messageType, note, pp);
+                consumerReference, hoReference, messageHeader, messageType, note);
         }
     }
 }

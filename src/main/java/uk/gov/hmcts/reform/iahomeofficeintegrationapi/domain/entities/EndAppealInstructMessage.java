@@ -15,10 +15,9 @@ public class EndAppealInstructMessage extends HomeOfficeInstruct {
         String messageType,
         String endReason,
         String endChallengeDate,
-        String note,
-        String pp) {
+        String note) {
 
-        super(consumerReference, hoReference, messageHeader, messageType, note, pp);
+        super(consumerReference, hoReference, messageHeader, messageType, note);
 
         this.endReason = endReason;
         this.endChallengeDate = endChallengeDate;
@@ -40,7 +39,6 @@ public class EndAppealInstructMessage extends HomeOfficeInstruct {
         private MessageHeader messageHeader;
         private String messageType;
         private String note;
-        private String pp;
 
         private EndAppealInstructMessageBuilder() {
         }
@@ -85,15 +83,10 @@ public class EndAppealInstructMessage extends HomeOfficeInstruct {
             return this;
         }
 
-        public EndAppealInstructMessageBuilder withPp(String pp) {
-            this.pp = pp;
-            return this;
-        }
-
         public EndAppealInstructMessage build() {
 
             return new EndAppealInstructMessage(
-                    consumerReference, hoReference, messageHeader, messageType, endReason, endChallengeDate, note, pp);
+                    consumerReference, hoReference, messageHeader, messageType, endReason, endChallengeDate, note);
         }
     }
 }

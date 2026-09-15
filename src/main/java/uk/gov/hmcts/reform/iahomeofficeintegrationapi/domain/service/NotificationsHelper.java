@@ -172,7 +172,18 @@ public class NotificationsHelper {
                 homeOfficeReferenceNumber = documentReference;
             }
         }
-        return homeOfficeReferenceNumber;
+
+        String finalHomeOfficeReferenceNumber = homeOfficeReferenceNumber;
+        return asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_APPELLANTS_PP_NUMBER, String.class)
+            .map(ppNumber -> finalHomeOfficeReferenceNumber + "/" + ppNumber)
+            .orElse(homeOfficeReferenceNumber);
+    }
+
+
+    public static String getUanMaybePp(AsylumCase asylumCase, String homeOfficeReferenceNumber) {
+        return asylumCase.read(AsylumCaseDefinition.HOME_OFFICE_APPELLANTS_PP_NUMBER, String.class)
+            .map(ppNumber -> homeOfficeReferenceNumber + "/" + ppNumber)
+            .orElse(homeOfficeReferenceNumber);
     }
 
     public String getCaseId(AsylumCase asylumCase) {

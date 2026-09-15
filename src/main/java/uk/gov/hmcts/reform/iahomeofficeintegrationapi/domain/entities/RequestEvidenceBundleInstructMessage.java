@@ -15,10 +15,9 @@ public class RequestEvidenceBundleInstructMessage extends HomeOfficeInstruct {
         String messageType,
         String deadlineDate,
         HomeOfficeChallenge challenge,
-        String note,
-        String pp) {
+        String note) {
 
-        super(consumerReference, hoReference, messageHeader, messageType, note, pp);
+        super(consumerReference, hoReference, messageHeader, messageType, note);
 
         this.deadlineDate = deadlineDate;
         this.challenge = challenge;
@@ -40,7 +39,6 @@ public class RequestEvidenceBundleInstructMessage extends HomeOfficeInstruct {
         private MessageHeader messageHeader;
         private String messageType;
         private String note;
-        private String pp;
 
         private RequestEvidenceBundleInstructMessageBuilder() {
         }
@@ -84,16 +82,11 @@ public class RequestEvidenceBundleInstructMessage extends HomeOfficeInstruct {
             return this;
         }
 
-        public RequestEvidenceBundleInstructMessageBuilder withPp(String pp) {
-            this.pp = pp;
-            return this;
-        }
-
         public RequestEvidenceBundleInstructMessage build() {
 
             RequestEvidenceBundleInstructMessage requestEvidenceBundleInstructMessage =
                 new RequestEvidenceBundleInstructMessage(
-                    consumerReference, hoReference, messageHeader, messageType, deadlineDate, challenge, note, pp);
+                    consumerReference, hoReference, messageHeader, messageType, deadlineDate, challenge, note);
 
             requestEvidenceBundleInstructMessage.challenge = this.challenge;
 

@@ -13,10 +13,9 @@ public class RequestEvidenceReviewInstructMessage extends HomeOfficeInstruct {
         MessageHeader messageHeader,
         String messageType,
         String deadlineDate,
-        String note,
-        String pp) {
+        String note) {
 
-        super(consumerReference, hoReference, messageHeader, messageType, note, pp);
+        super(consumerReference, hoReference, messageHeader, messageType, note);
 
         this.deadlineDate = deadlineDate;
     }
@@ -33,7 +32,6 @@ public class RequestEvidenceReviewInstructMessage extends HomeOfficeInstruct {
         private MessageHeader messageHeader;
         private String messageType;
         private String note;
-        private String pp;
 
         private RequestEvidenceReviewInstructMessageBuilder() {
         }
@@ -72,15 +70,10 @@ public class RequestEvidenceReviewInstructMessage extends HomeOfficeInstruct {
             return this;
         }
 
-        public RequestEvidenceReviewInstructMessageBuilder withPp(String pp) {
-            this.pp = pp;
-            return this;
-        }
-
         public RequestEvidenceReviewInstructMessage build() {
             return
                 new RequestEvidenceReviewInstructMessage(
-                    consumerReference, hoReference, messageHeader, messageType, deadlineDate, note, pp
+                    consumerReference, hoReference, messageHeader, messageType, deadlineDate, note
                 );
         }
     }
