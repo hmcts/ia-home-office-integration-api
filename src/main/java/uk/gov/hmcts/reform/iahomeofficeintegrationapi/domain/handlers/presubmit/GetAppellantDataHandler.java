@@ -1,23 +1,8 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.GWF_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_CLAIM_DATE;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_DECISION_DATE;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-
-import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeAppellantDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeApplicationDto;
@@ -32,6 +17,20 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitC
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeApplicationService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeMissingApplicationException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.RetriesExceededException;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.GWF_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_CLAIM_DATE;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_DECISION_DATE;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
 @Slf4j
 @Component
@@ -52,12 +51,18 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && List.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent())
-                && List.of(
-                    "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "appellantBasicDetails", // ExUI pages
-                    "cuiHomeOfficeReferenceNumber", "cuiAppellantName", "cuiAppellantDob") // CUI pages
-                    .contains(callback.getPageId());
+        return isPreSubmission(callbackStage, callback)
+            || (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+            && callback.getEvent().equals(Event.SUBMIT_APPEAL));
+    }
+
+    private boolean isPreSubmission(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
+        return callbackStage == PreSubmitCallbackStage.MID_EVENT &&
+            List.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent())
+            && List.of(
+                "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "appellantBasicDetails", // ExUI pages
+                "cuiHomeOfficeReferenceNumber", "cuiAppellantName", "cuiAppellantDob") // CUI pages
+            .contains(callback.getPageId());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -72,13 +77,13 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
         final long caseId = callback.getCaseDetails().getId();
         // Retrieve the UAN or GWF from the case record
         String homeOfficeReferenceNumber = asylumCase
-                .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
-                .orElse("");
+            .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
+            .orElse("");
         if (homeOfficeReferenceNumber.isEmpty()) {
             homeOfficeReferenceNumber = asylumCase
-                        .read(GWF_REFERENCE_NUMBER, String.class)
-                        .orElseThrow(() -> new IllegalStateException(
-                            "Home office reference number (UAN or GWF) is not present; caseId: " + caseId + "."));
+                .read(GWF_REFERENCE_NUMBER, String.class)
+                .orElseThrow(() -> new IllegalStateException(
+                    "Home office reference number (UAN or GWF) is not present; caseId: " + caseId + "."));
         }
 
         try {
@@ -87,10 +92,10 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
             HomeOfficeApplicationDto applicationDto = homeOfficeResponse.getBody();
             // Error checking even though we received a 2xx status code (things could still be wrong)
             if (applicationDto == null || applicationDto.getAppellants() == null || applicationDto.getAppellants().isEmpty()) {
-                throw new HomeOfficeMissingApplicationException(-2, 
-                            "Biographic information from Home Office asylum (etc.) application with reference " +
-                             homeOfficeReferenceNumber +
-                             " could not be retrieved.\n\nThe Home Office validation API responded but the response contained no data.");
+                throw new HomeOfficeMissingApplicationException(-2,
+                    "Biographic information from Home Office asylum (etc.) application with reference " +
+                        homeOfficeReferenceNumber +
+                        " could not be retrieved.\n\nThe Home Office validation API responded but the response contained no data.");
             }
             // If we supplied a UAN (rather than a GWF) and the Home Office returned one, make sure they match 
             if (HOME_OFFICE_REF_PATTERN.matcher(homeOfficeReferenceNumber).matches()) {
@@ -100,11 +105,11 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                     log.warn("Home Office response did not contain a UAN despite the fact that the appellant is known to have one: {}.", homeOfficeReferenceNumber);
                 } else if (!uan.equals(homeOfficeReferenceNumber)) {
                     // The Home Office returned a *different* UAN: very bad
-                    throw new HomeOfficeMissingApplicationException(-3, 
-                                "Biographic information from Home Office asylum (etc.) application with reference " +
-                                homeOfficeReferenceNumber +
-                                " could not be retrieved.\n\nThe Home Office validation API responded but the information " + 
-                                "appears to be from an application with reference " + uan + ".");                    
+                    throw new HomeOfficeMissingApplicationException(-3,
+                        "Biographic information from Home Office asylum (etc.) application with reference " +
+                            homeOfficeReferenceNumber +
+                            " could not be retrieved.\n\nThe Home Office validation API responded but the information " +
+                            "appears to be from an application with reference " + uan + ".");
                 }
             }
 
@@ -161,22 +166,22 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
             String id = pp == null ? homeOfficeReferenceNumber : homeOfficeReferenceNumber + "/" + pp;
             try {
                 HomeOfficeAppellant appellant = new HomeOfficeAppellant(pp,
-                                                                        appellantDto.getFamilyName(), 
-                                                                        appellantDto.getGivenNames(), 
-                                                                        appellantDto.getDateOfBirth().toString(), 
-                                                                        appellantDto.getNationality(), 
-                                                                        yesOrNoFromBoolean(appellantDto.getRoa()), 
-                                                                        yesOrNoFromBoolean(appellantDto.getAsylumSupport()), 
-                                                                        yesOrNoFromBoolean(appellantDto.getHoFeeWaiver()), 
-                                                                        appellantDto.getLanguage(), 
-                                                                        yesOrNoFromBoolean(appellantDto.getInterpreterNeeded()));
+                    appellantDto.getFamilyName(),
+                    appellantDto.getGivenNames(),
+                    appellantDto.getDateOfBirth().toString(),
+                    appellantDto.getNationality(),
+                    yesOrNoFromBoolean(appellantDto.getRoa()),
+                    yesOrNoFromBoolean(appellantDto.getAsylumSupport()),
+                    yesOrNoFromBoolean(appellantDto.getHoFeeWaiver()),
+                    appellantDto.getLanguage(),
+                    yesOrNoFromBoolean(appellantDto.getInterpreterNeeded()));
                 appellants.add(new IdValue<HomeOfficeAppellant>(id, appellant));
             } catch (Exception e) {
                 String message = "Biographic information from Home Office asylum (etc.) application with reference " + homeOfficeReferenceNumber
-                               + " was retrieved but did not match the expected format " + (pp == null ? "" : " for appellant " + pp)
-                               + ": " + e.getMessage();
+                    + " was retrieved but did not match the expected format " + (pp == null ? "" : " for appellant " + pp)
+                    + ": " + e.getMessage();
                 throw new HomeOfficeMissingApplicationException(-4, message);
-            } 
+            }
         }
 
         asylumCase.write(HOME_OFFICE_APPELLANTS, appellants);
