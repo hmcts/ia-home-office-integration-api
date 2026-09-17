@@ -100,11 +100,9 @@ class GetAppellantDataHandlerTest {
     private static Stream<Arguments> cannotHandleMidEventScenarios() {
         Set<Event> validEvents = Set.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT);
         List<Arguments> argumentsList = new ArrayList<>();
-        Arrays.stream(Event.values()).filter(event -> !validEvents.contains(event))
-            .forEach(event -> validPageIds.forEach(pageId ->
-                    argumentsList.add(Arguments.of(event, pageId, PreSubmitCallbackStage.MID_EVENT))
-                )
-            );
+        Arrays.stream(Event.values()).filter(event -> !validEvents.contains(event)).forEach(event -> validPageIds.forEach(pageId ->
+            argumentsList.add(Arguments.of(event, pageId, PreSubmitCallbackStage.MID_EVENT)))
+        );
         validEvents.forEach(event ->
             validPageIds.forEach(pageId ->
                 Arrays.stream(PreSubmitCallbackStage.values()).filter(stage -> stage != PreSubmitCallbackStage.MID_EVENT)
