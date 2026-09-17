@@ -87,7 +87,7 @@ class GetAppellantDataHandlerTest {
     }
 
     private static Stream<Arguments> canHandleMidEventScenarios() {
-        Set<Event> validEvents = Set.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT);
+        Set<Event> validEvents = Set.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPELLANT_PERSONAL_DATA);
         List<Arguments> argumentsList = new ArrayList<>();
         validEvents.forEach(event ->
             validPageIds.forEach(pageId ->
@@ -98,13 +98,11 @@ class GetAppellantDataHandlerTest {
     }
 
     private static Stream<Arguments> cannotHandleMidEventScenarios() {
-        Set<Event> validEvents = Set.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT);
+        Set<Event> validEvents = Set.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPELLANT_PERSONAL_DATA);
         List<Arguments> argumentsList = new ArrayList<>();
-        Arrays.stream(Event.values()).filter(event -> !validEvents.contains(event))
-            .forEach(event -> validPageIds.forEach(pageId ->
-                    argumentsList.add(Arguments.of(event, pageId, PreSubmitCallbackStage.MID_EVENT))
-                )
-            );
+        Arrays.stream(Event.values()).filter(event -> !validEvents.contains(event)).forEach(event -> validPageIds.forEach(pageId ->
+            argumentsList.add(Arguments.of(event, pageId, PreSubmitCallbackStage.MID_EVENT)))
+        );
         validEvents.forEach(event ->
             validPageIds.forEach(pageId ->
                 Arrays.stream(PreSubmitCallbackStage.values()).filter(stage -> stage != PreSubmitCallbackStage.MID_EVENT)
@@ -207,7 +205,7 @@ class GetAppellantDataHandlerTest {
     @ParameterizedTest
     @MethodSource("homeOfficeExceptionSource")
     void handle_writesHttpStatus_whenServiceThrowsException(int status, String message) throws Exception {
-        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL_AFTER_SUBMIT);
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPELLANT_PERSONAL_DATA);
         when(callback.getPageId()).thenReturn("oocHomeOfficeReferenceNumber");
         when(caseDetails.getId()).thenReturn(12345L);
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("UAN123"));
