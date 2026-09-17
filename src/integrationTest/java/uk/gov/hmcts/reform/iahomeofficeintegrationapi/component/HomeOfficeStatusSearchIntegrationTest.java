@@ -60,7 +60,7 @@ class HomeOfficeStatusSearchIntegrationTest
     private UserDetailsProvider userDetailsProvider;
 
     @Test
-    @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
+    @WithMockUser(authorities = {"ctsc"})
     void shouldRetrieveHomeOfficeUserDetails() throws Exception {
 
         final String homeOfficeReference = "CustRef123";
@@ -76,7 +76,7 @@ class HomeOfficeStatusSearchIntegrationTest
             = new IaCaseHomeOfficeIntegrationApiClient(mockMvc);
 
         final CallbackForTestBuilder callback = callback()
-            .event(Event.SUBMIT_APPEAL)
+            .event(Event.MARK_APPEAL_PAID)
             .caseDetails(someCaseDetailsWith()
                 .state(State.APPEAL_SUBMITTED)
                 .caseData(anAsylumCase()
@@ -109,7 +109,7 @@ class HomeOfficeStatusSearchIntegrationTest
     }
 
     @Test
-    @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
+    @WithMockUser(authorities = {"ctsc"})
     void shouldRetrieveHomeOfficeUserDetailsWithNullValue() throws Exception {
 
         final String homeOfficeReference = "CustRef000";
@@ -125,7 +125,7 @@ class HomeOfficeStatusSearchIntegrationTest
             = new IaCaseHomeOfficeIntegrationApiClient(mockMvc);
 
         final CallbackForTestBuilder callback = callback()
-            .event(Event.SUBMIT_APPEAL)
+            .event(Event.MARK_APPEAL_PAID)
             .caseDetails(someCaseDetailsWith()
                 .state(State.APPEAL_SUBMITTED)
                 .caseData(anAsylumCase()
