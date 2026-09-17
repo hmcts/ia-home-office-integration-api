@@ -30,8 +30,11 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Home
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.RetriesExceededException;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -72,57 +75,86 @@ class GetAppellantDataHandlerTest {
     @InjectMocks
     private GetAppellantDataHandler handler;
 
+    private static final Set<String> validPageIds = Set.of(
+        "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "appellantBasicDetails",
+        "cuiHomeOfficeReferenceNumber", "cuiAppellantName", "cuiAppellantDob"
+    );
+
     @BeforeEach
     void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
-    @Test
-    void canHandle_returnsTrue_whenStageAndEventAndPageIdCorrect_mid_event() {
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
-
-        assertTrue(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
+    private static Stream<Arguments> canHandleMidEventScenarios() {
+        Set<Event> validEvents = Set.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT);
+        List<Arguments> argumentsList = new ArrayList<>();
+        validEvents.forEach(event ->
+            validPageIds.forEach(pageId ->
+                argumentsList.add(Arguments.of(event, pageId, PreSubmitCallbackStage.MID_EVENT))
+            )
+        );
+        return argumentsList.stream();
     }
 
-    @Test
-    void canHandle_returnsFalse_WrongPageId_mid_event() {
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getPageId()).thenReturn("thisPageDoesNotExist");
-
-        assertFalse(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
+    private static Stream<Arguments> cannotHandleMidEventScenarios() {
+        Set<Event> validEvents = Set.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT);
+        List<Arguments> argumentsList = new ArrayList<>();
+        Arrays.stream(Event.values()).filter(event -> !validEvents.contains(event))
+            .forEach(event -> validPageIds.forEach(pageId ->
+                    argumentsList.add(Arguments.of(event, pageId, PreSubmitCallbackStage.MID_EVENT))
+                )
+            );
+        validEvents.forEach(event ->
+            validPageIds.forEach(pageId ->
+                Arrays.stream(PreSubmitCallbackStage.values()).filter(stage -> stage != PreSubmitCallbackStage.MID_EVENT)
+                    .forEach(stage ->
+                        argumentsList.add(Arguments.of(event, pageId, stage))
+                    )
+            )
+        );
+        validEvents.forEach(event ->
+            argumentsList.add(Arguments.of(event, "invalidPageId", PreSubmitCallbackStage.MID_EVENT))
+        );
+        return argumentsList.stream();
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT", "SUBMIT_APPEAL"}, mode = EnumSource.Mode.EXCLUDE)
-    void canHandle_returnsFalse_WrongEvent_mid_event(Event event) {
+    @MethodSource("canHandleMidEventScenarios")
+    void canHandle_returnsTrue_mid_event(Event event, String pageId, PreSubmitCallbackStage stage) {
         when(callback.getEvent()).thenReturn(event);
-        when(callback.getPageId()).thenReturn("oocHomeOfficeReferenceNumber");
+        when(callback.getPageId()).thenReturn(pageId);
 
-        assertFalse(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
+        assertTrue(handler.canHandle(stage, callback));
     }
 
     @ParameterizedTest
-    @EnumSource(value = PreSubmitCallbackStage.class, names = {"MID_EVENT"}, mode = EnumSource.Mode.EXCLUDE)
-    void canHandle_returnsFalse_WrongStage_mid_event(PreSubmitCallbackStage preSubmitCallbackStage) {
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getPageId()).thenReturn("cuiHomeOfficeReferenceNumber");
+    @MethodSource("cannotHandleMidEventScenarios")
+    void canHandle_returnsFalse_mid_event(Event event, String pageId, PreSubmitCallbackStage stage) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn(pageId);
 
-        assertFalse(handler.canHandle(preSubmitCallbackStage, callback));
+        assertFalse(handler.canHandle(stage, callback));
     }
 
     @Test
     void canHandle_returnsTrue_submit() {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        assertTrue(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
+        assertTrue(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
     }
 
     @ParameterizedTest
-    @EnumSource(value = PreSubmitCallbackStage.class, names = {"MID_EVENT"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = PreSubmitCallbackStage.class, names = {"ABOUT_TO_SUBMIT"}, mode = EnumSource.Mode.EXCLUDE)
     void canHandle_returnsFalse_submit_wrongStage(PreSubmitCallbackStage preSubmitCallbackStage) {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         assertFalse(handler.canHandle(preSubmitCallbackStage, callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL"}, mode = EnumSource.Mode.EXCLUDE)
+    void canHandle_returnsFalse_submit_wrongStage(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        assertFalse(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
     }
 
     @ParameterizedTest
