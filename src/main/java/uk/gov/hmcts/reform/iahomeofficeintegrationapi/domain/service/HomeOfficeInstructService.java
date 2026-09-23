@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -10,7 +8,6 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOffice
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeInstructApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.RetriesExceededException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AccessTokenProvider;
-
 
 @Service
 @Slf4j
@@ -47,22 +44,6 @@ public class HomeOfficeInstructService {
                 messageType,
                 correlationId
             );
-            // TODO Start block remove this
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            try {
-                String requestBody = objectMapper.writeValueAsString(request);
-                log.info("Full request body: {}", requestBody);
-            } catch (JsonProcessingException e) {
-                log.error("Error serializing request body for caseId: {}, reference number: {}, "
-                    + logMessage + ", Message: {}: ",
-                    caseId,
-                    homeOfficeReferenceNumber,
-                    messageType,
-                    correlationId,
-                    e.getMessage());
-            }
-            // TODO End block
             instructResponse = homeOfficeInstructApi.sendNotification(accessToken, request);
 
             if (instructResponse == null || instructResponse.getMessageHeader() == null) {
