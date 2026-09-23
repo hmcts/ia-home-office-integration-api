@@ -227,11 +227,11 @@ dependencyCheck {
     }
 }
 
-ext["tomcat.version"] = "10.1.57"
+ext["tomcat.version"] = "10.1.59"
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2025.0.2"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2025.0.3"
         mavenBom 'com.fasterxml.jackson:jackson-bom:2.21.5'
 
         // CVE-2026-34478
@@ -247,7 +247,7 @@ dependencyManagement {
         // CVE-2026-33870
         // CVE-2026-33871
         // CVE-2025-67735 - from spring-boot-starter-data-redis@3.5.14
-        mavenBom "io.netty:netty-bom:4.2.17.Final"
+        mavenBom "io.netty:netty-bom:4.2.18.Final"
     }
 
     dependencies {

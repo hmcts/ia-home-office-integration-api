@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.JacksonJsonParser;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeTokenApi;
 
@@ -34,6 +35,7 @@ public class HomeOfficeAuthorizor {
         this.clientSecret = clientSecret;
     }
 
+    @Cacheable(value = "hoTokenCache", key = "'hoTokenCache'")
     public String fetchCodeAuthorization() {
 
         Map<String, String> body = new HashMap<>();

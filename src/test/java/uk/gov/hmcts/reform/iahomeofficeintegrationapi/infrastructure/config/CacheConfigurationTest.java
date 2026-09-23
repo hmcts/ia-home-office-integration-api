@@ -68,10 +68,11 @@ class CacheConfigurationTest {
 
         CacheManager result = cacheConfiguration.cacheManager(redisConnectionFactory);
         result.getCache("systemUserTokenCache");
+        result.getCache("hoTokenCache");
         result.getCache("userInfoCache");
 
         assertThat(result.getCacheNames())
-                .contains("systemUserTokenCache", "userInfoCache");
+                .contains("systemUserTokenCache", "userInfoCache", "hoTokenCache");
     }
 
     @Test
