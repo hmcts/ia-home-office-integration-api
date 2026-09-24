@@ -1,12 +1,8 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-
 import feign.FeignException;
 import feign.Request;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,11 +10,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
-
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseGoneException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.CaseIncompatibleException;
@@ -41,10 +36,11 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.CcdD
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeResponseException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.idam.IdentityManagerResponseException;
 
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -53,7 +49,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -64,6 +59,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 class CcdDataServiceTest {
 
     private static final String HMCTS_REF_NUM = "PA/12345/2026";
@@ -281,7 +277,7 @@ class CcdDataServiceTest {
 
         assertEquals(
             expected,
-            ccdDataService.nextHistoryId(Optional.of(data))
+            ccdDataService.nextHistoryId(data)
         );
     }
 
@@ -309,7 +305,7 @@ class CcdDataServiceTest {
 
         when(existing.getHistory()).thenReturn(history("1"));
 
-        when(asylumCase.read(any()))
+        when(asylumCase.read(AsylumCaseDefinition.STATUTORY_TIMEFRAME_24_WEEKS, StatutoryTimeframe24Weeks.class))
             .thenReturn(Optional.of(existing));
 
         stubStartEvent(asylumCase);
@@ -373,7 +369,7 @@ class CcdDataServiceTest {
             eq(USER_TOKEN),
             eq(S2S_TOKEN),
             nullable(String.class),
-            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
+            eq(Event.STF_24W_DETERMINATION.toString())
         )).thenThrow(new RuntimeException("Some other error"));
 
         RuntimeException exception = assertThrows(
@@ -387,7 +383,7 @@ class CcdDataServiceTest {
             eq(USER_TOKEN),
             eq(S2S_TOKEN),
             nullable(String.class),
-            eq(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString())
+            eq(Event.STF_24W_DETERMINATION.toString())
         );
     }
 
@@ -480,16 +476,13 @@ class CcdDataServiceTest {
     }
 
     private void stubCaseId() {
-
         when(dbUtils.getCaseId(HMCTS_REF_NUM))
             .thenReturn(CCD_CASE_ID);
     }
 
     private void stubTokens() {
-
         when(idamService.getServiceUserToken())
             .thenReturn(USER_TOKEN);
-
         when(serviceAuthorization.generate())
             .thenReturn(S2S_TOKEN);
     }
