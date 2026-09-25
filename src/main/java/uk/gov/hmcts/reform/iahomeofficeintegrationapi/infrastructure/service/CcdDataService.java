@@ -114,7 +114,7 @@ public class CcdDataService {
         StatutoryTimeframe24Weeks stf24w = toStf24w(newHistoryId, status, hoStatutoryTimeframeDto);
         eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), stf24w);
 
-        String summary = "Home Office statutory timeframe status determined as " + (isYes ? "not " : "") + "suitable for 24 week timeframe.";
+        String summary = "Home Office statutory timeframe status determined as " + (isYes ? "" : "not") + "suitable for 24 week timeframe.";
 
         return submitEvent(userToken, s2sToken, caseId, eventData, startEventDetails.getToken(), summary);
 
