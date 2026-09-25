@@ -98,7 +98,6 @@ public class CcdDataService {
 
         AsylumCase asylumCase = caseDetails.getCaseData();
         StatutoryTimeframe24Weeks existingData = asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS, StatutoryTimeframe24Weeks.class).orElse(null);
-        String newHistoryId = nextHistoryId(existingData);
 
         checkStatusNotAlreadySet(existingData, caseId);
 
@@ -111,7 +110,7 @@ public class CcdDataService {
         eventData.put(STF_24W_CURRENT_STATUS_AUTO_GENERATED.value(), status);
         eventData.put(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value(), status);
         eventData.put(STF_24W_CURRENT_REASON_AUTO_GENERATED.value(), STATUTORY_TIMEFRAME_REASON);
-        StatutoryTimeframe24Weeks stf24w = toStf24w(newHistoryId, status, hoStatutoryTimeframeDto);
+        StatutoryTimeframe24Weeks stf24w = toStf24w(nextHistoryId(existingData), status, hoStatutoryTimeframeDto);
         eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), stf24w);
 
         String summary = "Home Office statutory timeframe status determined as " + (isYes ? "" : "not") + "suitable for 24 week timeframe.";
