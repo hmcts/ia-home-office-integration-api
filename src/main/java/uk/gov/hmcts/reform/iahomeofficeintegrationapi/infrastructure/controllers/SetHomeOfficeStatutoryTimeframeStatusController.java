@@ -81,10 +81,10 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         @Valid @RequestBody HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto
     ) throws Exception {
         SubmitEventDetails response = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
-        boolean hasCallbackError = !response.getCallbackErrorMessage().isBlank();
         log.info(response.getCallbackResponseStatus());
         log.info(String.valueOf(response.getCallbackResponseStatusCode()));
         log.info(response.getCallbackErrorMessage());
+        boolean hasCallbackError = !response.getCallbackErrorMessage().isBlank();
         if (!hasCallbackError && !response.getData().isEmpty()) {
             return ResponseEntity.status(HttpStatus.CREATED).body(hoStatutoryTimeframeDto);
         } else {
