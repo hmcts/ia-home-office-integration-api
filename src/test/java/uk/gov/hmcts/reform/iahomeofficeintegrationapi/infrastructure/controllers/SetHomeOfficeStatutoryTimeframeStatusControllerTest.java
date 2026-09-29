@@ -18,8 +18,10 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -103,5 +105,26 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
         // Then
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(dto, response.getBody());
+    }
+
+
+    @Test
+    void should_throw() {
+        String s2sToken = "Bearer test-token";
+        when(submitEventDetails.getCallbackResponseStatusCode()).thenReturn(200);
+        when(ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto))
+            .thenReturn(submitEventDetails);
+
+        when(submitEventDetails.getData()).thenReturn(emptyMap());
+        assertThrows(Exception.class, () ->
+            controller.updateHomeOfficeStatutoryTimeframeStatus(s2sToken, hoStatutoryTimeframeDto));
+
+        when(submitEventDetails.getData()).thenReturn(null);
+        assertThrows(Exception.class, () ->
+            controller.updateHomeOfficeStatutoryTimeframeStatus(s2sToken, hoStatutoryTimeframeDto));
+
+        when(submitEventDetails.getCallbackErrorMessage()).thenReturn("error");
+        assertThrows(Exception.class, () ->
+            controller.updateHomeOfficeStatutoryTimeframeStatus(s2sToken, hoStatutoryTimeframeDto));
     }
 }
