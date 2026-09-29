@@ -123,7 +123,7 @@ class GetAppellantDataHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT", "SUBMIT_APPEAL"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPELLANT_PERSONAL_DATA", "SUBMIT_APPEAL"}, mode = EnumSource.Mode.EXCLUDE)
     void canHandle_returnsFalse_WrongEvent_mid_event(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(callback.getPageId()).thenReturn("oocHomeOfficeReferenceNumber");
