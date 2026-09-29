@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
-
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service.CcdDataService;
 
@@ -79,18 +77,13 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
     public ResponseEntity<HomeOfficeStatutoryTimeframeDto> updateHomeOfficeStatutoryTimeframeStatus(
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
         @Valid @RequestBody HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto
-    ) throws Exception {
-        SubmitEventDetails response = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
-        log.info(response.getCallbackResponseStatus());
-        log.info(String.valueOf(response.getCallbackResponseStatusCode()));
-        log.info(response.getCallbackErrorMessage());
-        boolean hasCallbackError = response.getCallbackErrorMessage() != null && !response.getCallbackErrorMessage().isBlank();
-        if (!hasCallbackError && response.getData() != null && !response.getData().isEmpty()) {
+    ) throws RuntimeException {
+        try {
+            ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(hoStatutoryTimeframeDto);
-        } else {
-            log.error("HTTP POST to /home-office-statutory-timeframe-status endpoint was unsuccessful. {}",
-                hasCallbackError ? "Callback error was" + response.getCallbackErrorMessage() : "Data returned was empty.");
-            throw new Exception("The 24-week status could not be set.");
+        } catch (Exception e) {
+            log.error("HTTP POST to /home-office-statutory-timeframe-status endpoint was unsuccessful.", e);
+            throw e;
         }
     }
 }
