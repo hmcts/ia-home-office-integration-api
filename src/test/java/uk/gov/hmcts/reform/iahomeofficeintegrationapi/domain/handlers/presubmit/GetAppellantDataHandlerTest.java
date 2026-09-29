@@ -86,15 +86,12 @@ class GetAppellantDataHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
-    private static Stream<Arguments> canHandleMidEventScenarios() {
-        Set<Event> validEvents = Set.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT);
-        List<Arguments> argumentsList = new ArrayList<>();
-        validEvents.forEach(event ->
-            validPageIds.forEach(pageId ->
-                argumentsList.add(Arguments.of(event, pageId, PreSubmitCallbackStage.MID_EVENT))
-            )
-        );
-        return argumentsList.stream();
+    @Test
+    void canHandle_returnsTrue_whenStageAndEventAndPageIdCorrect_mid_event() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+
+        assertTrue(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
     }
 
     private static Stream<Arguments> cannotHandleMidEventScenarios() {
@@ -117,42 +114,43 @@ class GetAppellantDataHandlerTest {
         return argumentsList.stream();
     }
 
-    @ParameterizedTest
-    @MethodSource("canHandleMidEventScenarios")
-    void canHandle_returnsTrue_mid_event(Event event, String pageId, PreSubmitCallbackStage stage) {
-        when(callback.getEvent()).thenReturn(event);
-        when(callback.getPageId()).thenReturn(pageId);
+    @Test
+    void canHandle_returnsFalse_WrongPageId_mid_event() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("thisPageDoesNotExist");
 
-        assertTrue(handler.canHandle(stage, callback));
+        assertFalse(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
     }
 
     @ParameterizedTest
-    @MethodSource("cannotHandleMidEventScenarios")
-    void canHandle_returnsFalse_mid_event(Event event, String pageId, PreSubmitCallbackStage stage) {
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT", "SUBMIT_APPEAL"}, mode = EnumSource.Mode.EXCLUDE)
+    void canHandle_returnsFalse_WrongEvent_mid_event(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(callback.getPageId()).thenReturn(pageId);
+        when(callback.getPageId()).thenReturn("oocHomeOfficeReferenceNumber");
 
-        assertFalse(handler.canHandle(stage, callback));
+        assertFalse(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = PreSubmitCallbackStage.class, names = {"MID_EVENT"}, mode = EnumSource.Mode.EXCLUDE)
+    void canHandle_returnsFalse_WrongStage_mid_event(PreSubmitCallbackStage preSubmitCallbackStage) {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("cuiHomeOfficeReferenceNumber");
+
+        assertFalse(handler.canHandle(preSubmitCallbackStage, callback));
     }
 
     @Test
     void canHandle_returnsTrue_submit() {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        assertTrue(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+        assertTrue(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
     }
 
     @ParameterizedTest
-    @EnumSource(value = PreSubmitCallbackStage.class, names = {"ABOUT_TO_SUBMIT"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = PreSubmitCallbackStage.class, names = {"MID_EVENT"}, mode = EnumSource.Mode.EXCLUDE)
     void canHandle_returnsFalse_submit_wrongStage(PreSubmitCallbackStage preSubmitCallbackStage) {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         assertFalse(handler.canHandle(preSubmitCallbackStage, callback));
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL"}, mode = EnumSource.Mode.EXCLUDE)
-    void canHandle_returnsFalse_submit_wrongStage(Event event) {
-        when(callback.getEvent()).thenReturn(event);
-        assertFalse(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
     }
 
     @ParameterizedTest
