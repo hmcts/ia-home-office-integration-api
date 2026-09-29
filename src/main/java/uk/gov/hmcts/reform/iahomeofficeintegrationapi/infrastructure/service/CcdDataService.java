@@ -115,7 +115,7 @@ public class CcdDataService {
 
         String summary = "Home Office statutory timeframe status determined as " + (isYes ? "" : "not") + "suitable for 24 week timeframe.";
 
-        return submitEvent(userToken, s2sToken, caseId, eventData, startEventDetails.getToken(), summary);
+        return submitEvent(userToken, s2sToken, caseId, eventData, startEventDetails.getToken(), summary, isYes);
 
     }
 
@@ -130,31 +130,35 @@ public class CcdDataService {
         }
     }
 
+    private void handleError(Exception ex, String caseId, boolean isYes) {
+        String exMessage = ex.getMessage();
+        if (exMessage != null && exMessage.contains("Case ID is not valid")) {
+            String message = "Case no longer exists for case ID " + caseId + ".";
+            log.warn("{}\n\n{}", message, exMessage);
+            // This exception will result in a 410 (Gone) code being returned to the Home Office.  This is
+            // more descriptive than a 404, which is what CaseNotFoundException() would cause to be returned.
+            throw new CaseGoneException(message);
+        } else if (exMessage != null && exMessage.contains("\"status\":422,\"error\":\"Unprocessable Entity\"")) {
+            String message = "Case incompatible with supplied 24-week status for case ID " + caseId + ".";
+            log.warn("{}\n\n{}", message, exMessage);
+            // This exception will result in a 422 (Unprocessable Entity) code being returned to the Home Office.  This is
+            // more descriptive than a 409, which at the moment we are using solely to indicate that the status has already been set.
+            throw new CaseIncompatibleException(message, isYes ? YesOrNo.YES : YesOrNo.NO);
+        }
+    }
+
     private StartEventDetails getStartEventByCase(String userToken, String s2sToken, String caseId, boolean isYes) {
         try {
             return ccdDataApi.startEventByCase(userToken, s2sToken, caseId, STF_24W_DETERMINATION.toString());
         } catch (Exception ex) {
-            String exMessage = ex.getMessage();
-            if (exMessage != null && exMessage.contains("Case ID is not valid")) {
-                String message = "Case no longer exists for case ID " + caseId + ".";
-                log.warn("{}\n\n{}", message, exMessage);
-                // This exception will result in a 410 (Gone) code being returned to the Home Office.  This is
-                // more descriptive than a 404, which is what CaseNotFoundException() would cause to be returned.
-                throw new CaseGoneException(message);
-            } else if (exMessage != null && exMessage.contains("\"status\":422,\"error\":\"Unprocessable Entity\"")) {
-                String message = "Case incompatible with supplied 24-week status for case ID " + caseId + ".";
-                log.warn("{}\n\n{}", message, exMessage);
-                // This exception will result in a 422 (Unprocessable Entity) code being returned to the Home Office.  This is
-                // more descriptive than a 409, which at the moment we are using solely to indicate that the status has already been set.
-                throw new CaseIncompatibleException(message, isYes ? YesOrNo.YES : YesOrNo.NO);
-            }
+            handleError(ex, caseId, isYes);
             throw ex;
         }
     }
 
     private SubmitEventDetails submitEvent(
         String userToken, String s2sToken, String caseId, Map<String, Object> eventData,
-        String eventToken, String summary) {
+        String eventToken, String summary, boolean isYes) {
 
         Map<String, Object> eventMetadata = new HashMap<>();
         eventMetadata.put("id", STF_24W_DETERMINATION.toString());
@@ -163,8 +167,12 @@ public class CcdDataService {
 
         CaseDataContent requestBody =
             new CaseDataContent(caseId, eventData, eventMetadata, eventToken, false);
-
-        return ccdDataApi.submitEventByCase(userToken, s2sToken, caseId, requestBody);
+        try {
+            return ccdDataApi.submitEventByCase(userToken, s2sToken, caseId, requestBody);
+        } catch (Exception ex) {
+            handleError(ex, caseId, isYes);
+            throw ex;
+        }
     }
 
     public StatutoryTimeframe24Weeks toStf24w(String historyId, YesOrNo status, HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto) {
