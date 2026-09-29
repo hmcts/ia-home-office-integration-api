@@ -84,8 +84,8 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         log.info(response.getCallbackResponseStatus());
         log.info(String.valueOf(response.getCallbackResponseStatusCode()));
         log.info(response.getCallbackErrorMessage());
-        boolean hasCallbackError = !response.getCallbackErrorMessage().isBlank();
-        if (!hasCallbackError && !response.getData().isEmpty()) {
+        boolean hasCallbackError = response.getCallbackErrorMessage() != null && !response.getCallbackErrorMessage().isBlank();
+        if (!hasCallbackError && response.getData() != null && !response.getData().isEmpty()) {
             return ResponseEntity.status(HttpStatus.CREATED).body(hoStatutoryTimeframeDto);
         } else {
             log.error("HTTP POST to /home-office-statutory-timeframe-status endpoint was unsuccessful. {}",
