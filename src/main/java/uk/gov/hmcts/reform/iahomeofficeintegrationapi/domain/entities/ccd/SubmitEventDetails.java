@@ -23,4 +23,5 @@ public class SubmitEventDetails {
     private Map<String, Object> data;
     private int callbackResponseStatusCode;
     private String callbackResponseStatus;
+    private String callbackErrorMessage;
 }

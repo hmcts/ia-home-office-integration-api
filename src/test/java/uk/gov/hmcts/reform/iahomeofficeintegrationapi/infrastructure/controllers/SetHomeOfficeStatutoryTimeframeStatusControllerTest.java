@@ -89,7 +89,8 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
             State.APPEAL_SUBMITTED,
             new HashMap<>(),
             HttpStatus.OK.value(),
-            "OK"
+            "OK",
+            null
         );
 
         when(ccdDataService.setHomeOfficeStatutoryTimeframeStatus(dto))

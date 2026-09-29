@@ -81,11 +81,12 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         @Valid @RequestBody HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto
     ) throws Exception {
         SubmitEventDetails response = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
-        int httpStatus = response.getCallbackResponseStatusCode();
-        if (httpStatus == HttpStatus.OK.value()) {
+        boolean hasCallbackError = !response.getCallbackErrorMessage().isBlank();
+        if (!hasCallbackError && !response.getData().isEmpty()) {
             return ResponseEntity.status(HttpStatus.CREATED).body(hoStatutoryTimeframeDto);
         } else {
-            log.error("HTTP POST to /home-office-statutory-timeframe-status endpoint was unsuccessful.  The return status from CCD was {}.", httpStatus);
+            log.error("HTTP POST to /home-office-statutory-timeframe-status endpoint was unsuccessful. {}",
+                hasCallbackError ? "Callback error was" + response.getCallbackErrorMessage() : "Data returned was empty.");
             throw new Exception("The 24-week status could not be set.");
         }
     }
