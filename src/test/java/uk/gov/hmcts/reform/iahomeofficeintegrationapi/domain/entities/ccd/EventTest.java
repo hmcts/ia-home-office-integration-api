@@ -53,8 +53,9 @@ class EventTest {
             Arguments.of("requestResponseAmend", Event.REQUEST_RESPONSE_AMEND.toString()),
             Arguments.of("changeDirectionDueDate", Event.CHANGE_DIRECTION_DUE_DATE.toString()),
             Arguments.of("decideFtpaApplication", Event.DECIDE_FTPA_APPLICATION.toString()),
-            Arguments.of("addStatutoryTimeframe24Weeks", Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString()),
+            Arguments.of("addStatutoryTimeframe24Weeks", Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS.toString()),
             Arguments.of("removeStatutoryTimeframe24Weeks", Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS.toString()),
+            Arguments.of("stf24wDetermination", Event.STF_24W_DETERMINATION.toString()),
             Arguments.of("unknown", Event.UNKNOWN.toString())
         );
     }

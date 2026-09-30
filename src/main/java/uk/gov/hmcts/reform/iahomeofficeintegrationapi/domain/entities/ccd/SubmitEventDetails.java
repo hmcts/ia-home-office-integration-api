@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.util.Map;
@@ -21,6 +22,10 @@ public class SubmitEventDetails {
     private String jurisdiction;
     private State state;
     private Map<String, Object> data;
+    @JsonProperty("callback_response_status_code")
     private int callbackResponseStatusCode;
+    @JsonProperty("callback_response_status")
     private String callbackResponseStatus;
+    @JsonProperty("callback_error_message")
+    private String callbackErrorMessage;
 }

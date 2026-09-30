@@ -1,28 +1,33 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.controllers;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.List;
-
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service.CcdDataService;
+
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
@@ -48,12 +53,11 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
     void should_update_statutory_timeframe_status_successfully() throws Exception {
         // Given
         String s2sToken = "Bearer test-token";
-        when(submitEventDetails.getCallbackResponseStatusCode()).thenReturn(200);
         when(ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto))
             .thenReturn(submitEventDetails);
 
         // When
-        ResponseEntity<HomeOfficeStatutoryTimeframeDto> response = 
+        ResponseEntity<HomeOfficeStatutoryTimeframeDto> response =
             controller.updateHomeOfficeStatutoryTimeframeStatus(s2sToken, hoStatutoryTimeframeDto);
 
         // Then
@@ -87,9 +91,10 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
             1L,
             "IA",
             State.APPEAL_SUBMITTED,
-            new HashMap<>(),
+            Map.of("something", "something"),
             HttpStatus.OK.value(),
-            "OK"
+            "OK",
+            null
         );
 
         when(ccdDataService.setHomeOfficeStatutoryTimeframeStatus(dto))
@@ -102,5 +107,27 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
         // Then
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(dto, response.getBody());
+    }
+
+
+    @Test
+    void should_log_and_throw_if_event_submission_throws() {
+        Logger responseLogger = (Logger) LoggerFactory.getLogger(SetHomeOfficeStatutoryTimeframeStatusController.class);
+        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+        listAppender.start();
+        responseLogger.addAppender(listAppender);
+
+        when(ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto))
+            .thenThrow(new NullPointerException("some exception error message"));
+        RuntimeException runtimeException = assertThrows(NullPointerException.class, () ->
+            controller.updateHomeOfficeStatutoryTimeframeStatus("Bearer test-token", hoStatutoryTimeframeDto));
+        assertEquals("some exception error message", runtimeException.getMessage());
+
+        List<ILoggingEvent> logEvents = listAppender.list;
+        assertEquals(1, logEvents.size());
+        ILoggingEvent loggingEvent = logEvents.getFirst();
+        assertEquals("HTTP POST to /home-office-statutory-timeframe-status endpoint was unsuccessful.",
+            loggingEvent.getFormattedMessage());
+        assertEquals(Level.ERROR, loggingEvent.getLevel());
     }
 }

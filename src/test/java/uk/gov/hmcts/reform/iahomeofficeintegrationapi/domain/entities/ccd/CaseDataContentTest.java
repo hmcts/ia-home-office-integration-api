@@ -34,14 +34,14 @@ class CaseDataContentTest {
         data.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), "True");
 
         event = new HashMap<>();
-        event.put("id", Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString());
+        event.put("id", Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS.toString());
 
         caseDataContent =
             new CaseDataContent(caseReference, data, event, eventToken, ignoreWarning);
 
         assertEquals("1234", caseDataContent.getCaseReference());
         assertEquals(data, caseDataContent.getData());
-        assertEquals(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS.toString(), caseDataContent.getEvent().get("id"));
+        assertEquals(Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS.toString(), caseDataContent.getEvent().get("id"));
         assertEquals("eventToken", caseDataContent.getEventToken());
         assertEquals(true, caseDataContent.isIgnoreWarning());
     }

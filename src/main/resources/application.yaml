@@ -276,6 +276,7 @@ security:
     caseworker-ia-system:
       - "listCase"
       - "editCaseListing"
+      - "stf24wDetermination"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
