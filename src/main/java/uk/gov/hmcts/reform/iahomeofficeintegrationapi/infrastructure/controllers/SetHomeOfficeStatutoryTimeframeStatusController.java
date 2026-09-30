@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
-
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service.CcdDataService;
 
@@ -79,16 +77,13 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
     public ResponseEntity<HomeOfficeStatutoryTimeframeDto> updateHomeOfficeStatutoryTimeframeStatus(
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
         @Valid @RequestBody HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto
-    ) throws Exception {
-        log.info("HTTP POST to /home-office-statutory-timeframe-status endpoint called with payload: {}", hoStatutoryTimeframeDto);
-        SubmitEventDetails response = ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
-        int httpStatus = response.getCallbackResponseStatusCode();
-        if (httpStatus == HttpStatus.OK.value()) {
-            log.info("HTTP POST to /home-office-statutory-timeframe-status endpoint was successful.");
+    ) throws RuntimeException {
+        try {
+            ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(hoStatutoryTimeframeDto);
-        } else {
-            log.error("HTTP POST to /home-office-statutory-timeframe-status endpoint was unsuccessful.  The return status from CCD was {}.", httpStatus);
-            throw new Exception("The 24-week status could not be set.");
+        } catch (Exception e) {
+            log.error("HTTP POST to /home-office-statutory-timeframe-status endpoint was unsuccessful.", e);
+            throw e;
         }
     }
 }

@@ -16,6 +16,7 @@ class SubmitEventDetailsTest {
     private State state;
     private Map<String, Object> data;
     private final int callbackResponseStatusCode = 200;
+    private final String callbackError = "some error";
     private final String callbackResponseStatus = "CALLBACK_COMPLETED";
 
     private SubmitEventDetails submitEventDetails;
@@ -36,7 +37,7 @@ class SubmitEventDetailsTest {
         data.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), "True");
 
         submitEventDetails =
-            new SubmitEventDetails(id, jurisdiction, state, data, callbackResponseStatusCode, callbackResponseStatus);
+            new SubmitEventDetails(id, jurisdiction, state, data, callbackResponseStatusCode, callbackResponseStatus, callbackError);
 
         assertEquals(id, submitEventDetails.getId());
         assertEquals(jurisdiction, submitEventDetails.getJurisdiction());
@@ -44,5 +45,6 @@ class SubmitEventDetailsTest {
         assertEquals(data, submitEventDetails.getData());
         assertEquals(callbackResponseStatusCode, submitEventDetails.getCallbackResponseStatusCode());
         assertEquals(callbackResponseStatus, submitEventDetails.getCallbackResponseStatus());
+        assertEquals(callbackError, submitEventDetails.getCallbackErrorMessage());
     }
 }
