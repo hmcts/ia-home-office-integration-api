@@ -44,6 +44,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd
 @Slf4j
 public class CcdDataService {
 
+    // TODO DIAC-2945 subject to change
     private static final String STATUTORY_TIMEFRAME_REASON = "Home Office initial determination";
     private static final String STATUTORY_TIMEFRAME_USER = "Home Office Integration API";
 
@@ -105,7 +106,7 @@ public class CcdDataService {
         eventData.put(STF_24W_HOME_OFFICE_COHORT.value(),
             hoStatutoryTimeframeDto.getStf24weekCohortDtos().stream()
                 .filter(Stf24WeekCohortDto::isIncluded)
-                .map(Stf24WeekCohortDto::getName).collect(Collectors.joining(",")));
+                .map(Stf24WeekCohortDto::getName).collect(Collectors.joining(", ")));
         YesOrNo status = isYes ? YesOrNo.YES : YesOrNo.NO;
         eventData.put(STF_24W_CURRENT_STATUS_AUTO_GENERATED.value(), status);
         eventData.put(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED.value(), status);
@@ -113,6 +114,7 @@ public class CcdDataService {
         StatutoryTimeframe24Weeks stf24w = toStf24w(nextHistoryId(existingData), status, hoStatutoryTimeframeDto);
         eventData.put(STATUTORY_TIMEFRAME_24_WEEKS.value(), stf24w);
 
+        // TODO DIAC-2945 subject to change
         String summary = "Home Office statutory timeframe status determined as " + (isYes ? "" : "not ") + "suitable for 24 week timeframe.";
 
         return submitEvent(userToken, s2sToken, caseId, eventData, startEventDetails.getToken(), summary, isYes);
