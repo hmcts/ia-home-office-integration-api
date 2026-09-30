@@ -57,7 +57,7 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
             .thenReturn(submitEventDetails);
 
         // When
-        ResponseEntity<HomeOfficeStatutoryTimeframeDto> response = 
+        ResponseEntity<HomeOfficeStatutoryTimeframeDto> response =
             controller.updateHomeOfficeStatutoryTimeframeStatus(s2sToken, hoStatutoryTimeframeDto);
 
         // Then
@@ -119,9 +119,9 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
 
         when(ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto))
             .thenThrow(new NullPointerException("some exception error message"));
-
         RuntimeException runtimeException = assertThrows(NullPointerException.class, () ->
             controller.updateHomeOfficeStatutoryTimeframeStatus("Bearer test-token", hoStatutoryTimeframeDto));
+        assertEquals("some exception error message", runtimeException.getMessage());
 
         List<ILoggingEvent> logEvents = listAppender.list;
         assertEquals(1, logEvents.size());
@@ -129,7 +129,5 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
         assertEquals("HTTP POST to /home-office-statutory-timeframe-status endpoint was unsuccessful.",
             loggingEvent.getFormattedMessage());
         assertEquals(Level.ERROR, loggingEvent.getLevel());
-
-        assertEquals("some exception error message", runtimeException.getMessage());
     }
 }
