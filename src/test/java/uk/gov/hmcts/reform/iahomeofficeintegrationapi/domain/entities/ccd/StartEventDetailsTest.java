@@ -39,7 +39,7 @@ class StartEventDetailsTest {
     @Test
     void should_hold_onto_values() {
 
-        eventId = Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS;
+        eventId = Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS;
 
         when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
@@ -48,7 +48,7 @@ class StartEventDetailsTest {
 
         startEventDetails = new StartEventDetails(eventId, token, caseDetails);
 
-        assertEquals(Event.SET_HOME_OFFICE_STATUTORY_TIMEFRAME_STATUS, startEventDetails.getEventId());
+        assertEquals(Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS, startEventDetails.getEventId());
         assertEquals(token, startEventDetails.getToken());
         assertEquals(caseId, startEventDetails.getCaseDetails().getId());
         assertEquals(jurisdiction, startEventDetails.getCaseDetails().getJurisdiction());
