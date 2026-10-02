@@ -112,7 +112,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
             match the details stored by the Home Office
             ## Do this next"""
             + "\r\n- Contact the Home Office to get the correct details"
-            + "\r\n- Use [Edit appeal](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/editAppealAfterSubmit) to update "
+            + "\r\n- Use [Edit appeal](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/editAppellantPersonalData) to update "
             + "the details as required"
             + "\r\n- [Request Home Office data](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/requestHomeOfficeData) "
             + "to match the appellant details with the Home Office details";

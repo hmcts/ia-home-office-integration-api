@@ -56,7 +56,7 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
     }
 
     private boolean isPreSubmission(Callback<AsylumCase> callback) {
-        return List.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent())
+        return List.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPELLANT_PERSONAL_DATA).contains(callback.getEvent())
             && List.of(
                 "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "appellantBasicDetails", // ExUI pages
                 "cuiHomeOfficeReferenceNumber", "cuiAppellantName", "cuiAppellantDob") // CUI pages
