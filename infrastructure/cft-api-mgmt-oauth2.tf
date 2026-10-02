@@ -77,7 +77,7 @@ module "cft_api_mgmt_oauth2_api" {
   protocols             = ["http", "https"]
   content_format        = "openapi-link"
   subscription_required = "false"
-  revision              = "3"
+  revision              = "4"
   providers = {
     azurerm = azurerm.aks-cftapps
   }
