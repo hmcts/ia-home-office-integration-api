@@ -32,7 +32,7 @@ public abstract class HomeOfficeStatutoryTimeframeBase {
 
     @JsonProperty(value = "hmctsReferenceNumber", required = true)
     @NotNull
-    @Pattern(regexp = "^(RP|PA|EA|HU|DC|EU|AG)/[0-9]{5}/[0-9]{4}$",
+    @Pattern(regexp = "^(RP|PA|EA|HU|DC|EU|AG)/[0-9]{5,6}/[0-9]{4}$",
              message = "Home Office reference ID must be of the form XX/12345/2026, where XX is the appeal type, " + 
                        "12345 stands for any five-digit number and 2026 is the year")
     private String hmctsReferenceNumber;
