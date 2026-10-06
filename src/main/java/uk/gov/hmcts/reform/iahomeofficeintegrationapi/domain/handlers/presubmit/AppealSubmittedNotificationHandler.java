@@ -1,23 +1,11 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import static java.util.Collections.emptyList;
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealSubmittedInstructMessage.AppealSubmittedInstructMessageBuilder.appealSubmittedInstructMessage;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.APPEAL_REQUESTED;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
-
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HomeOfficeAppellant;
-
-import java.util.List;
-import java.util.Optional;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealSubmittedInstructMessage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -26,13 +14,25 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitC
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.NotificationsHelper;
 
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.Collections.emptyList;
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealSubmittedInstructMessage.AppealSubmittedInstructMessageBuilder.appealSubmittedInstructMessage;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.APPEAL_REQUESTED;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService.handleIfFailure;
+
 
 @Slf4j
 @Component
 public class AppealSubmittedNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private HomeOfficeInstructService homeOfficeInstructService;
-    private NotificationsHelper notificationsHelper;
+    private final HomeOfficeInstructService homeOfficeInstructService;
+    private final NotificationsHelper notificationsHelper;
 
     public AppealSubmittedNotificationHandler(
         HomeOfficeInstructService homeOfficeInstructService,
@@ -90,6 +90,7 @@ public class AppealSubmittedNotificationHandler implements PreSubmitCallbackHand
         final String notificationStatus = homeOfficeInstructService.sendNotification(bundleInstructMessage);
 
         asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_APPEAL_SUBMITTED_INSTRUCT_STATUS, notificationStatus);
+        handleIfFailure(asylumCase, notificationStatus, AsylumCaseDefinition.HOME_OFFICE_APPEAL_SUBMITTED_INSTRUCT_FAIL_DATE_TIME);
 
         log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
             APPEAL_REQUESTED.name(), caseId, homeOfficeReferenceNumber, notificationStatus, callback.getEvent());

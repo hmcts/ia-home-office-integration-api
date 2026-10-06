@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.Getter;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.DynamicList;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HearingCentre;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HomeOfficeAppellant;
@@ -40,6 +41,9 @@ public enum AsylumCaseDefinition {
 
     HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS(
         "homeOfficeAppellantApiResponseStatus", new TypeReference<String>(){}),
+
+    HOME_OFFICE_APPELLANT_API_RESPONSE_FAIL_DATE_TIME(
+        "homeOfficeAppellantApiResponseFailDateTime", new TypeReference<String>(){}),
 
     HOME_OFFICE_APPELLANT_CLAIM_DATE(
         "homeOfficeAppellantClaimDate", new TypeReference<String>(){}),
@@ -152,47 +156,83 @@ public enum AsylumCaseDefinition {
     HOME_OFFICE_INSTRUCT_STATUS(
         "homeOfficeInstructStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeInstructFailDateTime", new TypeReference<String>() {}),
+
     HOME_OFFICE_REQUEST_REVIEW_INSTRUCT_STATUS(
         "homeOfficeRequestReviewInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_REQUEST_REVIEW_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeRequestReviewInstructFailDateTime", new TypeReference<String>() {}),
 
     HOME_OFFICE_HEARING_INSTRUCT_STATUS(
         "homeOfficeHearingInstructStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_HEARING_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeHearingInstructFailDateTime", new TypeReference<String>() {}),
+
     HOME_OFFICE_EDIT_LISTING_INSTRUCT_STATUS(
         "homeOfficeEditListingInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_EDIT_LISTING_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeEditListingInstructFailDateTime", new TypeReference<String>() {}),
 
     HOME_OFFICE_ADJOURN_WITHOUT_DATE_INSTRUCT_STATUS(
         "homeOfficeAdjournWithoutDateInstructStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_ADJOURN_WITHOUT_DATE_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeAdjournWithoutDateInstructFailDateTime", new TypeReference<String>() {}),
+
     HOME_OFFICE_APPEAL_SUBMITTED_INSTRUCT_STATUS(
         "homeOfficeAppealSubmittedInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_APPEAL_SUBMITTED_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeAppealSubmittedInstructFailDateTime", new TypeReference<String>() {}),
 
     HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_STATUS(
         "homeOfficeAppealDecidedInstructStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeAppealDecidedInstructFailDateTime", new TypeReference<String>() {}),
+
     HOME_OFFICE_FTPA_APPELLANT_INSTRUCT_STATUS(
         "homeOfficeFtpaAppellantInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_FTPA_APPELLANT_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeFtpaAppellantInstructFailDateTime", new TypeReference<String>() {}),
 
     HOME_OFFICE_FTPA_RESPONDENT_INSTRUCT_STATUS(
         "homeOfficeFtpaRespondentInstructStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_FTPA_RESPONDENT_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeFtpaRespondentInstructFailDateTime", new TypeReference<String>() {}),
+
     HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS(
         "homeOfficeFtpaAppellantDecidedInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeFtpaAppellantDecidedInstructFailDateTime", new TypeReference<String>() {}),
 
     HOME_OFFICE_FTPA_RESPONDENT_DECIDED_INSTRUCT_STATUS(
         "homeOfficeFtpaRespondentDecidedInstructStatus", new TypeReference<String>() {}),
 
-    HOME_OFFICE_REQUEST_EVIDENCE_INSTRUCT_STATUS(
-        "homeOfficeRequestEvidenceInstructStatus", new TypeReference<String>() {}),
+    HOME_OFFICE_FTPA_RESPONDENT_DECIDED_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeFtpaRespondentDecidedInstructFailDateTime", new TypeReference<String>() {}),
 
     HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS(
         "homeOfficeHearingBundleReadyInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeHearingBundleReadyInstructFailDateTime", new TypeReference<String>() {}),
 
     CASE_FLAG_SET_ASIDE_REHEARD_EXISTS(
         "caseFlagSetAsideReheardExists", new TypeReference<YesOrNo>() {}),
 
     HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS(
         "homeOfficeEndAppealInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_END_APPEAL_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeEndAppealInstructFailDateTime", new TypeReference<String>() {}),
 
     END_APPEAL_DATE(
         "endAppealDate", new TypeReference<String>(){}),
@@ -206,14 +246,26 @@ public enum AsylumCaseDefinition {
     HOME_OFFICE_AMEND_BUNDLE_INSTRUCT_STATUS(
         "homeOfficeAmendBundleInstructStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_AMEND_BUNDLE_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeAmendBundleInstructFailDateTime", new TypeReference<String>() {}),
+
     HOME_OFFICE_AMEND_RESPONSE_INSTRUCT_STATUS(
         "homeOfficeAmendResponseInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_AMEND_RESPONSE_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeAmendResponseInstructFailDateTime", new TypeReference<String>() {}),
 
     HOME_OFFICE_REVIEW_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS(
         "homeOfficeReviewChangeDirectionDueDateInstructStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_REVIEW_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeReviewChangeDirectionDueDateInstructFailDateTime", new TypeReference<String>() {}),
+
     HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS(
         "homeOfficeEvidenceChangeDirectionDueDateInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_FAIL_DATE_TIME(
+        "homeOfficeEvidenceChangeDirectionDueDateInstructFailDateTime", new TypeReference<String>() {}),
 
     REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE(
             "remoteVideoCallTribunalResponse", new TypeReference<String>(){}),
@@ -256,6 +308,7 @@ public enum AsylumCaseDefinition {
     ;
 
     private final String value;
+    @Getter
     private final TypeReference typeReference;
 
     AsylumCaseDefinition(String value, TypeReference typeReference) {
@@ -267,7 +320,4 @@ public enum AsylumCaseDefinition {
         return value;
     }
 
-    public TypeReference getTypeReference() {
-        return typeReference;
-    }
 }

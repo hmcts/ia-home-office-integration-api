@@ -1,12 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealDecidedInstructMessage.AppealDecidedInstructMessageBuilder.appealDecidedInstructMessage;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.IS_DECISION_ALLOWED;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.COURT_OUTCOME;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.SEND_DECISION_AND_REASONS;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealDecidedInstructMessage;
@@ -24,13 +17,21 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.AppealDecid
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.NotificationsHelper;
 
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealDecidedInstructMessage.AppealDecidedInstructMessageBuilder.appealDecidedInstructMessage;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.IS_DECISION_ALLOWED;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.COURT_OUTCOME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.SEND_DECISION_AND_REASONS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService.handleIfFailure;
+
 
 @Slf4j
 @Component
 public class AppealDecidedNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private HomeOfficeInstructService homeOfficeInstructService;
-    private NotificationsHelper notificationsHelper;
+    private final HomeOfficeInstructService homeOfficeInstructService;
+    private final NotificationsHelper notificationsHelper;
 
     public AppealDecidedNotificationHandler(
         HomeOfficeInstructService homeOfficeInstructService,
@@ -86,6 +87,7 @@ public class AppealDecidedNotificationHandler implements PreSubmitCallbackHandle
         final String notificationStatus = homeOfficeInstructService.sendNotification(bundleInstructMessage);
 
         asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_STATUS, notificationStatus);
+        handleIfFailure(asylumCase, notificationStatus, AsylumCaseDefinition.HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_FAIL_DATE_TIME);
 
         log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
             COURT_OUTCOME.name(), caseId, homeOfficeReferenceNumber, notificationStatus, callback.getEvent());

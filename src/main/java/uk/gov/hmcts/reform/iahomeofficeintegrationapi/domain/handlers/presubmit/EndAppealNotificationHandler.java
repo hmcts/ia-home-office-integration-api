@@ -1,14 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.END_APPEAL_DATE;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.END_APPEAL_OUTCOME;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.END_APPEAL_OUTCOME_REASON;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.EndAppealInstructMessage.EndAppealInstructMessageBuilder.endAppealInstructMessage;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.REQUEST_CHALLENGE_END;
-
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
@@ -22,6 +13,18 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitC
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.NotificationsHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util.HomeOfficeDateFormatter;
+
+import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.END_APPEAL_DATE;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.END_APPEAL_OUTCOME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.END_APPEAL_OUTCOME_REASON;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_FAIL_DATE_TIME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.EndAppealInstructMessage.EndAppealInstructMessageBuilder.endAppealInstructMessage;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.REQUEST_CHALLENGE_END;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService.handleIfFailure;
 
 @Slf4j
 @Component
@@ -55,7 +58,7 @@ public class EndAppealNotificationHandler implements PreSubmitCallbackHandler<As
         }
 
         log.info("Preparing to send {} notification to HomeOffice for event {}",
-            REQUEST_CHALLENGE_END.toString(), callback.getEvent());
+            REQUEST_CHALLENGE_END, callback.getEvent());
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         final String homeOfficeReferenceNumber = notificationsHelper.getHomeOfficeReference(asylumCase);
@@ -83,6 +86,7 @@ public class EndAppealNotificationHandler implements PreSubmitCallbackHandler<As
             notificationStatus, callback.getEvent());
 
         asylumCase.write(HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, notificationStatus);
+        handleIfFailure(asylumCase, notificationStatus, HOME_OFFICE_END_APPEAL_INSTRUCT_FAIL_DATE_TIME);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -104,9 +108,7 @@ public class EndAppealNotificationHandler implements PreSubmitCallbackHandler<As
         Optional<EndAppealOutcome> endAppealOutcomeName
             = EndAppealOutcome.from(getEndAppealOutcome(asylumCase));
 
-        return endAppealOutcomeName.isPresent()
-                    ? endAppealOutcomeName.get().name()
-                    : null;
+        return endAppealOutcomeName.map(Enum::name).orElse(null);
     }
 
     private String getEndAppealOutcomeReason(AsylumCase asylumCase) {

@@ -1,14 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.valueOf;
-
-import java.util.Arrays;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +22,22 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FtpaAppealD
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.FtpaDecidedNotificationsHelper;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_FAIL_DATE_TIME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_FTPA_RESPONDENT_DECIDED_INSTRUCT_FAIL_DATE_TIME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_FTPA_RESPONDENT_DECIDED_INSTRUCT_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.valueOf;
+
 
 @ExtendWith(MockitoExtension.class)
 class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTestBase {
@@ -41,6 +48,8 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
     private FeatureToggler featureToggler;
     @Captor
     private ArgumentCaptor<AppealDecidedInstructMessage> appealDecidedInstructMessageCaptor;
+    @Captor
+    private ArgumentCaptor<String> dateTimeArgumentCaptor;
 
     private FtpaDecidedNotificationsHelper ftpaDecidedNotificationsHelper;
 
@@ -302,4 +311,39 @@ class FtpaDecidedNotificationsHelperTest  extends AbstractNotificationsHandlerTe
         assertThat(instructMessage.getCourtOutcome().getOutcome()).isIn(Arrays.asList(Outcome.values()));
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        value = {
+            "appellant:granted", "appellant:partiallyGranted", "appellant:refused", "appellant:notAdmitted",
+            "respondent:granted", "respondent:partiallyGranted", "respondent:refused", "respondent:notAdmitted"
+        },
+        delimiter = ':'
+    )
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    void check_helper_writes_to_fail_datetime(
+        String applicantType, String ftpaDecisionOutcome
+    ) {
+        setupCase(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
+        setupCaseData();
+        setupHelperResponses();
+        setupFtpaDecisionData(applicantType, ftpaDecisionOutcome);
+
+        when(homeOfficeInstructService.sendNotification(any(AppealDecidedInstructMessage.class)))
+            .thenReturn("FAIL");
+
+        ftpaDecidedNotificationsHelper.handleFtpaDecidedNotification(
+            asylumCase, notificationsHelper, homeOfficeInstructService, null, "");
+        boolean isAppellant = applicantType.equalsIgnoreCase("appellant");
+
+        AsylumCaseDefinition caseDefinition = isAppellant ? HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS
+            : HOME_OFFICE_FTPA_RESPONDENT_DECIDED_INSTRUCT_STATUS;
+        AsylumCaseDefinition failDefinition = isAppellant ? HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_FAIL_DATE_TIME
+            : HOME_OFFICE_FTPA_RESPONDENT_DECIDED_INSTRUCT_FAIL_DATE_TIME;
+        verify(asylumCase, times(1)).write(caseDefinition, "FAIL");
+        verify(asylumCase).write(eq(failDefinition), dateTimeArgumentCaptor.capture());
+
+        assertThat(LocalDateTime.parse(dateTimeArgumentCaptor.getValue()))
+            .isAfter(LocalDateTime.now().minusSeconds(5))
+            .isBefore(LocalDateTime.now().plusSeconds(5));
+    }
 }

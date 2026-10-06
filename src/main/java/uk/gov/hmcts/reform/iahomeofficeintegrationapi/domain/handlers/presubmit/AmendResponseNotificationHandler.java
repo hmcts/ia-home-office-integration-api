@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_AMEND_RESPONSE_INSTRUCT_STATUS;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.DEFAULT;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
@@ -17,12 +13,18 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitC
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.NotificationsHelper;
 
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_AMEND_RESPONSE_INSTRUCT_FAIL_DATE_TIME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_AMEND_RESPONSE_INSTRUCT_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.DEFAULT;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService.handleIfFailure;
+
 @Slf4j
 @Component
 public class AmendResponseNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private HomeOfficeInstructService homeOfficeInstructService;
-    private NotificationsHelper notificationsHelper;
+    private final HomeOfficeInstructService homeOfficeInstructService;
+    private final NotificationsHelper notificationsHelper;
 
     public AmendResponseNotificationHandler(
         HomeOfficeInstructService homeOfficeInstructService,
@@ -49,7 +51,7 @@ public class AmendResponseNotificationHandler implements PreSubmitCallbackHandle
             throw new IllegalStateException("Cannot handle callback");
         }
         log.info("Preparing to send {} notification to HomeOffice for event {}",
-            DEFAULT.toString(), callback.getEvent());
+            DEFAULT, callback.getEvent());
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
@@ -67,14 +69,15 @@ public class AmendResponseNotificationHandler implements PreSubmitCallbackHandle
             );
 
         log.info("Finished constructing {} notification request for caseId: {}, HomeOffice reference: {}",
-            DEFAULT.toString(), caseId, homeOfficeReferenceNumber);
+            DEFAULT, caseId, homeOfficeReferenceNumber);
 
         final String notificationStatus = homeOfficeInstructService.sendNotification(homeOfficeInstruct);
 
         asylumCase.write(HOME_OFFICE_AMEND_RESPONSE_INSTRUCT_STATUS, notificationStatus);
+        handleIfFailure(asylumCase, notificationStatus, HOME_OFFICE_AMEND_RESPONSE_INSTRUCT_FAIL_DATE_TIME);
 
         log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
-            DEFAULT.toString(), caseId, homeOfficeReferenceNumber, notificationStatus, callback.getEvent());
+            DEFAULT, caseId, homeOfficeReferenceNumber, notificationStatus, callback.getEvent());
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
