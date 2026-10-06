@@ -90,12 +90,12 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
             HomeOfficeApplicationDto applicationDto = homeOfficeResponse.getBody();
             // Error checking even though we received a 2xx status code (things could still be wrong)
             if (applicationDto == null || applicationDto.getAppellants() == null || applicationDto.getAppellants().isEmpty()) {
-                throw new HomeOfficeMissingApplicationException(-2, 
+                throw new HomeOfficeMissingApplicationException(-2,
                             "Biographic information from Home Office asylum (etc.) application with reference " +
                              homeOfficeReferenceNumber +
                              " could not be retrieved.\n\nThe Home Office validation API responded but the response contained no data.");
             }
-            // If we supplied a UAN (rather than a GWF) and the Home Office returned one, make sure they match 
+            // If we supplied a UAN (rather than a GWF) and the Home Office returned one, make sure they match
             if (HOME_OFFICE_REF_PATTERN.matcher(homeOfficeReferenceNumber).matches()) {
                 String uan = applicationDto.getUan();
                 if (uan == null) {
@@ -103,15 +103,16 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                     log.warn("Home Office response did not contain a UAN despite the fact that the appellant is known to have one: {}.", homeOfficeReferenceNumber);
                 } else if (!uan.equals(homeOfficeReferenceNumber)) {
                     // The Home Office returned a *different* UAN: very bad
-                    throw new HomeOfficeMissingApplicationException(-3, 
+                    throw new HomeOfficeMissingApplicationException(-3,
                                 "Biographic information from Home Office asylum (etc.) application with reference " +
                                 homeOfficeReferenceNumber +
-                                " could not be retrieved.\n\nThe Home Office validation API responded but the information " + 
-                                "appears to be from an application with reference " + uan + ".");                    
+                                " could not be retrieved.\n\nThe Home Office validation API responded but the information " +
+                                "appears to be from an application with reference " + uan + ".");
                 }
             }
 
             writeHomeOfficeDataToCase(asylumCase, homeOfficeReferenceNumber, String.valueOf(homeOfficeResponse.getStatusCode().value()), applicationDto);
+            log.info("GetAppellantDataHandler successfully wrote Home Office appellant data to case: {}", caseId);
 
         } catch (HomeOfficeMissingApplicationException exception) {
             String message = exception.getMessage();

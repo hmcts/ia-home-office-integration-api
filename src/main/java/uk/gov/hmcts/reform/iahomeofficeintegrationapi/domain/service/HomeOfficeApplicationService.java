@@ -47,10 +47,10 @@ public class HomeOfficeApplicationService {
             homeOfficeEventDateTime
         );
         try {
-            ResponseEntity<HomeOfficeApplicationDto> response = homeOfficeApplicationApi.getApplication(homeOfficeReferenceNumber, 
-                                                                                                        accessToken, 
-                                                                                                        homeOfficeCorrelationId, 
-                                                                                                        homeOfficeConsumer, 
+            ResponseEntity<HomeOfficeApplicationDto> response = homeOfficeApplicationApi.getApplication(homeOfficeReferenceNumber,
+                                                                                                        accessToken,
+                                                                                                        homeOfficeCorrelationId,
+                                                                                                        homeOfficeConsumer,
                                                                                                         homeOfficeEventDateTime);
             int statusCode = response.getStatusCode().value();
             log.info(
@@ -58,11 +58,12 @@ public class HomeOfficeApplicationService {
                 homeOfficeReferenceNumber,
                 statusCode
             );
+
             return response;
         } catch (RetriesExceededException e) {
             String message = "Biographic information from Home Office asylum (etc.) application with reference " + homeOfficeReferenceNumber
                            + " could not be retrieved.\n\nThe Home Office validation API did not respond.";
             throw new HomeOfficeMissingApplicationException(-1, message);
-        }       
+        }
     }
 }
