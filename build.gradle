@@ -227,11 +227,11 @@ dependencyCheck {
     }
 }
 
-ext["tomcat.version"] = "10.1.57"
+ext["tomcat.version"] = "10.1.59"
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2025.0.2"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2025.0.3"
         mavenBom 'com.fasterxml.jackson:jackson-bom:2.21.5'
 
         // CVE-2026-34478
@@ -247,7 +247,7 @@ dependencyManagement {
         // CVE-2026-33870
         // CVE-2026-33871
         // CVE-2025-67735 - from spring-boot-starter-data-redis@3.5.14
-        mavenBom "io.netty:netty-bom:4.2.16.Final"
+        mavenBom "io.netty:netty-bom:4.2.18.Final"
     }
 
     dependencies {
@@ -285,8 +285,14 @@ dependencyManagement {
             entry 'log4j-api'
         }
 
-        // CVE-2020-13956 - transitive from service-auth-provider-java-client@5.3.3
+        dependency group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.6.4'
+
         dependency group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
+
+        dependencySet(group: 'org.apache.httpcomponents.core5', version: '5.4.4') {
+            entry 'httpcore5'
+            entry 'httpcore5-h2'
+        }
     }
 }
 
@@ -325,12 +331,12 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
 
-    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.4'
+    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.5'
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
 
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.13'
 
-    implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '3.2.1'
+    implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '3.2.2'
 
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.17'
 
