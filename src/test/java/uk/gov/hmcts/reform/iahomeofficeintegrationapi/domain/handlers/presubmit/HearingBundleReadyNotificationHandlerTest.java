@@ -1,20 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.HEARING_BUNDLE_READY;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +7,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Hearing;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HearingInstructMessage;
@@ -30,6 +17,25 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.ListingNotificationHelper;
+
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_FAIL_DATE_TIME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.HEARING_BUNDLE_READY;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -42,6 +48,8 @@ class HearingBundleReadyNotificationHandlerTest extends AbstractNotificationsHan
 
     @Captor
     private ArgumentCaptor<HearingInstructMessage> hearingInstructMessageArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<String> dateTimeArgumentCaptor;
 
     private HearingBundleReadyNotificationHandler hearingBundleReadyNotificationHandler;
 
@@ -204,5 +212,33 @@ class HearingBundleReadyNotificationHandlerTest extends AbstractNotificationsHan
         assertThatThrownBy(() -> hearingBundleReadyNotificationHandler.handle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    void if_notification_fail_then_save_date_to_case_data() {
+        setupCase(Event.ASYNC_STITCHING_COMPLETE);
+        setupHelperResponses();
+        when(notificationsHelper.getCaseId(any(AsylumCase.class))).thenReturn(someCaseReference);
+
+        when(homeOfficeInstructService.sendNotification(any())).thenReturn("FAIL");
+
+        when(listingNotificationHelper.getHearingBundleReadyInstructMessage(
+            any(AsylumCase.class), any(),
+            any(), anyString())).thenReturn(hearingInstructMessage);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            hearingBundleReadyNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertTrue(response.getErrors().isEmpty());
+        verify(asylumCase, times(1)).write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, "FAIL");
+        verify(asylumCase).write(eq(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_FAIL_DATE_TIME), dateTimeArgumentCaptor.capture());
+
+        assertThat(LocalDateTime.parse(dateTimeArgumentCaptor.getValue()))
+            .isAfter(LocalDateTime.now().minusSeconds(5))
+            .isBefore(LocalDateTime.now().plusSeconds(5));
     }
 }

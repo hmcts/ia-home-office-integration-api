@@ -1,10 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.REQUEST_REVIEW;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceReviewInstructMessage.RequestEvidenceReviewInstructMessageBuilder.requestEvidenceReviewInstructMessage;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
@@ -19,13 +14,19 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitC
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.NotificationsHelper;
 
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.REQUEST_REVIEW;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceReviewInstructMessage.RequestEvidenceReviewInstructMessageBuilder.requestEvidenceReviewInstructMessage;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService.handleIfFailure;
+
 
 @Slf4j
 @Component
 public class RequestEvidenceReviewNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final HomeOfficeInstructService homeOfficeInstructService;
-    private NotificationsHelper notificationsHelper;
+    private final NotificationsHelper notificationsHelper;
 
     public RequestEvidenceReviewNotificationHandler(
         HomeOfficeInstructService homeOfficeInstructService,
@@ -53,7 +54,7 @@ public class RequestEvidenceReviewNotificationHandler implements PreSubmitCallba
         }
 
         log.info("Preparing to send {} notification to HomeOffice for event {}",
-            REQUEST_REVIEW.toString(), callback.getEvent());
+            REQUEST_REVIEW, callback.getEvent());
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
@@ -73,14 +74,15 @@ public class RequestEvidenceReviewNotificationHandler implements PreSubmitCallba
                 .build();
 
         log.info("Finished constructing {} notification request for caseId: {}, HomeOffice reference: {}",
-            REQUEST_REVIEW.toString(), caseId, homeOfficeReferenceNumber);
+            REQUEST_REVIEW, caseId, homeOfficeReferenceNumber);
 
         final String notificationStatus = homeOfficeInstructService.sendNotification(bundleInstructMessage);
 
         asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_REQUEST_REVIEW_INSTRUCT_STATUS, notificationStatus);
+        handleIfFailure(asylumCase, notificationStatus, AsylumCaseDefinition.HOME_OFFICE_REQUEST_REVIEW_INSTRUCT_FAIL_DATE_TIME);
 
         log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
-            REQUEST_REVIEW.toString(), caseId, homeOfficeReferenceNumber, notificationStatus, callback.getEvent());
+            REQUEST_REVIEW, caseId, homeOfficeReferenceNumber, notificationStatus, callback.getEvent());
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

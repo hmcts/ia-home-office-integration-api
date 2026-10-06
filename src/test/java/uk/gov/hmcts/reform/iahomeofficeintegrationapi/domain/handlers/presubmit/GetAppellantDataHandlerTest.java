@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Home
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.RetriesExceededException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +38,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -47,6 +49,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_FAIL_DATE_TIME;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_CLAIM_DATE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_DECISION_DATE;
@@ -71,6 +74,9 @@ class GetAppellantDataHandlerTest {
 
     @Captor
     private ArgumentCaptor<AsylumCase> asylumCaseCaptor;
+
+    @Captor
+    private ArgumentCaptor<String> dateTimeArgumentCaptor;
 
     @InjectMocks
     private GetAppellantDataHandler handler;
@@ -157,7 +163,7 @@ class GetAppellantDataHandlerTest {
     @ValueSource(strings = {
         "appellantBasicDetails", "cuiAppellantName", "cuiAppellantDob"
     })
-    void handle_writesData_whenServiceReturnsApplication(String pageId) throws Exception {
+    void handle_writesData_whenServiceReturnsApplication(String pageId) {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(callback.getPageId()).thenReturn(pageId);
         when(caseDetails.getId()).thenReturn(12345L);
@@ -217,6 +223,10 @@ class GetAppellantDataHandlerTest {
         assertEquals(asylumCase, response.getData());
 
         verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, status);
+        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_API_RESPONSE_FAIL_DATE_TIME), dateTimeArgumentCaptor.capture());
+        assertThat(LocalDateTime.parse(dateTimeArgumentCaptor.getValue()))
+            .isAfter(LocalDateTime.now().minusSeconds(5))
+            .isBefore(LocalDateTime.now().plusSeconds(5));
     }
 
     private static Stream<Arguments> homeOfficeExceptionSource() {
@@ -298,6 +308,10 @@ class GetAppellantDataHandlerTest {
         handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, -2);
+        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_API_RESPONSE_FAIL_DATE_TIME), dateTimeArgumentCaptor.capture());
+        assertThat(LocalDateTime.parse(dateTimeArgumentCaptor.getValue()))
+            .isAfter(LocalDateTime.now().minusSeconds(5))
+            .isBefore(LocalDateTime.now().plusSeconds(5));
     }
 
     @Test
@@ -325,6 +339,10 @@ class GetAppellantDataHandlerTest {
         handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, -3);
+        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_API_RESPONSE_FAIL_DATE_TIME), dateTimeArgumentCaptor.capture());
+        assertThat(LocalDateTime.parse(dateTimeArgumentCaptor.getValue()))
+            .isAfter(LocalDateTime.now().minusSeconds(5))
+            .isBefore(LocalDateTime.now().plusSeconds(5));
     }
 
     @Test
@@ -378,6 +396,10 @@ class GetAppellantDataHandlerTest {
         handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, -1);
+        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_API_RESPONSE_FAIL_DATE_TIME), dateTimeArgumentCaptor.capture());
+        assertThat(LocalDateTime.parse(dateTimeArgumentCaptor.getValue()))
+            .isAfter(LocalDateTime.now().minusSeconds(5))
+            .isBefore(LocalDateTime.now().plusSeconds(5));
     }
 
     @Test
@@ -404,5 +426,9 @@ class GetAppellantDataHandlerTest {
         handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, -4);
+        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_API_RESPONSE_FAIL_DATE_TIME), dateTimeArgumentCaptor.capture());
+        assertThat(LocalDateTime.parse(dateTimeArgumentCaptor.getValue()))
+            .isAfter(LocalDateTime.now().minusSeconds(5))
+            .isBefore(LocalDateTime.now().plusSeconds(5));
     }
 }

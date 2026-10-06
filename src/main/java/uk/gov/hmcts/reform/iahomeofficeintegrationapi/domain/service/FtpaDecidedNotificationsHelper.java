@@ -1,11 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealDecidedInstructMessage.AppealDecidedInstructMessageBuilder.appealDecidedInstructMessage;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.FTPA_APPLICANT_TYPE;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.valueOf;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.COURT_OUTCOME;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -18,6 +12,13 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Decide
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.FtpaDecisionOutcomeType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.FtpaResidentJudgeDecisionOutcomeType;
+
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AppealDecidedInstructMessage.AppealDecidedInstructMessageBuilder.appealDecidedInstructMessage;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.FTPA_APPLICANT_TYPE;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.valueOf;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.COURT_OUTCOME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService.handleIfFailure;
 
 
 @Slf4j
@@ -129,6 +130,8 @@ public class FtpaDecidedNotificationsHelper {
 
         asylumCase.write(valueOf("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_STATUS".formatted(
             ftpaApplicantType.toUpperCase())), notificationStatus);
+        handleIfFailure(asylumCase, notificationStatus, valueOf("HOME_OFFICE_FTPA_%s_DECIDED_INSTRUCT_FAIL_DATE_TIME".formatted(
+            ftpaApplicantType.toUpperCase())));
 
         return notificationStatus;
     }

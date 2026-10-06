@@ -1,23 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPEAL_SUBMITTED_INSTRUCT_STATUS;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS;
-
-import java.util.List;
-import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,10 +14,31 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.HomeOfficeAppellant;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPEAL_SUBMITTED_INSTRUCT_FAIL_DATE_TIME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPEAL_SUBMITTED_INSTRUCT_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -46,6 +49,8 @@ class AppealSubmittedNotificationHandlerTest extends AbstractNotificationsHandle
 
     @Captor
     private ArgumentCaptor<AppealSubmittedInstructMessage> appealSubmittedInstructMessageCaptor;
+    @Captor
+    private ArgumentCaptor<String> dateTimeArgumentCaptor;
 
     private AppealSubmittedNotificationHandler appealSubmittedNotificationHandler;
 
@@ -245,4 +250,31 @@ class AppealSubmittedNotificationHandlerTest extends AbstractNotificationsHandle
             .write(any(), any());
     }
 
+    @Test
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    void if_notification_fail_then_save_date_to_case_data() {
+        setupCase(Event.SUBMIT_APPEAL);
+        setupCaseData();
+        setupHelperResponses();
+
+        List<IdValue<HomeOfficeAppellant>> appellants = List.of(
+            new IdValue<>("1", mock(HomeOfficeAppellant.class))
+        );
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.of(appellants));
+
+        when(homeOfficeInstructService.sendNotification(any(AppealSubmittedInstructMessage.class)))
+            .thenReturn("FAIL");
+        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
+
+        appealSubmittedNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(HOME_OFFICE_APPEAL_SUBMITTED_INSTRUCT_STATUS, "FAIL");
+        verify(asylumCase).write(eq(HOME_OFFICE_APPEAL_SUBMITTED_INSTRUCT_FAIL_DATE_TIME), dateTimeArgumentCaptor.capture());
+
+        assertThat(LocalDateTime.parse(dateTimeArgumentCaptor.getValue()))
+            .isAfter(LocalDateTime.now().minusSeconds(5))
+            .isBefore(LocalDateTime.now().plusSeconds(5));
+    }
 }
