@@ -95,7 +95,7 @@ class GetAppellantDataHandlerTest {
     }
 
     private static Stream<Arguments> cannotHandleMidEventScenarios() {
-        Set<Event> validEvents = Set.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT);
+        Set<Event> validEvents = Set.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPELLANT_PERSONAL_DATA);
         List<Arguments> argumentsList = new ArrayList<>();
         Arrays.stream(Event.values()).filter(event -> !validEvents.contains(event)).forEach(event -> validPageIds.forEach(pageId ->
             argumentsList.add(Arguments.of(event, pageId, PreSubmitCallbackStage.MID_EVENT)))
@@ -123,7 +123,7 @@ class GetAppellantDataHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT", "SUBMIT_APPEAL"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPELLANT_PERSONAL_DATA", "SUBMIT_APPEAL"}, mode = EnumSource.Mode.EXCLUDE)
     void canHandle_returnsFalse_WrongEvent_mid_event(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(callback.getPageId()).thenReturn("oocHomeOfficeReferenceNumber");
@@ -203,7 +203,7 @@ class GetAppellantDataHandlerTest {
     @ParameterizedTest
     @MethodSource("homeOfficeExceptionSource")
     void handle_writesHttpStatus_whenServiceThrowsException(int status, String message) throws Exception {
-        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL_AFTER_SUBMIT);
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPELLANT_PERSONAL_DATA);
         when(callback.getPageId()).thenReturn("oocHomeOfficeReferenceNumber");
         when(caseDetails.getId()).thenReturn(12345L);
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("UAN123"));
