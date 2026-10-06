@@ -4,7 +4,8 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.35.0"
+      # Leave this pinned until https://github.com/hashicorp/terraform-provider-azurerm/pull/29523 is merged in
+      version = "4.21.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
