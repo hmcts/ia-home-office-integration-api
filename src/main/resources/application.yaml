@@ -27,6 +27,9 @@ spring:
     name: Home Office Integration API
   main:
     allow-bean-definition-overriding: true
+  http:
+    converters:
+      preferred-json-mapper: jackson2
   jackson.date-format: yyyy-MM-dd
   security:
     oauth2:
