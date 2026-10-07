@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
 import static java.util.Arrays.stream;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum FtpaAppealDecidedNote {
@@ -179,6 +180,7 @@ public enum FtpaAppealDecidedNote {
     @JsonValue
     private final String value;
 
+    @JsonCreator
     FtpaAppealDecidedNote(String id, String value) {
         this.id = id;
         this.value = value;

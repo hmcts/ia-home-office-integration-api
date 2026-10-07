@@ -26,7 +26,6 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -106,12 +105,14 @@ public class RequestHomeOfficeDataPreparerTest {
 
     private RequestHomeOfficeDataPreparer requestHomeOfficeDataPreparer;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @BeforeEach
     void setUp() {
 
         requestHomeOfficeDataPreparer =
                 new RequestHomeOfficeDataPreparer(
-                        homeOfficeSearchService, homeOfficeDataErrorsHelper, homeOfficeDataMatchHelper);
+                        homeOfficeSearchService, homeOfficeDataErrorsHelper, homeOfficeDataMatchHelper, objectMapper);
     }
 
     @Test
@@ -422,9 +423,9 @@ public class RequestHomeOfficeDataPreparerTest {
     private HomeOfficeSearchResponse getSampleResponse() throws Exception {
         if (homeOfficeSearchResponse == null) {
             Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
-            ObjectMapper om = new ObjectMapper()
-                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            homeOfficeSearchResponse = om.readValue(FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
+            ObjectMapper om = new ObjectMapper();
+            homeOfficeSearchResponse = om.readValue(
+                FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
         }
         return homeOfficeSearchResponse;
     }

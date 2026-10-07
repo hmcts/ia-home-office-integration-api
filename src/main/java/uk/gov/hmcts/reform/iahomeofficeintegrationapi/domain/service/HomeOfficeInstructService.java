@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeErrorResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeInstructApi;
@@ -18,12 +18,15 @@ public class HomeOfficeInstructService {
 
     private final HomeOfficeInstructApi homeOfficeInstructApi;
     private final AccessTokenProvider accessTokenProvider;
+    private final ObjectMapper objectMapper;
 
     public HomeOfficeInstructService(
         HomeOfficeInstructApi homeOfficeInstructApi,
-        @Qualifier("homeOffice") AccessTokenProvider accessTokenProvider) {
+        @Qualifier("homeOffice") AccessTokenProvider accessTokenProvider,
+        ObjectMapper objectMapper) {
         this.homeOfficeInstructApi = homeOfficeInstructApi;
         this.accessTokenProvider = accessTokenProvider;
+        this.objectMapper = objectMapper;
     }
 
     public String sendNotification(
@@ -47,8 +50,6 @@ public class HomeOfficeInstructService {
                 messageType,
                 correlationId
             );
-            // TODO Start block remove this
-            ObjectMapper objectMapper = new ObjectMapper();
 
             try {
                 String requestBody = objectMapper.writeValueAsString(request);
@@ -62,7 +63,7 @@ public class HomeOfficeInstructService {
                     correlationId,
                     e.getMessage());
             }
-            // TODO End block
+
             instructResponse = homeOfficeInstructApi.sendNotification(accessToken, request);
 
             if (instructResponse == null || instructResponse.getMessageHeader() == null) {

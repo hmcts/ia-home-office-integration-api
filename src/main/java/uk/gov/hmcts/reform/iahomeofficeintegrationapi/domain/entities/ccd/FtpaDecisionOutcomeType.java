@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd;
 
 import static java.util.Arrays.stream;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 
@@ -14,6 +15,7 @@ public enum FtpaDecisionOutcomeType {
     @JsonValue
     private final String id;
 
+    @JsonCreator
     FtpaDecisionOutcomeType(String id) {
         this.id = id;
     }

@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
@@ -29,23 +28,23 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @BeforeEach
     void setUp() throws Exception {
         objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.findAndRegisterModules();
         String jsonSchemaFile = "twentyFourWeekStatusSchema_v8.json";
 
         JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V4);
         InputStream schemaStream = getClass().getResourceAsStream("/" + jsonSchemaFile);
-        
+
         if (schemaStream == null) {
             fail("Schema file " + jsonSchemaFile + " not found in test resources");
         }
-        
+
         schema = factory.getSchema(schemaStream);
     }
 
     @Test
     void shouldValidateAgainstJsonSchemaWithAcceleratedAppealTrue() throws Exception {
         // Given
-        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort = 
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort =
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                 .name("HU")
                 .included(true)
@@ -73,7 +72,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldValidateAgainstJsonSchemaWithAcceleratedAppealFalse() throws Exception {
         // Given
-        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort = 
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort =
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                 .name("HU")
                 .included(false)
@@ -100,7 +99,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldValidateTimeStampFormatWithEdgeCaseTime() throws Exception {
         // Given - test with edge case time values
-        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort = 
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort =
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                 .name("HU")
                 .included(true)
@@ -127,7 +126,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldValidateTimeStampFormatWithMidnightTime() throws Exception {
         // Given
-        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort = 
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort =
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                 .name("HU")
                 .included(true)
@@ -154,7 +153,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldValidateAgainstJsonSchemaWithMissingUan() throws Exception {
         // Given
-        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort = 
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort =
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                 .name("HU")
                 .included(true)
@@ -180,7 +179,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldValidateAgainstJsonSchemaWithNullStatus() throws Exception {
         // Given
-        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort = 
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort =
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                 .name("HU")
                 .included(true)
@@ -207,7 +206,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldFailValidationWhenUanHasInvalidFormat() throws Exception {
         // Given - UAN without dashes
-        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort = 
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort =
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                 .name("HU")
                 .included(true)
@@ -229,7 +228,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
 
         // Then
         assertTrue(!errors.isEmpty(), "JSON should fail validation with invalid UAN format");
-        assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("uan")), 
+        assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("uan")),
                    "Error should be related to UAN field. Errors: " + errors);
     }
 
@@ -259,7 +258,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
     @Test
     void shouldFailValidationWhenUanContainsLetters() throws Exception {
         // Given - UAN with letters
-        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort = 
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort =
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                 .name("HU")
                 .included(true)
@@ -281,14 +280,14 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
 
         // Then
         assertTrue(!errors.isEmpty(), "JSON should fail validation with letters in UAN");
-        assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("uan")), 
+        assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("uan")),
                    "Error should be related to UAN field. Errors: " + errors);
     }
 
     @Test
     void shouldFailValidationWhenUanIsTooShort() throws Exception {
         // Given - UAN with wrong length
-        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort = 
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort =
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                 .name("HU")
                 .included(true)
@@ -310,14 +309,14 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
 
         // Then
         assertTrue(!errors.isEmpty(), "JSON should fail validation with short UAN");
-        assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("uan")), 
+        assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("uan")),
                    "Error should be related to UAN field. Errors: " + errors);
     }
 
     @Test
     void shouldFailValidationWhenHmctsRefNumIsWrong() throws Exception {
         // Given - wrong HMCTS reference number
-        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort = 
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort =
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                 .name("HU")
                 .included(true)
@@ -340,14 +339,14 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
 
         // Then
         assertTrue(!errors.isEmpty(), "JSON should fail validation with wrong HMCTS reference number");
-        assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("hmctsReferenceNumber")), 
+        assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("hmctsReferenceNumber")),
                    "Error should be related to HMCTS reference number field. Errors: " + errors);
     }
 
     @Test
     void shouldFailValidationWhenHmctsRefNumIsMissing() throws Exception {
         // Given - wrong HMCTS reference number
-        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort = 
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto cohort =
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohortDto.builder()
                 .name("HU")
                 .included(true)
@@ -368,7 +367,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
 
         // Then
         assertTrue(!errors.isEmpty(), "JSON should fail validation with wrong HMCTS reference number");
-        assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("hmctsReferenceNumber")), 
+        assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("hmctsReferenceNumber")),
                    "Error should be related to HMCTS reference number field. Errors: " + errors);
     }
 }
