@@ -5,11 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeErrorResponse;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeInstruct;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.HomeOfficeInstructApi;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.RetriesExceededException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AccessTokenProvider;
+
+import java.time.LocalDateTime;
 
 
 @Service
@@ -108,6 +112,12 @@ public class HomeOfficeInstructService {
         }
 
         return status;
+    }
+
+    public static void handleIfFailure(AsylumCase asylumCase, String notificationStatus, AsylumCaseDefinition statusField) {
+        if (!notificationStatus.equals("OK")) {
+            asylumCase.write(statusField, LocalDateTime.now().toString());
+        }
     }
 
 }

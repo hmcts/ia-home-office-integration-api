@@ -1,19 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_STATUS;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +22,24 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.AppealDecidedNote;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_FAIL_DATE_TIME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -46,6 +50,9 @@ class AppealDecidedNotificationHandlerTest extends AbstractNotificationsHandlerT
 
     @Captor
     private ArgumentCaptor<AppealDecidedInstructMessage> appealDecidedInstructMessageCaptor;
+
+    @Captor
+    private ArgumentCaptor<String> dateTimeArgumentCaptor;
 
     private AppealDecidedNotificationHandler appealDecidedNotificationHandler;
 
@@ -195,5 +202,27 @@ class AppealDecidedNotificationHandlerTest extends AbstractNotificationsHandlerT
             .hasMessage("Case ID for the appeal is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
 
+    }
+
+    @Test
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    void if_notification_fail_then_save_date_to_case_data() {
+        setupCase(Event.SEND_DECISION_AND_REASONS);
+        setupCaseData();
+        setupHelperResponses();
+
+        when(homeOfficeInstructService.sendNotification(any(AppealDecidedInstructMessage.class)))
+            .thenReturn("FAIL");
+        when(asylumCase.read(AsylumCaseDefinition.IS_DECISION_ALLOWED, AppealDecision.class))
+            .thenReturn(Optional.of(AppealDecision.ALLOWED));
+
+        appealDecidedNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_STATUS, "FAIL");
+        verify(asylumCase).write(eq(HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_FAIL_DATE_TIME), dateTimeArgumentCaptor.capture());
+
+        assertThat(LocalDateTime.parse(dateTimeArgumentCaptor.getValue()))
+            .isAfter(LocalDateTime.now().minusSeconds(5))
+            .isBefore(LocalDateTime.now().plusSeconds(5));
     }
 }

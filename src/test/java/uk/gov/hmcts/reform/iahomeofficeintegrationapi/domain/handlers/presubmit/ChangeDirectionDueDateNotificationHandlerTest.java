@@ -1,23 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_DATE_DUE;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_EXPLANATION;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_PARTIES;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-
-import java.util.Arrays;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +22,27 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callba
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_DATE_DUE;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_EXPLANATION;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_PARTIES;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class ChangeDirectionDueDateNotificationHandlerTest extends AbstractNotificationsHandlerTestBase {
@@ -49,6 +52,8 @@ class ChangeDirectionDueDateNotificationHandlerTest extends AbstractNotification
 
     @Captor
     private ArgumentCaptor<HomeOfficeInstruct> homeOfficeInstructMessage;
+    @Captor
+    private ArgumentCaptor<String> dateTimeArgumentCaptor;
 
     private ChangeDirectionDueDateNotificationHandler changeDirectionDueDateNotificationHandler;
 
@@ -209,5 +214,29 @@ class ChangeDirectionDueDateNotificationHandlerTest extends AbstractNotification
         assertThatThrownBy(() -> changeDirectionDueDateNotificationHandler.handle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "RESPONDENT_REVIEW, HOME_OFFICE_REVIEW_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS, HOME_OFFICE_REVIEW_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_FAIL_DATE_TIME",
+        "AWAITING_RESPONDENT_EVIDENCE, HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS, HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_FAIL_DATE_TIME"
+    })
+    void if_notification_fail_then_save_date_to_case_data(State state, AsylumCaseDefinition status, AsylumCaseDefinition failDateTime) {
+        setupCase(Event.CHANGE_DIRECTION_DUE_DATE);
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+        setupAppealCaseData();
+
+        when(homeOfficeInstructService.sendNotification(any(HomeOfficeInstruct.class)))
+            .thenReturn("FAIL");
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            changeDirectionDueDateNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(status, "FAIL");
+        verify(asylumCase).write(eq(failDateTime), dateTimeArgumentCaptor.capture());
+
+        assertThat(LocalDateTime.parse(dateTimeArgumentCaptor.getValue()))
+            .isAfter(LocalDateTime.now().minusSeconds(5))
+            .isBefore(LocalDateTime.now().plusSeconds(5));
     }
 }
