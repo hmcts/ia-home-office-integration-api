@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.Home
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.RetriesExceededException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -26,6 +27,7 @@ import java.util.regex.Pattern;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.GWF_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANTS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_FAIL_DATE_TIME;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_CLAIM_DATE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_APPELLANT_DECISION_DATE;
@@ -36,7 +38,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 @Component
 public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private HomeOfficeApplicationService homeOfficeApplicationService;
+    private final HomeOfficeApplicationService homeOfficeApplicationService;
 
     public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|(GWF[0-9]{9}))$");
 
@@ -112,7 +114,9 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
             }
 
             writeHomeOfficeDataToCase(asylumCase, homeOfficeReferenceNumber, String.valueOf(homeOfficeResponse.getStatusCode().value()), applicationDto);
-
+            if (homeOfficeResponse.getStatusCode().is2xxSuccessful()) {
+                asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_FAIL_DATE_TIME, LocalDateTime.now().toString());
+            }
         } catch (HomeOfficeMissingApplicationException exception) {
             String message = exception.getMessage();
             // Log as an error if the return status indicates a problem somewhere in our code (which may be a result of something changing at the Home Office's end)
@@ -141,9 +145,11 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
             }
             // Send the HTTP status code back to the ia-case-api service by writing it in the case record
             asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, exception.getHttpStatus());
+            asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_FAIL_DATE_TIME, LocalDateTime.now().toString());
         } catch (RetriesExceededException ex) {
             log.warn("Retries exhausted calling Home Office: message - {}", ex.getMessage());
             asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, -1);
+            asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_FAIL_DATE_TIME, LocalDateTime.now().toString());
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -173,7 +179,7 @@ public class GetAppellantDataHandler implements PreSubmitCallbackHandler<AsylumC
                                                                         yesOrNoFromBoolean(appellantDto.getHoFeeWaiver()), 
                                                                         appellantDto.getLanguage(), 
                                                                         yesOrNoFromBoolean(appellantDto.getInterpreterNeeded()));
-                appellants.add(new IdValue<HomeOfficeAppellant>(id, appellant));
+                appellants.add(new IdValue<>(id, appellant));
             } catch (Exception e) {
                 String message = "Biographic information from Home Office asylum (etc.) application with reference " + homeOfficeReferenceNumber
                                + " was retrieved but did not match the expected format " + (pp == null ? "" : " for appellant " + pp)
