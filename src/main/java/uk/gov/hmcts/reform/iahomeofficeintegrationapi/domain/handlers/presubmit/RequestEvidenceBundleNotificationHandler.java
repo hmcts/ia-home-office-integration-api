@@ -1,10 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.REQUEST_EVIDENCE_BUNDLE;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceBundleInstructMessage.RequestEvidenceBundleInstructMessageBuilder.requestEvidenceBundleInstructMessage;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
@@ -19,13 +14,19 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitC
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.NotificationsHelper;
 
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.REQUEST_EVIDENCE_BUNDLE;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.RequestEvidenceBundleInstructMessage.RequestEvidenceBundleInstructMessageBuilder.requestEvidenceBundleInstructMessage;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService.handleIfFailure;
+
 
 @Slf4j
 @Component
 public class RequestEvidenceBundleNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private HomeOfficeInstructService homeOfficeInstructService;
-    private NotificationsHelper notificationsHelper;
+    private final HomeOfficeInstructService homeOfficeInstructService;
+    private final NotificationsHelper notificationsHelper;
 
     public RequestEvidenceBundleNotificationHandler(
         HomeOfficeInstructService homeOfficeInstructService,
@@ -52,7 +53,7 @@ public class RequestEvidenceBundleNotificationHandler implements PreSubmitCallba
             throw new IllegalStateException("Cannot handle callback");
         }
         log.info("Preparing to send {} notification to HomeOffice for event {}",
-            REQUEST_EVIDENCE_BUNDLE.toString(), callback.getEvent());
+            REQUEST_EVIDENCE_BUNDLE, callback.getEvent());
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
@@ -74,14 +75,15 @@ public class RequestEvidenceBundleNotificationHandler implements PreSubmitCallba
                 .build();
 
         log.info("Finished constructing {} notification request for caseId: {}, HomeOffice reference: {}",
-            REQUEST_EVIDENCE_BUNDLE.toString(), caseId, homeOfficeReferenceNumber);
+            REQUEST_EVIDENCE_BUNDLE, caseId, homeOfficeReferenceNumber);
 
         final String notificationStatus = homeOfficeInstructService.sendNotification(bundleInstructMessage);
 
         asylumCase.write(AsylumCaseDefinition.HOME_OFFICE_INSTRUCT_STATUS, notificationStatus);
+        handleIfFailure(asylumCase, notificationStatus, AsylumCaseDefinition.HOME_OFFICE_INSTRUCT_FAIL_DATE_TIME);
 
         log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
-            REQUEST_EVIDENCE_BUNDLE.toString(), caseId, homeOfficeReferenceNumber,
+            REQUEST_EVIDENCE_BUNDLE, caseId, homeOfficeReferenceNumber,
             notificationStatus, callback.getEvent());
 
         return new PreSubmitCallbackResponse<>(asylumCase);

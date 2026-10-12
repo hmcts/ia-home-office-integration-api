@@ -1,14 +1,5 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_DATE_DUE;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_EXPLANATION;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_PARTIES;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REVIEW_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS;
-import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.DEFAULT;
-
-import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
@@ -23,12 +14,25 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.PreSubmitC
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.NotificationsHelper;
 
+import java.util.Arrays;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_DATE_DUE;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_EXPLANATION;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.DIRECTION_EDIT_PARTIES;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_FAIL_DATE_TIME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REVIEW_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_FAIL_DATE_TIME;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_REVIEW_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.MessageType.DEFAULT;
+import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service.HomeOfficeInstructService.handleIfFailure;
+
 @Slf4j
 @Component
 public class ChangeDirectionDueDateNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private HomeOfficeInstructService homeOfficeInstructService;
-    private NotificationsHelper notificationsHelper;
+    private final HomeOfficeInstructService homeOfficeInstructService;
+    private final NotificationsHelper notificationsHelper;
 
     public ChangeDirectionDueDateNotificationHandler(
         HomeOfficeInstructService homeOfficeInstructService,
@@ -60,7 +64,7 @@ public class ChangeDirectionDueDateNotificationHandler implements PreSubmitCallb
             throw new IllegalStateException("Cannot handle callback");
         }
         log.info("Preparing to send {} notification to HomeOffice for event {}",
-            DEFAULT.toString(), callback.getEvent());
+            DEFAULT, callback.getEvent());
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
@@ -78,22 +82,24 @@ public class ChangeDirectionDueDateNotificationHandler implements PreSubmitCallb
             );
 
         log.info("Finished constructing {} notification request for caseId: {}, HomeOffice reference: {}",
-            DEFAULT.toString(), caseId, homeOfficeReferenceNumber);
+            DEFAULT, caseId, homeOfficeReferenceNumber);
 
         final String notificationStatus = homeOfficeInstructService.sendNotification(homeOfficeInstruct);
 
         if (State.RESPONDENT_REVIEW.equals(callback.getCaseDetails().getState())) {
 
             asylumCase.write(HOME_OFFICE_REVIEW_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS, notificationStatus);
+            handleIfFailure(asylumCase, notificationStatus, HOME_OFFICE_REVIEW_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_FAIL_DATE_TIME);
 
         } else if (State.AWAITING_RESPONDENT_EVIDENCE.equals(callback.getCaseDetails().getState())) {
 
             asylumCase.write(HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS, notificationStatus);
+            handleIfFailure(asylumCase, notificationStatus, HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_FAIL_DATE_TIME);
 
         }
 
         log.info("SENT: {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
-            DEFAULT.toString(), caseId, homeOfficeReferenceNumber, notificationStatus, callback.getEvent());
+            DEFAULT, caseId, homeOfficeReferenceNumber, notificationStatus, callback.getEvent());
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -114,6 +120,6 @@ public class ChangeDirectionDueDateNotificationHandler implements PreSubmitCallb
         Parties parties = asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)
             .orElseThrow(() -> new IllegalStateException("directionEditParties is not present"));
 
-        return parties.equals(parties.RESPONDENT);
+        return parties.equals(Parties.RESPONDENT);
     }
 }
