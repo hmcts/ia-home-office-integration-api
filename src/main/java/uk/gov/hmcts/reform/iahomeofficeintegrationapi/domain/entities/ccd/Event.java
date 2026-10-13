@@ -8,7 +8,7 @@ public enum Event {
     START_APPEAL("startAppeal"),
     EDIT_APPEAL("editAppeal"),
     SUBMIT_APPEAL("submitAppeal"),
-    EDIT_APPEAL_AFTER_SUBMIT("editAppealAfterSubmit"),
+    EDIT_APPELLANT_PERSONAL_DATA("editAppellantPersonalData"),
     PAY_AND_SUBMIT_APPEAL("payAndSubmitAppeal"),
     MARK_APPEAL_PAID("markAppealPaid"),
     REQUEST_HOME_OFFICE_DATA("requestHomeOfficeData"),
