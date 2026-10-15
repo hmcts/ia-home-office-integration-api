@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.service.Ccd
 @Slf4j
 public class SetHomeOfficeStatutoryTimeframeStatusController {
 
-    public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
 
     private final CcdDataService ccdDataService;
 
@@ -75,7 +75,7 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HomeOfficeStatutoryTimeframeDto> updateHomeOfficeStatutoryTimeframeStatus(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authToken,
+        @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
         @Valid @RequestBody HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto
     ) throws RuntimeException {
         try {
