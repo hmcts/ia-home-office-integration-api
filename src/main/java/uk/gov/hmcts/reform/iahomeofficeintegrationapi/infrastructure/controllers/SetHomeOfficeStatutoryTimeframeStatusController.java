@@ -31,7 +31,7 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
     private final boolean isHomeOfficeValidationEnabled;
 
     public SetHomeOfficeStatutoryTimeframeStatusController(CcdDataService ccdDataService,
-                                                           @Value("${feature.home-office-validation.enabled}") boolean isHomeOfficeValidationEnabled) {
+                                                           @Value("${app.home-office-validation.enabled}") boolean isHomeOfficeValidationEnabled) {
         this.ccdDataService = ccdDataService;
         this.isHomeOfficeValidationEnabled = isHomeOfficeValidationEnabled;
     }
