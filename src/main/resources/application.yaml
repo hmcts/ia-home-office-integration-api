@@ -73,7 +73,7 @@ security:
       - "startAppeal"
       - "editAppeal"
       - "submitAppeal"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
       - "payAndSubmitAppeal"
       - "applyForFTPAAppellant"
     tribunal-caseworker:
@@ -89,7 +89,7 @@ security:
       - "requestResponseAmend"
       - "changeDirectionDueDate"
       - "markAppealPaid"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
     challenged-access-legal-operations:
       - "requestHomeOfficeData"
       - "requestRespondentEvidence"
@@ -103,7 +103,7 @@ security:
       - "requestResponseAmend"
       - "changeDirectionDueDate"
       - "markAppealPaid"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
     senior-tribunal-caseworker:
       - "requestHomeOfficeData"
       - "requestRespondentEvidence"
@@ -117,13 +117,13 @@ security:
       - "requestResponseAmend"
       - "changeDirectionDueDate"
       - "markAppealPaid"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
     hearing-centre-admin:
       - "markAppealPaid"
       - "startAppeal"
       - "submitAppeal"
       - "editAppeal"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
       - "applyForFTPAAppellant"
       - "listCase"
       - "editCaseListing"
@@ -134,7 +134,7 @@ security:
     ctsc:
       - "startAppeal"
       - "editAppeal"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
       - "markAppealPaid"
       - "submitAppeal"
       - "applyForFTPAAppellant"
@@ -147,7 +147,7 @@ security:
     ctsc-team-leader:
       - "startAppeal"
       - "editAppeal"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
       - "markAppealPaid"
       - "submitAppeal"
       - "applyForFTPAAppellant"
@@ -166,7 +166,7 @@ security:
       - "adjournHearingWithoutDate"
       - "sendDecisionAndReasons"
       - "endAppeal"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
       - "requestRespondentEvidence"
     challenged-access-ctsc:
       - "markAppealPaid"
@@ -177,7 +177,7 @@ security:
       - "adjournHearingWithoutDate"
       - "sendDecisionAndReasons"
       - "endAppeal"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
       - "requestRespondentEvidence"
     challenged-access-admin:
       - "markAppealPaid"
@@ -188,7 +188,7 @@ security:
       - "adjournHearingWithoutDate"
       - "sendDecisionAndReasons"
       - "endAppeal"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
       - "requestRespondentEvidence"
     caseworker-ia-homeofficeapc:
     caseworker-ia-homeofficelart:
@@ -203,7 +203,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
     judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -211,7 +211,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
     senior-judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -219,7 +219,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
     leadership-judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -227,7 +227,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
     fee-paid-judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -235,7 +235,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
     lead-judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -243,7 +243,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
     hearing-judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -251,7 +251,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
     ftpa-judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -259,7 +259,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
     hearing-panel-judge:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -267,7 +267,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
     challenged-access-judiciary:
       - "sendDecisionAndReasons"
       - "leadershipJudgeFtpaDecision"
@@ -275,7 +275,7 @@ security:
       - "decideFtpaApplication"
       - "endAppeal"
       - "changeDirectionDueDate"
-      - "editAppealAfterSubmit"
+      - "editAppellantPersonalData"
     caseworker-ia-system:
       - "listCase"
       - "editCaseListing"
@@ -345,3 +345,5 @@ auth.homeoffice.client.secret: ${IA_HOMEOFFICE_SECRET:}
 app:
   public-ip:
     enabled: ${APP_PUBLIC_IP_ENABLED:false}
+  home-office-validation:
+    enabled: ${HOME_OFFICE_VALIDATION_ENABLED:false}

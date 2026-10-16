@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +28,12 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
     public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
 
     private final CcdDataService ccdDataService;
+    private final boolean isHomeOfficeValidationEnabled;
 
-    public SetHomeOfficeStatutoryTimeframeStatusController(CcdDataService ccdDataService) {
+    public SetHomeOfficeStatutoryTimeframeStatusController(CcdDataService ccdDataService,
+                                                           @Value("${app.home-office-validation.enabled}") boolean isHomeOfficeValidationEnabled) {
         this.ccdDataService = ccdDataService;
+        this.isHomeOfficeValidationEnabled = isHomeOfficeValidationEnabled;
     }
 
     @Operation(
@@ -78,12 +82,17 @@ public class SetHomeOfficeStatutoryTimeframeStatusController {
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
         @Valid @RequestBody HomeOfficeStatutoryTimeframeDto hoStatutoryTimeframeDto
     ) throws RuntimeException {
-        try {
-            ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(hoStatutoryTimeframeDto);
-        } catch (Exception e) {
-            log.error("HTTP POST to /home-office-statutory-timeframe-status endpoint was unsuccessful.", e);
-            throw e;
+        if (isHomeOfficeValidationEnabled) {
+            try {
+                ccdDataService.setHomeOfficeStatutoryTimeframeStatus(hoStatutoryTimeframeDto);
+                return ResponseEntity.status(HttpStatus.CREATED).body(hoStatutoryTimeframeDto);
+            } catch (Exception e) {
+                log.error("HTTP POST to /home-office-statutory-timeframe-status endpoint was unsuccessful.", e);
+                throw e;
+            }
+        } else {
+            log.info("Home Office statutory timeframe status validation is disabled. No action taken.");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
     }
 }

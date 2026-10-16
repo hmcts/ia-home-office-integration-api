@@ -7,7 +7,6 @@ import ch.qos.logback.core.read.ListAppender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
@@ -41,12 +40,11 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
     @Mock
     private SubmitEventDetails submitEventDetails;
 
-    @InjectMocks
     private SetHomeOfficeStatutoryTimeframeStatusController controller;
 
     @BeforeEach
     void setUp() {
-        controller = new SetHomeOfficeStatutoryTimeframeStatusController(ccdDataService);
+        controller = new SetHomeOfficeStatutoryTimeframeStatusController(ccdDataService, true);
     }
 
     @Test
@@ -129,5 +127,20 @@ class SetHomeOfficeStatutoryTimeframeStatusControllerTest {
         assertEquals("HTTP POST to /home-office-statutory-timeframe-status endpoint was unsuccessful.",
             loggingEvent.getFormattedMessage());
         assertEquals(Level.ERROR, loggingEvent.getLevel());
+    }
+
+    @Test
+    void should_return_no_content_when_home_office_validation_is_disabled() {
+        // Given
+        controller =
+            new SetHomeOfficeStatutoryTimeframeStatusController(ccdDataService, false);
+
+        // When
+        ResponseEntity<HomeOfficeStatutoryTimeframeDto> response =
+            controller.updateHomeOfficeStatutoryTimeframeStatus("Bearer test-token", hoStatutoryTimeframeDto);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(response.getBody()).isNull();
     }
 }
