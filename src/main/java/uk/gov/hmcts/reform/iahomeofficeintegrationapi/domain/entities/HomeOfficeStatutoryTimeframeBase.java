@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
@@ -33,12 +34,12 @@ public abstract class HomeOfficeStatutoryTimeframeBase {
     @JsonProperty(value = "hmctsReferenceNumber", required = true)
     @NotNull
     @Pattern(regexp = "^(RP|PA|EA|HU|DC|EU|AG)/[0-9]{5,6}/[0-9]{4}$",
-             message = "Home Office reference ID must be of the form XX/12345/2026, where XX is the appeal type, " + 
+             message = "Home Office reference ID must be of the form XX/12345/2026, where XX is the appeal type, " +
                        "12345 stands for any five-digit number and 2026 is the year")
     private String hmctsReferenceNumber;
 
     @JsonProperty(value = "uan")
-    @Pattern(regexp = "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$", 
+    @Pattern(regexp = "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$",
              message = "UAN must be in format XXXX-XXXX-XXXX-XXXX where X is a digit")
     private String uan;
 
@@ -61,6 +62,7 @@ public abstract class HomeOfficeStatutoryTimeframeBase {
     private OffsetDateTime timeStamp;
 
     // Copy constructor for base fields
+    @JsonCreator
     protected HomeOfficeStatutoryTimeframeBase(HomeOfficeStatutoryTimeframeBase other) {
         this.dateOfBirth = other.dateOfBirth;
         this.familyName = other.familyName;

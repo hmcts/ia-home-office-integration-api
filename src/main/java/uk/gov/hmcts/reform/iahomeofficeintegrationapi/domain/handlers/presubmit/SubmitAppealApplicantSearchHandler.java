@@ -99,12 +99,16 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
 
     private HomeOfficeDataMatchHelper homeOfficeDataMatchHelper;
 
+    private ObjectMapper objectMapper;
+
     public SubmitAppealApplicantSearchHandler(HomeOfficeSearchService homeOfficeSearchService,
                                               HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper,
-                                              HomeOfficeDataMatchHelper homeOfficeDataMatchHelper) {
+                                              HomeOfficeDataMatchHelper homeOfficeDataMatchHelper,
+                                              ObjectMapper objectMapper) {
         this.homeOfficeSearchService = homeOfficeSearchService;
         this.homeOfficeDataErrorsHelper = homeOfficeDataErrorsHelper;
         this.homeOfficeDataMatchHelper = homeOfficeDataMatchHelper;
+        this.objectMapper = objectMapper;
     }
 
     public boolean canHandle(
@@ -300,7 +304,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                     return new PreSubmitCallbackResponse<>(asylumCase);
                 }
 
-                String homeOfficeSearchResponseJsonStr = new ObjectMapper().writeValueAsString(searchResponse);
+                String homeOfficeSearchResponseJsonStr = objectMapper.writeValueAsString(searchResponse);
 
                 updateAsylumCase(asylumCase,
                         caseId,
