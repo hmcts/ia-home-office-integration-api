@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.serialization;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Component
 public class StdSerializer<T> implements Serializer<T> {

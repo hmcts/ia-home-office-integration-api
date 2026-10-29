@@ -115,9 +115,6 @@ class HomeOfficeSearchServiceTest {
     private String getSampleResponse() throws Exception {
         Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
         return FileCopyUtils.copyToString(reader);
-        //ObjectMapper om = new ObjectMapper()
-        //    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        //return om.readValue(FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
     }
 
 }

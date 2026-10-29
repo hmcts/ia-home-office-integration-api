@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils;
 
 import java.time.LocalDateTime;
-
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
@@ -33,6 +33,7 @@ public class CaseDetailsForTest {
     private String callbackResponseStatus;
     private Integer version;
 
+    @JsonCreator
     CaseDetailsForTest(long id, String jurisdiction, State state, AsylumCase caseData, String createdDate,
                         LocalDateTime lastModified, Integer lockedBy, Integer securityLevel, Classification securityClassification,
                         String callbackResponseStatus, Integer version) {

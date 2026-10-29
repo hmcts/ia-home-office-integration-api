@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum AppealDecidedNote {
@@ -28,6 +29,7 @@ public enum AppealDecidedNote {
     @JsonValue
     private final String value;
 
+    @JsonCreator
     AppealDecidedNote(String value) {
         this.value = value;
     }
