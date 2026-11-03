@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,11 +33,13 @@ class HomeOfficeInstructServiceTest {
 
     private HomeOfficeInstructService homeOfficeInstructService;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @BeforeEach
     public void setUp() {
 
         homeOfficeInstructService = new HomeOfficeInstructService(
-            homeOfficeInstructApi, accessTokenProvider);
+            homeOfficeInstructApi, accessTokenProvider, objectMapper);
     }
 
     @Test

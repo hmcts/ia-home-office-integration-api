@@ -20,7 +20,6 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -77,6 +76,8 @@ public class RequestHomeOfficeDataHandlerTest {
     @org.springframework.beans.factory.annotation.Value("classpath:home-office-sample-response.json")
     private Resource resource;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     long caseId = 1234;
 
     private RequestHomeOfficeDataHandler requestHomeOfficeDataHandler;
@@ -85,7 +86,7 @@ public class RequestHomeOfficeDataHandlerTest {
     void setUp() {
 
         requestHomeOfficeDataHandler =
-                new RequestHomeOfficeDataHandler(homeOfficeDataErrorsHelper);
+                new RequestHomeOfficeDataHandler(homeOfficeDataErrorsHelper, objectMapper);
     }
 
     @Test
@@ -144,7 +145,7 @@ public class RequestHomeOfficeDataHandlerTest {
     @Test
     void handle_should_return_matched_appellant_details() throws Exception {
 
-        String hoSearchResponseJsonStr = new ObjectMapper().writeValueAsString(getSampleResponse());
+        String hoSearchResponseJsonStr = objectMapper.writeValueAsString(getSampleResponse());
 
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -270,9 +271,8 @@ public class RequestHomeOfficeDataHandlerTest {
     private HomeOfficeSearchResponse getSampleResponse() throws Exception {
         if (homeOfficeSearchResponse == null) {
             Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
-            ObjectMapper om = new ObjectMapper()
-                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            homeOfficeSearchResponse = om.readValue(FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
+            homeOfficeSearchResponse = objectMapper.readValue(
+                FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
         }
         return homeOfficeSearchResponse;
     }

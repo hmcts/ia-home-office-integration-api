@@ -60,13 +60,17 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
 
     private HomeOfficeDataMatchHelper homeOfficeDataMatchHelper;
 
+    private ObjectMapper objectMapper;
+
     public RequestHomeOfficeDataPreparer(HomeOfficeSearchService homeOfficeSearchService,
                                          HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper,
-                                         HomeOfficeDataMatchHelper homeOfficeDataMatchHelper) {
+                                         HomeOfficeDataMatchHelper homeOfficeDataMatchHelper,
+                                         ObjectMapper objectMapper) {
 
         this.homeOfficeSearchService = homeOfficeSearchService;
         this.homeOfficeDataErrorsHelper = homeOfficeDataErrorsHelper;
         this.homeOfficeDataMatchHelper = homeOfficeDataMatchHelper;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -136,7 +140,7 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
                     && (homeOfficeReferenceNumberBeforeEdit.isEmpty()
                     || homeOfficeReferenceNumberBeforeEdit.equals(homeOfficeReferenceNumber))) {
 
-                searchResponse = new ObjectMapper()
+                searchResponse = objectMapper
                         .readValue(homeOfficeSearchResponseJsonStr, HomeOfficeSearchResponse.class);
             } else {
 
@@ -173,7 +177,7 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
 
             if (!matchedApplicants.isEmpty()) {
 
-                homeOfficeSearchResponseJsonStr = new ObjectMapper().writeValueAsString(searchResponse);
+                homeOfficeSearchResponseJsonStr = objectMapper.writeValueAsString(searchResponse);
                 asylumCase.write(HOME_OFFICE_SEARCH_RESPONSE, homeOfficeSearchResponseJsonStr);
 
                 matchedApplicants.stream().forEach(a -> {

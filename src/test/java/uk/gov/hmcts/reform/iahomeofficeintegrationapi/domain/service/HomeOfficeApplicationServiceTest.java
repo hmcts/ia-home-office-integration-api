@@ -104,7 +104,7 @@ class HomeOfficeApplicationServiceTest {
             anyString(),
             eq("CONSUMER123"),
             anyString()
-        )).thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
+        )).thenReturn(ResponseEntity.ok(null));
 
         // Act
         ResponseEntity<HomeOfficeApplicationDto> result = service.getApplication(referenceNumber);

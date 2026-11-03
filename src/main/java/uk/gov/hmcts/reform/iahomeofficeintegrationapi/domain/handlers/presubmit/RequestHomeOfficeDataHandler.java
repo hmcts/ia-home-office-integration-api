@@ -44,10 +44,13 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
             + "trigger/requestHomeOfficeData) to try again. This may take a few minutes.";
 
     private HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper;
+    private ObjectMapper objectMapper;
 
-    public RequestHomeOfficeDataHandler(HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper) {
+    public RequestHomeOfficeDataHandler(HomeOfficeDataErrorsHelper homeOfficeDataErrorsHelper,
+                                        ObjectMapper objectMapper) {
 
         this.homeOfficeDataErrorsHelper = homeOfficeDataErrorsHelper;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -115,7 +118,7 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
                         asylumCase.read(HOME_OFFICE_SEARCH_RESPONSE, String.class)
                                 .orElseThrow(() -> new IllegalStateException("Home Office search response is not present."));
 
-                searchResponse = new ObjectMapper()
+                searchResponse = objectMapper
                         .readValue(homeOfficeSearchResponseJsonStr, HomeOfficeSearchResponse.class);
 
                 String selectedApplicantName = selectedApplicant.split("-")[0];

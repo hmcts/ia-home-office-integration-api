@@ -30,7 +30,6 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -155,11 +154,13 @@ public class SubmitAppealApplicantSearchHandlerTest {
 
     private SubmitAppealApplicantSearchHandler submitAppealApplicantSearchHandler;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @BeforeEach
     void setUp() {
         submitAppealApplicantSearchHandler =
                 new SubmitAppealApplicantSearchHandler(
-                        homeOfficeSearchService, homeOfficeDataErrorsHelper, homeOfficeDataMatchHelper);
+                        homeOfficeSearchService, homeOfficeDataErrorsHelper, homeOfficeDataMatchHelper, objectMapper);
     }
 
     @ParameterizedTest
@@ -881,9 +882,9 @@ public class SubmitAppealApplicantSearchHandlerTest {
     private HomeOfficeSearchResponse getSampleResponse() throws Exception {
         if (homeOfficeSearchResponse == null) {
             Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
-            ObjectMapper om = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            homeOfficeSearchResponse = om.readValue(FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
+            ObjectMapper om = new ObjectMapper();
+            homeOfficeSearchResponse = om.readValue(
+                FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
         }
         return homeOfficeSearchResponse;
     }
@@ -891,8 +892,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
     private HomeOfficeSearchResponse getNullFieldResponse() throws Exception {
         if (homeOfficeNullFieldResponse == null) {
             Reader reader = new InputStreamReader(resourceNullField.getInputStream(), UTF_8);
-            ObjectMapper om = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            ObjectMapper om = new ObjectMapper();
             homeOfficeNullFieldResponse = om.readValue(
                 FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
         }
@@ -902,10 +902,9 @@ public class SubmitAppealApplicantSearchHandlerTest {
     private HomeOfficeSearchResponse getMultipleApplicantsResponse() throws Exception {
         if (homeOfficeMultipleApplicantsResponse == null) {
             Reader reader = new InputStreamReader(resourceMultipleApplicants.getInputStream(), UTF_8);
-            ObjectMapper om = new ObjectMapper()
-                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            ObjectMapper om = new ObjectMapper();
             homeOfficeMultipleApplicantsResponse = om.readValue(
-                    FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
+                FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
         }
         return homeOfficeMultipleApplicantsResponse;
     }

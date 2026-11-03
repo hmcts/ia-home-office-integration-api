@@ -73,7 +73,7 @@ public class HomeOfficeMissingApplicationDecoder implements ErrorDecoder {
                 break;
             case 500, 501, 502, 503, 504:
                 message += "\n\nThe Home Office validation API was not available.";
-                break;            
+                break;
             default:
                 message += "\n\nThe HTTP status code was " + statusCode + ".";
                 break;
