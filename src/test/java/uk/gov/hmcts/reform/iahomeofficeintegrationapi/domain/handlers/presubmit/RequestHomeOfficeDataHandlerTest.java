@@ -123,7 +123,7 @@ public class RequestHomeOfficeDataHandlerTest {
     }
 
     @Test
-    void handle_should_return_no_match_if_no_appellant_matched() throws Exception {
+    void handle_should_return_no_match_if_no_appellant_matched() {
 
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -190,7 +190,7 @@ public class RequestHomeOfficeDataHandlerTest {
     }
 
     @Test
-    void handler_should_throw_error_for_empty_ho_search_response_data() throws Exception {
+    void handler_should_throw_error_for_empty_ho_search_response_data() {
 
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -280,7 +280,7 @@ public class RequestHomeOfficeDataHandlerTest {
     private DynamicList selectAppellant() {
 
         List<Value> values = new ArrayList<>();
-        values.add(new Value("Capability Smith", "Capability Smith-210170"));
+        values.add(new Value("Capability-John Smith", "Capability-John Smith-210170"));
         return new DynamicList(values.getFirst(), values);
     }
 
@@ -290,22 +290,5 @@ public class RequestHomeOfficeDataHandlerTest {
         values.add(new Value("NoMatch", "No Match"));
 
         return new DynamicList(values.getFirst(), values);
-    }
-
-    private HomeOfficeCaseStatus getNoMatchResponse() {
-
-        String noMatch = "No match";
-        Person noMatchingPerson = Person.PersonBuilder.person()
-                .withGivenName(noMatch)
-                .withFamilyName(noMatch)
-                .withNationality(new CodeWithDescription(noMatch, noMatch))
-                .withGender(new CodeWithDescription(noMatch, noMatch))
-                .build();
-
-        return new HomeOfficeCaseStatus(noMatchingPerson, null, null,
-                null, null, null,
-                null, null,
-                null, null);
-
     }
 }

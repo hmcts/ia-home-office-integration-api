@@ -118,8 +118,9 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
                 searchResponse = new ObjectMapper()
                         .readValue(homeOfficeSearchResponseJsonStr, HomeOfficeSearchResponse.class);
 
-                String selectedApplicantName = selectedApplicant.split("-")[0];
-                String selectedApplicantDob = selectedApplicant.split("-")[1];
+                int selectedApplicantHyphenIndex = selectedApplicant.lastIndexOf("-");
+                String selectedApplicantName = selectedApplicant.substring(0, selectedApplicantHyphenIndex);
+                String selectedApplicantDob = selectedApplicant.substring(selectedApplicantHyphenIndex + 1);
 
                 Optional<HomeOfficeCaseStatus> optMatchedApplicant =
                         findApplicantByNameAndDob(
@@ -200,13 +201,8 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
 
     boolean isApplicantMatched(HomeOfficeCaseStatus status, String selectedApplicantName, String appellantDateOfBirth) {
 
-        if (isApplicantNameMatched(status, selectedApplicantName)
-                && isApplicantDobMatched(status, appellantDateOfBirth)) {
-
-            return true;
-        }
-
-        return false;
+        return isApplicantNameMatched(status, selectedApplicantName)
+            && isApplicantDobMatched(status, appellantDateOfBirth);
     }
 
     boolean isApplicantNameMatched(HomeOfficeCaseStatus status, String selectedApplicantName) {
@@ -233,7 +229,7 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
     }
 
     String getRejectionReasonString(List<RejectionReason> rejectionReasons) {
-        StringBuilder sb = new StringBuilder("");
+        StringBuilder sb = new StringBuilder();
         if (rejectionReasons != null && !rejectionReasons.isEmpty()) {
             rejectionReasons
                     .forEach(rejectionReason -> sb.append(rejectionReason.getReason()).append("<br />"));

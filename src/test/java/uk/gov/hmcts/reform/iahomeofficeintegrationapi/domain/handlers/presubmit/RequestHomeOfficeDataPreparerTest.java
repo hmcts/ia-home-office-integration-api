@@ -258,7 +258,7 @@ public class RequestHomeOfficeDataPreparerTest {
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
                 new Value("John Smith", "John Smith-290268"),
-                new Value("Capability Smith", "Capability Smith-210170"),
+                new Value("Capability-John Smith", "Capability-John Smith-210170"),
                 new Value("NoMatch", "No Match"));
         DynamicList appellantsList = new DynamicList(values.getFirst(), values);
 
@@ -298,7 +298,7 @@ public class RequestHomeOfficeDataPreparerTest {
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
                 new Value("John Smith", "John Smith-290268"),
-                new Value("Capability Smith", "Capability Smith-210170"),
+                new Value("Capability-John Smith", "Capability-John Smith-210170"),
                 new Value("NoMatch", "No Match"));
         DynamicList appellantsList = new DynamicList(values.getFirst(), values);
 
@@ -335,7 +335,7 @@ public class RequestHomeOfficeDataPreparerTest {
         String errorCode = "2021";
         HomeOfficeError hoError = new HomeOfficeError(errorCode, "SomeApiFailure", false);
         HomeOfficeSearchResponse hoSearchResponse = new HomeOfficeSearchResponse(
-                messageHeader, "someMsgType", Arrays.asList(caseStatus), hoError);
+                messageHeader, "someMsgType", List.of(caseStatus), hoError);
 
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);

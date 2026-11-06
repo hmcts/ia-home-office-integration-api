@@ -126,12 +126,12 @@
       "person": {
         "dayOfBirth": 21,
         "familyName": "Smith",
-        "fullName": "Capability Smith",
+        "fullName": "Capability-John Smith",
         "gender": {
           "code": "M (denoting male)",
           "description": "Male"
         },
-        "givenName": "Capability",
+        "givenName": "Capability-John",
         "monthOfBirth": 1,
         "nationality": {
           "code": "CAN",
