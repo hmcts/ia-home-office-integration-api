@@ -102,10 +102,10 @@ class HomeOfficeStatusSearchIntegrationTest
         assertTrue(homeOfficeCaseStatus.isPresent());
         Person person = homeOfficeCaseStatus.get().getPerson();
         assertNotNull(person);
-        assertEquals(person.getGivenName(), "Capability");
-        assertEquals(person.getFamilyName(), "Smith");
-        assertEquals(person.getNationality().getDescription(), "Canada");
-        assertEquals(person.getFullName(), "Capability Smith");
+        assertEquals("Capability-John", person.getGivenName());
+        assertEquals("Smith", person.getFamilyName());
+        assertEquals("Canada", person.getNationality().getDescription());
+        assertEquals("Capability-John Smith", person.getFullName());
     }
 
     @Test
@@ -218,10 +218,10 @@ class HomeOfficeStatusSearchIntegrationTest
         assertTrue(homeOfficeCaseStatus.isPresent());
         Person person = homeOfficeCaseStatus.get().getPerson();
         assertNotNull(person);
-        assertEquals(person.getGivenName(), "Capability");
-        assertEquals(person.getFamilyName(), "Smith");
-        assertEquals(person.getNationality().getDescription(), "Canada");
-        assertEquals(person.getFullName(), "Capability Smith");
+        assertEquals("Capability-John", person.getGivenName());
+        assertEquals("Smith", person.getFamilyName());
+        assertEquals("Canada", person.getNationality().getDescription());
+        assertEquals("Capability-John Smith", person.getFullName());
     }
 
 

@@ -9,7 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appellantGivenNames": "Capability",
+          "appellantGivenNames": "Capability-John",
           "appellantFamilyName": "Smith",
           "appellantDateOfBirth": "1970-4-21"
         }
@@ -22,7 +22,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "appellantGivenNames": "Capability",
+        "appellantGivenNames": "Capability-John",
         "appellantFamilyName": "Smith",
         "appellantDateOfBirth": "1970-4-21",
         "homeOfficeSearchStatus": "SUCCESS"

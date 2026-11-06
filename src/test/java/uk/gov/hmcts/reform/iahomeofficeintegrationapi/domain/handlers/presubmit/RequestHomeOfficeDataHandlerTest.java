@@ -1,5 +1,34 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.Resource;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.util.FileCopyUtils;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataErrorsHelper;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeSearchResponse;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.DynamicList;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Value;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -19,37 +48,6 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.Resource;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.util.FileCopyUtils;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.HomeOfficeDataErrorsHelper;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.CodeWithDescription;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeCaseStatus;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeSearchResponse;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Person;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.DynamicList;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Value;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
 @SpringJUnitConfig
 @ExtendWith(MockitoExtension.class)
@@ -123,7 +121,7 @@ public class RequestHomeOfficeDataHandlerTest {
     }
 
     @Test
-    void handle_should_return_no_match_if_no_appellant_matched() throws Exception {
+    void handle_should_return_no_match_if_no_appellant_matched() {
 
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -190,7 +188,7 @@ public class RequestHomeOfficeDataHandlerTest {
     }
 
     @Test
-    void handler_should_throw_error_for_empty_ho_search_response_data() throws Exception {
+    void handler_should_throw_error_for_empty_ho_search_response_data() {
 
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -280,7 +278,7 @@ public class RequestHomeOfficeDataHandlerTest {
     private DynamicList selectAppellant() {
 
         List<Value> values = new ArrayList<>();
-        values.add(new Value("Capability Smith", "Capability Smith-210170"));
+        values.add(new Value("Capability-John Smith", "Capability-John Smith-210170"));
         return new DynamicList(values.getFirst(), values);
     }
 
@@ -290,22 +288,5 @@ public class RequestHomeOfficeDataHandlerTest {
         values.add(new Value("NoMatch", "No Match"));
 
         return new DynamicList(values.getFirst(), values);
-    }
-
-    private HomeOfficeCaseStatus getNoMatchResponse() {
-
-        String noMatch = "No match";
-        Person noMatchingPerson = Person.PersonBuilder.person()
-                .withGivenName(noMatch)
-                .withFamilyName(noMatch)
-                .withNationality(new CodeWithDescription(noMatch, noMatch))
-                .withGender(new CodeWithDescription(noMatch, noMatch))
-                .build();
-
-        return new HomeOfficeCaseStatus(noMatchingPerson, null, null,
-                null, null, null,
-                null, null,
-                null, null);
-
     }
 }

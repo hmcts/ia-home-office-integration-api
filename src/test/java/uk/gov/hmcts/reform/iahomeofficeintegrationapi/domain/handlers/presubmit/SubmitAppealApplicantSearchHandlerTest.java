@@ -269,7 +269,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
         when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Capability"));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Capability-John"));
         when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Smith"));
         when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1981-10-12"));
 
@@ -303,7 +303,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
         when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Capability"));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Capability-John"));
         when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Smith"));
         when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1980-11-11"));
 
@@ -697,15 +697,15 @@ public class SubmitAppealApplicantSearchHandlerTest {
         Person person = searchStatus.getFirst().getPerson();
 
         assertNotNull(searchStatus);
-        assertTrue(!searchStatus.isEmpty());
+        assertFalse(searchStatus.isEmpty());
         assertThat(person.getFamilyName()).isEqualTo("Smith");
-        assertThat(person.getGivenName()).isEqualTo("Capability");
+        assertThat(person.getGivenName()).isEqualTo("Capability-John");
     }
 
     @Test
     void should_match_applicant_details_by_given_and_family_names() throws Exception {
 
-        Person appellant = Person.PersonBuilder.person().withFamilyName("Smith").withGivenName("Capability").build();
+        Person appellant = Person.PersonBuilder.person().withFamilyName("Smith").withGivenName("Capability-John").build();
 
         List<HomeOfficeCaseStatus> searchStatus = submitAppealApplicantSearchHandler.selectMainApplicant(
             caseId,
@@ -722,9 +722,9 @@ public class SubmitAppealApplicantSearchHandlerTest {
                 .getPerson();
 
         assertNotNull(searchStatus);
-        assertTrue(!searchStatus.isEmpty());
+        assertFalse(searchStatus.isEmpty());
         assertThat(person.getFamilyName()).isEqualTo("Smith");
-        assertThat(person.getGivenName()).isEqualTo("Capability");
+        assertThat(person.getGivenName()).isEqualTo("Capability-John");
 
     }
 
@@ -744,13 +744,13 @@ public class SubmitAppealApplicantSearchHandlerTest {
             );
 
         assertNotNull(searchStatus);
-        assertFalse(!searchStatus.isEmpty());
+        assertTrue(searchStatus.isEmpty());
     }
 
     @Test
     void should_log_warning_for_no_metadata_of_applicant() throws Exception {
 
-        Person appellant = Person.PersonBuilder.person().withFamilyName("Smith").withGivenName("Capability").build();
+        Person appellant = Person.PersonBuilder.person().withFamilyName("Smith").withGivenName("Capability-John").build();
 
         List<HomeOfficeCaseStatus> searchStatus = submitAppealApplicantSearchHandler.selectMainApplicant(
             caseId,
@@ -767,9 +767,9 @@ public class SubmitAppealApplicantSearchHandlerTest {
                 .getPerson();
 
         assertNotNull(searchStatus);
-        assertTrue(!searchStatus.isEmpty());
+        assertFalse(searchStatus.isEmpty());
         assertThat(person.getFamilyName()).isEqualTo("Smith");
-        assertThat(person.getGivenName()).isEqualTo("Capability");
+        assertThat(person.getGivenName()).isEqualTo("Capability-John");
     }
 
     @Test
@@ -911,7 +911,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
     }
 
     @Test
-    void check_handler_returns_empty_response_when_appellant_data_is_already_present() throws Exception {
+    void check_handler_returns_empty_response_when_appellant_data_is_already_present() {
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
