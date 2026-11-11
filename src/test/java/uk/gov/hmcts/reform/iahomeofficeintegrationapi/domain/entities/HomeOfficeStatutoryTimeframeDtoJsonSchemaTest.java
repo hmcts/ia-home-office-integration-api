@@ -1,25 +1,27 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.SpecVersion;
-import com.networknt.schema.ValidationMessage;
+import wiremock.com.networknt.schema.InputFormat;
+import wiremock.com.networknt.schema.JsonSchema;
+import wiremock.com.networknt.schema.JsonSchemaFactory;
+import wiremock.com.networknt.schema.SpecVersion;
+import wiremock.com.networknt.schema.ValidationMessage;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
 
@@ -28,8 +30,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper = new JsonMapper();
         String jsonSchemaFile = "twentyFourWeekStatusSchema_v8.json";
 
         JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V4);
@@ -40,6 +41,12 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
         }
         
         schema = factory.getSchema(schemaStream);
+    }
+
+    private Set<ValidationMessage> validateDto(HomeOfficeStatutoryTimeframeDto dto) throws Exception {
+        String json = objectMapper.writeValueAsString(dto);
+        // validates raw json string without needing JsonNode
+        return schema.validate(json, InputFormat.JSON);
     }
 
     @Test
@@ -61,12 +68,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .timeStamp(OffsetDateTime.of(2023, 12, 1, 14, 30, 45, 0, ZoneOffset.UTC))
             .build();
 
-        // When
-        String json = objectMapper.writeValueAsString(dto);
-        JsonNode jsonNode = objectMapper.readTree(json);
-        Set<ValidationMessage> errors = schema.validate(jsonNode);
-
-        // Then
+        Set<ValidationMessage> errors = validateDto(dto);
         assertTrue(errors.isEmpty(), "JSON should validate against schema. Errors: " + errors);
     }
 
@@ -88,12 +90,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .timeStamp(OffsetDateTime.of(2024, 1, 15, 10, 20, 30, 0, ZoneOffset.UTC))
             .build();
 
-        // When
-        String json = objectMapper.writeValueAsString(dto);
-        JsonNode jsonNode = objectMapper.readTree(json);
-        Set<ValidationMessage> errors = schema.validate(jsonNode);
-
-        // Then
+        Set<ValidationMessage> errors = validateDto(dto);
         assertTrue(errors.isEmpty(), "JSON should validate against schema. Errors: " + errors);
     }
 
@@ -115,12 +112,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .timeStamp(OffsetDateTime.of(2024, 6, 15, 23, 59, 59, 0, ZoneOffset.UTC))
             .build();
 
-        // When
-        String json = objectMapper.writeValueAsString(dto);
-        JsonNode jsonNode = objectMapper.readTree(json);
-        Set<ValidationMessage> errors = schema.validate(jsonNode);
-
-        // Then
+        Set<ValidationMessage> errors = validateDto(dto);
         assertTrue(errors.isEmpty(), "JSON should validate against schema with edge case time. Errors: " + errors);
     }
 
@@ -142,12 +134,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .timeStamp(OffsetDateTime.of(2023, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
             .build();
 
-        // When
-        String json = objectMapper.writeValueAsString(dto);
-        JsonNode jsonNode = objectMapper.readTree(json);
-        Set<ValidationMessage> errors = schema.validate(jsonNode);
-
-        // Then
+        Set<ValidationMessage> errors = validateDto(dto);
         assertTrue(errors.isEmpty(), "JSON should validate against schema with midnight time. Errors: " + errors);
     }
 
@@ -168,12 +155,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .timeStamp(OffsetDateTime.of(2024, 1, 15, 10, 20, 30, 0, ZoneOffset.UTC))
             .build();
 
-        // When
-        String json = objectMapper.writeValueAsString(dto);
-        JsonNode jsonNode = objectMapper.readTree(json);
-        Set<ValidationMessage> errors = schema.validate(jsonNode);
-
-        // Then
+        Set<ValidationMessage> errors = validateDto(dto);
         assertTrue(errors.isEmpty(), "JSON should validate against schema. Errors: " + errors);
     }
 
@@ -195,12 +177,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .timeStamp(OffsetDateTime.of(2024, 1, 15, 10, 20, 30, 0, ZoneOffset.UTC))
             .build();
 
-        // When
-        String json = objectMapper.writeValueAsString(dto);
-        JsonNode jsonNode = objectMapper.readTree(json);
-        Set<ValidationMessage> errors = schema.validate(jsonNode);
-
-        // Then
+        Set<ValidationMessage> errors = validateDto(dto);
         assertTrue(errors.isEmpty(), "JSON should validate against schema. Errors: " + errors);
     }
 
@@ -222,12 +199,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .timeStamp(OffsetDateTime.of(2023, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
             .build();
 
-        // When
-        String json = objectMapper.writeValueAsString(dto);
-        JsonNode jsonNode = objectMapper.readTree(json);
-        Set<ValidationMessage> errors = schema.validate(jsonNode);
-
-        // Then
+        Set<ValidationMessage> errors = validateDto(dto);
         assertTrue(!errors.isEmpty(), "JSON should fail validation with invalid UAN format");
         assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("uan")), 
                    "Error should be related to UAN field. Errors: " + errors);
@@ -247,12 +219,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .timeStamp(OffsetDateTime.of(2024, 1, 15, 10, 20, 30, 0, ZoneOffset.UTC))
             .build();
 
-        // When
-        String json = objectMapper.writeValueAsString(dto);
-        JsonNode jsonNode = objectMapper.readTree(json);
-        Set<ValidationMessage> errors = schema.validate(jsonNode);
-
-        // Then
+        Set<ValidationMessage> errors = validateDto(dto);
         assertTrue(errors.isEmpty(), "JSON should pass validation with empty cohort array");
     }
 
@@ -274,12 +241,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .timeStamp(OffsetDateTime.of(2023, 1, 1, 12, 30, 45, 0, ZoneOffset.UTC))
             .build();
 
-        // When
-        String json = objectMapper.writeValueAsString(dto);
-        JsonNode jsonNode = objectMapper.readTree(json);
-        Set<ValidationMessage> errors = schema.validate(jsonNode);
-
-        // Then
+        Set<ValidationMessage> errors = validateDto(dto);
         assertTrue(!errors.isEmpty(), "JSON should fail validation with letters in UAN");
         assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("uan")), 
                    "Error should be related to UAN field. Errors: " + errors);
@@ -303,12 +265,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .timeStamp(OffsetDateTime.of(2023, 1, 1, 12, 30, 45, 0, ZoneOffset.UTC))
             .build();
 
-        // When
-        String json = objectMapper.writeValueAsString(dto);
-        JsonNode jsonNode = objectMapper.readTree(json);
-        Set<ValidationMessage> errors = schema.validate(jsonNode);
-
-        // Then
+        Set<ValidationMessage> errors = validateDto(dto);
         assertTrue(!errors.isEmpty(), "JSON should fail validation with short UAN");
         assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("uan")), 
                    "Error should be related to UAN field. Errors: " + errors);
@@ -333,12 +290,7 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .timeStamp(OffsetDateTime.of(2023, 1, 1, 12, 30, 45, 0, ZoneOffset.UTC))
             .build();
 
-        // When
-        String json = objectMapper.writeValueAsString(dto);
-        JsonNode jsonNode = objectMapper.readTree(json);
-        Set<ValidationMessage> errors = schema.validate(jsonNode);
-
-        // Then
+        Set<ValidationMessage> errors = validateDto(dto);
         assertTrue(!errors.isEmpty(), "JSON should fail validation with wrong HMCTS reference number");
         assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("hmctsReferenceNumber")), 
                    "Error should be related to HMCTS reference number field. Errors: " + errors);
@@ -362,13 +314,15 @@ class HomeOfficeStatutoryTimeframeDtoJsonSchemaTest {
             .build();
 
         // When
-        String json = objectMapper.writeValueAsString(dto);
-        JsonNode jsonNode = objectMapper.readTree(json);
-        Set<ValidationMessage> errors = schema.validate(jsonNode);
+        Set<ValidationMessage> errors = validateDto(dto);
 
         // Then
-        assertTrue(!errors.isEmpty(), "JSON should fail validation with wrong HMCTS reference number");
-        assertTrue(errors.stream().anyMatch(e -> e.getMessage().contains("hmctsReferenceNumber")), 
-                   "Error should be related to HMCTS reference number field. Errors: " + errors);
+        assertFalse(errors.isEmpty(), "JSON should fail validation with missing HMCTS reference number");
+        assertTrue(errors.stream().anyMatch(e ->
+                        "hmctsReferenceNumber".equals(e.getProperty())
+                                || (e.getArguments() != null && Arrays.asList(e.getArguments()).contains("hmctsReferenceNumber"))
+                                || e.getMessage().contains("hmctsReferenceNumber")
+                ),
+                "Error should be related to HMCTS reference number field. Errors: " + errors);
     }
 }

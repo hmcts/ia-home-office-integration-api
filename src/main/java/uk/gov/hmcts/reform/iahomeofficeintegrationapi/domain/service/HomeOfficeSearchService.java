@@ -2,8 +2,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties.LookupReferenceData;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -42,7 +41,7 @@ public class HomeOfficeSearchService {
 
     public HomeOfficeSearchResponse getCaseStatus(
         long caseId,
-        String homeOfficeReferenceNumber) throws JsonProcessingException {
+        String homeOfficeReferenceNumber) {
 
         final String accessToken = accessTokenProvider.getAccessToken();
         HomeOfficeSearch request = makeRequestBody(homeOfficeReferenceNumber);

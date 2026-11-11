@@ -1,10 +1,11 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.JacksonException;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.HomeOfficeErrorResponse;
@@ -52,12 +53,12 @@ public class HomeOfficeInstructService {
                 correlationId
             );
             // TODO Start block remove this
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = new JsonMapper();
 
             try {
                 String requestBody = objectMapper.writeValueAsString(request);
                 log.info("Full request body: {}", requestBody);
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 log.error("Error serializing request body for caseId: {}, reference number: {}, "
                     + logMessage + ", Message: {}: ",
                     caseId,

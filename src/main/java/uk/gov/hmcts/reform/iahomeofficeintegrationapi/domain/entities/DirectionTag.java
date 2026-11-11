@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,6 +30,7 @@ public enum DirectionTag {
     @JsonValue
     private final String id;
 
+    @JsonCreator
     DirectionTag(String id) {
         this.id = id;
     }

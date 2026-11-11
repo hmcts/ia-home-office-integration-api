@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
 import static java.util.Arrays.stream;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ public enum EndAppealOutcome {
     @JsonValue
     private String value;
 
+    @JsonCreator
     EndAppealOutcome(String value) {
         this.value = value;
     }

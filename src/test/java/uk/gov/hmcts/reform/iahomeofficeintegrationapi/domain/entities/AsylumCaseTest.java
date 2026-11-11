@@ -3,7 +3,8 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.APPEAL_REFERENCE_NUMBER;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.io.IOException;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.Test;
 @SuppressWarnings("OperatorWrap")
 public class AsylumCaseTest {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new JsonMapper();
 
     @Test
     public void reads_string() throws IOException {
