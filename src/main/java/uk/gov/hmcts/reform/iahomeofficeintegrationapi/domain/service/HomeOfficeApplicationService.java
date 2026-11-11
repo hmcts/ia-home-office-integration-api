@@ -14,6 +14,9 @@ import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client.util
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.security.AccessTokenProvider;
 
+import java.time.Duration;
+import java.time.Instant;
+
 
 @Service
 @Slf4j
@@ -47,11 +50,15 @@ public class HomeOfficeApplicationService {
             homeOfficeEventDateTime
         );
         try {
+            Instant start = Instant.now();
             ResponseEntity<HomeOfficeApplicationDto> response = homeOfficeApplicationApi.getApplication(homeOfficeReferenceNumber, 
                                                                                                         accessToken, 
                                                                                                         homeOfficeCorrelationId, 
-                                                                                                        homeOfficeConsumer, 
+                                                                                                        homeOfficeConsumer,
                                                                                                         homeOfficeEventDateTime);
+            Instant finish = Instant.now();
+            long timeElapsed = Duration.between(start, finish).toMillis();
+            log.info("Time Elapsed for HO getApplication call: {}ms", timeElapsed);
             int statusCode = response.getStatusCode().value();
             log.info(
                 "Home Office /applications/v1/{} GET response has been received with HTTP status {}.",
