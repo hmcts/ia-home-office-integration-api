@@ -29,6 +29,8 @@ public class UserInfo implements Serializable {
     @Setter
     private List<String> roles;
     private String name;
+    @JsonProperty("given_name")
     private String givenName;
+    @JsonProperty("family_name")
     private String familyName;
 }
