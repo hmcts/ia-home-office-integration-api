@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import feign.codec.ErrorDecoder;
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ class HomeOfficeMissingApplicationDecoderConfigTest {
         HomeOfficeMissingApplicationDecoderConfig config =
             new HomeOfficeMissingApplicationDecoderConfig();
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new JsonMapper();
 
         ErrorDecoder decoder =
             config.homeOfficeMissingApplicationDecoder(objectMapper);

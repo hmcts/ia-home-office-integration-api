@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.MATCHING_APPELLANT_DETAILS_FOUND;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -136,7 +136,7 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
                     && (homeOfficeReferenceNumberBeforeEdit.isEmpty()
                     || homeOfficeReferenceNumberBeforeEdit.equals(homeOfficeReferenceNumber))) {
 
-                searchResponse = new ObjectMapper()
+                searchResponse = new JsonMapper()
                         .readValue(homeOfficeSearchResponseJsonStr, HomeOfficeSearchResponse.class);
             } else {
 
@@ -173,7 +173,7 @@ public class RequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<A
 
             if (!matchedApplicants.isEmpty()) {
 
-                homeOfficeSearchResponseJsonStr = new ObjectMapper().writeValueAsString(searchResponse);
+                homeOfficeSearchResponseJsonStr = new JsonMapper().writeValueAsString(searchResponse);
                 asylumCase.write(HOME_OFFICE_SEARCH_RESPONSE, homeOfficeSearchResponseJsonStr);
 
                 matchedApplicants.stream().forEach(a -> {

@@ -30,8 +30,8 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.time.LocalDate;
@@ -166,7 +166,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
     @EnumSource(value = Event.class, names = { "SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL", "MARK_APPEAL_PAID" })
     void check_handler_returns_case_data_with_home_office_fields() throws Exception {
 
-        final String jsonStr = new ObjectMapper().writeValueAsString(getSampleResponse());
+        final String jsonStr = new JsonMapper().writeValueAsString(getSampleResponse());
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -228,7 +228,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
     @Test
     void handler_should_error_for_multiple_applicants_present_on_the_give_uan() throws Exception {
 
-        String jsonStr = new ObjectMapper().writeValueAsString(getMultipleApplicantsResponse());
+        String jsonStr = new JsonMapper().writeValueAsString(getMultipleApplicantsResponse());
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -261,7 +261,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
     @Test
     void handler_should_error_for_no_match_applicant() throws Exception {
 
-        String jsonStr = new ObjectMapper().writeValueAsString(getMultipleApplicantsResponse());
+        String jsonStr = new JsonMapper().writeValueAsString(getMultipleApplicantsResponse());
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -295,7 +295,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
     @EnumSource(value = Event.class, names = { "SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL", "MARK_APPEAL_PAID" })
     void handler_should_write_ho_response_into_case_data_if_any_applicants_details_matches() throws Exception {
 
-        String jsonStr = new ObjectMapper().writeValueAsString(getMultipleApplicantsResponse());
+        String jsonStr = new JsonMapper().writeValueAsString(getMultipleApplicantsResponse());
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -881,8 +881,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
     private HomeOfficeSearchResponse getSampleResponse() throws Exception {
         if (homeOfficeSearchResponse == null) {
             Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
-            ObjectMapper om = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            ObjectMapper om = new JsonMapper();
             homeOfficeSearchResponse = om.readValue(FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
         }
         return homeOfficeSearchResponse;
@@ -891,8 +890,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
     private HomeOfficeSearchResponse getNullFieldResponse() throws Exception {
         if (homeOfficeNullFieldResponse == null) {
             Reader reader = new InputStreamReader(resourceNullField.getInputStream(), UTF_8);
-            ObjectMapper om = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            ObjectMapper om = new JsonMapper();
             homeOfficeNullFieldResponse = om.readValue(
                 FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
         }
@@ -902,8 +900,7 @@ public class SubmitAppealApplicantSearchHandlerTest {
     private HomeOfficeSearchResponse getMultipleApplicantsResponse() throws Exception {
         if (homeOfficeMultipleApplicantsResponse == null) {
             Reader reader = new InputStreamReader(resourceMultipleApplicants.getInputStream(), UTF_8);
-            ObjectMapper om = new ObjectMapper()
-                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            ObjectMapper om = new JsonMapper();
             homeOfficeMultipleApplicantsResponse = om.readValue(
                     FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
         }

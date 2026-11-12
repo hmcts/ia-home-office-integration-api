@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd;
 
 import static java.util.Arrays.stream;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 
@@ -38,6 +39,7 @@ public enum HearingCentre {
 
     private final String value;
 
+    @JsonCreator
     HearingCentre(String id, String value) {
         this.id = id;
         this.value = value;
