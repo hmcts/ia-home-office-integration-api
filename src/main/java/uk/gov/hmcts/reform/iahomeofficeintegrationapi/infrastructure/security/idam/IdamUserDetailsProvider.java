@@ -31,8 +31,6 @@ public class IdamUserDetailsProvider implements UserDetailsProvider {
         UserInfo response;
         try {
             response = idamService.getUserInfo(accessToken);
-            System.out.println("USER INFOOOOO: " + response.getGivenName() + " / " + response.getFamilyName());
-
         } catch (FeignException ex) {
             throw new IdentityManagerResponseException(
                 "Could not get user details with IDAM",

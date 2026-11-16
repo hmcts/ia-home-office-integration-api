@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.annotation.JsonNaming;
@@ -35,6 +36,7 @@ public class CaseDetails<T extends CaseData> {
     private String callbackResponseStatus;
     private Integer version;
 
+    @JsonCreator
     private CaseDetails() {
         // noop -- for deserializer
     }

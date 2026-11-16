@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.annotation.JsonNaming;
@@ -24,6 +25,7 @@ public class Callback<T extends CaseData> {
 
     private String pageId = "";
 
+    @JsonCreator
     private Callback() {
         // noop -- for deserializer
     }

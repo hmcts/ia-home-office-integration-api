@@ -227,8 +227,6 @@ dependencyCheck {
     }
 }
 
-ext["tomcat.version"] = "10.1.59"
-
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:2025.1.4"
