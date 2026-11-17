@@ -22,6 +22,7 @@ public enum HearingCentre {
     NEWCASTLE("newcastle", "Newcastle Civil & Family Courts and Tribunals Centre"),
     BELFAST("belfast", "Belfast"),
     HENDON("hendon", "Hendon"),
+    KIRKLEES("kirklees", "Kirklees"),
     YARLS_WOOD("yarlsWood", "Yarl's Wood"),
     BRADFORD_KEIGHLEY("bradfordKeighley", "Bradford & Keighley"),
     MCC_MINSHULL("mccMinshull", "MCC Minshull st"),
