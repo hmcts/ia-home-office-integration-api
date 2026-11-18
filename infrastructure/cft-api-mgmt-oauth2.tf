@@ -4,7 +4,7 @@ locals {
   cft_api_mgmt_oauth2_suffix = var.apim_suffix == "" ? var.env : var.apim_suffix
   cft_api_mgmt_oauth2_name   = join("-", ["cft-api-mgmt", local.cft_api_mgmt_oauth2_suffix])
   cft_api_mgmt_oauth2_rg     = join("-", ["cft", var.env, "network-rg"])
-  cft_api_oauth2_base_path   = "ia-home-office-api"
+  cft_api_oauth2_base_path   = "ia-home-office-integration-api"
 }
 
 data "template_file" "cft_oauth2_policy_template" {
@@ -66,8 +66,8 @@ module "cft_api_mgmt_oauth2_product" {
 
 module "cft_api_mgmt_oauth2_api" {
   source                = "git@github.com:hmcts/cnp-module-api-mgmt-api?ref=master"
-  name                  = "ia-home-office-api"
-  display_name          = "IA Home Office API"
+  name                  = "ia-home-office-integration-api"
+  display_name          = "IA Home Office Integration API"
   api_mgmt_name         = local.cft_api_mgmt_oauth2_name
   api_mgmt_rg           = local.cft_api_mgmt_oauth2_rg
   product_id            = module.cft_api_mgmt_oauth2_product.product_id
