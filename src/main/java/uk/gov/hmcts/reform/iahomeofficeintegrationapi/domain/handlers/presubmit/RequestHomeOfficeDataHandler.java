@@ -10,7 +10,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.Asy
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.AsylumCaseDefinition.HOME_OFFICE_SEARCH_STATUS_MESSAGE;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -115,7 +115,7 @@ public class RequestHomeOfficeDataHandler implements PreSubmitCallbackHandler<As
                         asylumCase.read(HOME_OFFICE_SEARCH_RESPONSE, String.class)
                                 .orElseThrow(() -> new IllegalStateException("Home Office search response is not present."));
 
-                searchResponse = new ObjectMapper()
+                searchResponse = new JsonMapper()
                         .readValue(homeOfficeSearchResponseJsonStr, HomeOfficeSearchResponse.class);
 
                 int selectedApplicantHyphenIndex = selectedApplicant.lastIndexOf("-");

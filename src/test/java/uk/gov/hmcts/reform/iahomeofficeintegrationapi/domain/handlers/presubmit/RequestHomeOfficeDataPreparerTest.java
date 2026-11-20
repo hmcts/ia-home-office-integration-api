@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -276,7 +276,7 @@ public class RequestHomeOfficeDataPreparerTest {
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT, String.class))
                 .thenReturn(Optional.of("1234-1234-5678-5678"));
         when(asylumCase.read(HOME_OFFICE_SEARCH_RESPONSE, String.class))
-                .thenReturn(Optional.of(new ObjectMapper().writeValueAsString(getSampleResponse())));
+                .thenReturn(Optional.of(new JsonMapper().writeValueAsString(getSampleResponse())));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 requestHomeOfficeDataPreparer.handle(ABOUT_TO_START, callback);
@@ -326,7 +326,7 @@ public class RequestHomeOfficeDataPreparerTest {
         verify(asylumCase, times(1)).write(MATCHING_APPELLANT_DETAILS_FOUND, YesOrNo.YES);
         verify(asylumCase, times(1)).write(HOME_OFFICE_APPELLANTS_LIST, appellantsList);
         verify(asylumCase, times(1))
-                .write(HOME_OFFICE_SEARCH_RESPONSE, new ObjectMapper().writeValueAsString(getSampleResponse()));
+                .write(HOME_OFFICE_SEARCH_RESPONSE, new JsonMapper().writeValueAsString(getSampleResponse()));
     }
 
     @Test
@@ -422,8 +422,7 @@ public class RequestHomeOfficeDataPreparerTest {
     private HomeOfficeSearchResponse getSampleResponse() throws Exception {
         if (homeOfficeSearchResponse == null) {
             Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
-            ObjectMapper om = new ObjectMapper()
-                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            ObjectMapper om = new JsonMapper();
             homeOfficeSearchResponse = om.readValue(FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
         }
         return homeOfficeSearchResponse;

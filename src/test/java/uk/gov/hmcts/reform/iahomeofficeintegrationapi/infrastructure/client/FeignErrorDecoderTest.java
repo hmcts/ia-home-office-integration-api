@@ -8,8 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import feign.FeignException;
 import feign.Request;
 import feign.Request.HttpMethod;
@@ -36,8 +37,9 @@ class FeignErrorDecoderTest {
 
     @BeforeEach
     void setUp() {
-        ObjectMapper objectMapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+        ObjectMapper objectMapper = JsonMapper.builder()
+            .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
+            .build();
         feignErrorDecoder = new FeignErrorDecoder(objectMapper);
     }
 

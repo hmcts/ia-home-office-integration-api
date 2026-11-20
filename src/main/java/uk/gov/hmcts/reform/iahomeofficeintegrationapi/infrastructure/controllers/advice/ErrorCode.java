@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     CASE_NOT_FOUND("CASE_NOT_FOUND", HttpStatus.NOT_FOUND, null),
     CASE_GONE("CASE_GONE", HttpStatus.GONE, null),
-    CASE_INCOMPATIBLE("CASE_INCOMPATIBLE", HttpStatus.UNPROCESSABLE_ENTITY, null),
+    CASE_INCOMPATIBLE("CASE_INCOMPATIBLE", HttpStatus.UNPROCESSABLE_CONTENT, null),
     REQUIRED_FIELD_MISSING("REQUIRED_FIELD_MISSING", HttpStatus.BAD_REQUEST, null),
     CONFLICT("CONFLICT", HttpStatus.CONFLICT, null),
 

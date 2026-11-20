@@ -29,7 +29,6 @@ public class IdamUserDetailsProvider implements UserDetailsProvider {
         final String accessToken = accessTokenProvider.getAccessToken();
 
         UserInfo response;
-
         try {
             response = idamService.getUserInfo(accessToken);
         } catch (FeignException ex) {

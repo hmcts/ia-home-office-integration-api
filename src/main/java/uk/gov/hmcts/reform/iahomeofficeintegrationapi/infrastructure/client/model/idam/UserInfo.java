@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.annotation.JsonNaming;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -29,6 +29,8 @@ public class UserInfo implements Serializable {
     @Setter
     private List<String> roles;
     private String name;
+    @JsonProperty("given_name")
     private String givenName;
+    @JsonProperty("family_name")
     private String familyName;
 }

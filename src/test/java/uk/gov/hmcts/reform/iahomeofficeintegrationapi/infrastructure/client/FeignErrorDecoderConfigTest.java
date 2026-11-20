@@ -2,7 +2,8 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import feign.codec.ErrorDecoder;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -27,7 +28,7 @@ class FeignErrorDecoderConfigTest {
     @Test
     void shouldUseProvidedObjectMapperInstance() throws Exception {
         // Arrange
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new JsonMapper();
 
         // Act
         FeignErrorDecoder decoder =

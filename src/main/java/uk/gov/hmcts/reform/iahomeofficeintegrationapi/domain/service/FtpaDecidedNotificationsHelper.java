@@ -123,8 +123,8 @@ public class FtpaDecidedNotificationsHelper {
                 );
             }
         } catch (Exception e) {
-            log.error("Failed to send {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}",
-                COURT_OUTCOME.name(), caseId, homeOfficeReferenceNumber, notificationStatus, event);
+            log.error("Failed to send {} notification for caseId: {}, HomeOffice reference: {}, status: {}, event: {}, e: {}",
+                COURT_OUTCOME.name(), caseId, homeOfficeReferenceNumber, notificationStatus, event, e.toString());
             notificationStatus = "FAIL";
         }
 

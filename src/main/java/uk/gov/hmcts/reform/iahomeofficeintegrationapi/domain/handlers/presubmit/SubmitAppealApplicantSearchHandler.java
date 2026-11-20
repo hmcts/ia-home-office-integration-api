@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -300,7 +300,7 @@ public class SubmitAppealApplicantSearchHandler implements PreSubmitCallbackHand
                     return new PreSubmitCallbackResponse<>(asylumCase);
                 }
 
-                String homeOfficeSearchResponseJsonStr = new ObjectMapper().writeValueAsString(searchResponse);
+                String homeOfficeSearchResponseJsonStr = new JsonMapper().writeValueAsString(searchResponse);
 
                 updateAsylumCase(asylumCase,
                         caseId,
