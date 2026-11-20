@@ -53,6 +53,7 @@ class HearingCentreTest {
         assertEquals(HearingCentre.fromId("newcastle"), HearingCentre.NEWCASTLE);
         assertEquals(HearingCentre.fromId("belfast"), HearingCentre.BELFAST);
         assertEquals(HearingCentre.fromId("hendon"), HearingCentre.HENDON);
+        assertEquals(HearingCentre.fromId("kirklees"), HearingCentre.KIRKLEES);
         assertEquals(HearingCentre.fromId("yarlsWood"), HearingCentre.YARLS_WOOD);
         assertEquals(HearingCentre.fromId("bradfordKeighley"), HearingCentre.BRADFORD_KEIGHLEY);
         assertEquals(HearingCentre.fromId("mccMinshull"), HearingCentre.MCC_MINSHULL);
@@ -82,6 +83,7 @@ class HearingCentreTest {
         assertEquals("Newcastle Civil & Family Courts and Tribunals Centre", HearingCentre.NEWCASTLE.getValue());
         assertEquals("Belfast", HearingCentre.BELFAST.getValue());
         assertEquals("Hendon", HearingCentre.HENDON.getValue());
+        assertEquals("Kirklees", HearingCentre.KIRKLEES.getValue());
         assertEquals("Yarl's Wood", HearingCentre.YARLS_WOOD.getValue());
         assertEquals("Bradford & Keighley", HearingCentre.BRADFORD_KEIGHLEY.getValue());
         assertEquals("MCC Minshull st", HearingCentre.MCC_MINSHULL.getValue());
@@ -96,7 +98,7 @@ class HearingCentreTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(25, HearingCentre.values().length);
+        assertEquals(26, HearingCentre.values().length);
     }
 
 }
