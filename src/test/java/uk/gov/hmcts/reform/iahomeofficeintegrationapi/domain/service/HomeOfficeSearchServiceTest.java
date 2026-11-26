@@ -10,7 +10,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iahomeofficeintegrationapi.infrastructure.config.HomeOfficeProperties.LookupReferenceData;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
@@ -50,7 +51,7 @@ class HomeOfficeSearchServiceTest {
 
     @BeforeEach
     public void setUp() {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new JsonMapper();
         homeOfficeSearchService = new HomeOfficeSearchService(
             homeOfficeProperties, homeOfficeSearchApi, accessTokenProvider, objectMapper);
     }

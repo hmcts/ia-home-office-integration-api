@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.component.testutils;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities.ccd.Event;
 
@@ -11,6 +12,7 @@ public class CallbackForTest {
     @JsonProperty("case_details")
     private CaseDetailsForTest caseDetails;
 
+    @JsonCreator
     CallbackForTest(Event event, CaseDetailsForTest caseDetails) {
         this.event = event;
         this.caseDetails = caseDetails;

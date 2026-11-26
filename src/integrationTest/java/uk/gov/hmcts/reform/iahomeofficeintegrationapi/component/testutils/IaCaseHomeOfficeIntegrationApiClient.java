@@ -4,8 +4,8 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -22,7 +22,7 @@ public class IaCaseHomeOfficeIntegrationApiClient {
     private final String ccdSubmittedUrl;
 
     private final HttpHeaders httpHeaders = new HttpHeaders();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new JsonMapper();
 
     public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
@@ -53,8 +53,6 @@ public class IaCaseHomeOfficeIntegrationApiClient {
         httpHeaders.add(SERVICE_AUTHORIZATION, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJmcGxfY2FzZV9zZXJ2aWNlIiwi"
                                                + "ZXhwIjoxNTkwNjg4NTU4fQ.I-Kuj5uEQqInvIn53bBoJtbtEYp5BGK-qakBjU5V_Mz"
                                                + "ruwmGq9ctPo6kYhnSkzvQ81sasaHZXtjbSKWfnUNeZg");
-
-        objectMapper.registerModule(new Jdk8Module());
     }
 
     public PreSubmitCallbackResponseForTest aboutToSubmit(

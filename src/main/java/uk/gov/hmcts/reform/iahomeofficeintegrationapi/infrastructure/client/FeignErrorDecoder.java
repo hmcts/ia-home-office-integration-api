@@ -7,8 +7,8 @@ import java.nio.charset.Charset;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import feign.Response;
 import feign.codec.ErrorDecoder;
@@ -46,7 +46,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                             // CCD returns {"message": "Case ID is not valid", ...}
                             var jsonNode = objectMapper.readTree(rawResponse);
                             if (jsonNode.has("message")) {
-                                errMessage = jsonNode.get("message").asText();
+                                errMessage = jsonNode.get("message").asString();
                                 // CCD returns 400 "Case ID is not valid" when case not found - treat as 404
                                 if (errMessage.contains("Case ID is not valid")) {
                                     log.info("CCD returned 400 for case not found, treating as 404: {}", errMessage);
@@ -74,7 +74,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                     log.info("Error StatusCode: {}, methodKey: {}, reason: {}, message: {}",
                         response.status(), methodKey, response.reason(), errMessage);
 
-                } catch (IOException ex) {
+                } catch (JacksonException | IOException ex) {
                     errMessage = ERROR_LOG.formatted(ex.getMessage());
                     log.error(ERROR_LOG, ex.getMessage());
                 }

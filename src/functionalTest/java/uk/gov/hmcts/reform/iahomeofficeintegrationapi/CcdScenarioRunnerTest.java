@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import feign.RetryableException;
 import io.restassured.RestAssured;
 import io.restassured.http.Headers;

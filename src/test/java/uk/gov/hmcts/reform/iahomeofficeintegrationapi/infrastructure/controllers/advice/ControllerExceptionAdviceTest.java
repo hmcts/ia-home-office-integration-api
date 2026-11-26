@@ -76,7 +76,7 @@ class ControllerExceptionAdviceTest {
 
         ResponseEntity<ErrorResponse> response = handler.handleCaseIncompatibleException(exception, request);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_CONTENT);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getErrorCode()).isEqualTo("CASE_INCOMPATIBLE");
         assertThat(response.getBody().getMessage()).startsWith("The 24-week status could not be set.")

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 import feign.Request;
 import feign.Response;

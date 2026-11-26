@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.entities;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
@@ -9,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.annotation.JsonNaming;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -61,6 +62,7 @@ public abstract class HomeOfficeStatutoryTimeframeBase {
     private OffsetDateTime timeStamp;
 
     // Copy constructor for base fields
+    @JsonCreator
     protected HomeOfficeStatutoryTimeframeBase(HomeOfficeStatutoryTimeframeBase other) {
         this.dateOfBirth = other.dateOfBirth;
         this.familyName = other.familyName;

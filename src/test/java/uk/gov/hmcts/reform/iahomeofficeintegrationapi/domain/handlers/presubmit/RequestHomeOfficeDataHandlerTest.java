@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iahomeofficeintegrationapi.domain.handlers.presubmit;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -142,7 +142,7 @@ public class RequestHomeOfficeDataHandlerTest {
     @Test
     void handle_should_return_matched_appellant_details() throws Exception {
 
-        String hoSearchResponseJsonStr = new ObjectMapper().writeValueAsString(getSampleResponse());
+        String hoSearchResponseJsonStr = new JsonMapper().writeValueAsString(getSampleResponse());
 
         when(callback.getEvent()).thenReturn(REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -268,8 +268,7 @@ public class RequestHomeOfficeDataHandlerTest {
     private HomeOfficeSearchResponse getSampleResponse() throws Exception {
         if (homeOfficeSearchResponse == null) {
             Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
-            ObjectMapper om = new ObjectMapper()
-                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            ObjectMapper om = new JsonMapper();
             homeOfficeSearchResponse = om.readValue(FileCopyUtils.copyToString(reader), HomeOfficeSearchResponse.class);
         }
         return homeOfficeSearchResponse;
