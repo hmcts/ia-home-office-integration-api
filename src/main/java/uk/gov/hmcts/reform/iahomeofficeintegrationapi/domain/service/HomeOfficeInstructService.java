@@ -52,22 +52,7 @@ public class HomeOfficeInstructService {
                 messageType,
                 correlationId
             );
-            // TODO Start block remove this
-            ObjectMapper objectMapper = new JsonMapper();
 
-            try {
-                String requestBody = objectMapper.writeValueAsString(request);
-                log.info("Full request body: {}", requestBody);
-            } catch (JacksonException e) {
-                log.error("Error serializing request body for caseId: {}, reference number: {}, "
-                    + logMessage + ", Message: {}: ",
-                    caseId,
-                    homeOfficeReferenceNumber,
-                    messageType,
-                    correlationId,
-                    e.getMessage());
-            }
-            // TODO End block
             instructResponse = homeOfficeInstructApi.sendNotification(accessToken, request);
 
             if (instructResponse == null || instructResponse.getMessageHeader() == null) {
